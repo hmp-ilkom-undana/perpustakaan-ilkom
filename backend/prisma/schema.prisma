@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String       @id @default(uuid())
+  name        String
+  email       String       @unique
+  wa_number   String
+  password    String
+  role        Role         @default(MAHASISWA)
+  borrowings  Borrowing[]
+  createdAt   DateTime     @default(now())
+}
+
+model Book {
+  id          String       @id @default(uuid())
+  title       String
+  author      String
+  year        Int
+  category    String
+  status      BookStatus   @default(TERSEDIA)
+  borrowings  Borrowing[]
+  createdAt   DateTime     @default(now())
+}
+
+model Borrowing {
+  id             String         @id @default(uuid())
+  userId         String
+  bookId         String
+  borrowDate     DateTime       @default(now())
+  returnDate     DateTime?
+  status         BorrowStatus   @default(REQUESTED)
+  kondisiAkhir   KondisiBuku?
+  fineAmount     Int            @default(0)
+  user           User           @relation(fields: [userId], references: [id])
+  book           Book           @relation(fields: [bookId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  MAHASISWA
+}
+
+enum BookStatus {
+  TERSEDIA
+  DIPINJAM
+}
+
+enum BorrowStatus {
+  REQUESTED
+  WAITING_PICKUP
+  BORROWED
+  OVERDUE
+  RETURNED
+  DAMAGED
+  LOST
+}
+
+enum KondisiBuku {
+  BAIK
+  RUSAK
+  HILANG
+}

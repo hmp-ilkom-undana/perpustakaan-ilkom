@@ -1,0 +1,8 @@
+{
+  "window.zoomLevel": 1,
+  "workbench.colorTheme": "Noctis Azureus",
+  "editor.fontSize": 15,
+  "workbench.iconTheme": "vscode-icons",
+  "editor.linkedEditing": true,
+  "liveServer.settings.port": 5501
+}
