@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
 import Home from "./pages/Home";
+import CatalogPage from "./features/catalog/pages/CatalogPage";
+
+import ArchiveDetail from "./features/catalog/pages/ArchiveDetail";
 
 // Komponen Halaman
-const Katalog = () => <h1>Katalog</h1>;
 const Panduan = () => <h1>Panduan Peminjaman</h1>;
 const Login = () => <h1>Login</h1>;
 
@@ -13,7 +15,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<PublicLayout />}>
           <Route path="" element={<Home />} />
-          <Route path="/katalog" element={<Katalog />} />
+          <Route path="/katalog" element={<CatalogPage />} />
+          <Route path="/katalog/:id" element={<ArchiveDetail />} />
           <Route path="/panduan" element={<Panduan />} />
           <Route path="/login" element={<Login />} />
         </Route>
