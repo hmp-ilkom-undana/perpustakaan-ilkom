@@ -68,6 +68,25 @@ app.post("/api/books", async (req, res) => {
   }
 });
 
+// 3. GET: Mengambil detail skripsi berdasarkan ID
+app.get("/api/books/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const book = await prisma.book.findUnique({
+      where: { id },
+    });
+    
+    if (!book) {
+      return res.status(404).json({ error: "Arsip tidak ditemukan." });
+    }
+    
+    res.status(200).json(book);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Terjadi kesalahan saat mengambil detail skripsi." });
+  }
+});
+
 // Jalankan Server
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
