@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, BookOpen, CalendarDays, Folder, UserRound } from "lucide-react";
+import { ArrowLeft, BookOpen, CalendarDays, Folder, UserRound, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useArchiveDetail } from "../hooks/useArchiveDetail";
 import StatusBadge from "../components/StatusBadge";
@@ -36,7 +36,7 @@ export default function ArchiveDetail() {
     );
   }
 
-  const isAvailable = book.status === "tersedia";
+  const isAvailable = book.status === "tersedia" || book.status === "TERSEDIA";
 
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4">
@@ -49,7 +49,7 @@ export default function ArchiveDetail() {
           {/* Header Section */}
           <div className="p-8 md:p-12 border-b border-slate-100 bg-gradient-to-b from-slate-50/50 to-white">
             <div className="flex flex-col md:flex-row gap-6 md:items-start">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border border-orange-100 bg-orange-50 text-3xl font-extrabold text-orange-600">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border border-orange-100 bg-orange-50 text-3xl font-extrabold text-orange-600 shadow-sm">
                 {String(book.title || "A").charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 space-y-4">
@@ -62,29 +62,22 @@ export default function ArchiveDetail() {
           </div>
 
           {/* Details Section */}
-          <div className="p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="md:col-span-2 space-y-8">
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3">Abstrak</h3>
-                <p className="text-slate-600 leading-relaxed">
-                  {book.abstract || "Abstrak tidak tersedia untuk arsip ini. Silakan kunjungi perpustakaan untuk membaca dokumen fisik selengkapnya."}
-                </p>
-              </div>
+          <div className="p-8 md:p-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+              <DetailCard icon={UserRound} label="Penulis" value={book.author} />
+              <DetailCard icon={CalendarDays} label="Tahun" value={book.year} />
+              <DetailCard icon={Folder} label="Kategori" value={book.category} />
+              <DetailCard icon={MapPin} label="Lokasi Rak" value={book.shelfLocation || "Lokasi belum tersedia"} />
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
-                <DetailRow icon={UserRound} label="Penulis" value={book.author} />
-                <DetailRow icon={CalendarDays} label="Tahun" value={book.year} />
-                <DetailRow icon={Folder} label="Kategori" value={book.category} />
-              </div>
-
+            {/* Action Panel */}
+            <div className="flex justify-end border-t border-slate-100 pt-8 mt-8">
               <Button
                 type="button"
                 disabled={!isAvailable}
-                className={`w-full h-12 rounded-xl font-bold text-base ${
+                className={`w-full md:w-auto h-12 px-8 rounded-xl font-bold text-base transition-all duration-200 ${
                   isAvailable
-                    ? "bg-orange-500 text-white hover:bg-orange-600 shadow-md hover:shadow-lg shadow-orange-500/20"
+                    ? "bg-orange-500 text-white hover:bg-orange-600 shadow-md hover:shadow-lg hover:-translate-y-0.5 shadow-orange-500/20"
                     : "bg-slate-100 text-slate-500 cursor-not-allowed"
                 }`}
               >
@@ -99,15 +92,17 @@ export default function ArchiveDetail() {
   );
 }
 
-function DetailRow({ icon: Icon, label, value }) {
+function DetailCard({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-start gap-3">
-      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-slate-400" aria-hidden="true" />
+    <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 flex items-start gap-4 hover:shadow-sm transition-shadow duration-200">
+      <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
+        <Icon className="h-5 w-5 text-slate-500" aria-hidden="true" />
+      </div>
       <div>
-        <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
           {label}
         </p>
-        <p className="font-semibold text-slate-800">{value}</p>
+        <p className="font-semibold text-slate-800 leading-snug">{value}</p>
       </div>
     </div>
   );
