@@ -18,14 +18,15 @@ model User {
 }
 
 model Book {
-  id          String       @id @default(uuid())
-  title       String
-  author      String
-  year        Int
-  category    String
-  status      BookStatus   @default(TERSEDIA)
-  borrowings  Borrowing[]
-  createdAt   DateTime     @default(now())
+  id            String       @id @default(uuid())
+  title         String
+  author        String
+  year          Int
+  category      String
+  status        BookStatus   @default(TERSEDIA)
+  shelfLocation String?
+  borrowings    Borrowing[]
+  createdAt     DateTime     @default(now())
 }
 
 model Borrowing {

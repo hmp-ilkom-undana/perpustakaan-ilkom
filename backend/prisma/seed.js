@@ -17,6 +17,7 @@ const devBooks = [
     year: 2024,
     category: "Kecerdasan Buatan",
     status: "TERSEDIA",
+    shelfLocation: "Rak A1",
   },
   {
     title: "Sistem Deteksi Intrusi Berbasis Machine Learning pada Jaringan Komputer",
@@ -24,6 +25,7 @@ const devBooks = [
     year: 2023,
     category: "Keamanan Siber",
     status: "DIPINJAM",
+    shelfLocation: "Rak B2",
   },
   {
     title: "Pengembangan Aplikasi Mobile Manajemen Akademik dengan Flutter",
@@ -31,6 +33,7 @@ const devBooks = [
     year: 2024,
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
+    shelfLocation: "Lemari Skripsi 2025",
   },
   {
     title: "Analisis Sentimen Ulasan Produk Menggunakan Natural Language Processing",
@@ -38,6 +41,7 @@ const devBooks = [
     year: 2022,
     category: "Kecerdasan Buatan",
     status: "TERSEDIA",
+    shelfLocation: "Rak A2",
   },
   {
     title: "Perancangan Sistem Informasi Perpustakaan Berbasis Web",
@@ -45,6 +49,7 @@ const devBooks = [
     year: 2021,
     category: "Sistem Informasi",
     status: "DIPINJAM",
+    shelfLocation: "Rak Sistem Informasi",
   },
   {
     title: "Audit Keamanan Sistem Informasi Menggunakan Framework ISO 27001",
@@ -52,6 +57,7 @@ const devBooks = [
     year: 2023,
     category: "Keamanan Siber",
     status: "TERSEDIA",
+    shelfLocation: "Rak B2",
   },
   {
     title: "Penerapan Metode Scrum dalam Pengembangan Sistem Manajemen Inventaris",
@@ -59,6 +65,7 @@ const devBooks = [
     year: 2025,
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
+    shelfLocation: "Lemari Skripsi 2025",
   },
   {
     title: "Rancang Bangun Sistem Informasi Keuangan Desa Berbasis Web",
@@ -66,6 +73,7 @@ const devBooks = [
     year: 2022,
     category: "Sistem Informasi",
     status: "TERSEDIA",
+    shelfLocation: "Rak Sistem Informasi",
   },
   {
     title: "Implementasi Algoritma Genetika untuk Optimasi Penjadwalan Kuliah",
@@ -73,6 +81,7 @@ const devBooks = [
     year: 2021,
     category: "Kecerdasan Buatan",
     status: "DIPINJAM",
+    shelfLocation: "Rak A1",
   },
   {
     title: "Analisis Kerentanan Keamanan Aplikasi Web Menggunakan OWASP",
@@ -80,6 +89,7 @@ const devBooks = [
     year: 2024,
     category: "Keamanan Siber",
     status: "TERSEDIA",
+    shelfLocation: "Rak B1",
   },
   {
     title: "Pengembangan REST API untuk Aplikasi E-Commerce dengan Node.js",
@@ -87,6 +97,7 @@ const devBooks = [
     year: 2023,
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
+    shelfLocation: "Rak C1",
   },
   {
     title: "Sistem Pendukung Keputusan Pemilihan Jurusan dengan Metode AHP",
@@ -94,6 +105,7 @@ const devBooks = [
     year: 2025,
     category: "Sistem Informasi",
     status: "DIPINJAM",
+    shelfLocation: "Rak Sistem Informasi",
   },
 ];
 
