@@ -24,6 +24,7 @@ model Book {
   year          Int
   category      String
   status        BookStatus   @default(TERSEDIA)
+  archiveType   String       @default("Skripsi")
   shelfLocation String?
   borrowings    Borrowing[]
   createdAt     DateTime     @default(now())

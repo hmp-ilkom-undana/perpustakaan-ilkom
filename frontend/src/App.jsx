@@ -4,9 +4,9 @@ import Home from "./pages/Home";
 import CatalogPage from "./features/catalog/pages/CatalogPage";
 
 import ArchiveDetail from "./features/catalog/pages/ArchiveDetail";
+import GuidePage from "./features/guide/pages/GuidePage";
 
 // Komponen Halaman
-const Panduan = () => <h1>Panduan Peminjaman</h1>;
 const Login = () => <h1>Login</h1>;
 
 export default function App() {
@@ -17,7 +17,7 @@ export default function App() {
           <Route path="" element={<Home />} />
           <Route path="/katalog" element={<CatalogPage />} />
           <Route path="/katalog/:id" element={<ArchiveDetail />} />
-          <Route path="/panduan" element={<Panduan />} />
+          <Route path="/panduan" element={<GuidePage />} />
           <Route path="/login" element={<Login />} />
         </Route>
       </Routes>

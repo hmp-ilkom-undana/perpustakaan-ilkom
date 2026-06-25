@@ -18,6 +18,7 @@ const devBooks = [
     category: "Kecerdasan Buatan",
     status: "TERSEDIA",
     shelfLocation: "Rak A1",
+    archiveType: "Skripsi"
   },
   {
     title: "Sistem Deteksi Intrusi Berbasis Machine Learning pada Jaringan Komputer",
@@ -26,6 +27,7 @@ const devBooks = [
     category: "Keamanan Siber",
     status: "DIPINJAM",
     shelfLocation: "Rak B2",
+    archiveType: "Naskah Publikasi"
   },
   {
     title: "Pengembangan Aplikasi Mobile Manajemen Akademik dengan Flutter",
@@ -34,6 +36,7 @@ const devBooks = [
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
     shelfLocation: "Lemari Skripsi 2025",
+    archiveType: "Skripsi"
   },
   {
     title: "Analisis Sentimen Ulasan Produk Menggunakan Natural Language Processing",
@@ -42,6 +45,7 @@ const devBooks = [
     category: "Kecerdasan Buatan",
     status: "TERSEDIA",
     shelfLocation: "Rak A2",
+    archiveType: "Ringkasan Skripsi"
   },
   {
     title: "Perancangan Sistem Informasi Perpustakaan Berbasis Web",
@@ -50,6 +54,7 @@ const devBooks = [
     category: "Sistem Informasi",
     status: "DIPINJAM",
     shelfLocation: "Rak Sistem Informasi",
+    archiveType: "Skripsi"
   },
   {
     title: "Audit Keamanan Sistem Informasi Menggunakan Framework ISO 27001",
@@ -58,6 +63,7 @@ const devBooks = [
     category: "Keamanan Siber",
     status: "TERSEDIA",
     shelfLocation: "Rak B2",
+    archiveType: "Naskah Publikasi"
   },
   {
     title: "Penerapan Metode Scrum dalam Pengembangan Sistem Manajemen Inventaris",
@@ -66,6 +72,7 @@ const devBooks = [
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
     shelfLocation: "Lemari Skripsi 2025",
+    archiveType: "Skripsi"
   },
   {
     title: "Rancang Bangun Sistem Informasi Keuangan Desa Berbasis Web",
@@ -74,6 +81,7 @@ const devBooks = [
     category: "Sistem Informasi",
     status: "TERSEDIA",
     shelfLocation: "Rak Sistem Informasi",
+    archiveType: "Ringkasan Skripsi"
   },
   {
     title: "Implementasi Algoritma Genetika untuk Optimasi Penjadwalan Kuliah",
@@ -82,6 +90,7 @@ const devBooks = [
     category: "Kecerdasan Buatan",
     status: "DIPINJAM",
     shelfLocation: "Rak A1",
+    archiveType: "Skripsi"
   },
   {
     title: "Analisis Kerentanan Keamanan Aplikasi Web Menggunakan OWASP",
@@ -90,6 +99,7 @@ const devBooks = [
     category: "Keamanan Siber",
     status: "TERSEDIA",
     shelfLocation: "Rak B1",
+    archiveType: "Naskah Publikasi"
   },
   {
     title: "Pengembangan REST API untuk Aplikasi E-Commerce dengan Node.js",
@@ -98,6 +108,7 @@ const devBooks = [
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
     shelfLocation: "Rak C1",
+    archiveType: "Skripsi"
   },
   {
     title: "Sistem Pendukung Keputusan Pemilihan Jurusan dengan Metode AHP",
@@ -106,19 +117,16 @@ const devBooks = [
     category: "Sistem Informasi",
     status: "DIPINJAM",
     shelfLocation: "Rak Sistem Informasi",
+    archiveType: "Ringkasan Skripsi"
   },
 ];
 
 async function main() {
   console.log("Memulai proses seeding data development...");
 
-  // Cek data existing
-  const existing = await prisma.book.count();
-  if (existing > 0) {
-    console.log(`Database sudah berisi ${existing} data. Seed dibatalkan untuk mencegah duplikasi.`);
-    console.log("Hapus data terlebih dahulu jika ingin re-seed.");
-    return;
-  }
+  // Hapus data lama untuk development seeding
+  await prisma.borrowing.deleteMany({});
+  await prisma.book.deleteMany({});
 
   let inserted = 0;
   for (const book of devBooks) {

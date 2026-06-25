@@ -1,6 +1,14 @@
 import { RotateCcw, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SEARCH_TYPES, STATUS_OPTIONS } from "../constants/catalogOptions.js";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ARCHIVE_TYPES, STATUS_OPTIONS } from "../constants/catalogOptions.js";
 
 export default function SearchFilterBar({
   filters,
@@ -19,23 +27,23 @@ export default function SearchFilterBar({
           >
             Kata kunci
           </label>
-          <div className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-500/20">
-            <Search className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
-            <input
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+            <Input
               id="catalog-search"
               value={filters.q}
               onChange={(event) => onChange("q", event.target.value)}
               placeholder="Cari judul, penulis, topik..."
-              className="min-w-0 flex-1 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+              className="h-11 rounded-xl bg-slate-50 pl-9 border-slate-200 focus-visible:ring-orange-500/20 focus-visible:border-orange-400"
             />
           </div>
         </div>
 
         <SelectField
-          label="Mode"
-          value={filters.type}
-          onChange={(value) => onChange("type", value)}
-          options={SEARCH_TYPES}
+          label="Jenis Arsip"
+          value={filters.archiveType}
+          onChange={(value) => onChange("archiveType", value)}
+          options={ARCHIVE_TYPES}
         />
         <SelectField
           label="Kategori"
@@ -83,18 +91,21 @@ function SelectField({ label, value, options, onChange }) {
       >
         {label}
       </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-800 outline-none focus:border-orange-400 focus:ring-2 focus:ring-orange-500/20"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger 
+          id={id}
+          className="h-11 w-full rounded-xl bg-slate-50 border-slate-200 focus:ring-orange-500/20 focus:border-orange-400"
+        >
+          <SelectValue placeholder={`Pilih ${label}`} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

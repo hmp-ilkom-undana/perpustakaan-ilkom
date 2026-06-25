@@ -4,25 +4,17 @@ import { DEFAULT_FILTERS } from "../constants/catalogOptions.js";
 import { normalizeBookStatus } from "../utils/catalogFormatters.js";
 
 const ALL_VALUE = "semua";
-const PARAM_KEYS = ["q", "type", "category", "year", "status", "page"];
+const PARAM_KEYS = ["q", "archiveType", "category", "year", "status", "page"];
 
 function includesValue(value, query) {
   return String(value || "").toLowerCase().includes(query);
 }
 
-function matchesQuery(book, q, type) {
+function matchesQuery(book, q) {
   const query = q.trim().toLowerCase();
   if (!query) return true;
 
-  const fieldsByType = {
-    judul: [book.title],
-    penulis: [book.author],
-    topik: [book.category],
-    tahun: [book.year],
-    semua: [book.title, book.author, book.category, book.year, book.status],
-  };
-
-  const fields = fieldsByType[type] || fieldsByType.semua;
+  const fields = [book.title, book.author, book.category, book.year, book.status, book.archiveType];
   return fields.some((field) => includesValue(field, query));
 }
 
@@ -30,6 +22,10 @@ export function filterBooks(books, filters) {
   return books.filter((book) => {
     const status = normalizeBookStatus(book.status);
 
+    const matchesArchiveType =
+      !filters.archiveType ||
+      filters.archiveType === ALL_VALUE ||
+      book.archiveType === filters.archiveType;
     const matchesCategory =
       !filters.category ||
       filters.category === ALL_VALUE ||
@@ -40,7 +36,8 @@ export function filterBooks(books, filters) {
       !filters.status || filters.status === ALL_VALUE || status === filters.status;
 
     return (
-      matchesQuery(book, filters.q || "", filters.type || ALL_VALUE) &&
+      matchesQuery(book, filters.q || "") &&
+      matchesArchiveType &&
       matchesCategory &&
       matchesYear &&
       matchesStatus
@@ -66,7 +63,7 @@ function parseFilters(searchParams) {
 
   return {
     q: searchParams.get("q") || DEFAULT_FILTERS.q,
-    type: searchParams.get("type") || DEFAULT_FILTERS.type,
+    archiveType: searchParams.get("archiveType") || DEFAULT_FILTERS.archiveType,
     category: searchParams.get("category") || DEFAULT_FILTERS.category,
     year: searchParams.get("year") || DEFAULT_FILTERS.year,
     status:

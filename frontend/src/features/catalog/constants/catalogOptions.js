@@ -1,11 +1,10 @@
 export const CATALOG_PAGE_SIZE = 6;
 
-export const SEARCH_TYPES = [
-  { value: "semua", label: "Semua" },
-  { value: "judul", label: "Judul" },
-  { value: "penulis", label: "Penulis" },
-  { value: "topik", label: "Topik" },
-  { value: "tahun", label: "Tahun" },
+export const ARCHIVE_TYPES = [
+  { value: "semua", label: "Semua Arsip" },
+  { value: "Skripsi", label: "Skripsi" },
+  { value: "Naskah Publikasi", label: "Naskah Publikasi" },
+  { value: "Ringkasan Skripsi", label: "Ringkasan Skripsi" },
 ];
 
 export const STATUS_OPTIONS = [
@@ -16,7 +15,7 @@ export const STATUS_OPTIONS = [
 
 export const DEFAULT_FILTERS = {
   q: "",
-  type: "semua",
+  archiveType: "semua",
   category: "semua",
   year: "semua",
   status: "semua",
