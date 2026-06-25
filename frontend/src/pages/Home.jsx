@@ -2,6 +2,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
   Search,
   BookOpen,
   BookMarked,
@@ -141,8 +148,8 @@ export default function Home() {
         aria-label="Hero — Perpustakaan ILKOM"
       >
         {/* Overlays */}
-        <div className="absolute inset-0 bg-slate-950/82 z-0 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-transparent to-slate-950/70 z-0 pointer-events-none" />
+        <div className="absolute inset-0 bg-slate-950/50 z-0 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/20 via-transparent to-slate-950/50 z-0 pointer-events-none" />
         <div
           className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[280px] bg-orange-500/12 blur-[130px] rounded-full z-0 pointer-events-none"
           aria-hidden="true"
@@ -150,12 +157,6 @@ export default function Home() {
 
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 sm:px-6 flex flex-col items-center w-full">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-xs font-semibold tracking-widest uppercase mb-7">
-            <BookMarked className="h-3.5 w-3.5" aria-hidden="true" />
-            Perpustakaan Digital Ilmu Komputer
-          </div>
-
           {/* Heading */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-5 max-w-4xl mx-auto">
             Satu Pintu untuk Seluruh{" "}
@@ -309,7 +310,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {FEATURES.map(({ Icon, title, description, featured }) => (
-                <div
+                <Card
                   key={title}
                   className={`group relative overflow-hidden rounded-[2rem] border p-8 md:p-10 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col
                     ${
@@ -322,30 +323,34 @@ export default function Home() {
                     className={`absolute top-0 right-0 w-40 h-40 rounded-full blur-[60px] -mr-10 -mt-10 pointer-events-none transition-opacity duration-500 ${featured ? "bg-blue-400/20 opacity-0 group-hover:opacity-100" : "bg-blue-500/10 opacity-0 group-hover:opacity-100"}`}
                   />
 
-                  <div
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 relative z-10 shrink-0
-                      ${
-                        featured
-                          ? "bg-orange-100 text-orange-600 shadow-sm border border-orange-200"
-                          : "bg-orange-50 text-orange-500 border border-orange-100"
-                      }`}
-                  >
-                    <Icon size={32} weight="duotone" aria-hidden="true" />
-                  </div>
-                  <h3
-                    className={`text-lg md:text-xl font-bold mb-3 relative z-10 ${featured ? "text-blue-950" : "text-slate-900"}`}
-                  >
-                    {title}
-                  </h3>
-                  <p
-                    className={`text-sm leading-relaxed relative z-10 flex-1 ${featured ? "text-blue-900/70" : "text-slate-600"}`}
-                  >
-                    {description}
-                  </p>
+                  <CardHeader className="p-0 mb-6 shrink-0">
+                    <div
+                      className={`w-14 h-14 rounded-2xl flex items-center justify-center relative z-10
+                        ${
+                          featured
+                            ? "bg-orange-100 text-orange-600 shadow-sm border border-orange-200"
+                            : "bg-orange-50 text-orange-500 border border-orange-100"
+                        }`}
+                    >
+                      <Icon size={32} weight="duotone" aria-hidden="true" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0 flex-1 relative z-10 flex flex-col">
+                    <CardTitle
+                      className={`text-lg md:text-xl font-bold mb-3 ${featured ? "text-blue-950" : "text-slate-900"}`}
+                    >
+                      {title}
+                    </CardTitle>
+                    <CardDescription
+                      className={`text-sm leading-relaxed flex-1 ${featured ? "text-blue-900/70" : "text-slate-600"}`}
+                    >
+                      {description}
+                    </CardDescription>
+                  </CardContent>
                   {!featured && (
                     <div className="absolute bottom-0 left-8 right-8 h-[2px] bg-gradient-to-r from-transparent via-slate-200 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   )}
-                </div>
+                </Card>
               ))}
             </div>
           </div>
@@ -408,7 +413,9 @@ export default function Home() {
                     <span className="text-xs font-bold tracking-wide text-slate-700 group-hover:text-slate-900 transition-colors">
                       Jelajahi Topik
                     </span>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${theme.iconBg} border border-transparent group-hover:border-slate-200/50 group-hover:shadow-sm`}>
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${theme.iconBg} border border-transparent group-hover:border-slate-200/50 group-hover:shadow-sm`}
+                    >
                       <ArrowRight
                         className={`h-4 w-4 transition-transform group-hover:translate-x-0.5 ${theme.iconText}`}
                         aria-hidden="true"
