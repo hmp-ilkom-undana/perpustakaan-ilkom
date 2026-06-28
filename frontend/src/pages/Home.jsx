@@ -29,14 +29,6 @@ import bgHero from "../assets/hero-bg.png";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
-const SEARCH_TABS = [
-  { id: "semua", label: "Semua" },
-  { id: "judul", label: "Judul" },
-  { id: "penulis", label: "Penulis" },
-  { id: "topik", label: "Topik" },
-  { id: "tahun", label: "Tahun" },
-];
-
 const TRUST_ITEMS = [
   { Icon: BookMarked, label: "Arsip Akademik" },
   { Icon: Search, label: "Pencarian Cepat" },
@@ -123,7 +115,6 @@ const CATEGORIES = [
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("semua");
   const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
 
@@ -131,7 +122,6 @@ export default function Home() {
     e.preventDefault();
     const params = new URLSearchParams();
     if (keyword.trim()) params.set("q", keyword.trim());
-    if (activeTab !== "semua") params.set("type", activeTab);
     navigate(`/katalog${params.toString() ? `?${params}` : ""}`);
   };
 
@@ -178,11 +168,63 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-orange-500/15 blur-[120px] rounded-full pointer-events-none z-0" />
 
         {/* Ruang Konten */}
-        <div className="relative z-10 mx-auto max-w-7xl px-4 pt-24 sm:px-6 md:pt-32 lg:px-8 min-h-[50vh]">
-          {/* Teks dan Kotak Pencarian */}
-          <p className="text-slate-500 text-center animate-fade-in delay-100">
-            Menunggu konten Fase 2...
-          </p>
+        {/* Ruang Konten Utama (Mobile-First Grid) */}
+        <div className="relative z-10 mx-auto max-w-7xl px-4 pt-20 sm:px-6 md:pt-32 lg:px-8 min-h-[50vh]">
+          {/* text-center di HP, text-left di Laptop (lg) */}
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8 items-center text-center lg:text-left">
+            {/* KOLOM KIRI (TEKS & FORM PENCARIAN) */}
+            {/* items-center di HP agar di tengah, items-start di Laptop (lg) agar rata kiri */}
+            <div className="lg:col-span-7 flex flex-col items-center lg:items-start justify-center space-y-6 lg:space-y-8 pt-4 lg:pt-8">
+              {/* Heading: Teks lebih kecil di HP (text-4xl), membesar di Laptop (lg:text-7xl) */}
+              <h1 className="animate-fade-in delay-200 text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.15] text-white">
+                Satu Pintu untuk Seluruh <br className="hidden sm:block" />
+                <span className="bg-gradient-to-br from-white via-slate-200 to-orange-500 bg-clip-text text-transparent">
+                  Arsip Akademik
+                </span>
+              </h1>
+
+              {/* Deskripsi: Diberi padding kiri-kanan (px-2) di HP agar tidak menabrak tepi layar */}
+              <p className="animate-fade-in delay-300 max-w-xl text-sm sm:text-base lg:text-lg text-slate-400 leading-relaxed font-light px-2 lg:px-0">
+                Telusuri skripsi dan arsip akademik Program Studi Ilmu Komputer.
+                Ajukan peminjaman digital, ambil fisik di perpustakaan tanpa
+                birokrasi rumit.
+              </p>
+
+              {/* Form Pencarian Glassmorphism */}
+              <div className="animate-fade-in delay-400 w-full max-w-2xl mt-6 lg:mt-8">
+                {/* Bar Input: Ditumpuk atas-bawah di HP (flex-col), Sejajar di Tablet/Laptop (sm:flex-row) */}
+                <form
+                  onSubmit={handleSearch}
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-0 bg-slate-900/40 backdrop-blur-xl border border-white/10 rounded-2xl sm:rounded-full p-2 hover:border-orange-500/50 hover:bg-slate-900/60 transition-all shadow-2xl"
+                >
+                  <div className="flex items-center gap-3 pl-3 sm:pl-4 flex-1 min-w-0">
+                    <Search className="h-5 w-5 text-slate-400 shrink-0" />
+                    <input
+                      type="text"
+                      value={keyword}
+                      onChange={(e) => setKeyword(e.target.value)}
+                      // Placeholder diubah statis agar lebih jelas
+                      placeholder="Cari judul skripsi, penulis, atau topik..."
+                      className="bg-transparent border-none outline-none text-white w-full placeholder:text-slate-500 text-sm sm:text-base min-w-0 py-2"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white rounded-xl sm:rounded-full px-8 h-12 text-sm sm:text-base font-bold transition-transform hover:scale-105 shadow-orange-500/25 shadow-lg shrink-0"
+                  >
+                    Telusuri
+                  </Button>
+                </form>
+              </div>
+            </div>
+
+            {/* --- FASE 2B: KOLOM KANAN (Akan diisi di Fase 3) --- */}
+            {/* hidden di HP agar tidak memenuhi layar, muncul saat layar seukuran Laptop (lg:block) */}
+            <div className="lg:col-span-5 space-y-6 lg:mt-12 hidden lg:block text-slate-500 text-center animate-fade-in delay-500">
+              Menunggu konten Kartu Statistik Fase 3...
+            </div>
+          </div>
         </div>
       </section>
 
