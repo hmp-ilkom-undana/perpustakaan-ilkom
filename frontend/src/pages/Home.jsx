@@ -149,17 +149,20 @@ export default function Home() {
           .delay-100 { animation-delay: 0.1s; }
           .delay-200 { animation-delay: 0.2s; }
           .delay-300 { animation-delay: 0.3s; }
+          .delay-400 { animation-delay: 0.4s; }
+          .delay-500 { animation-delay: 0.5s; }
         `}</style>
 
         {/* Background Masking */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40"
+          className="absolute inset-0 z-0 bg-no-repeat opacity-40 bg-cover md:bg-cover bg-[center_top_1rem] md:bg-center"
           style={{
             backgroundImage: `url(${bgHero})`,
+            // Masking diubah agar bagian bawah gambar memudar lebih cepat (mulai 50%) khusus untuk HP
             maskImage:
-              "linear-gradient(180deg, black 0%, black 70%, transparent 100%)",
+              "linear-gradient(180deg, black 0%, black 50%, transparent 100%)",
             WebkitMaskImage:
-              "linear-gradient(180deg, black 0%, black 70%, transparent 100%)",
+              "linear-gradient(180deg, black 0%, black 50%, transparent 100%)",
           }}
           aria-hidden="true"
         />
@@ -167,7 +170,7 @@ export default function Home() {
         {/* Pendaran Cahaya (Glow) di Tengah */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-orange-500/15 blur-[120px] rounded-full pointer-events-none z-0" />
 
-        {/* Ruang Konten */}
+        {/* 2. Ruang Konten */}
         {/* Ruang Konten Utama (Mobile-First Grid) */}
         <div className="relative z-10 mx-auto max-w-7xl px-4 pt-20 sm:px-6 md:pt-32 lg:px-8 min-h-[50vh]">
           {/* text-center di HP, text-left di Laptop (lg) */}
