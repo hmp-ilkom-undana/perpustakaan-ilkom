@@ -138,103 +138,51 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white overflow-x-hidden">
       {/* ── 1. HERO ─────────────────────────────────────────────────────────── */}
-      <section
-        className="relative w-full min-h-[92vh] flex flex-col items-center justify-center text-center overflow-hidden"
-        style={{
-          backgroundImage: `url(${bgHero})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-        aria-label="Hero — Perpustakaan ILKOM"
-      >
-        {/* Overlays */}
-        <div className="absolute inset-0 bg-slate-950/50 z-0 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/20 via-transparent to-slate-950/50 z-0 pointer-events-none" />
+      <section className="relative w-full bg-slate-950 text-white overflow-hidden pb-12 sm:pb-16 md:pb-24">
+        {/* Scoped Animations */}
+        <style>{`
+          @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+          }
+          .animate-fade-in {
+            animation: fadeSlideIn 0.8s ease-out forwards;
+            opacity: 0;
+          }
+          .animate-marquee {
+            animation: marquee 25s linear infinite; 
+          }
+          .delay-100 { animation-delay: 0.1s; }
+          .delay-200 { animation-delay: 0.2s; }
+          .delay-300 { animation-delay: 0.3s; }
+        `}</style>
+
+        {/* Background Masking */}
         <div
-          className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[280px] bg-orange-500/12 blur-[130px] rounded-full z-0 pointer-events-none"
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40"
+          style={{
+            backgroundImage: `url(${bgHero})`,
+            maskImage:
+              "linear-gradient(180deg, black 0%, black 70%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(180deg, black 0%, black 70%, transparent 100%)",
+          }}
           aria-hidden="true"
         />
 
-        {/* Content */}
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 flex flex-col items-center w-full">
-          {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-5 max-w-4xl mx-auto">
-            Satu Pintu untuk Seluruh{" "}
-            <span className="text-orange-500">Arsip Akademik</span>
-          </h1>
+        {/* Pendaran Cahaya (Glow) di Tengah */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-orange-500/15 blur-[120px] rounded-full pointer-events-none z-0" />
 
-          {/* Subtitle */}
-          <p className="text-base sm:text-lg md:text-xl text-slate-300/90 mb-10 max-w-2xl mx-auto font-light leading-relaxed px-2">
-            Telusuri skripsi dan arsip akademik Program Studi Ilmu Komputer.
-            Ajukan peminjaman digital, ambil fisik di perpustakaan.
+        {/* Ruang Konten */}
+        <div className="relative z-10 mx-auto max-w-7xl px-4 pt-24 sm:px-6 md:pt-32 lg:px-8 min-h-[50vh]">
+          {/* Teks dan Kotak Pencarian */}
+          <p className="text-slate-500 text-center animate-fade-in delay-100">
+            Menunggu konten Fase 2...
           </p>
-
-          {/* Search Panel */}
-          <div className="w-full max-w-2xl mx-auto">
-            {/* Tabs */}
-            <div
-              className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1 justify-center"
-              style={{ scrollbarWidth: "none" }}
-              role="tablist"
-              aria-label="Filter pencarian"
-            >
-              {SEARCH_TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500
-                    ${
-                      activeTab === tab.id
-                        ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30"
-                        : "bg-slate-800/70 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/50"
-                    }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Input row */}
-            <form
-              onSubmit={handleSearch}
-              role="search"
-              className="flex flex-col sm:flex-row gap-3 sm:gap-0 bg-slate-900/65 backdrop-blur-md border border-slate-600/50 rounded-2xl sm:rounded-full p-2 hover:border-orange-500/40 transition-colors"
-            >
-              <label htmlFor="hero-search" className="sr-only">
-                Cari arsip berdasarkan{" "}
-                {SEARCH_TABS.find((t) => t.id === activeTab)?.label ??
-                  "kata kunci"}
-              </label>
-              <div className="flex items-center gap-3 pl-2 sm:pl-4 flex-1 min-w-0">
-                <Search
-                  className="h-5 w-5 text-slate-400 shrink-0"
-                  aria-hidden="true"
-                />
-                <input
-                  id="hero-search"
-                  type="text"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  placeholder={`Cari ${
-                    SEARCH_TABS.find(
-                      (t) => t.id === activeTab,
-                    )?.label.toLowerCase() ?? "kata kunci"
-                  }...`}
-                  className="bg-transparent border-none outline-none text-white w-full placeholder:text-slate-500 text-sm sm:text-base min-w-0 py-2"
-                />
-              </div>
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white rounded-xl sm:rounded-full px-8 h-11 sm:h-12 text-sm sm:text-base font-bold transition-transform hover:scale-105 shadow-orange-500/20 shadow-lg shrink-0"
-              >
-                Telusuri
-              </Button>
-            </form>
-          </div>
         </div>
       </section>
 
