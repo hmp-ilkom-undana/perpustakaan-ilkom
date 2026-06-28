@@ -8,6 +8,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+
+// --- Kumpulan Ikon dari Lucide React ---
 import {
   Search,
   BookOpen,
@@ -18,15 +20,18 @@ import {
   Lock,
   Laptop,
   Database,
+  Target,
+  Crown,
+  Star,
+  Smartphone,
+  Clock,
+  ShieldCheck
 } from "lucide-react";
-import {
-  MagnifyingGlass,
-  DeviceMobile,
-  ShieldCheck,
-  Books,
-} from "@phosphor-icons/react";
-import bgHero from "../assets/hero-bg.png";
 
+// --- Kumpulan Ikon dari Phosphor Icons ---
+import { MagnifyingGlass, DeviceMobile, Books } from "@phosphor-icons/react";
+
+import bgHero from "../assets/hero-bg.png";
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const TRUST_ITEMS = [
@@ -63,33 +68,9 @@ const FEATURES = [
 const CATEGORIES = [
   {
     Icon: Cpu,
-    title: "Kecerdasan Buatan",
-    description: "Machine learning, deep learning, computer vision, NLP.",
-    theme: {
-      border: "border-orange-200/60",
-      glow: "bg-orange-400/15",
-      iconBg: "bg-orange-50",
-      iconText: "text-orange-600",
-      line: "from-orange-400 to-orange-500",
-    },
-  },
-  {
-    Icon: Lock,
-    title: "Keamanan Siber",
-    description: "Kriptografi, keamanan jaringan, forensik digital.",
-    theme: {
-      border: "border-blue-200/60",
-      glow: "bg-blue-400/15",
-      iconBg: "bg-blue-50",
-      iconText: "text-blue-600",
-      line: "from-blue-400 to-blue-500",
-    },
-  },
-  {
-    Icon: Laptop,
-    title: "Rekayasa Perangkat Lunak",
+    title: "Machine Learning",
     description:
-      "Software engineering, arsitektur sistem, metodologi pengembangan.",
+      "Pengembangan algoritma cerdas, deep learning, dan computer vision.",
     theme: {
       border: "border-orange-200/60",
       glow: "bg-orange-400/15",
@@ -101,7 +82,8 @@ const CATEGORIES = [
   {
     Icon: Database,
     title: "Sistem Informasi",
-    description: "Basis data, sistem ERP, analisis informasi bisnis.",
+    description:
+      "Perancangan basis data, sistem ERP, dan analisis data bisnis.",
     theme: {
       border: "border-blue-200/60",
       glow: "bg-blue-400/15",
@@ -110,9 +92,56 @@ const CATEGORIES = [
       line: "from-blue-400 to-blue-500",
     },
   },
+  {
+    Icon: Laptop,
+    title: "Sistem Pakar",
+    description:
+      "Sistem berbasis pengetahuan dan rule-based reasoning untuk pemecahan masalah.",
+    theme: {
+      border: "border-orange-200/60",
+      glow: "bg-orange-400/15",
+      iconBg: "bg-orange-50",
+      iconText: "text-orange-600",
+      line: "from-orange-400 to-orange-500",
+    },
+  },
+  {
+    Icon: Target,
+    title: "Sistem Pendukung Keputusan",
+    description:
+      "Analisis multi-kriteria dan pemodelan logis untuk pengambilan keputusan.",
+    theme: {
+      border: "border-blue-200/60",
+      glow: "bg-blue-400/15",
+      iconBg: "bg-blue-50",
+      iconText: "text-blue-600",
+      line: "from-blue-400 to-blue-500",
+    },
+  },
+  {
+    Icon: Lock,
+    title: "Kriptografi",
+    description:
+      "Keamanan siber, enkripsi data, dan proteksi jaringan informasi.",
+    theme: {
+      border: "border-orange-200/60",
+      glow: "bg-orange-400/15",
+      iconBg: "bg-orange-50",
+      iconText: "text-orange-600",
+      line: "from-orange-400 to-orange-500",
+    },
+  },
 ];
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// --- Sub-Komponen Statistik untuk Hero ---
+const StatItem = ({ value, label }) => (
+  <div className="flex flex-col items-center justify-center transition-transform hover:-translate-y-1 cursor-default">
+    <span className="text-xl font-bold text-white sm:text-2xl">{value}</span>
+    <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium sm:text-xs">
+      {label}
+    </span>
+  </div>
+);
 
 export default function Home() {
   const [keyword, setKeyword] = useState("");
@@ -222,10 +251,103 @@ export default function Home() {
               </div>
             </div>
 
-            {/* --- FASE 2B: KOLOM KANAN (Akan diisi di Fase 3) --- */}
-            {/* hidden di HP agar tidak memenuhi layar, muncul saat layar seukuran Laptop (lg:block) */}
-            <div className="lg:col-span-5 space-y-6 lg:mt-12 hidden lg:block text-slate-500 text-center animate-fade-in delay-500">
-              Menunggu konten Kartu Statistik Fase 3...
+            {/* --- FASE 3: KOLOM KANAN (SMART BORROWING & MARQUEE) --- */}
+            <div className="lg:col-span-5 space-y-6 lg:mt-12 hidden lg:block">
+              {/* FASE 3A: Kartu Aturan Peminjaman Hybrid (Glassmorphism) Tanpa Badge */}
+              <div className="animate-fade-in delay-500 relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl">
+                {/* Efek Pendaran Dalam Kartu */}
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
+
+                <div className="relative z-10">
+                  {/* Header Kartu */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 shadow-inner">
+                      <Smartphone className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold tracking-tight text-white font-poppins">
+                        Smart Borrowing
+                      </div>
+                      <div className="text-sm text-slate-400 font-inter">
+                        Pengajuan Digital, Ambil Fisik
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* List Aturan PRD (Desain Clean) */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10 transition-colors hover:bg-white/10">
+                      <div className="flex items-center gap-3">
+                        <BookOpen className="w-5 h-5 text-orange-500" />
+                        <span className="text-sm text-slate-300 font-medium font-inter">
+                          Batas Peminjaman
+                        </span>
+                      </div>
+                      <span className="text-white font-bold font-inter">
+                        Maks. 3 Skripsi
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10 transition-colors hover:bg-white/10">
+                      <div className="flex items-center gap-3">
+                        <Clock className="w-5 h-5 text-orange-500" />
+                        <span className="text-sm text-slate-300 font-medium font-inter">
+                          Durasi Maksimal
+                        </span>
+                      </div>
+                      <span className="text-white font-bold font-inter">
+                        1 Bulan
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10 transition-colors hover:bg-white/10">
+                      <div className="flex items-center gap-3">
+                        <ShieldCheck className="w-5 h-5 text-orange-500" />
+                        <span className="text-sm text-slate-300 font-medium font-inter">
+                          Sistem Denda
+                        </span>
+                      </div>
+                      <span className="text-white font-bold font-inter">
+                        Otomatis Terlacak
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* FASE 3B: Kartu Marquee (Topik Spesifik PRD) */}
+              <div className="animate-fade-in delay-500 relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 py-6 backdrop-blur-xl">
+                <h3 className="mb-6 px-8 text-xs font-bold uppercase tracking-widest text-slate-400 text-center font-mono">
+                  Kategori Bidang
+                </h3>
+
+                {/* Efek Masking Kiri-Kanan agar Teks Seolah Muncul & Menghilang */}
+                <div
+                  className="relative flex overflow-hidden"
+                  style={{
+                    maskImage:
+                      "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+                    WebkitMaskImage:
+                      "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+                  }}
+                >
+                  <div className="animate-marquee flex gap-8 whitespace-nowrap px-4">
+                    {[...CATEGORIES, ...CATEGORIES, ...CATEGORIES].map(
+                      (topic, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 opacity-50 transition-all hover:opacity-100 cursor-default"
+                        >
+                          <topic.Icon className="h-5 w-5 text-orange-500" />
+                          <span className="text-sm font-bold text-white tracking-wide font-inter">
+                            {topic.title}
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -372,7 +494,7 @@ export default function Home() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 justify-center">
               {CATEGORIES.map(({ Icon, title, description, theme }) => (
                 <Link
                   key={title}
