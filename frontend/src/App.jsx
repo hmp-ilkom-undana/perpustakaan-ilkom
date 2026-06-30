@@ -5,9 +5,7 @@ import CatalogPage from "./features/catalog/pages/CatalogPage";
 
 import ArchiveDetail from "./features/catalog/pages/ArchiveDetail";
 import GuidePage from "./features/guide/pages/GuidePage";
-
-// Komponen Halaman
-const Login = () => <h1>Login</h1>;
+import Login from "./pages/Login";
 
 export default function App() {
   return (
