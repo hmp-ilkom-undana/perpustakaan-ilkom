@@ -7,7 +7,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-slate-200/60 bg-white/85 backdrop-blur-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05)] transition-all">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="w-full max-w-[93rem] mx-auto flex h-16 items-center justify-between px-6 md:px-12">
         {/* Bagian Kiri: Logo dan Nama */}
         <Link to="/" className="flex items-center gap-3 group">
           <img
