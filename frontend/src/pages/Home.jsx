@@ -25,7 +25,7 @@ import {
   Star,
   Smartphone,
   Clock,
-  ShieldCheck
+  ShieldCheck,
 } from "lucide-react";
 
 // --- Kumpulan Ikon dari Phosphor Icons ---
@@ -360,32 +360,7 @@ export default function Home() {
         <div className="absolute bottom-1/4 -right-[20%] w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-orange-200/20 blur-[150px] rounded-full pointer-events-none z-0" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none z-0" />
 
-        {/* ── 2. TRUST BAR ────────────────────────────────────────────────────── */}
-        <section
-          className="relative z-20 -mt-6 px-4"
-          aria-label="Keunggulan Sistem"
-        >
-          <div className="container mx-auto max-w-5xl">
-            <div className="bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-sm rounded-2xl py-4 px-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 md:gap-12">
-              {TRUST_ITEMS.map(({ Icon, label }) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-2 text-slate-700"
-                >
-                  <Icon
-                    className="h-4 w-4 text-orange-500 shrink-0"
-                    aria-hidden="true"
-                  />
-                  <span className="text-sm font-semibold whitespace-nowrap">
-                    {label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── 3. INTRO ────────────────────────────────────────────────────────── */}
+        {/*  INTRO ────────────────────────────────────────────────────────── */}
         <section className="relative z-10 pt-12 pb-8 md:pt-20 md:pb-12 px-4">
           <div className="container mx-auto max-w-4xl">
             <div className="bg-white/60 backdrop-blur-lg border border-slate-200/50 rounded-[2rem] p-8 md:p-12 text-center shadow-sm relative overflow-hidden">
@@ -411,7 +386,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── 4. FEATURE BENTO GRID ───────────────────────────────────────────── */}
+        {/*  FEATURE BENTO GRID ───────────────────────────────────────────── */}
         <section className="relative z-10 py-10 md:py-16 bg-white/40 border-y border-slate-200/30">
           <div className="container mx-auto max-w-6xl px-4">
             <div className="text-center mb-10">
@@ -471,7 +446,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── 5. TOPIC CATEGORIES ─────────────────────────────────────────────── */}
+        {/* TOPIC CATEGORIES ─────────────────────────────────────────────── */}
         <section className="relative z-10 py-12 md:py-20 px-4">
           <div className="container mx-auto max-w-6xl">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
@@ -494,12 +469,12 @@ export default function Home() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 justify-center">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-5">
               {CATEGORIES.map(({ Icon, title, description, theme }) => (
                 <Link
                   key={title}
                   to="/katalog"
-                  className={`group relative overflow-hidden rounded-[1.5rem] border bg-white/90 backdrop-blur-sm p-6 flex flex-col gap-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:bg-white ${theme.border}`}
+                  className={`group relative overflow-hidden rounded-[1.5rem] border bg-white/90 backdrop-blur-sm p-6 flex flex-col gap-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:bg-white ${theme.border} w-full md:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)] max-w-sm`}
                 >
                   <div
                     className={`absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r ${theme.line} opacity-60 group-hover:opacity-100 transition-opacity`}
@@ -543,7 +518,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── 6. CLOSING CTA ──────────────────────────────────────────────────── */}
+        {/* CLOSING CTA ──────────────────────────────────────────────────── */}
         <section className="relative z-10 pt-8 pb-16 md:pt-10 md:pb-24 px-4">
           <div className="container mx-auto max-w-5xl">
             <div className="relative overflow-hidden rounded-[2.5rem] bg-white/70 backdrop-blur-xl px-6 py-14 sm:py-20 text-center border border-white/60 shadow-xl shadow-slate-200/50 ring-1 ring-inset ring-slate-100/50">
