@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home, BookOpen, BookOpenText, LogIn } from "lucide-react";
 import logoIlkom from "../assets/Logo_Ilkom.png";
 
 export default function Navbar() {
@@ -47,7 +47,9 @@ export default function Navbar() {
 
           <Link
             to="/login"
-            className="ml-2 sm:ml-0 px-5 py-2 text-sm font-semibold text-white bg-orange-500 rounded-full shadow-md shadow-orange-500/20 hover:bg-orange-600 hover:shadow-orange-600/30 transition-all hover:-translate-y-0.5"
+            className={
+              "hidden sm:inline-flex px-5 py-2 text-sm font-semibold text-white bg-orange-500 rounded-full shadow-md shadow-orange-500/20 hover:bg-orange-600 hover:shadow-orange-600/30 transition-all hover:-translate-y-0.5"
+            }
           >
             Login
           </Link>
@@ -69,36 +71,67 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="sm:hidden absolute top-16 left-0 w-full bg-white border-b border-slate-200 shadow-xl py-4 px-6 flex flex-col gap-4 animate-in slide-in-from-top-2">
+          <div className="sm:hidden absolute top-20 left-4 right-4 bg-white border border-slate-100 shadow-2xl rounded-3xl p-4 flex flex-col gap-2 animate-in slide-in-from-top-4 fade-in duration-200">
+            {/* Navigasi */}
+            <div className="px-3 pb-2 border-b border-slate-100 mb-2">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Menu Sistem
+              </span>
+            </div>
+
+            {/* Menu Beranda */}
             <Link
               to="/"
               onClick={closeMenu}
-              className={`text-base font-semibold transition-colors ${isActive("/") ? "text-orange-600" : "text-slate-600 hover:text-orange-500"}`}
+              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl text-base font-semibold transition-all ${
+                isActive("/")
+                  ? "bg-orange-50 text-orange-600"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-orange-500"
+              }`}
             >
+              <Home className="w-5 h-5" />
               Beranda
             </Link>
+
+            {/* Menu Katalog */}
             <Link
               to="/katalog"
               onClick={closeMenu}
-              className={`text-base font-semibold transition-colors ${isActive("/katalog") ? "text-orange-600" : "text-slate-600 hover:text-orange-500"}`}
+              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl text-base font-semibold transition-all ${
+                isActive("/katalog")
+                  ? "bg-orange-50 text-orange-600"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-orange-500"
+              }`}
             >
-              Katalog
+              <BookOpen className="w-5 h-5" />
+              Katalog Arsip
             </Link>
+
+            {/* Menu Panduan */}
             <Link
               to="/panduan"
               onClick={closeMenu}
-              className={`text-base font-semibold transition-colors ${isActive("/panduan") ? "text-orange-600" : "text-slate-600 hover:text-orange-500"}`}
+              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl text-base font-semibold transition-all ${
+                isActive("/panduan")
+                  ? "bg-orange-50 text-orange-600"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-orange-500"
+              }`}
             >
-              Panduan
+              <BookOpenText className="w-5 h-5" />
+              Panduan Peminjaman
             </Link>
 
-            <Link
-              to="/login"
-              onClick={closeMenu}
-              className="px-5 py-2 text-base font-semibold text-white bg-orange-500 rounded-full shadow-md shadow-orange-500/20 hover:bg-orange-600 hover:shadow-orange-600/30 transition-all hover:-translate-y-0.5"
-            >
-              Login
-            </Link>
+            {/* Tombol Login Mobile (Di dalam Menu Burger) */}
+            <div className="mt-2 pt-4 border-t border-slate-100">
+              <Link
+                to="/login"
+                onClick={closeMenu}
+                className="flex items-center justify-center gap-2 w-full bg-orange-500 hover:bg-orange-600 text-white rounded-2xl py-4 text-base font-bold shadow-lg shadow-orange-500/25 active:scale-95 transition-all"
+              >
+                <LogIn className="w-5 h-5" />
+                Login ke Sistem
+              </Link>
+            </div>
           </div>
         )}
       </div>
