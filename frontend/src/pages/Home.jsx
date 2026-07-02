@@ -449,7 +449,7 @@ export default function Home() {
         {/* TOPIC CATEGORIES ─────────────────────────────────────────────── */}
         <section className="relative z-10 py-12 md:py-20 px-4">
           <div className="container mx-auto max-w-6xl">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+            <div className="flex flex-col items-start md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-10">
               <div>
                 <p className="text-xs font-bold tracking-widest uppercase text-orange-500 mb-2">
                   Telusuri Topik
