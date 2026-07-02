@@ -10,9 +10,7 @@ export default function GuidePage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col overflow-hidden pb-32">
       
-      {/* ========================================================
-          HERO SECTION DENGAN ANIMASI CONTAINER SCROLL
-          ======================================================== */}
+      {/* HERO SECTION DENGAN ANIMASI CONTAINER SCROLL */}
       <ContainerScroll
         titleComponent={
           <>
@@ -37,9 +35,7 @@ export default function GuidePage() {
         />
       </ContainerScroll>
 
-      {/* ========================================================
-          BAGIAN KONTEN PANDUAN MURNI (Di Bawah Animasi)
-          ======================================================== */}
+      {/* BAGIAN KONTEN PANDUAN MURNI (Di Bawah Animasi) */}
       <div className="max-w-4xl mx-auto px-6 lg:px-8 w-full -mt-20 md:-mt-40 relative z-10">
         
         {/* Step 1 */}
