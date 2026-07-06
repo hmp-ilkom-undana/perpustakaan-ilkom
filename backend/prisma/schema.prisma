@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,40 +8,45 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  name        String
-  email       String       @unique
-  wa_number   String
-  password    String
-  role        Role         @default(MAHASISWA)
-  borrowings  Borrowing[]
-  createdAt   DateTime     @default(now())
-}
+  id            String      @id @default(uuid())
+  name          String
+  email         String      @unique
+  wa_number     String
+  password      String
+  role          Role        @default(MAHASISWA)
+  borrowings    Borrowing[]
+  createdAt     DateTime    @default(now())
+  emailVerified Boolean     @default(false)
+  image         String?
+  updatedAt     DateTime    @updatedAt @default(now())
+  sessions      Session[]
+  accounts      Account[]
+}
 
 model Book {
-  id            String       @id @default(uuid())
+  id            String      @id @default(uuid())
   title         String
   author        String
   year          Int
   category      String
-  status        BookStatus   @default(TERSEDIA)
-  archiveType   String       @default("Skripsi")
+  status        BookStatus  @default(TERSEDIA)
+  archiveType   String      @default("Skripsi")
   shelfLocation String?
   borrowings    Borrowing[]
-  createdAt     DateTime     @default(now())
+  createdAt     DateTime    @default(now())
 }
 
 model Borrowing {
-  id             String         @id @default(uuid())
-  userId         String
-  bookId         String
-  borrowDate     DateTime       @default(now())
-  returnDate     DateTime?
-  status         BorrowStatus   @default(REQUESTED)
-  kondisiAkhir   KondisiBuku?
-  fineAmount     Int            @default(0)
-  user           User           @relation(fields: [userId], references: [id])
-  book           Book           @relation(fields: [bookId], references: [id])
+  id           String       @id @default(uuid())
+  userId       String
+  bookId       String
+  borrowDate   DateTime     @default(now())
+  returnDate   DateTime?
+  status       BorrowStatus @default(REQUESTED)
+  kondisiAkhir KondisiBuku?
+  fineAmount   Int          @default(0)
+  user         User         @relation(fields: [userId], references: [id])
+  book         Book         @relation(fields: [bookId], references: [id])
 }
 
 enum Role {
@@ -67,4 +73,52 @@ enum KondisiBuku {
   BAIK
   RUSAK
   HILANG
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

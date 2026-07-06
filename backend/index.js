@@ -23,7 +23,26 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
+
+import rateLimit from "express-rate-limit";
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5, // Limit each IP to 5 requests per `window`
+  message: { error: "Terlalu banyak permintaan, coba lagi dalam 1 menit." }
+});
+
+// Mount Better Auth Handler before express.json()
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./src/auth.js";
+app.use("/api/auth/sign-in", authLimiter);
+app.use("/api/auth/setup-password", authLimiter);
+app.use("/api/auth/check-setup", authLimiter);
+app.all("/api/auth/*", toNodeHandler(auth));
+
 app.use(express.json());
 
 // Root Endpoint
