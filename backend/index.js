@@ -45,6 +45,8 @@ app.all("/api/auth/*", toNodeHandler(auth));
 
 app.use(express.json());
 
+import { requireAuth, requireRoles } from "./src/middleware/authMiddleware.js";
+
 // Root Endpoint
 app.get("/", (req, res) => {
   res.json({ message: "Server Perpustakaan ILKOM berjalan lancar!" });
@@ -55,7 +57,7 @@ app.get("/", (req, res) => {
 // ==========================================
 
 // 1. GET: Mengambil seluruh daftar skripsi
-app.get("/api/books", async (req, res) => {
+app.get("/api/books", requireAuth, requireRoles(["MAHASISWA", "PETUGAS", "ADMIN"]), async (req, res) => {
   try {
     const books = await prisma.book.findMany({
       orderBy: { createdAt: 'desc' }
@@ -68,7 +70,7 @@ app.get("/api/books", async (req, res) => {
 });
 
 // 2. POST: Menambahkan skripsi baru ke dalam katalog
-app.post("/api/books", async (req, res) => {
+app.post("/api/books", requireAuth, requireRoles(["PETUGAS", "ADMIN"]), async (req, res) => {
   const { title, author, year, category } = req.body;
 
   try {
@@ -88,7 +90,7 @@ app.post("/api/books", async (req, res) => {
 });
 
 // 3. GET: Mengambil detail skripsi berdasarkan ID
-app.get("/api/books/:id", async (req, res) => {
+app.get("/api/books/:id", requireAuth, requireRoles(["MAHASISWA", "PETUGAS", "ADMIN"]), async (req, res) => {
   try {
     const { id } = req.params;
     const book = await prisma.book.findUnique({

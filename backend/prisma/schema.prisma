@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,7 +20,7 @@ model User {
   updatedAt     DateTime    @updatedAt @default(now())
   sessions      Session[]
   accounts      Account[]
-}
+}
 
 model Book {
   id            String      @id @default(uuid())
@@ -37,20 +36,29 @@ model Book {
 }
 
 model Borrowing {
-  id           String       @id @default(uuid())
-  userId       String
-  bookId       String
-  borrowDate   DateTime     @default(now())
-  returnDate   DateTime?
-  status       BorrowStatus @default(REQUESTED)
-  kondisiAkhir KondisiBuku?
-  fineAmount   Int          @default(0)
-  user         User         @relation(fields: [userId], references: [id])
-  book         Book         @relation(fields: [bookId], references: [id])
+  id                    String       @id @default(uuid())
+  userId                String
+  bookId                String
+  borrowDate            DateTime     @default(now())
+  returnDate            DateTime?
+  status                BorrowStatus @default(REQUESTED)
+  fineAmount            Int          @default(0)
+
+  kondisiPinjam         KondisiBuku?
+  catatanKondisiPinjam  String?
+  fotoUrlPinjam         String?
+
+  kondisiKembali        KondisiBuku?
+  catatanKondisiKembali String?
+  fotoUrlKembali        String?
+
+  user                  User         @relation(fields: [userId], references: [id])
+  book                  Book         @relation(fields: [bookId], references: [id])
 }
 
 enum Role {
   ADMIN
+  PETUGAS
   MAHASISWA
 }
 
