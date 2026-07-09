@@ -26,6 +26,11 @@ export const auth = betterAuth({
       wa_number: {
         type: "string",
         required: false,
+      },
+      nim: {
+        type: "string",
+        required: true,
+        unique: true,
       }
     }
   },
