@@ -9,6 +9,7 @@ datasource db {
 model User {
   id            String      @id @default(uuid())
   name          String
+  nim           String      @unique
   email         String      @unique
   wa_number     String
   password      String
