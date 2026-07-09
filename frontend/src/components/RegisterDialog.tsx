@@ -22,6 +22,10 @@ const registerSchema = z
   .object({
     name: z.string().min(3, "Nama minimal 3 karakter"),
     nim: z.string().length(10, "NIM harus 10 karakter"),
+    wa_number: z
+      .string()
+      .min(10, "Nomor WA minimal 10 digit")
+      .max(14, "Nomor WA terlalu panjang"),
     email: z.string().email("Format email tidak valid"),
     password: z.string().min(8, "Password minimal 8 karakter"),
     confirmPassword: z.string(),
@@ -62,6 +66,7 @@ export default function RegisterDialog({
     defaultValues: {
       name: "",
       nim: "",
+      wa_number: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -84,6 +89,7 @@ export default function RegisterDialog({
         password: values.password,
         name: values.name,
         nim: values.nim,
+        wa_number: values.wa_number,
       });
       if (error) {
         setRegisterError(
@@ -118,7 +124,7 @@ export default function RegisterDialog({
               {registerError}
             </div>
           )}
-
+          {/* Nama */}
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-zinc-700">Nama</Label>
             <Input
@@ -133,12 +139,13 @@ export default function RegisterDialog({
             )}
           </div>
 
+          {/* NIM */}
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-zinc-700">NIM</Label>
             <Input
               placeholder="Masukkan NIM anda..."
               className="h-9 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
-              {...register("nim")} 
+              {...register("nim")}
             />
             {errors.nim && (
               <p className="text-red-500 text-[10px] font-medium">
@@ -147,6 +154,24 @@ export default function RegisterDialog({
             )}
           </div>
 
+          {/* WA Number */}
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold text-zinc-700">
+              Nomor WA
+            </Label>
+            <Input
+              placeholder="Masukkan nomor WA anda..."
+              className="h-9 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
+              {...register("wa_number")}
+            />
+            {errors.wa_number && (
+              <p className="text-red-500 text-[10px] font-medium">
+                {errors.wa_number.message}
+              </p>
+            )}
+          </div>
+
+          {/* Email */}
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-zinc-700">Email</Label>
             <Input
@@ -162,6 +187,7 @@ export default function RegisterDialog({
             )}
           </div>
 
+          {/* Password */}
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-zinc-700">
               Kata Sandi
@@ -179,6 +205,7 @@ export default function RegisterDialog({
             )}
           </div>
 
+          {/* Confirm Password */}
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-zinc-700">
               Konfirmasi Sandi
@@ -196,6 +223,7 @@ export default function RegisterDialog({
             )}
           </div>
 
+          {/* Button Daftar Akun */}
           <Button
             type="submit"
             disabled={isSubmitting}
