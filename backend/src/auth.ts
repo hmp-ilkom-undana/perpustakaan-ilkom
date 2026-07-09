@@ -21,7 +21,12 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: true,
-        defaultValue: "MAHASISWA"
+        defaultValue: "MAHASISWA",
+      },
+      username: {
+        type: "string",
+        required: true,
+        unique: true,
       },
       wa_number: {
         type: "string",
@@ -31,11 +36,11 @@ export const auth = betterAuth({
         type: "string",
         required: true,
         unique: true,
-      }
-    }
+      },
+    },
   },
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [setupPlugin()]
+  plugins: [setupPlugin()],
 });

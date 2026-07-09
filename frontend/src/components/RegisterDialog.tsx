@@ -21,6 +21,10 @@ import {
 const registerSchema = z
   .object({
     name: z.string().min(3, "Nama minimal 3 karakter"),
+    username: z
+      .string()
+      .min(3, "Username minimal 3 karakter")
+      .regex(/^[a-zA-Z0-9_]+$/, "Hanya boleh huruf, angka, dan underscore"),
     nim: z.string().length(10, "NIM harus 10 karakter"),
     wa_number: z
       .string()
@@ -89,6 +93,7 @@ export default function RegisterDialog({
         password: values.password,
         name: values.name,
         nim: values.nim,
+        username: values.username,
         wa_number: values.wa_number,
       });
       if (error) {
@@ -183,6 +188,24 @@ export default function RegisterDialog({
             {errors.email && (
               <p className="text-red-500 text-[10px] font-medium">
                 {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          {/* Username */}
+          <div className="space-y-2">
+            <Label htmlFor="username" className="text-blue-950 font-medium">
+              Username
+            </Label>
+            <Input
+              id="username"
+              placeholder="johndoe_123"
+              {...register("username")}
+              className={errors.username ? "border-red-500" : ""}
+            />
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.username.message}
               </p>
             )}
           </div>
