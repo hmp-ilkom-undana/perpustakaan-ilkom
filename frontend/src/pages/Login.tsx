@@ -65,16 +65,16 @@ export default function Login() {
   // =============================================================================
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-between bg-zinc-50 p-6 relative overflow-hidden">
-      {/* BACKGROUND: Particle Network — Interaktif (tsparticles) */}
+    <div className="min-h-screen w-full flex flex-col items-center justify-between bg-blue-950 p-6 relative overflow-hidden">
+      {/* BACKGROUND: Circuit Board Canvas */}
       <ParticleBackground />
 
-      {/* Pendaran cahaya (Radial Blur) - ILKOM Identity (5% Opacity maksimal) */}
-      <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/[0.05] rounded-full blur-[140px] pointer-events-none z-0" />
-      <div className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-orange-500/[0.05] rounded-full blur-[140px] pointer-events-none z-0" />
+      {/* Pendaran cahaya (Radial Blur) - ILKOM Identity */}
+      <div className="fixed top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/[0.07] rounded-full blur-[140px] pointer-events-none z-[2]" />
+      <div className="fixed bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-orange-500/[0.05] rounded-full blur-[140px] pointer-events-none z-[2]" />
 
       {/* Form Login — Tengah layar */}
-      <div className="flex-1 flex items-center justify-center w-full z-10">
+      <div className="flex-1 flex items-center justify-center w-full z-20">
         <Card className="w-full max-w-sm bg-white border border-blue-50/80 shadow-[0_4px_24px_0_rgba(29,78,216,0.06)] rounded-2xl overflow-hidden relative">
           {/* Header: Logo + Judul */}
           <CardHeader className="space-y-2 text-center pt-9 pb-5 px-6">
@@ -189,7 +189,7 @@ export default function Login() {
       <RegisterDialog open={isRegisterOpen} onOpenChange={setRegisterOpen} />
 
       {/* Footer Logo */}
-      <footer className="w-full max-w-md border-t border-zinc-200/60 pt-5 pb-3 flex flex-col items-center gap-4 text-center z-10">
+      <footer className="w-full max-w-md border-t border-white/10 pt-5 pb-3 flex flex-col items-center gap-4 text-center z-20">
         <div className="flex items-center justify-center gap-6">
           <img
             src="/assets/Undana.png"
@@ -204,7 +204,7 @@ export default function Login() {
           <img
             src="/assets/Arthasena.png"
             alt="Logo Arthasena"
-            className="h-14 w-auto object-contain opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+            className="h-21 w-auto object-contain opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300"
           />
         </div>
         <p className="text-[10px] tracking-wide font-medium text-zinc-400 uppercase">
