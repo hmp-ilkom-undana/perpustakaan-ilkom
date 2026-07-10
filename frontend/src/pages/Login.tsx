@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RegisterDialog from "@/components/RegisterDialog";
 import ParticleBackground from "@/components/ParticleBackground";
+import { toast } from "sonner";
 
 // =============================================================================
 // SCHEMA — Username fleksibel (tanpa .email())
@@ -29,7 +30,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function Login() {
   const navigate = useNavigate();
 
-  const [globalError, setGlobalError] = useState<string | null>(null);
   const [isRegisterOpen, setRegisterOpen] = useState(false);
 
   const {
@@ -42,21 +42,17 @@ export default function Login() {
   });
 
   const onLogin = async (values: LoginFormValues) => {
-    setGlobalError(null);
-    try {
-      const { error } = await authClient.signIn.email({
-        email: values.email,
-        password: values.password,
-      });
-      if (error) {
-        setGlobalError(
-          error.message || "Gagal masuk. Periksa kembali akun Anda.",
-        );
-      } else {
-        navigate("/katalog");
-      }
-    } catch {
-      setGlobalError("Koneksi ke server gagal. Coba beberapa saat lagi.");
+    const { error } = await authClient.signIn.email({
+      email: values.email,
+      password: values.password,
+    });
+    if (error) {
+      // Jika salah password / email tidak ditemukan
+      toast.error(error.message || "Gagal masuk. Periksa kembali akun Anda.");
+    } else {
+      // Jika sukses
+      toast.success("Berhasil masuk!");
+      navigate("/dashboard");
     }
   };
 
@@ -102,13 +98,6 @@ export default function Login() {
           {/* Form Body */}
           <CardContent className="pb-8 px-6">
             <form onSubmit={handleSubmit(onLogin)} className="space-y-4">
-              {/* Error server */}
-              {globalError && (
-                <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-xs font-medium">
-                  {globalError}
-                </div>
-              )}
-
               {/* Input Username / Email */}
               <div className="space-y-1.5">
                 <Label
