@@ -13,7 +13,7 @@ model User {
   nim           String      @unique
   email         String      @unique
   wa_number     String
-  password      String
+  password      String?
   role          Role        @default(MAHASISWA)
   borrowings    Borrowing[]
   createdAt     DateTime    @default(now())

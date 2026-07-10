@@ -194,17 +194,17 @@ export default function Login() {
           <img
             src="/assets/Undana.png"
             alt="Logo Undana"
-            className="h-14 w-auto object-contain opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+            className="h-14 w-auto object-contain"
           />
           <img
             src="/assets/Logo_Ilkom.png"
             alt="Logo ILKOM"
-            className="h-14 w-auto object-contain opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+            className="h-14 w-auto object-contain"
           />
           <img
             src="/assets/Arthasena.png"
             alt="Logo Arthasena"
-            className="h-21 w-auto object-contain opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+            className="h-21 w-auto object-contain"
           />
         </div>
         <p className="text-[10px] tracking-wide font-medium text-zinc-400 uppercase">

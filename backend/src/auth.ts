@@ -4,7 +4,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import pkg from "@prisma/client";
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { setupPlugin } from "./setupPlugin.js";
 
 const { PrismaClient } = pkg;
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
@@ -30,17 +29,15 @@ export const auth = betterAuth({
       },
       wa_number: {
         type: "string",
-        required: false,
+        required: true,
       },
       nim: {
         type: "string",
         required: true,
-        unique: true,
       },
     },
   },
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [setupPlugin()],
 });

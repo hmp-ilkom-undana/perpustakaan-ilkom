@@ -2,6 +2,7 @@ import pkg from "@prisma/client";
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import dotenv from "dotenv";
+import { auth } from "../src/auth.ts";
 
 dotenv.config();
 
@@ -10,6 +11,7 @@ const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
+// --- DATA BUKU DUMMY ---
 const devBooks = [
   {
     title: "Implementasi Deep Learning untuk Klasifikasi Gambar Medis",
@@ -18,16 +20,17 @@ const devBooks = [
     category: "Kecerdasan Buatan",
     status: "TERSEDIA",
     shelfLocation: "Rak A1",
-    archiveType: "Skripsi"
+    archiveType: "Skripsi",
   },
   {
-    title: "Sistem Deteksi Intrusi Berbasis Machine Learning pada Jaringan Komputer",
+    title:
+      "Sistem Deteksi Intrusi Berbasis Machine Learning pada Jaringan Komputer",
     author: "Siti Rahma",
     year: 2023,
     category: "Keamanan Siber",
     status: "DIPINJAM",
     shelfLocation: "Rak B2",
-    archiveType: "Naskah Publikasi"
+    archiveType: "Naskah Publikasi",
   },
   {
     title: "Pengembangan Aplikasi Mobile Manajemen Akademik dengan Flutter",
@@ -36,16 +39,17 @@ const devBooks = [
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
     shelfLocation: "Lemari Skripsi 2025",
-    archiveType: "Skripsi"
+    archiveType: "Skripsi",
   },
   {
-    title: "Analisis Sentimen Ulasan Produk Menggunakan Natural Language Processing",
+    title:
+      "Analisis Sentimen Ulasan Produk Menggunakan Natural Language Processing",
     author: "Dewi Kurniasih",
     year: 2022,
     category: "Kecerdasan Buatan",
     status: "TERSEDIA",
     shelfLocation: "Rak A2",
-    archiveType: "Ringkasan Skripsi"
+    archiveType: "Ringkasan Skripsi",
   },
   {
     title: "Perancangan Sistem Informasi Perpustakaan Berbasis Web",
@@ -54,7 +58,7 @@ const devBooks = [
     category: "Sistem Informasi",
     status: "DIPINJAM",
     shelfLocation: "Rak Sistem Informasi",
-    archiveType: "Skripsi"
+    archiveType: "Skripsi",
   },
   {
     title: "Audit Keamanan Sistem Informasi Menggunakan Framework ISO 27001",
@@ -63,16 +67,17 @@ const devBooks = [
     category: "Keamanan Siber",
     status: "TERSEDIA",
     shelfLocation: "Rak B2",
-    archiveType: "Naskah Publikasi"
+    archiveType: "Naskah Publikasi",
   },
   {
-    title: "Penerapan Metode Scrum dalam Pengembangan Sistem Manajemen Inventaris",
+    title:
+      "Penerapan Metode Scrum dalam Pengembangan Sistem Manajemen Inventaris",
     author: "Yusuf Hakim",
     year: 2025,
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
     shelfLocation: "Lemari Skripsi 2025",
-    archiveType: "Skripsi"
+    archiveType: "Skripsi",
   },
   {
     title: "Rancang Bangun Sistem Informasi Keuangan Desa Berbasis Web",
@@ -81,7 +86,7 @@ const devBooks = [
     category: "Sistem Informasi",
     status: "TERSEDIA",
     shelfLocation: "Rak Sistem Informasi",
-    archiveType: "Ringkasan Skripsi"
+    archiveType: "Ringkasan Skripsi",
   },
   {
     title: "Implementasi Algoritma Genetika untuk Optimasi Penjadwalan Kuliah",
@@ -90,7 +95,7 @@ const devBooks = [
     category: "Kecerdasan Buatan",
     status: "DIPINJAM",
     shelfLocation: "Rak A1",
-    archiveType: "Skripsi"
+    archiveType: "Skripsi",
   },
   {
     title: "Analisis Kerentanan Keamanan Aplikasi Web Menggunakan OWASP",
@@ -99,7 +104,7 @@ const devBooks = [
     category: "Keamanan Siber",
     status: "TERSEDIA",
     shelfLocation: "Rak B1",
-    archiveType: "Naskah Publikasi"
+    archiveType: "Naskah Publikasi",
   },
   {
     title: "Pengembangan REST API untuk Aplikasi E-Commerce dengan Node.js",
@@ -108,7 +113,7 @@ const devBooks = [
     category: "Rekayasa Perangkat Lunak",
     status: "TERSEDIA",
     shelfLocation: "Rak C1",
-    archiveType: "Skripsi"
+    archiveType: "Skripsi",
   },
   {
     title: "Sistem Pendukung Keputusan Pemilihan Jurusan dengan Metode AHP",
@@ -117,25 +122,93 @@ const devBooks = [
     category: "Sistem Informasi",
     status: "DIPINJAM",
     shelfLocation: "Rak Sistem Informasi",
-    archiveType: "Ringkasan Skripsi"
+    archiveType: "Ringkasan Skripsi",
+  },
+];
+
+// --- DATA AKUN DUMMY ---
+const devUsers = [
+  {
+    name: "Administrator Perpustakaan",
+    username: "admin_perpustakaan",
+    email: "delanomanafe05@gmail.com",
+    password: "adminPERPUSTAKAAN123",
+    nim: "230000001",
+    role: "ADMIN",
+    wa_number: "082339113591",
+  },
+  {
+    name: "Petugas Perpustakaan",
+    username: "petugas1",
+    email: "petugasperpus@gmail.com",
+    password: "Petugas#1",
+    nim: "230000002",
+    role: "PETUGAS",
+    wa_number: "081234567891",
+  },
+  {
+    name: "Mahasiswa Demo",
+    username: "mahasiswa1",
+    email: "mahasiswa1@gmail.com",
+    password: "mahasiswa1234",
+    nim: "2201020001",
+    role: "MAHASISWA",
+    wa_number: "081234567892",
   },
 ];
 
 async function main() {
-  console.log("Memulai proses seeding data development...");
+  console.log("Memulai proses seeding data development...\n");
 
-  // Hapus data lama untuk development seeding
+  // ==========================================
+  // 1. SEEDING BUKU
+  // ==========================================
+  console.log("--- SEEDING BUKU ---");
   await prisma.borrowing.deleteMany({});
   await prisma.book.deleteMany({});
 
-  let inserted = 0;
+  let insertedBooks = 0;
   for (const book of devBooks) {
     await prisma.book.create({ data: book });
-    inserted++;
-    console.log(`✓ [${inserted}/${devBooks.length}] ${book.title}`);
+    insertedBooks++;
+  }
+  console.log(`✓ ${insertedBooks} arsip buku berhasil ditambahkan.\n`);
+
+  // ==========================================
+  // 2. SEEDING USER
+  // ==========================================
+  console.log("--- SEEDING AKUN USER ---");
+  for (const userData of devUsers) {
+    // Mengecek apakah email sudah ada agar script aman dijalankan berulang kali
+    const existingUser = await prisma.user.findUnique({
+      where: { email: userData.email },
+    });
+
+    if (!existingUser) {
+      // Pendaftaran via Better Auth agar password otomatis dienkripsi
+      await auth.api.signUpEmail({
+        body: {
+          name: userData.name,
+          email: userData.email,
+          password: userData.password,
+          username: userData.username,
+          nim: userData.nim,
+          role: userData.role,
+          wa_number: userData.wa_number,
+        },
+      });
+
+      console.log(
+        `✓ Akun [${userData.role}] Username: '${userData.username}' berhasil dibuat.`,
+      );
+    } else {
+      console.log(
+        `⚠ Akun [${userData.role}] ${userData.email} sudah ada, dilewati.`,
+      );
+    }
   }
 
-  console.log(`\nSelesai. ${inserted} arsip berhasil ditambahkan.`);
+  console.log("\nProses seeding selesai secara keseluruhan!");
 }
 
 main()

@@ -199,7 +199,7 @@ export default function RegisterDialog({
             </Label>
             <Input
               id="username"
-              placeholder="johndoe_123"
+              placeholder="Masukan username anda... "
               {...register("username")}
               className={errors.username ? "border-red-500" : ""}
             />
