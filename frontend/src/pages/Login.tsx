@@ -12,10 +12,7 @@ import RegisterDialog from "@/components/RegisterDialog";
 import ParticleBackground from "@/components/ParticleBackground";
 import { toast } from "sonner";
 
-// =============================================================================
-// SCHEMA — Username fleksibel (tanpa .email())
-// =============================================================================
-
+// SCHEMA 
 const loginSchema = z.object({
   email: z.string().min(1, "Username / Email wajib diisi"),
   password: z.string().min(1, "Password wajib diisi"),
@@ -23,9 +20,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-// =============================================================================
 // KOMPONEN
-// =============================================================================
 
 export default function Login() {
   const navigate = useNavigate();
@@ -63,14 +58,21 @@ export default function Login() {
       );
     } else {
       toast.success("Berhasil masuk!");
-      navigate("/dashboard");
+      // Ambil peran (role) dari balasan server
+      const role = authResponse.data?.user?.role;
+
+      // Arahkan (Redirect) sesuai peran masing-masing
+      if (role === "ADMIN") {
+        navigate("/admin");
+      } else if (role === "PETUGAS") {
+        navigate("/petugas");
+      } else {
+        navigate("/mahasiswa");
+      }
     }
   };
 
-  // =============================================================================
   // RENDER
-  // =============================================================================
-
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-between bg-blue-950 p-6 relative overflow-hidden">
       {/* BACKGROUND: Circuit Board Canvas */}

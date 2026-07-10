@@ -8,9 +8,27 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rute Dashboard */}
+        {/* Admin */}
         <Route
-          path="/dashboard"
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        {/* Petugas */}
+        <Route
+          path="/petugas"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        {/* Mahasiswa */}
+        <Route
+          path="/mahasiswa"
           element={
             <ProtectedRoute>
               <Dashboard />
