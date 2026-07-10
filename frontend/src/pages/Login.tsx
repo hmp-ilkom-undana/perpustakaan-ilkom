@@ -42,15 +42,26 @@ export default function Login() {
   });
 
   const onLogin = async (values: LoginFormValues) => {
-    const { error } = await authClient.signIn.email({
-      email: values.email,
-      password: values.password,
-    });
-    if (error) {
-      // Jika salah password / email tidak ditemukan
-      toast.error(error.message || "Gagal masuk. Periksa kembali akun Anda.");
+    const isEmail = values.email.includes("@");
+    let authResponse;
+
+    if (isEmail) {
+      authResponse = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+      });
     } else {
-      // Jika sukses
+      authResponse = await authClient.signIn.username({
+        username: values.email,
+        password: values.password,
+      });
+    }
+
+    if (authResponse.error) {
+      toast.error(
+        authResponse.error.message || "Gagal masuk. Periksa kembali akun Anda.",
+      );
+    } else {
       toast.success("Berhasil masuk!");
       navigate("/dashboard");
     }
