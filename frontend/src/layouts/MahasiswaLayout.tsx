@@ -67,9 +67,15 @@ export default function MahasiswaLayout() {
           >
             {/* Bagian Kiri: Logo & Nama Aplikasi */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <BookOpenCheck className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 rounded-lg overflow-hidden relative flex-shrink-0 bg-white">
+                <img
+                  src="/assets/Logo_Ilkom.png"
+                  alt="Logo Ilkom"
+                  className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 scale-[1.8] origin-top object-cover max-w-none w-full"
+
+                />
               </div>
+
               <h1 className="text-xl font-bold text-blue-900 tracking-tight hidden sm:block">
                 Perpustakaan ILKOM
               </h1>
