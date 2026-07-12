@@ -14,7 +14,7 @@ export const setupPlugin = () => {
             }, async (ctx) => {
                 const { loginId, wa_number } = ctx.body;
                 
-                let user;
+                let user: any;
                 if (loginId.includes('@')) {
                     const userRecord = await ctx.context.internalAdapter.findUserByEmail(loginId);
                     user = userRecord?.user;
@@ -54,7 +54,7 @@ export const setupPlugin = () => {
                 const { email, wa_number, newPassword } = ctx.body;
 
                 const userRecord = await ctx.context.internalAdapter.findUserByEmail(email);
-                const user = userRecord?.user;
+                const user: any = userRecord?.user;
                 
                 if (!user) {
                     throw new APIError("BAD_REQUEST", { message: "Data pengguna tidak ditemukan." });

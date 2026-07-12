@@ -1,7 +1,13 @@
 import { auth } from "../auth.js";
 import { fromNodeHeaders } from "better-auth/node";
+import { Request, Response, NextFunction } from "express";
 
-export const requireAuth = async (req, res, next) => {
+interface AuthRequest extends Request {
+  user?: any;
+  session?: any;
+}
+
+export const requireAuth = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
@@ -20,8 +26,8 @@ export const requireAuth = async (req, res, next) => {
   }
 };
 
-export const requireRoles = (allowedRoles) => {
-  return (req, res, next) => {
+export const requireRoles = (allowedRoles: string[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({ error: "Unauthorized" });
     }
