@@ -18,6 +18,7 @@ interface ArchiveCardProps {
   archiveType: string;
   category: string;
   status: string;
+  onClick: () => void;
 }
 
 export function ArchiveCard({
@@ -27,11 +28,15 @@ export function ArchiveCard({
   archiveType,
   category,
   status,
+  onClick,
 }: ArchiveCardProps) {
   const isAvailable = status.toUpperCase() === "TERSEDIA";
 
   return (
-    <Card className="flex flex-col h-full bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+    <Card
+      onClick={onClick}
+      className="flex flex-col h-full bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden cursor-pointer"
+    >
       <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50">
         <div className="flex justify-between items-start mb-2 gap-2">
           <Badge className="bg-blue-900 hover:bg-blue-800 text-white font-medium shadow-none rounded-sm">
@@ -73,19 +78,6 @@ export function ArchiveCard({
           </div>
         </div>
       </CardContent>
-
-      <CardFooter className="pt-0 pb-5 px-6">
-        <Button
-          className={`w-full font-bold shadow-none rounded-md transition-colors ${
-            isAvailable
-              ? "bg-orange-500 hover:bg-orange-600 text-white"
-              : "bg-slate-100 text-slate-400 cursor-not-allowed"
-          }`}
-          disabled={!isAvailable}
-        >
-          {isAvailable ? "Ajukan Peminjaman" : "Tidak Tersedia"}
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

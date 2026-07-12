@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArchiveCard } from "@/components/ArchiveCard";
+import { ArchiveDetailDialog } from "@/components/ArchiveDetailDialog";
 
 interface ArchiveData {
   id: string;
@@ -14,6 +15,7 @@ interface ArchiveData {
 export default function Katalog() {
   const [archives, setArchives] = useState<ArchiveData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedArchive, setSelectedArchive] = useState<any>(null);
 
   useEffect(() => {
     const fetchArchives = async () => {
@@ -68,6 +70,7 @@ export default function Katalog() {
                 archiveType={archive.archiveType}
                 category={archive.category}
                 status={archive.status}
+                onClick={() => setSelectedArchive(archive)}
               />
             ))
           ) : (
@@ -84,6 +87,12 @@ export default function Katalog() {
           )}
         </div>
       )}
+      {/* DIALOG DETAIL */}
+      <ArchiveDetailDialog
+        isOpen={selectedArchive !== null}
+        onClose={() => setSelectedArchive(null)}
+        archive={selectedArchive}
+      />
     </div>
   );
 }
