@@ -7,55 +7,59 @@ datasource db {
 }
 
 model User {
-  id            String      @id @default(uuid())
-  name          String
-  username      String      @unique
-  nim           String      @unique
-  email         String      @unique
-  wa_number     String
-  password      String?
-  role          Role        @default(MAHASISWA)
-  borrowings    Borrowing[]
-  createdAt     DateTime    @default(now())
-  emailVerified Boolean     @default(false)
-  image         String?
-  updatedAt     DateTime    @updatedAt @default(now())
-  sessions      Session[]
-  accounts      Account[]
+  id              String      @id @default(uuid())
+  name            String
+  username        String      @unique
+  displayUsername String?
+  nim             String      @unique
+  email           String      @unique
+  wa_number       String
+  password        String?
+  role            Role        @default(MAHASISWA)
+  borrowings      Borrowing[]
+  createdAt       DateTime    @default(now())
+  emailVerified   Boolean     @default(false)
+  image           String?
+  updatedAt       DateTime    @updatedAt @default(now())
+  sessions        Session[]
+  accounts        Account[]
 }
 
-model Book {
-  id            String      @id @default(uuid())
+model Archive {
+  id            String          @id @default(uuid())
   title         String
   author        String
   year          Int
   category      String
-  status        BookStatus  @default(TERSEDIA)
-  archiveType   String      @default("Skripsi")
-  shelfLocation String?
+  status        ArchiveStatus   @default(TERSEDIA)
+  archiveType   String          
+  quantity      Int             @default(1)
+  shelfLocation String?         
   borrowings    Borrowing[]
-  createdAt     DateTime    @default(now())
+  createdAt     DateTime        @default(now())
 }
+
 
 model Borrowing {
   id                    String       @id @default(uuid())
   userId                String
-  bookId                String
+  archiveId             String   
   borrowDate            DateTime     @default(now())
   returnDate            DateTime?
   status                BorrowStatus @default(REQUESTED)
   fineAmount            Int          @default(0)
 
-  kondisiPinjam         KondisiBuku?
+  kondisiPinjam         KondisiArsip?
   catatanKondisiPinjam  String?
   fotoUrlPinjam         String?
 
-  kondisiKembali        KondisiBuku?
+  kondisiKembali        KondisiArsip?
   catatanKondisiKembali String?
   fotoUrlKembali        String?
 
   user                  User         @relation(fields: [userId], references: [id])
-  book                  Book         @relation(fields: [bookId], references: [id])
+  archive               Archive      @relation(fields: [archiveId], references: [id])
+
 }
 
 enum Role {
@@ -64,7 +68,7 @@ enum Role {
   MAHASISWA
 }
 
-enum BookStatus {
+enum ArchiveStatus {
   TERSEDIA
   DIPINJAM
 }
@@ -79,7 +83,7 @@ enum BorrowStatus {
   LOST
 }
 
-enum KondisiBuku {
+enum KondisiArsip {
   BAIK
   RUSAK
   HILANG
