@@ -1,56 +1,87 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
+import { ArchiveCard } from "@/components/ArchiveCard";
 
-// Data dummy (sementara sebelum kita ambil dari backend)
-const DUMMY_BOOKS = Array.from({ length: 12 }).map((_, i) => ({
-  id: i + 1,
-  judul: `Buku Pemrograman Web ${i + 1}`,
-  penulis: "Budi Santoso",
-  kategori: "Teknologi",
-  status: i % 3 === 0 ? "Dipinjam" : "Tersedia", // Sebagian dipinjam, sebagian tersedia
-}));
+interface ArchiveData {
+  id: string;
+  title: string;
+  author: string;
+  year: number;
+  archiveType: string;
+  category: string;
+  status: string;
+}
 
 export default function Katalog() {
+  const [archives, setArchives] = useState<ArchiveData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchArchives = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/archives");
+
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data dari server");
+        }
+
+        const data = await response.json();
+
+        setArchives(data);
+      } catch (error) {
+        console.error("Error fetching archives:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArchives();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900">Katalog Buku</h2>
-        <p className="text-slate-500">Cari dan ajukan peminjaman buku yang Anda butuhkan.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-blue-900">
+          Katalog Arsip
+        </h2>
+        <p className="text-slate-500">
+          Cari dan ajukan peminjaman arsip tugas akhir yang Anda butuhkan.
+        </p>
       </div>
 
-      {/* Grid Layout untuk Card Buku */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {DUMMY_BOOKS.map((buku) => (
-          <Card key={buku.id} className="flex flex-col justify-between hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-4">
-              <div className="flex justify-between items-start mb-2">
-                <Badge variant={buku.status === "Tersedia" ? "default" : "destructive"}>
-                  {buku.status}
-                </Badge>
-                <span className="text-xs text-slate-400 font-medium">{buku.kategori}</span>
-              </div>
-              <CardTitle className="line-clamp-2 text-lg leading-tight">{buku.judul}</CardTitle>
-              <p className="text-sm text-slate-500 mt-1">{buku.penulis}</p>
-            </CardHeader>
-            <CardContent>
-              {/* Gambar cover buku (placeholder) */}
-              <div className="w-full h-40 bg-slate-100 rounded-md flex items-center justify-center text-slate-400 border border-dashed">
-                Cover Buku
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                className="w-full" 
-                disabled={buku.status !== "Tersedia"}
-                variant={buku.status === "Tersedia" ? "default" : "secondary"}
-              >
-                {buku.status === "Tersedia" ? "Ajukan Peminjaman" : "Tidak Tersedia"}
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center py-12 text-slate-500">
+          <p>Memuat data dari server...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {archives.length > 0 ? (
+            /* Lakukan Looping Data dari Backend */
+            archives.map((archive) => (
+              <ArchiveCard
+                key={archive.id}
+                id={archive.id}
+                title={archive.title}
+                author={archive.author}
+                year={archive.year}
+                archiveType={archive.archiveType}
+                category={archive.category}
+                status={archive.status}
+              />
+            ))
+          ) : (
+            /* Tampilan jika database Backend masih kosong */
+            <div className="col-span-full flex flex-col items-center justify-center py-16 bg-slate-50 border border-slate-200 rounded-xl">
+              <p className="text-lg font-medium text-slate-600">
+                Belum ada arsip yang tersedia.
+              </p>
+              <p className="text-sm text-slate-400 mt-1">
+                Koleksi arsip tugas akhir, ringkasan skripsi, dan naskah
+                publikasi sedang diperbarui. Silakan kembali lagi nanti.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
