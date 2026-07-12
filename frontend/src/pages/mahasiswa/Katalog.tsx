@@ -18,7 +18,9 @@ export default function Katalog() {
   useEffect(() => {
     const fetchArchives = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/archives");
+        const response = await fetch("http://localhost:5000/api/archives", {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error("Gagal mengambil data dari server");

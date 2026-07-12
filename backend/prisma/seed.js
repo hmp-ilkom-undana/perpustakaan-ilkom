@@ -37,7 +37,7 @@ async function main() {
     },
     {
       email: "mahasiswa1@gmail.com",
-      password: "mahasiswa_ILKOM123", 
+      password: "mahasiswa_ILKOM123",
       name: "Mahasiswa Demo",
       username: "mahasiswa1",
       nim: "2201020001",
@@ -51,11 +51,17 @@ async function main() {
       await auth.api.signUpEmail({ body: user });
       console.log(`[+] Akun ${user.role} (${user.email}) berhasil dibuat!`);
     } catch (error) {
-      console.log(`[!] Info: Akun ${user.role} sudah ada / gagal dibuat. (Alasan: ${error?.body?.message || "Username/Email sudah terpakai"})`);
+      console.log(
+        `[!] Info: Akun ${user.role} sudah ada / gagal dibuat. (Alasan: ${error?.body?.message || "Username/Email sudah terpakai"})`,
+      );
     }
   }
   console.log("Seeding User selesai!\n");
   // ----------------------------------------
+
+  // Hapus semua data arsip sebelumnya untuk mencegah duplikasi
+  console.log("Membersihkan data arsip lama...");
+  await prisma.archive.deleteMany();
 
   const devArchives = [
     // 1. DATA SKRIPSI (Memiliki Lokasi Rak)
