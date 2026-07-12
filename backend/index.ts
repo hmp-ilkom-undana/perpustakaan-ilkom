@@ -23,16 +23,18 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 // Middleware
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 import rateLimit from "express-rate-limit";
 const authLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 5, // Limit each IP to 5 requests per `window`
-  message: { error: "Terlalu banyak permintaan, coba lagi dalam 1 menit." }
+  message: { error: "Terlalu banyak permintaan, coba lagi dalam 1 menit." },
 });
 
 // Mount Better Auth Handler before express.json()
@@ -53,60 +55,92 @@ app.get("/", (req, res) => {
 });
 
 // ==========================================
-// ENDPOINT KATALOG SKRIPSI (BOOKS)
+// ENDPOINT KATALOG SKRIPSI
 // ==========================================
 
 // 1. GET: Mengambil seluruh daftar skripsi
-app.get("/api/books", requireAuth, requireRoles(["MAHASISWA", "PETUGAS", "ADMIN"]), async (req, res) => {
-  try {
-    const books = await prisma.book.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
-    res.status(200).json(books);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Terjadi kesalahan saat mengambil data skripsi." });
-  }
-});
+app.get(
+  "/api/archives",
+  requireAuth,
+  requireRoles(["MAHASISWA", "PETUGAS", "ADMIN"]),
+  async (req, res) => {
+    try {
+      const archives = await prisma.archive.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+      res.status(200).json(archives);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "Terjadi kesalahan saat mengambil data arsip." });
+    }
+  },
+);
 
 // 2. POST: Menambahkan skripsi baru ke dalam katalog
-app.post("/api/books", requireAuth, requireRoles(["PETUGAS", "ADMIN"]), async (req, res) => {
-  const { title, author, year, category } = req.body;
+app.post(
+  "/api/archives",
+  requireAuth,
+  requireRoles(["PETUGAS", "ADMIN"]),
+  async (req, res) => {
+    const {
+      title,
+      author,
+      year,
+      category,
+      archiveType,
+      quantity,
+      shelfLocation,
+    } = req.body;
 
-  try {
-    const newBook = await prisma.book.create({
-      data: {
-        title,
-        author,
-        year: parseInt(year),
-        category,
-      },
-    });
-    res.status(201).json(newBook);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Terjadi kesalahan saat menambahkan skripsi." });
-  }
-});
+    try {
+      const newArchive = await prisma.archive.create({
+        data: {
+          title,
+          author,
+          year: parseInt(year),
+          category,
+          archiveType: archiveType || "SKRIPSI",
+          quantity: quantity ? parseInt(quantity) : 1,
+          shelfLocation: shelfLocation || null,
+        },
+      });
+      res.status(201).json(newArchive);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "Terjadi kesalahan saat menambahkan arsip." });
+    }
+  },
+);
 
 // 3. GET: Mengambil detail skripsi berdasarkan ID
-app.get("/api/books/:id", requireAuth, requireRoles(["MAHASISWA", "PETUGAS", "ADMIN"]), async (req, res) => {
-  try {
-    const { id } = req.params;
-    const book = await prisma.book.findUnique({
-      where: { id },
-    });
-    
-    if (!book) {
-      return res.status(404).json({ error: "Arsip tidak ditemukan." });
+app.get(
+  "/api/archives/:id",
+  requireAuth,
+  requireRoles(["MAHASISWA", "PETUGAS", "ADMIN"]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const archive = await prisma.archive.findUnique({
+        where: { id: id as string },
+      });
+
+      if (!archive) {
+        return res.status(404).json({ error: "Arsip tidak ditemukan." });
+      }
+
+      res.status(200).json(archive);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "Terjadi kesalahan saat mengambil detail arsip." });
     }
-    
-    res.status(200).json(book);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Terjadi kesalahan saat mengambil detail skripsi." });
-  }
-});
+  },
+);
 
 // Jalankan Server
 app.listen(PORT, () => {
