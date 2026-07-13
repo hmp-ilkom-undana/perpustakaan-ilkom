@@ -19,6 +19,8 @@ interface Archive {
   archiveType: string;
   category: string;
   status: string;
+  quantity: number;
+  shelfLocation: string | null;
 }
 
 interface ArchiveDetailDialogProps {
@@ -81,6 +83,18 @@ export function ArchiveDetailDialog({
                 {archive.status}
               </Badge>
             </div>
+
+            <div className="font-semibold text-slate-500">Stok Tersedia</div>
+            <div className="col-span-2 text-slate-800">
+              {archive.quantity} Eksemplar
+            </div>
+
+            <div className="font-semibold text-slate-500">Lokasi Rak</div>
+            <div className="col-span-2 text-slate-800">
+              {archive.shelfLocation
+                ? archive.shelfLocation
+                : "Belum ditentukan"}
+            </div>
           </div>
         </div>
 
@@ -97,7 +111,7 @@ export function ArchiveDetailDialog({
             {isLoading
               ? "Memproses..."
               : isAvailable
-                ? "Ya, Ajukan Peminjaman"
+                ? "Ajukan Peminjaman"
                 : "Tidak Tersedia"}
           </Button>
         </DialogFooter>
