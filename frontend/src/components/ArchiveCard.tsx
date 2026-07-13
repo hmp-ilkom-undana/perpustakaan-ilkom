@@ -21,6 +21,23 @@ interface ArchiveCardProps {
   onClick: () => void;
 }
 
+const getArchiveTypeColor = (type: string) => {
+  // Menggunakan toLowerCase() agar pencarian kebal terhadap huruf besar/kecil (case-insensitive)
+  switch (type.toLowerCase()) {
+    case "skripsi":
+      return "bg-blue-600 hover:bg-blue-700 text-white";
+
+    case "ringkasan skripsi":
+      return "bg-sky-500 hover:bg-sky-600 text-white";
+
+    case "naskah publikasi":
+      return "bg-orange-500 hover:bg-orange-600 text-white";
+
+    default:
+      return "bg-slate-600 hover:bg-slate-700 text-white";
+  }
+};
+
 export function ArchiveCard({
   title,
   author,
@@ -39,7 +56,9 @@ export function ArchiveCard({
     >
       <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50">
         <div className="flex justify-between items-start mb-2 gap-2">
-          <Badge className="bg-blue-900 hover:bg-blue-800 text-white font-medium shadow-none rounded-sm">
+          <Badge
+            className={`${getArchiveTypeColor(archiveType)} font-medium shadow-none rounded-sm`}
+          >
             {archiveType}
           </Badge>
 
