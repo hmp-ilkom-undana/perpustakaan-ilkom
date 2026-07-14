@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-import pkg from "@prisma/client";
-
-const { PrismaClient } = pkg;
-const prisma = new PrismaClient();
+import { prisma } from "../auth.js";
 
 interface AuthRequest extends Request {
   user?: any;
@@ -46,13 +43,14 @@ export const createBorrowingRequest = async (
 
     // 4. Validasi Kuota berdasarkan tipe arsip
     let maxAllowed = 0;
+    const currentArchiveType = archive.archiveType.toUpperCase();
 
     // Aturan Jumlah Peminjaman Maksimal
-    if (archive.archiveType === "SKRIPSI") {
+    if (currentArchiveType === "SKRIPSI") {
       maxAllowed = 2;
-    } else if (archive.archiveType === "RINGKASAN") {
+    } else if (currentArchiveType === "RINGKASAN") {
       maxAllowed = 1;
-    } else if (archive.archiveType === "NASKAH_PUBLIKASI") {
+    } else if (currentArchiveType === "NASKAH_PUBLIKASI") {
       maxAllowed = 1;
     }
 
@@ -64,11 +62,9 @@ export const createBorrowingRequest = async (
 
     // 5. Validasi Ketersediaan (Status & Stok)
     if (archive.status !== "TERSEDIA" || archive.quantity <= 0) {
-      return res
-        .status(400)
-        .json({
-          error: "Arsip sedang tidak tersedia untuk dipinjam saat ini.",
-        });
+      return res.status(400).json({
+        error: "Arsip sedang tidak tersedia untuk dipinjam saat ini.",
+      });
     }
 
     // 6. Buat Record Peminjaman

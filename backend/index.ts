@@ -3,25 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import pkg from "@prisma/client";
 import borrowingRoutes from "./src/routes/borrowingRoutes.js";
-
-// Import Driver Adapter
-import pg from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { prisma } from "./src/auth.js";
 
 dotenv.config();
 
-const { PrismaClient } = pkg;
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// 1. Buat koneksi native PostgreSQL ke Neon
-const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
-
-// 2. Bungkus koneksi tersebut ke dalam Prisma Adapter
-const adapter = new PrismaPg(pool);
-
-// 3. INJEKSI ADAPTER KE DALAM PRISMA CLIENT
-const prisma = new PrismaClient({ adapter });
 
 // Middleware
 app.use(
