@@ -73,9 +73,9 @@ export default function Katalog() {
         </div>
 
         {/* Bagian Filter */}
-        <div className="flex flex-col sm:flex-row items-center gap-1 w-full md:w-auto">
+        <div className="flex flex-row gap-4 w-full md:w-auto">
           {/* Filter Jenis Arsip */}
-          <div className="flex flex-col gap-1.5 w-full sm:w-40">
+          <div className="flex flex-col gap-1.5 flex-1 sm:w-48">
             <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
               Jenis Arsip
             </label>
@@ -83,7 +83,7 @@ export default function Katalog() {
               value={filterType}
               onValueChange={(val) => setFilterType(val || "Semua")}
             >
-              <SelectTrigger className="bg-white border-slate-200 focus:ring-blue-600 shadow-sm h-9">
+              <SelectTrigger className="bg-white border-slate-200 focus:ring-blue-600 shadow-sm h-9 w-full">
                 <SelectValue placeholder="Pilih Jenis" />
               </SelectTrigger>
               <SelectContent>
@@ -100,7 +100,7 @@ export default function Katalog() {
           </div>
 
           {/* Filter Kategori */}
-          <div className="flex flex-col gap-1.5 w-full sm:w-40">
+          <div className="flex flex-col gap-1.5 flex-1 sm:w-48">
             <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
               Kategori
             </label>
@@ -108,7 +108,7 @@ export default function Katalog() {
               value={filterCategory}
               onValueChange={(val) => setFilterCategory(val || "Semua")}
             >
-              <SelectTrigger className="bg-white border-slate-200 focus:ring-blue-600 shadow-sm h-9">
+              <SelectTrigger className="bg-white border-slate-200 focus:ring-blue-600 shadow-sm h-9 w-full">
                 <SelectValue placeholder="Pilih Kategori" />
               </SelectTrigger>
               <SelectContent>
