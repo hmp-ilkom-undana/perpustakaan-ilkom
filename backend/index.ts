@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pkg from "@prisma/client";
+import borrowingRoutes from "./src/routes/borrowingRoutes.js";
 
 // Import Driver Adapter
 import pg from "pg";
@@ -54,9 +55,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Server Perpustakaan ILKOM berjalan lancar!" });
 });
 
-// ==========================================
 // ENDPOINT KATALOG SKRIPSI
-// ==========================================
 
 // 1. GET: Mengambil seluruh daftar skripsi
 app.get(
@@ -141,6 +140,9 @@ app.get(
     }
   },
 );
+
+// ENDPOINT PEMINJAMAN (BORROWINGS)
+app.use("/api/borrowings", borrowingRoutes);
 
 // Jalankan Server
 app.listen(PORT, () => {
