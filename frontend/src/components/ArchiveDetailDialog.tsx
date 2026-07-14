@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -44,11 +45,33 @@ export function ArchiveDetailDialog({
   const handleBorrow = async () => {
     setIsLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/borrowings",
+        { archiveId: archive.id },
+        { withCredentials: true },
+      );
 
-    setIsLoading(false);
-    onClose(); // Tutup modal
-    toast.success("Berhasil mengajukan pinjaman! Silakan cek menu Riwayat.");
+      // Jika berhasil, tutup modal dan tampilkan notifikasi sukses
+      onClose();
+      toast.success("Pengajuan Berhasil!", {
+        description:
+          response.data.message || "Silakan cek menu Riwayat Peminjaman.",
+      });
+    } catch (error: any) {
+      console.error("Gagal mengajukan pinjaman:", error);
+
+      // Ambil pesan error spesifik dari backend
+      const errorMsg =
+        error.response?.data?.error || "Terjadi kesalahan pada sistem.";
+
+      // Tampilkan notifikasi gagal
+      toast.error("Pengajuan Gagal", {
+        description: errorMsg,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
