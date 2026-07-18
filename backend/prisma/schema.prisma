@@ -34,6 +34,7 @@ model Archive {
   status        ArchiveStatus   @default(TERSEDIA)
   archiveType   String          
   quantity      Int             @default(1)
+  reservedQuantity Int          @default(0)
   shelfLocation String?         
   borrowings    Borrowing[]
   createdAt     DateTime        @default(now())

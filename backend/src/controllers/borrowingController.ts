@@ -61,9 +61,12 @@ export const createBorrowingRequest = async (
     }
 
     // 5. Validasi Ketersediaan (Status & Stok)
-    if (archive.status !== "TERSEDIA" || archive.quantity <= 0) {
+    const availableStock = archive.quantity - archive.reservedQuantity;
+
+    if (archive.status !== "TERSEDIA" || availableStock <= 0) {
       return res.status(400).json({
-        error: "Arsip sedang tidak tersedia untuk dipinjam saat ini.",
+        error:
+          "Arsip sedang diantre atau tidak tersedia untuk dipinjam saat ini.",
       });
     }
 
@@ -76,6 +79,16 @@ export const createBorrowingRequest = async (
       },
       include: {
         archive: true,
+      },
+    });
+
+    // 7. Update reservedQuantity 
+    await prisma.archive.update({
+      where: { id: archiveId },
+      data: {
+        reservedQuantity: {
+          increment: 1, // Tambah 1 ke daftar antrean
+        },
       },
     });
 
