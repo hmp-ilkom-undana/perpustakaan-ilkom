@@ -64,7 +64,7 @@ export function ArchiveCard({
     displayStatus = "Sedang Anda Ajukan";
     badgeStyle = "border-blue-500 text-blue-700 bg-blue-50 rounded-sm"; // Warna Biru
   } else if (availableStock <= 0) {
-    displayStatus = "Habis";
+    displayStatus = "Sedang Dipinjam";
     badgeStyle = "border-slate-400 text-slate-500 bg-slate-50 rounded-sm"; // Warna Abu-abu
   }
 
