@@ -51,9 +51,37 @@ app.get(
   requireRoles(["MAHASISWA", "PETUGAS", "ADMIN"]),
   async (req, res) => {
     try {
-      const archives = await prisma.archive.findMany({
+      // 1. Ambil ID user dari request context
+      // @ts-ignore
+      const userId = req.user?.id;
+
+      // 2. Ambil data arsip sekaligus cek tabel borrowings
+      const rawArchives = await prisma.archive.findMany({
         orderBy: { createdAt: "desc" },
+        include: {
+          borrowings: {
+            where: {
+              userId: userId,
+              status: "REQUESTED", // Hanya cek yang sedang diantre
+            },
+            select: { id: true }, // Cukup ambil ID
+          },
+        },
       });
+
+      // 3. Mapping data untuk frontend
+      const archives = rawArchives.map((archive) => {
+        // Jika array borrowings memiliki minimal 1 data, berarti user ini sedang mengantre
+        const isRequested = archive.borrowings.length > 0;
+
+        const { borrowings, ...restArchive } = archive;
+
+        return {
+          ...restArchive,
+          isRequestedByCurrentUser: isRequested,
+        };
+      });
+
       res.status(200).json(archives);
     } catch (error) {
       console.error(error);
