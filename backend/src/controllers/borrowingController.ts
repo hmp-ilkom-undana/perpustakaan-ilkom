@@ -36,7 +36,7 @@ export const createBorrowingRequest = async (
           archiveType: archive.archiveType, // Hanya hitung tipe arsip yang sama
         },
         status: {
-          in: ["REQUESTED", "BORROWED", "OVERDUE"],
+          in: ["REQUESTED","WAITING_PICKUP", "BORROWED", "OVERDUE"],
         },
       },
     });
@@ -111,3 +111,35 @@ export const createBorrowingRequest = async (
     res.status(500).json({ error: "Terjadi kesalahan internal server." });
   }
 };
+
+export const getMyBorrowingHistory = async (
+  req: AuthRequest,
+  res: Response,
+) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized. Anda harus login." });
+    }
+
+    // Ambil data peminjaman milik user ini, urutkan dari yang terbaru
+    const history = await prisma.borrowing.findMany({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        borrowDate: "desc", // Yang paling baru di atas
+      },
+      include: {
+        archive: true, // Ambil juga detail arsip yang dipinjam (judul, tahun, dll)
+      },
+    });
+
+    res.status(200).json(history);
+  } catch (error) {
+    console.error("Error getMyBorrowingHistory:", error);
+    res.status(500).json({ error: "Terjadi kesalahan internal server." });
+  }
+};
+

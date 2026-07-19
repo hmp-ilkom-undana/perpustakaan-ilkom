@@ -61,7 +61,7 @@ export function ArchiveCard({
   let badgeStyle = "border-green-600 text-green-700 bg-green-50 rounded-sm";
 
   if (isRequestedByMe) {
-    displayStatus = "Milik Saya";
+    displayStatus = "Sedang Anda Ajukan";
     badgeStyle = "border-blue-500 text-blue-700 bg-blue-50 rounded-sm"; // Warna Biru
   } else if (availableStock <= 0) {
     displayStatus = "Habis";

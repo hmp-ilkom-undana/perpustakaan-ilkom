@@ -54,7 +54,7 @@ export function ArchiveDetailDialog({
   let displayStatus = "Tersedia";
   let badgeStyle = "bg-green-100 text-green-700";
   if (isRequestedByMe) {
-    displayStatus = "Milik Saya";
+    displayStatus = "Sedang Diajukan";
     badgeStyle = "bg-blue-100 text-blue-700";
   } else if (!isAvailable) {
     displayStatus = "Habis (Diantre)";
@@ -151,7 +151,7 @@ export function ArchiveDetailDialog({
             {isLoading
               ? "Memproses..."
               : isRequestedByMe
-                ? "Dalam Antrean Anda"
+                ? "✓ Sedang Anda Ajukan (Cek Peminjaman)"
                 : isAvailable
                   ? `Ajukan Peminjaman (Sisa: ${availableStock})`
                   : "Stok Habis (Diantre)"}
