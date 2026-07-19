@@ -1,8 +1,5 @@
 import { useState } from "react";
-import {
-  TicketProgress,
-  ActiveTicketProps,
-} from "@/components/TicketProgress";
+import { TicketProgress, ActiveTicketProps } from "@/components/TicketProgress";
 
 import { BookOpen } from "lucide-react";
 import { BorrowingRow } from "@/components/BorrowingRow";
@@ -119,14 +116,32 @@ export default function Peminjaman() {
                     </div>
                   </div>
 
-                  {/* 3. TOMBOL AKSI */}
-                  <div className="flex justify-end pt-2">
-                    <button
-                      onClick={() => alert(`Membatalkan ID: ${ticket.id}`)}
-                      className="rounded-md border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
-                    >
-                      Batalkan Antrean
-                    </button>
+                  {/* 3. TOMBOL AKSI ATAU INFO DENDA/TENGGAT */}
+                  <div className="mt-2 flex items-center justify-end border-t border-slate-100 pt-4">
+                    {ticket.status === "REQUESTED" ||
+                    ticket.status === "WAITING_PICKUP" ? (
+                      <button
+                        onClick={() => alert(`Membatalkan ID: ${ticket.id}`)}
+                        className="rounded-md border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
+                      >
+                        Batalkan Antrean
+                      </button>
+                    ) : (
+                      <div className="flex flex-col items-end text-right">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                          Batas Pengembalian
+                        </span>
+                        <span className="text-sm font-bold text-slate-800">
+                          {ticket.dueDate || "Belum ditentukan"}
+                        </span>
+                        {/* Peringatan Denda (Hanya muncul jika OVERDUE) */}
+                        {ticket.status === "OVERDUE" && (
+                          <span className="mt-1 rounded bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-600">
+                            Estimasi Denda: Rp 5.000/hari
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

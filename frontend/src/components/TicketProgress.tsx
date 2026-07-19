@@ -23,9 +23,9 @@ export function TicketProgress({
   // Deskripsi kita buat sangat singkat agar tidak tabrakan di layar Horizontal
   const steps = [
     { id: "REQUESTED", label: "Diajukan", desc: "Menunggu ACC" },
-    { id: "WAITING_PICKUP", label: "Siap Diambil", desc: "Di loket" },
+    { id: "WAITING_PICKUP", label: "Siap Diambil", desc: "Di ruangan HMP" },
     { id: "BORROWED", label: "Dipinjam", desc: "Sedang dibawa" },
-    { id: "COMPLETED", label: "Selesai", desc: "Telah kembali" },
+    { id: "COMPLETED", label: "Selesai", desc: "Telah dikembalikan" },
   ];
 
   const currentIndex = steps.findIndex(
