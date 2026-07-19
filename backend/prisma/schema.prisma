@@ -49,6 +49,7 @@ model Borrowing {
   returnDate            DateTime?
   status                BorrowStatus @default(REQUESTED)
   fineAmount            Int          @default(0)
+  pickupCode            String?      @unique
 
   kondisiPinjam         KondisiArsip?
   catatanKondisiPinjam  String?

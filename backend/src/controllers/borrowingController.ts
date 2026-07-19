@@ -27,7 +27,7 @@ export const createBorrowingRequest = async (
       return res.status(404).json({ error: "Arsip tidak ditemukan." });
     }
 
-    // 3. Hitung transaksi aktif mahasiswa untuk TIPE arsip ini saja
+    // 3. Hitung transaksi aktif mahasiswa untuk TIPE arsip
     // Status aktif: REQUESTED, BORROWED, OVERDUE
     const activeBorrowingsCount = await prisma.borrowing.count({
       where: {
@@ -70,19 +70,29 @@ export const createBorrowingRequest = async (
       });
     }
 
-    // 6. Buat Record Peminjaman
+    // 6A. Generate Pickup Code 4-Digit Angka (Contoh: REQ-8192)
+    const generatePickupCode = () => {
+      // Menghasilkan angka acak dari 1000 hingga 9999
+      const randomNumbers = Math.floor(1000 + Math.random() * 9000);
+      return `REQ-${randomNumbers}`;
+    };
+
+    const pickupCode = generatePickupCode();
+
+    // 6B. Buat Record Peminjaman
     const newBorrowing = await prisma.borrowing.create({
       data: {
         userId: userId,
         archiveId: archiveId,
         status: "REQUESTED",
+        pickupCode: pickupCode,
       },
       include: {
         archive: true,
       },
     });
 
-    // 7. Update reservedQuantity 
+    // 7. Update reservedQuantity
     await prisma.archive.update({
       where: { id: archiveId },
       data: {
