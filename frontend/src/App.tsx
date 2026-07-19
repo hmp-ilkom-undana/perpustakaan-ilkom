@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import MahasiswaLayout from "./layouts/MahasiswaLayout";
 import Katalog from "./pages/mahasiswa/Katalog";
+import Peminjaman from "./pages/mahasiswa/Peminjaman";
 
 function App() {
   return (
@@ -45,7 +46,7 @@ function App() {
 
           {/* Sub-halaman  */}
           <Route path="katalog" element={<Katalog />} />
-          <Route path="peminjaman" element={<div>Peminjaman Saya</div>} />
+          <Route path="peminjaman" element={<Peminjaman />} />
           <Route path="riwayat" element={<div>Riwayat Peminjaman</div>} />
           <Route path="profil" element={<div>Profil & Pengaturan</div>} />
         </Route>
