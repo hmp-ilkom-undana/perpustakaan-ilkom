@@ -22,6 +22,8 @@ interface Archive {
   status: string;
   quantity: number;
   shelfLocation: string | null;
+  reservedQuantity: number;
+  isRequestedByCurrentUser?: boolean;
 }
 
 interface ArchiveDetailDialogProps {
@@ -40,7 +42,24 @@ export function ArchiveDetailDialog({
   // Jika tidak ada arsip yang dipilih, jangan render apa-apa
   if (!archive) return null;
 
-  const isAvailable = archive.status.toUpperCase() === "TERSEDIA";
+  // 1. Kalkulasi stok nyata (Quantity asli dikurangi yang sedang diantre)
+  const availableStock = archive.quantity - archive.reservedQuantity;
+
+  // 2. Cek apakah user yang sedang login sudah mengantre buku ini
+  const isRequestedByMe = archive.isRequestedByCurrentUser;
+
+  // 3. Status ketersediaan untuk orang lain
+  const isAvailable = availableStock > 0;
+
+  let displayStatus = "Tersedia";
+  let badgeStyle = "bg-green-100 text-green-700";
+  if (isRequestedByMe) {
+    displayStatus = "Milik Saya";
+    badgeStyle = "bg-blue-100 text-blue-700";
+  } else if (!isAvailable) {
+    displayStatus = "Habis (Diantre)";
+    badgeStyle = "bg-slate-100 text-slate-500";
+  }
 
   const handleBorrow = async () => {
     setIsLoading(true);
@@ -96,20 +115,15 @@ export function ArchiveDetailDialog({
 
             <div className="font-semibold text-slate-500">Status</div>
             <div className="col-span-2">
-              <Badge
-                className={
-                  isAvailable
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }
-              >
-                {archive.status}
+              <Badge className={`${badgeStyle} shadow-none`}>
+                {displayStatus}
               </Badge>
             </div>
 
-            <div className="font-semibold text-slate-500">Stok Tersedia</div>
+            <div className="font-semibold text-slate-500">Sisa Stok</div>
             <div className="col-span-2 text-slate-800">
-              {archive.quantity} Eksemplar
+              {/* Tampilkan sisa stok */}
+              {availableStock} dari {archive.quantity} Eksemplar
             </div>
 
             <div className="font-semibold text-slate-500">Lokasi Rak</div>
@@ -124,18 +138,23 @@ export function ArchiveDetailDialog({
         <DialogFooter>
           <Button
             onClick={handleBorrow}
-            disabled={!isAvailable || isLoading}
+            // Tombol mati jika: Sedang loading, Sudah diantre user ini, ATAU stok habis
+            disabled={isLoading || isRequestedByMe || !isAvailable}
             className={`w-full font-bold shadow-none rounded-md transition-colors ${
-              isAvailable
-                ? "bg-orange-500 hover:bg-orange-600 text-white"
-                : "bg-slate-100 text-slate-400 cursor-not-allowed"
+              isRequestedByMe
+                ? "bg-blue-50 text-blue-600 border border-blue-200 cursor-not-allowed" // STATE 1: Milik Saya
+                : isAvailable
+                  ? "bg-orange-500 hover:bg-orange-600 text-white" // STATE 2: Tersedia
+                  : "bg-slate-100 text-slate-400 cursor-not-allowed" // STATE 3: Habis
             }`}
           >
             {isLoading
               ? "Memproses..."
-              : isAvailable
-                ? "Ajukan Peminjaman"
-                : "Tidak Tersedia"}
+              : isRequestedByMe
+                ? "Dalam Antrean Anda"
+                : isAvailable
+                  ? `Ajukan Peminjaman (Sisa: ${availableStock})`
+                  : "Stok Habis (Diantre)"}
           </Button>
         </DialogFooter>
       </DialogContent>

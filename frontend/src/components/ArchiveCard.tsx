@@ -17,7 +17,10 @@ interface ArchiveCardProps {
   year: number | string;
   archiveType: string;
   category: string;
-  status: string;
+  quantity: number;
+  reservedQuantity: number;
+  isRequestedByCurrentUser?: boolean;
+
   onClick: () => void;
 }
 
@@ -44,10 +47,26 @@ export function ArchiveCard({
   year,
   archiveType,
   category,
-  status,
+  quantity,
+  reservedQuantity,
+  isRequestedByCurrentUser,
   onClick,
 }: ArchiveCardProps) {
-  const isAvailable = status.toUpperCase() === "TERSEDIA";
+  // 1. Kalkulasi stok aktual
+  const availableStock = quantity - reservedQuantity;
+  const isRequestedByMe = isRequestedByCurrentUser;
+
+  // 2. Tentukan Teks dan Warna Badge 
+  let displayStatus = "Tersedia";
+  let badgeStyle = "border-green-600 text-green-700 bg-green-50 rounded-sm";
+
+  if (isRequestedByMe) {
+    displayStatus = "Milik Saya";
+    badgeStyle = "border-blue-500 text-blue-700 bg-blue-50 rounded-sm"; // Warna Biru
+  } else if (availableStock <= 0) {
+    displayStatus = "Habis";
+    badgeStyle = "border-slate-400 text-slate-500 bg-slate-50 rounded-sm"; // Warna Abu-abu
+  }
 
   return (
     <Card
@@ -62,15 +81,8 @@ export function ArchiveCard({
             {archiveType}
           </Badge>
 
-          <Badge
-            variant="outline"
-            className={
-              isAvailable
-                ? "border-green-600 text-green-700 bg-green-50 rounded-sm"
-                : "border-slate-400 text-slate-500 bg-slate-50 rounded-sm"
-            }
-          >
-            {status}
+          <Badge variant="outline" className={badgeStyle}>
+            {displayStatus}
           </Badge>
         </div>
 

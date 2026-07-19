@@ -17,6 +17,9 @@ interface ArchiveData {
   archiveType: string;
   category: string;
   status: string;
+  quantity: number;
+  reservedQuantity: number;
+  isRequestedByCurrentUser?: boolean;
 }
 
 export default function Katalog() {
@@ -144,7 +147,9 @@ export default function Katalog() {
                 year={archive.year}
                 archiveType={archive.archiveType}
                 category={archive.category}
-                status={archive.status}
+                quantity={archive.quantity}
+                reservedQuantity={archive.reservedQuantity}
+                isRequestedByCurrentUser={archive.isRequestedByCurrentUser}
                 onClick={() => setSelectedArchive(archive)}
               />
             ))
