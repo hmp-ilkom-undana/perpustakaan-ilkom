@@ -62,9 +62,9 @@ export default function Katalog() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-0 sm:gap-6 pb-6 sm:p-6 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* HEADER & FILTER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-200/70">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4 sm:pb-6 border-b border-slate-200/70 p-4 sm:p-0">
         {/* Bagian Judul */}
         <div className="space-y-1">
           <h2 className="text-2xl font-bold tracking-tight text-blue-900">
@@ -136,7 +136,7 @@ export default function Katalog() {
           <p>Memuat data dari server...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0 sm:gap-6 border-t border-slate-100 sm:border-none">
           {filteredArchives.length > 0 ? (
             filteredArchives.map((archive) => (
               <ArchiveCard
@@ -155,7 +155,7 @@ export default function Katalog() {
             ))
           ) : (
             /* Tampilan jika database Backend masih kosong */
-            <div className="col-span-full flex flex-col items-center justify-center py-16 bg-slate-50 border border-slate-200 rounded-xl">
+            <div className="col-span-full flex flex-col items-center justify-center py-16 px-4 sm:bg-slate-50 sm:border border-slate-200 sm:rounded-xl text-center">
               <p className="text-lg font-medium text-slate-600">
                 Belum ada arsip yang tersedia.
               </p>

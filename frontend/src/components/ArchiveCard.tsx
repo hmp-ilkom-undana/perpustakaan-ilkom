@@ -71,7 +71,7 @@ export function ArchiveCard({
   return (
     <Card
       onClick={onClick}
-      className="flex flex-col h-full bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden cursor-pointer"
+      className="flex flex-col h-full bg-white border-x-0 border-t-0 border-b sm:border border-slate-200 rounded-none sm:rounded-xl shadow-none sm:shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden cursor-pointer"
     >
       <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50">
         <div className="flex justify-between items-start mb-2 gap-2">
