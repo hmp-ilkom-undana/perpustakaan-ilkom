@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TicketProgress, ActiveTicketProps } from "@/components/TicketProgress";
 
-import { BookOpen } from "lucide-react";
+import { BookOpen, CheckCircle2, AlertCircle, Clock, Info } from "lucide-react";
 import { BorrowingRow } from "@/components/BorrowingRow";
 
 // 1. Data Dummy
@@ -67,16 +67,12 @@ export default function Peminjaman() {
       </div>
 
       {/* --- GRID KARTU TIKET --- */}
-      {/* 
-          Grid CSS: 1 kolom di HP, 2 kolom di tablet (md), 3 kolom di layar besar (lg).
-      */}
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         {DUMMY_TICKETS.map((ticket) => (
           <div key={ticket.id} className="flex flex-col">
             {/* Baris List Utama */}
             <BorrowingRow
               {...ticket}
-              // Logika toggle: Jika baris yang sama diklik lagi, tutup detailnya (null)
               onClick={() =>
                 setSelectedTicket(
                   selectedTicket?.id === ticket.id ? null : ticket,
@@ -84,65 +80,134 @@ export default function Peminjaman() {
               }
             />
 
-            {/* Area Detail (Expandable) - Mode Compact & Informatif */}
+            {/* Area Detail (Expandable) - Clean & High Density */}
             {selectedTicket?.id === ticket.id && (
-              <div className="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 animate-in slide-in-from-top-2 fade-in duration-200">
-                <div className="flex flex-col gap-5">
-                  {/* 1. STATUS TRACKER (Horizontal Ringkas) */}
+              <div className="border-b border-slate-100 bg-slate-50/80 p-5 sm:p-6 animate-in slide-in-from-top-2 fade-in duration-200">
+                <div className="flex flex-col gap-6">
+                  
+                  {/* Info Arsip Singkat (Dipindah ke atas agar rapi) */}
+                  <div className="flex items-center gap-2 text-sm text-slate-600 bg-white/60 p-3 rounded-lg border border-slate-200/60">
+                    <Info className="h-4 w-4 text-blue-500" />
+                    <span>Penulis: <strong>Budi Santoso</strong> &bull; Tahun: <strong>2023</strong></span>
+                  </div>
+
+                  {/* 1. STATUS TRACKER */}
                   <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                     <TicketProgress currentStatus={ticket.status} />
                   </div>
 
-                  {/* 2. INFO UTAMA & PICKUP CODE */}
-                  <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                    {/* Judul & Kategori */}
-                    <div className="flex flex-col gap-1">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                        {ticket.archiveType}
-                      </span>
-                      <h3 className="text-sm font-bold leading-snug text-slate-900 sm:text-base">
-                        {ticket.archiveTitle}
-                      </h3>
-                    </div>
+                  {/* 2. DYNAMIC TIMELINE (Pengganti Grid) */}
+                  <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                    <h4 className="mb-5 text-xs font-bold uppercase tracking-widest text-slate-400">
+                      Garis Waktu
+                    </h4>
+                    <div className="flex flex-col gap-4">
+                      
+                      {/* Selalu Tampil: Waktu Pengajuan */}
+                      <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                            <CheckCircle2 className="h-4.5 w-4.5" />
+                          </div>
+                          <span className="text-sm font-medium text-slate-700">Diajukan Pada</span>
+                        </div>
+                        <span className="text-sm font-bold text-slate-900">{ticket.requestDate}</span>
+                      </div>
 
-                    {/* Kode Pickup (Compact Badge) */}
-                    <div className="flex shrink-0 items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-2 shadow-sm">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        Code:
-                      </span>
-                      <span className="font-mono text-lg font-black tracking-wider text-slate-900">
-                        {ticket.pickupCode}
-                      </span>
+                      {/* Tampil jika sudah di-ACC */}
+                      {(ticket.status === "WAITING_PICKUP" || ticket.status === "BORROWED" || ticket.status === "OVERDUE") && (
+                        <div className="flex items-center justify-between border-b border-slate-50 pb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                              <CheckCircle2 className="h-4.5 w-4.5" />
+                            </div>
+                            <span className="text-sm font-medium text-slate-700">Di-ACC Petugas</span>
+                          </div>
+                          <span className="text-sm font-bold text-slate-900">20 Jul 2026</span>
+                        </div>
+                      )}
+
+                      {/* Batas Pengambilan: Hanya relevan jika WAITING_PICKUP */}
+                      {ticket.status === "WAITING_PICKUP" && (
+                        <div className="flex items-center justify-between pb-1">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+                              <AlertCircle className="h-4.5 w-4.5" />
+                            </div>
+                            <span className="text-sm font-medium text-slate-700">Batas Pengambilan (RUANGAN HMP)</span>
+                          </div>
+                          <span className="text-sm font-bold text-rose-600">22 Jul 2026, 16:00</span>
+                        </div>
+                      )}
+
+                      {/* Tenggat Pengembalian: Relevan jika BORROWED atau OVERDUE */}
+                      {(ticket.status === "BORROWED" || ticket.status === "OVERDUE") && (
+                        <div className="flex items-center justify-between pb-1">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+                              <Clock className="h-4.5 w-4.5" />
+                            </div>
+                            <span className="text-sm font-medium text-slate-700">Tenggat Pengembalian</span>
+                          </div>
+                          <span className="text-sm font-bold text-amber-600">{ticket.dueDate}</span>
+                        </div>
+                      )}
+                      
                     </div>
                   </div>
 
-                  {/* 3. TOMBOL AKSI ATAU INFO DENDA/TENGGAT */}
-                  <div className="mt-2 flex items-center justify-end border-t border-slate-100 pt-4">
-                    {ticket.status === "REQUESTED" ||
+                  {/* 3. DYNAMIC BOTTOM ACTION / OVERDUE COUNTER CARD */}
+                  {ticket.status === "OVERDUE" ? (
+                    /* Komponen Peringatan Denda */
+                    <div className="mt-2 flex flex-col justify-between rounded-xl border border-rose-200 bg-rose-50 p-4 sm:flex-row sm:items-center sm:p-5">
+                      <div className="flex items-center gap-4">
+                        {/* Ikon Alert/Jam */}
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                          <svg
+                            className="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-rose-900">
+                            Keterlambatan Pengembalian
+                          </span>
+                          <span className="text-xs font-medium text-rose-600">
+                            Terlambat 11 Hari
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex flex-col items-start sm:mt-0 sm:items-end">
+                        <span className="text-2xl font-black tracking-tight text-rose-700">
+                          Rp 55.000
+                        </span>
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-rose-500/80">
+                          Tarif Denda: Rp 5.000 / Hari
+                        </span>
+                      </div>
+                    </div>
+                  ) : ticket.status === "REQUESTED" ||
                     ticket.status === "WAITING_PICKUP" ? (
+                    /* Tombol Pembatalan Biasa */
+                    <div className="mt-2 flex justify-end border-t border-slate-100 pt-4">
                       <button
                         onClick={() => alert(`Membatalkan ID: ${ticket.id}`)}
-                        className="rounded-md border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
+                        className="rounded-md border border-rose-200 bg-rose-50 px-5 py-2 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
                       >
                         Batalkan Antrean
                       </button>
-                    ) : (
-                      <div className="flex flex-col items-end text-right">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                          Batas Pengembalian
-                        </span>
-                        <span className="text-sm font-bold text-slate-800">
-                          {ticket.dueDate || "Belum ditentukan"}
-                        </span>
-                        {/* Peringatan Denda (Hanya muncul jika OVERDUE) */}
-                        {ticket.status === "OVERDUE" && (
-                          <span className="mt-1 rounded bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-600">
-                            Estimasi Denda: Rp 5.000/hari
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             )}

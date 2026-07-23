@@ -49,9 +49,9 @@ export default function MahasiswaLayout() {
       {/* ================= NAVBAR ATAS ================= */}
       <header
         className={cn(
-          "sticky top-0 z-50 mx-auto w-full border-transparent border-b transition-all duration-500 ease-in-out bg-white/80 backdrop-blur-md supports-backdrop-filter:bg-white/50",
+          "sticky top-0 z-50 mx-auto w-full border-b border-transparent bg-white transition-all duration-300 ease-in-out",
           {
-            "border-slate-200 md:top-2 md:max-w-7xl md:rounded-xl md:shadow-md md:border bg-white/95":
+            "border-slate-200 shadow-sm md:top-2 md:max-w-7xl md:rounded-xl md:border md:shadow-md":
               scrolled,
           },
         )}
