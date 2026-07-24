@@ -254,3 +254,124 @@ export function deleteCatalogItem(id: string) {
   const filtered = data.filter(item => item.id !== id);
   saveCatalogData(filtered);
 }
+
+// ==========================================
+// MOCK DATA: DENDA (FINES)
+// ==========================================
+
+export type FineStatus = "UNPAID" | "PAID";
+export type FineType = "Terlambat" | "Kerusakan Fisik" | "Kehilangan Arsip";
+
+export interface FineItem {
+  id: string; // e.g. FIN-001
+  transactionId: string; // e.g. REQ-8192
+  studentName: string;
+  studentId: string;
+  archiveTitle: string;
+  fineType: FineType;
+  amount: number;
+  status: FineStatus;
+  createdAt: string;
+  // Audit Trail (only if PAID)
+  paidAt?: string;
+  paymentMethod?: "Tunai" | "Transfer";
+  receivedBy?: string;
+  notes?: string;
+}
+
+const FINE_INITIAL_DATA: FineItem[] = [
+  {
+    id: "FIN-001",
+    transactionId: "REQ-8150",
+    studentName: "Budi Santoso",
+    studentId: "19051234001",
+    archiveTitle: "Analisis Algoritma Dijkstra pada Jaringan Distribusi",
+    fineType: "Terlambat",
+    amount: 25000,
+    status: "UNPAID",
+    createdAt: "2026-07-20T09:00:00",
+  },
+  {
+    id: "FIN-002",
+    transactionId: "REQ-8110",
+    studentName: "Ahmad Fauzi",
+    studentId: "18051234022",
+    archiveTitle: "Sistem Informasi Manajemen Perpustakaan",
+    fineType: "Kerusakan Fisik",
+    amount: 150000,
+    status: "UNPAID",
+    createdAt: "2026-07-22T10:30:00",
+  },
+  {
+    id: "FIN-003",
+    transactionId: "REQ-8099",
+    studentName: "Siti Aminah",
+    studentId: "20051234002",
+    archiveTitle: "Dasar-Dasar Keamanan Jaringan Komputer",
+    fineType: "Terlambat",
+    amount: 50000,
+    status: "UNPAID",
+    createdAt: "2026-07-23T11:15:00",
+  },
+  {
+    id: "FIN-004",
+    transactionId: "REQ-8055",
+    studentName: "Dina Mariana",
+    studentId: "22051234004",
+    archiveTitle: "Penerapan Machine Learning dalam Prediksi Cuaca",
+    fineType: "Terlambat",
+    amount: 150000,
+    status: "PAID",
+    createdAt: "2026-06-02T10:00:00",
+    paidAt: "2026-06-10T14:20:00",
+    paymentMethod: "Tunai",
+    receivedBy: "Petugas Perpustakaan",
+    notes: "Uang pas",
+  },
+  {
+    id: "FIN-005",
+    transactionId: "REQ-8012",
+    studentName: "Tono Mulyono",
+    studentId: "18051234066",
+    archiveTitle: "Sistem Kendali Robotik",
+    fineType: "Kehilangan Arsip",
+    amount: 300000,
+    status: "PAID",
+    createdAt: "2026-05-11T09:00:00",
+    paidAt: "2026-05-15T09:30:00",
+    paymentMethod: "Transfer",
+    receivedBy: "Petugas Perpustakaan",
+    notes: "Transfer BCA",
+  }
+];
+
+const FINE_STORAGE_KEY = "fine_mock_db";
+
+export function getFineData(): FineItem[] {
+  const stored = localStorage.getItem(FINE_STORAGE_KEY);
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  localStorage.setItem(FINE_STORAGE_KEY, JSON.stringify(FINE_INITIAL_DATA));
+  return FINE_INITIAL_DATA;
+}
+
+export function saveFineData(data: FineItem[]) {
+  localStorage.setItem(FINE_STORAGE_KEY, JSON.stringify(data));
+}
+
+export function payFine(id: string, method: "Tunai" | "Transfer", notes: string, officerName: string) {
+  const data = getFineData();
+  const index = data.findIndex(item => item.id === id);
+  if (index !== -1) {
+    data[index] = { 
+      ...data[index], 
+      status: "PAID",
+      paidAt: new Date().toISOString(),
+      paymentMethod: method,
+      receivedBy: officerName,
+      notes: notes
+    };
+    saveFineData(data);
+  }
+}
