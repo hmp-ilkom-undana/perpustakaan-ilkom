@@ -18,7 +18,7 @@ import { useScroll } from "@/hooks/use-scroll";
 
 // Daftar Menu Mahasiswa
 const menus = [
-  { name: "Dashboard", path: "/mahasiswa", icon: LayoutDashboard },
+  { name: "Beranda", path: "/mahasiswa", icon: LayoutDashboard },
   { name: "Katalog", path: "/mahasiswa/katalog", icon: Library },
   { name: "Peminjaman", path: "/mahasiswa/peminjaman", icon: BookOpenCheck },
   { name: "Riwayat", path: "/mahasiswa/riwayat", icon: History },
@@ -93,13 +93,13 @@ export default function MahasiswaLayout() {
                   <Link
                     key={menu.path}
                     to={menu.path}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-semibold transition-all ${
                       isActive
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                        ? "bg-blue-900 text-white shadow-md"
+                        : "text-slate-600 hover:bg-blue-50 hover:text-blue-900"
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className={`w-4 h-4 ${isActive ? "text-orange-500" : ""}`} />
                     {menu.name}
                   </Link>
                 );
@@ -157,13 +157,13 @@ export default function MahasiswaLayout() {
                     key={menu.path}
                     to={menu.path}
                     onClick={() => setIsMobileMenuOpen(false)} // Tutup menu saat diklik
-                    className={`flex items-center gap-3 px-3 py-3 rounded-md text-base font-medium ${
+                    className={`flex items-center gap-3 px-3 py-3 rounded-md text-base font-semibold transition-all ${
                       isActive
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-slate-600 hover:bg-slate-50"
+                        ? "bg-blue-900 text-white shadow-md"
+                        : "text-slate-600 hover:bg-blue-50 hover:text-blue-900"
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className={`w-5 h-5 ${isActive ? "text-orange-500" : ""}`} />
                     {menu.name}
                   </Link>
                 );

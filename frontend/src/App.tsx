@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import { Toaster } from "./components/ui/sonner";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Dashboard from "./pages/Dashboard";
+import Beranda from "./pages/Beranda";
 import MahasiswaLayout from "./layouts/MahasiswaLayout";
 import Katalog from "./pages/mahasiswa/Katalog";
 import Peminjaman from "./pages/mahasiswa/Peminjaman";
@@ -17,7 +17,7 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Beranda />
             </ProtectedRoute>
           }
         />
@@ -26,7 +26,7 @@ function App() {
           path="/petugas"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Beranda />
             </ProtectedRoute>
           }
         />

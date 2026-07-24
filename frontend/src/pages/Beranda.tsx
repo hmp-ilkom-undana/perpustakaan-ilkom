@@ -3,8 +3,7 @@ import { useSession, authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
-
-export default function Dashboard() {
+export default function Beranda() {
   const navigate = useNavigate();
   
   // 1. Mengambil data sesi pengguna yang sedang aktif
