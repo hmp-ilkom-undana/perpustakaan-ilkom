@@ -51,7 +51,6 @@ const mockHistoryData: HistoryItemProps[] = [
     returnDate: "10 Jun 2024",
     status: "DAMAGED",
     fine: 50000,
-    paymentDate: "10 Jun 2024",
     note: "Sampul belakang robek saat dikembalikan, dikenakan denda kerusakan fisik."
   }
 ];

@@ -110,9 +110,24 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
                     <span className="text-sm font-bold text-rose-600">Rp {item.fine.toLocaleString('id-ID')}</span>
                   </div>
                 </div>
-                {item.paymentDate && (
+                {item.paymentDate ? (
                   <div className="text-[10px] font-medium text-rose-600/80 text-right">
                     Dibayar pada: {item.paymentDate}
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2 mt-2 pt-3 border-t border-rose-200">
+                    <p className="text-[11px] text-rose-700 font-medium">
+                      Silakan hubungi petugas via WhatsApp untuk menyelesaikan denda (transfer/tunai).
+                    </p>
+                    <a 
+                      href={`https://wa.me/6281234567890?text=Halo%20Admin%20Perpustakaan,%20saya%20ingin%20menyelesaikan%20denda%20untuk%20Peminjaman%20ID%20${item.id}%20sebesar%20Rp%20${item.fine?.toLocaleString('id-ID')}.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-md transition-colors w-full sm:w-auto"
+                    >
+                      <Receipt className="w-3 h-3" />
+                      Konfirmasi Pembayaran (WA)
+                    </a>
                   </div>
                 )}
               </div>
