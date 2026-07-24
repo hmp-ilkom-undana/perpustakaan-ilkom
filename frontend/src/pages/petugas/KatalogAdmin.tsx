@@ -1,13 +1,372 @@
+import { useState, useEffect } from "react";
+import { Search, Plus, Filter, Package, Trash2, Edit2 } from "lucide-react";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { 
+  CatalogItem, 
+  getCatalogData, 
+  addCatalogItem, 
+  updateCatalogItem, 
+  deleteCatalogItem,
+  ArchiveCategory,
+  ArchiveType
+} from "@/lib/mockData";
+
 export default function KatalogAdmin() {
+  const [data, setData] = useState<CatalogItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  
+  // Sheet Form State
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<CatalogItem | null>(null);
+  
+  // Form Fields
+  const [formData, setFormData] = useState<Partial<CatalogItem>>({
+    title: "",
+    author: "",
+    year: new Date().getFullYear(),
+    category: "Umum",
+    type: "Buku",
+    stock: 1,
+    location: "",
+  });
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = () => {
+    setData(getCatalogData());
+  };
+
+  const handleOpenAdd = () => {
+    setEditingItem(null);
+    setFormData({
+      title: "",
+      author: "",
+      year: new Date().getFullYear(),
+      category: "Umum",
+      type: "Buku",
+      stock: 1,
+      location: "",
+    });
+    setIsSheetOpen(true);
+  };
+
+  const handleOpenEdit = (item: CatalogItem) => {
+    setEditingItem(item);
+    setFormData({ ...item });
+    setIsSheetOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm("Yakin ingin menghapus arsip ini?")) {
+      deleteCatalogItem(id);
+      loadData();
+      toast.success("Arsip berhasil dihapus");
+    }
+  };
+
+  const handleSave = () => {
+    if (!formData.title || !formData.author || !formData.location) {
+      toast.error("Mohon lengkapi semua field yang wajib");
+      return;
+    }
+
+    if (editingItem) {
+      updateCatalogItem(editingItem.id, formData);
+      toast.success("Arsip berhasil diperbarui");
+    } else {
+      addCatalogItem(formData as Omit<CatalogItem, "id">);
+      toast.success("Arsip baru berhasil ditambahkan");
+    }
+    
+    setIsSheetOpen(false);
+    loadData();
+  };
+
+  const filteredData = data.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          item.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          item.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = filterCategory === "all" || item.type === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight text-blue-900">Manajemen Katalog</h1>
-        <p className="text-sm text-slate-500">Tambah, edit, atau hapus data arsip dan buku perpustakaan.</p>
+      {/* HEADER & ACTION BAR */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manajemen Katalog</h1>
+          <p className="text-sm text-slate-500">Kelola data buku, skripsi, dan naskah publikasi.</p>
+        </div>
+        
+        <Button onClick={handleOpenAdd} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold">
+          <Plus className="w-4 h-4 mr-2" />
+          Tambah Arsip
+        </Button>
       </div>
-      <div className="p-12 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center bg-white">
-        <p className="text-slate-400 font-medium">[ Form Entri & Tabel Katalog Master Akan Dibangun Di Sini ]</p>
+
+      {/* SEARCH & FILTER BAR */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 items-center relative z-20">
+        <div className="relative w-full md:flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <Input 
+            placeholder="Cari judul, penulis, atau ID arsip..." 
+            className="pl-10 w-full"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="w-full md:w-64 flex items-center gap-2">
+          <Filter className="h-5 w-5 text-slate-400 hidden md:block" />
+          <Select value={filterCategory} onValueChange={(val) => val && setFilterCategory(val)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Semua Jenis" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Jenis</SelectItem>
+              <SelectItem value="Skripsi">Skripsi</SelectItem>
+              <SelectItem value="Buku">Buku</SelectItem>
+              <SelectItem value="Naskah Publikasi">Naskah Publikasi</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
+      {/* DATA VISUALIZATION */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden relative z-20">
+        
+        {/* MOBILE VIEW (< 768px) */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {filteredData.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">Data tidak ditemukan</div>
+          ) : (
+            filteredData.map(item => (
+              <div key={item.id} className="p-4 space-y-3 flex flex-col hover:bg-slate-50">
+                <div className="flex justify-between items-start gap-2">
+                  <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">{item.id}</span>
+                  <Badge variant={item.stock > 0 ? "default" : "destructive"} className={item.stock > 0 ? "bg-emerald-500 hover:bg-emerald-600" : ""}>
+                    {item.stock > 0 ? `Stok: ${item.stock}` : "Habis"}
+                  </Badge>
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 line-clamp-2 leading-tight">{item.title}</h3>
+                  <p className="text-sm text-slate-500">{item.author} • {item.year}</p>
+                </div>
+                <div className="flex justify-between items-center pt-2">
+                  <Badge variant="outline" className="text-xs border-slate-300 text-slate-600">
+                    {item.type}
+                  </Badge>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="h-8 w-8 text-blue-600">
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} className="h-8 w-8 text-red-600">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* DESKTOP VIEW (>= 768px) */}
+        <div className="hidden md:block overflow-x-auto">
+          <Table>
+            <TableHeader className="bg-slate-50">
+              <TableRow>
+                <TableHead className="w-[100px] font-bold">ID</TableHead>
+                <TableHead className="font-bold">Info Arsip</TableHead>
+                <TableHead className="font-bold">Jenis / Kategori</TableHead>
+                <TableHead className="font-bold">Lokasi</TableHead>
+                <TableHead className="font-bold text-center">Stok</TableHead>
+                <TableHead className="font-bold text-right">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-10 text-slate-500">
+                    Data tidak ditemukan
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredData.map((item) => (
+                  <TableRow key={item.id} className="hover:bg-slate-50/50">
+                    <TableCell className="font-medium text-slate-600">
+                      {item.id}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900 line-clamp-1">{item.title}</span>
+                        <span className="text-sm text-slate-500">{item.author} • {item.year}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1 items-start">
+                        <Badge variant="secondary" className="text-xs bg-slate-100 text-slate-700 hover:bg-slate-200">{item.type}</Badge>
+                        <span className="text-xs text-slate-500">{item.category}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-slate-600">
+                      {item.location}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge variant={item.stock > 0 ? "default" : "destructive"} className={item.stock > 0 ? "bg-emerald-500 hover:bg-emerald-600" : ""}>
+                        {item.stock}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)} className="text-slate-400 hover:text-blue-600">
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} className="text-slate-400 hover:text-red-600">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* FORM SHEET (Slide-out Form) */}
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto z-[60]">
+          <SheetHeader className="mb-6">
+            <SheetTitle>{editingItem ? "Edit Data Arsip" : "Tambah Arsip Baru"}</SheetTitle>
+            <SheetDescription>
+              Silakan isi formulir di bawah ini dengan data arsip yang valid.
+            </SheetDescription>
+          </SheetHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Judul Arsip <span className="text-red-500">*</span></Label>
+              <Input 
+                id="title" 
+                placeholder="Contoh: Sistem Informasi Manajemen..." 
+                value={formData.title}
+                onChange={(e) => setFormData({...formData, title: e.target.value})}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="author">Penulis / Pengarang <span className="text-red-500">*</span></Label>
+              <Input 
+                id="author" 
+                placeholder="Nama Pengarang" 
+                value={formData.author}
+                onChange={(e) => setFormData({...formData, author: e.target.value})}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="year">Tahun Terbit</Label>
+                <Input 
+                  id="year" 
+                  type="number" 
+                  value={formData.year}
+                  onChange={(e) => setFormData({...formData, year: parseInt(e.target.value) || 2024})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="stock">Jumlah Fisik (Stok)</Label>
+                <Input 
+                  id="stock" 
+                  type="number" 
+                  min={0}
+                  value={formData.stock}
+                  onChange={(e) => setFormData({...formData, stock: parseInt(e.target.value) || 0})}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Jenis Arsip</Label>
+              <Select 
+                value={formData.type} 
+                onValueChange={(val) => val && setFormData({...formData, type: val as ArchiveType})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih Jenis" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Skripsi">Skripsi</SelectItem>
+                  <SelectItem value="Buku">Buku</SelectItem>
+                  <SelectItem value="Naskah Publikasi">Naskah Publikasi</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Kategori Bidang</Label>
+              <Select 
+                value={formData.category} 
+                onValueChange={(val) => val && setFormData({...formData, category: val as ArchiveCategory})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Machine Learning">Machine Learning</SelectItem>
+                  <SelectItem value="Sistem Pendukung Keputusan">Sistem Pendukung Keputusan</SelectItem>
+                  <SelectItem value="Rekayasa Perangkat Lunak">Rekayasa Perangkat Lunak</SelectItem>
+                  <SelectItem value="Jaringan Komputer">Jaringan Komputer</SelectItem>
+                  <SelectItem value="Umum">Umum</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="location">Lokasi Rak <span className="text-red-500">*</span></Label>
+              <Input 
+                id="location" 
+                placeholder="Contoh: Lemari A - Rak 1" 
+                value={formData.location}
+                onChange={(e) => setFormData({...formData, location: e.target.value})}
+              />
+            </div>
+          </div>
+          
+          <SheetFooter className="mt-8">
+            <Button variant="outline" onClick={() => setIsSheetOpen(false)} className="w-full sm:w-auto">Batal</Button>
+            <Button onClick={handleSave} className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white">
+              <Package className="w-4 h-4 mr-2" />
+              Simpan Data
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

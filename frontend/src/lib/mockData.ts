@@ -164,3 +164,93 @@ export function updateCirculationItem(id: string, updates: Partial<CirculationIt
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }
 }
+
+// ==========================================
+// MOCK DATA: KATALOG (ARCHIVES)
+// ==========================================
+
+export type ArchiveCategory = "Machine Learning" | "Sistem Pendukung Keputusan" | "Rekayasa Perangkat Lunak" | "Jaringan Komputer" | "Umum";
+export type ArchiveType = "Skripsi" | "Naskah Publikasi" | "Buku";
+
+export interface CatalogItem {
+  id: string;
+  title: string;
+  author: string;
+  year: number;
+  category: ArchiveCategory;
+  type: ArchiveType;
+  stock: number;
+  location: string;
+}
+
+const CATALOG_INITIAL_DATA: CatalogItem[] = [
+  {
+    id: "ARC-001",
+    title: "Analisis Algoritma Dijkstra pada Jaringan Distribusi",
+    author: "Budi Santoso",
+    year: 2023,
+    category: "Jaringan Komputer",
+    type: "Skripsi",
+    stock: 2,
+    location: "Lemari A - Rak 1",
+  },
+  {
+    id: "ARC-002",
+    title: "Sistem Informasi Manajemen Perpustakaan",
+    author: "Siti Aminah",
+    year: 2021,
+    category: "Rekayasa Perangkat Lunak",
+    type: "Buku",
+    stock: 0,
+    location: "Lemari B - Rak 2",
+  },
+  {
+    id: "ARC-003",
+    title: "Penerapan Machine Learning dalam Prediksi Cuaca",
+    author: "Dina Mariana",
+    year: 2024,
+    category: "Machine Learning",
+    type: "Naskah Publikasi",
+    stock: 5,
+    location: "Lemari C - Rak 1",
+  }
+];
+
+const CATALOG_STORAGE_KEY = "catalog_mock_db";
+
+export function getCatalogData(): CatalogItem[] {
+  const stored = localStorage.getItem(CATALOG_STORAGE_KEY);
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  localStorage.setItem(CATALOG_STORAGE_KEY, JSON.stringify(CATALOG_INITIAL_DATA));
+  return CATALOG_INITIAL_DATA;
+}
+
+export function saveCatalogData(data: CatalogItem[]) {
+  localStorage.setItem(CATALOG_STORAGE_KEY, JSON.stringify(data));
+}
+
+export function addCatalogItem(item: Omit<CatalogItem, "id">) {
+  const data = getCatalogData();
+  const newId = `ARC-${String(data.length + 1).padStart(3, '0')}`;
+  const newItem = { ...item, id: newId };
+  data.unshift(newItem);
+  saveCatalogData(data);
+  return newItem;
+}
+
+export function updateCatalogItem(id: string, updates: Partial<CatalogItem>) {
+  const data = getCatalogData();
+  const index = data.findIndex(item => item.id === id);
+  if (index !== -1) {
+    data[index] = { ...data[index], ...updates };
+    saveCatalogData(data);
+  }
+}
+
+export function deleteCatalogItem(id: string) {
+  const data = getCatalogData();
+  const filtered = data.filter(item => item.id !== id);
+  saveCatalogData(filtered);
+}
