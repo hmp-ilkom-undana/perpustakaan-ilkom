@@ -8,6 +8,14 @@ import Katalog from "./pages/mahasiswa/Katalog";
 import Peminjaman from "./pages/mahasiswa/Peminjaman";
 import Riwayat from "./pages/mahasiswa/Riwayat";
 
+// Petugas Imports
+import PetugasLayout from "./layouts/PetugasLayout";
+import DashboardPetugas from "./pages/petugas/DashboardPetugas";
+import Sirkulasi from "./pages/petugas/Sirkulasi";
+import SirkulasiDetail from "./pages/petugas/SirkulasiDetail";
+import KatalogAdmin from "./pages/petugas/KatalogAdmin";
+import Denda from "./pages/petugas/Denda";
+
 function App() {
   return (
     <BrowserRouter>
@@ -26,10 +34,16 @@ function App() {
           path="/petugas"
           element={
             <ProtectedRoute>
-              <Beranda />
+              <PetugasLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<DashboardPetugas />} />
+          <Route path="sirkulasi" element={<Sirkulasi />} />
+          <Route path="sirkulasi/:id" element={<SirkulasiDetail />} />
+          <Route path="katalog" element={<KatalogAdmin />} />
+          <Route path="denda" element={<Denda />} />
+        </Route>
         {/* Mahasiswa */}
         <Route
           path="/mahasiswa"
