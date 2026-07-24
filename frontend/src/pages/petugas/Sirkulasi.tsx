@@ -76,7 +76,7 @@ export default function Sirkulasi() {
     <div className="flex flex-col h-[calc(100vh-80px)]">
       {/* SUPER SEARCH BAR */}
       <div className="mb-6 sticky top-0 z-10 bg-slate-50/80 backdrop-blur-xl pb-2 pt-2">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-4 hidden md:block">Hub Pemantauan Sirkulasi</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-4 hidden md:block">Pemantauan Sirkulasi</h1>
         <div className="relative group">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Search className="h-6 w-6 text-slate-400 group-focus-within:text-orange-500 transition-colors" />
@@ -96,7 +96,7 @@ export default function Sirkulasi() {
       </div>
 
       {/* MOBILE TABS */}
-      <div className="md:hidden flex overflow-x-auto gap-2 pb-4 no-scrollbar">
+      <div className="md:hidden flex overflow-x-auto gap-2 pb-4">
         {[
           { id: "REQUESTED", label: "Menunggu ACC", count: requestedItems.length },
           { id: "WAITING_PICKUP", label: "Siap Diambil", count: waitingItems.length },

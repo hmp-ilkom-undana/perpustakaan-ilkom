@@ -135,8 +135,14 @@ export default function PetugasLayout() {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl mx-auto w-full p-4 sm:p-6 md:p-8 animate-in fade-in duration-500">
+      <main className="flex-1 overflow-y-auto relative bg-slate-50">
+        
+        {/* BACKGROUND SILHOUETTE */}
+        <div className="fixed inset-0 md:left-64 pointer-events-none z-0 overflow-hidden flex items-center justify-center opacity-7">
+           <img src="/assets/Logo_Ilkom.png" alt="Logo Watermark" className="w-[400px] md:w-[600px] h-auto grayscale" />
+        </div>
+
+        <div className="max-w-7xl mx-auto w-full p-4 sm:p-6 md:p-8 animate-in fade-in duration-500 relative z-10">
           <Outlet />
         </div>
       </main>
