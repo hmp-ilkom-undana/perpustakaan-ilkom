@@ -2,11 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import { Toaster } from "./components/ui/sonner";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Beranda from "./pages/Beranda";
-import MahasiswaLayout from "./layouts/MahasiswaLayout";
-import Katalog from "./pages/mahasiswa/Katalog";
-import Peminjaman from "./pages/mahasiswa/Peminjaman";
-import Riwayat from "./pages/mahasiswa/Riwayat";
+
+// Admin Imports
+import AdminLayout from "./layouts/AdminLayout";
+import DashboardAdmin from "./pages/admin/DashboardAdmin";
+import ManajemenPengguna from "./pages/admin/ManajemenPengguna";
 
 // Petugas Imports
 import PetugasLayout from "./layouts/PetugasLayout";
@@ -15,6 +15,14 @@ import Sirkulasi from "./pages/petugas/Sirkulasi";
 import SirkulasiDetail from "./pages/petugas/SirkulasiDetail";
 import KatalogAdmin from "./pages/petugas/KatalogAdmin";
 import Denda from "./pages/petugas/Denda";
+
+// Mahasiswa Imports
+import MahasiswaLayout from "./layouts/MahasiswaLayout";
+import DashboardMahasiswa from "./pages/mahasiswa/DashboardMahasiswa";
+import Katalog from "./pages/mahasiswa/Katalog";
+import Peminjaman from "./pages/mahasiswa/Peminjaman";
+import Riwayat from "./pages/mahasiswa/Riwayat";
+import Beranda from "./pages/Beranda"; // if still used, but probably we can remove if replaced by roles
 
 function App() {
   return (
@@ -25,10 +33,18 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute>
-              <Beranda />
+              <AdminLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route index element={<DashboardAdmin />} />
+          <Route path="sirkulasi" element={<Sirkulasi />} />
+          <Route path="sirkulasi/:id" element={<SirkulasiDetail />} />
+          <Route path="katalog" element={<KatalogAdmin />} />
+          <Route path="denda" element={<Denda />} />
+          <Route path="pengguna" element={<ManajemenPengguna />} />
+        </Route>
+
         {/* Petugas */}
         <Route
           path="/petugas"
@@ -44,6 +60,7 @@ function App() {
           <Route path="katalog" element={<KatalogAdmin />} />
           <Route path="denda" element={<Denda />} />
         </Route>
+
         {/* Mahasiswa */}
         <Route
           path="/mahasiswa"
@@ -56,7 +73,7 @@ function App() {
           {/* Halaman utama /mahasiswa */}
           <Route
             index
-            element={<div>Dashboard Ringkasan (Akan Segera Dibuat)</div>}
+            element={<DashboardMahasiswa />}
           />
 
           {/* Sub-halaman  */}
