@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 const user = {
   name: "Budi Santoso",
   totalDenda: 50000,
-  kuotaPeminjaman: { terpakai: 1, maksimal: 2 },
+  kuotaPeminjaman: { terpakai: 1, maksimal: 4 },
   tenggatTerdekat: "Besok, 14:00", // Atau "Aman" jika tidak ada
   tenggatBuku: "Analisis Sentimen Menggunakan Naive Bayes",
   transaksiBerjalan: {
@@ -75,15 +75,13 @@ export default function DashboardMahasiswa() {
             <div className="space-y-2 mt-auto">
               <Progress value={progressValue} className="h-1.5 sm:h-2 bg-slate-100" />
               <p className="text-[11px] sm:text-xs text-slate-500 font-medium leading-tight">
-                {user.kuotaPeminjaman.terpakai === user.kuotaPeminjaman.maksimal 
-                  ? "Kuota penuh." 
-                  : "Sisa 1 arsip."}
+                Maks: 2 Skripsi, 1 Ringkasan, 1 Publikasi
               </p>
             </div>
           </div>
 
           {/* Metrik 2: Batas Waktu Terdekat */}
-          <div className="flex flex-col justify-between pl-4 border-l border-slate-100 sm:pl-0 sm:border-l-0 sm:p-5 sm:border border-slate-200 sm:rounded-xl sm:shadow-sm sm:bg-white">
+          <div className="flex flex-col justify-between pl-4 border-l border-slate-100 sm:border-l-0 sm:p-5 sm:border border-slate-200 sm:rounded-xl sm:shadow-sm sm:bg-white">
             <div>
               <div className="flex items-center gap-2 mb-2 sm:mb-4">
                 <Clock className="w-4 h-4 text-orange-600 hidden sm:block" />
