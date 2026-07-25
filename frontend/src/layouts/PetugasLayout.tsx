@@ -47,7 +47,7 @@ export default function PetugasLayout() {
             <img
               src="/assets/Logo_Ilkom.png"
               alt="Logo"
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 scale-[1.8] origin-top object-cover"
+              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 scale-[1.8] origin-top object-cover max-w-none w-full"
             />
           </div>
           <h1 className="font-bold tracking-tight text-lg">Panel Petugas</h1>
