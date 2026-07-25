@@ -88,7 +88,7 @@ export default function AdminLayout() {
           </div>
           <div>
             <h1 className="font-bold tracking-tight text-lg leading-tight">Perpus ILKOM</h1>
-            <p className="text-[10px] text-blue-500 font-semibold tracking-widest uppercase">Admin Eksekutif</p>
+            <p className="text-[10px] text-blue-500 font-semibold tracking-widest uppercase">Admin</p>
           </div>
         </div>
 
