@@ -51,7 +51,7 @@ export default function DashboardMahasiswa() {
               <h3 className="text-red-800 font-bold text-base">Tunggakan Denda: Rp {user.totalDenda.toLocaleString('id-ID')}</h3>
             </div>
             <p className="text-red-700/90 text-sm font-medium leading-relaxed">
-              Harap segera lunasi di Ruangan HMP untuk membuka kembali akses peminjaman Anda.
+              Harap segera lunasi untuk membuka kembali akses peminjaman Anda. Silahkan hubungi admin atau anggota HMP.
             </p>
           </div>
         </div>
@@ -75,7 +75,9 @@ export default function DashboardMahasiswa() {
             <div className="space-y-2 mt-auto">
               <Progress value={progressValue} className="h-1.5 sm:h-2 bg-slate-100" />
               <p className="text-[11px] sm:text-xs text-slate-500 font-medium leading-tight">
-                Maks: 2 Skripsi, 1 Ringkasan, 1 Publikasi
+                {user.kuotaPeminjaman.terpakai === user.kuotaPeminjaman.maksimal 
+                  ? "Kuota penuh, Anda tidak dapat meminjam lagi." 
+                  : `Sisa ${user.kuotaPeminjaman.maksimal - user.kuotaPeminjaman.terpakai} arsip yang dapat dipinjam.`}
               </p>
             </div>
           </div>
