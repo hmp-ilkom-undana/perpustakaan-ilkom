@@ -33,7 +33,7 @@ export default function AdminLayout() {
   };
 
   const menus = [
-    { name: "Dashboard Eksekutif", path: "/admin", icon: LayoutDashboard },
+    { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
     { name: "Sirkulasi", path: "/admin/sirkulasi", icon: ArrowRightLeft },
     { name: "Katalog Data", path: "/admin/katalog", icon: Library },
     { name: "Kelola Denda", path: "/admin/denda", icon: Receipt },

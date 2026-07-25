@@ -49,8 +49,8 @@ export default function DashboardAdmin() {
       {/* Header & Time Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard Eksekutif</h1>
-          <p className="text-slate-500">Ringkasan aktivitas dan kesehatan perpustakaan.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+          <p className="text-slate-500">Ringkasan aktivitas perpustakaan.</p>
         </div>
         <Select value={timeFilter} onValueChange={(val) => { if (val) setTimeFilter(val); }}>
           <SelectTrigger className="w-[180px] bg-white">
