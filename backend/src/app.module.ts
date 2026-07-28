@@ -1,13 +1,23 @@
+import 'dotenv/config';
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ArchiveModule } from './archive/archive.module';
 import { BorrowingModule } from './borrowing/borrowing.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ArchiveModule, BorrowingModule],
+  imports: [
+    ScheduleModule.forRoot(),
+    PrismaModule,
+    AuthModule,
+    ArchiveModule,
+    BorrowingModule,
+    CronModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
