@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  public readonly auth; 
+  public readonly auth;
 
   constructor(private prisma: PrismaService) {
     this.auth = betterAuth({
@@ -16,10 +16,18 @@ export class AuthService {
       emailAndPassword: {
         enabled: true,
       },
-      plugins: [
-        username(),
-      ],
+      plugins: [username()],
       trustedOrigins: ['http://localhost:5173'],
+      user: {
+        additionalFields: {
+          role: {
+            type: 'string',
+          },
+          nim: {
+            type: 'string',
+          },
+        },
+      },
     });
   }
 }
