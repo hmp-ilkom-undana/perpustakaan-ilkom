@@ -1,0 +1,73 @@
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class BorrowingService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async requestBorrow(userId: string, archiveId: string) {
+    return await this.prisma.$transaction(async (tx) => {
+      const archive = await tx.archive.findUnique({
+        where: { id: archiveId },
+      });
+
+      if (!archive) {
+        throw new BadRequestException('Arsip tidak ditemukan.');
+      }
+
+      const activeBorrowings = await tx.borrowing.findMany({
+        where: {
+          userId: userId,
+          status: {
+            in: ['REQUESTED', 'WAITING_PICKUP', 'BORROWED', 'OVERDUE'],
+          },
+        },
+        include: {
+          archive: true,
+        },
+      });
+
+      let countSkripsi = 0;
+      let countRingkasan = 0;
+      let countNaskah = 0;
+
+      for (const b of activeBorrowings) {
+        if (b.archive.archiveType === 'SKRIPSI') countSkripsi++;
+        else if (b.archive.archiveType === 'RINGKASAN_SKRIPSI') countRingkasan++;
+        else if (b.archive.archiveType === 'NASKAH_PUBLIKASI') countNaskah++;
+      }
+
+      if (archive.archiveType === 'SKRIPSI' && countSkripsi >= 2) {
+        throw new BadRequestException('Batas maksimal peminjaman (2 Skripsi) telah tercapai.');
+      }
+      if (archive.archiveType === 'RINGKASAN_SKRIPSI' && countRingkasan >= 1) {
+        throw new BadRequestException('Batas maksimal peminjaman (1 Ringkasan Skripsi) telah tercapai.');
+      }
+      if (archive.archiveType === 'NASKAH_PUBLIKASI' && countNaskah >= 1) {
+        throw new BadRequestException('Batas maksimal peminjaman (1 Naskah Publikasi) telah tercapai.');
+      }
+
+      const availableStock = archive.quantity - archive.reservedQuantity;
+      if (availableStock <= 0) {
+        throw new BadRequestException('Maaf, stok arsip ini sedang kosong atau sudah dipesan orang lain.');
+      }
+
+      await tx.archive.update({
+        where: { id: archiveId },
+        data: {
+          reservedQuantity: { increment: 1 },
+        },
+      });
+
+      const borrowing = await tx.borrowing.create({
+        data: {
+          userId: userId,
+          archiveId: archiveId,
+          status: 'REQUESTED',
+        },
+      });
+
+      return borrowing;
+    });
+  }
+}
