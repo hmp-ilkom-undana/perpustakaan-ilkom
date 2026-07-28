@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { username } from 'better-auth/plugins';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -15,7 +16,9 @@ export class AuthService {
       emailAndPassword: {
         enabled: true,
       },
+      plugins: [
+        username(),
+      ],
     });
   }
 }
-
