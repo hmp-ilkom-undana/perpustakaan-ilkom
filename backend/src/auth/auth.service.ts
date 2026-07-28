@@ -19,6 +19,7 @@ export class AuthService {
       plugins: [
         username(),
       ],
+      trustedOrigins: ['http://localhost:5173'],
     });
   }
 }
