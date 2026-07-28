@@ -33,23 +33,32 @@ export class BorrowingService {
 
       for (const b of activeBorrowings) {
         if (b.archive.archiveType === 'SKRIPSI') countSkripsi++;
-        else if (b.archive.archiveType === 'RINGKASAN_SKRIPSI') countRingkasan++;
+        else if (b.archive.archiveType === 'RINGKASAN_SKRIPSI')
+          countRingkasan++;
         else if (b.archive.archiveType === 'NASKAH_PUBLIKASI') countNaskah++;
       }
 
       if (archive.archiveType === 'SKRIPSI' && countSkripsi >= 2) {
-        throw new BadRequestException('Batas maksimal peminjaman (2 Skripsi) telah tercapai.');
+        throw new BadRequestException(
+          'Batas maksimal peminjaman (2 Skripsi) telah tercapai.',
+        );
       }
       if (archive.archiveType === 'RINGKASAN_SKRIPSI' && countRingkasan >= 1) {
-        throw new BadRequestException('Batas maksimal peminjaman (1 Ringkasan Skripsi) telah tercapai.');
+        throw new BadRequestException(
+          'Batas maksimal peminjaman (1 Ringkasan Skripsi) telah tercapai.',
+        );
       }
       if (archive.archiveType === 'NASKAH_PUBLIKASI' && countNaskah >= 1) {
-        throw new BadRequestException('Batas maksimal peminjaman (1 Naskah Publikasi) telah tercapai.');
+        throw new BadRequestException(
+          'Batas maksimal peminjaman (1 Naskah Publikasi) telah tercapai.',
+        );
       }
 
       const availableStock = archive.quantity - archive.reservedQuantity;
       if (availableStock <= 0) {
-        throw new BadRequestException('Maaf, stok arsip ini sedang kosong atau sudah dipesan orang lain.');
+        throw new BadRequestException(
+          'Maaf, stok arsip ini sedang kosong atau sudah dipesan orang lain.',
+        );
       }
 
       await tx.archive.update({
@@ -68,6 +77,24 @@ export class BorrowingService {
       });
 
       return borrowing;
+    });
+  }
+  async getMyBorrowings(userId: string) {
+    return this.prisma.borrowing.findMany({
+      where: { userId: userId },
+      include: {
+        archive: {
+          select: {
+            title: true,
+            author: true,
+            archiveType: true,
+            category: true,
+          },
+        },
+      },
+      orderBy: {
+        borrowDate: 'desc',
+      },
     });
   }
 }
