@@ -14,6 +14,8 @@ dist-ssr
 .env
 
 Workflow.md
+ROADMAP_FRONTEND_MAHASISWA.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
