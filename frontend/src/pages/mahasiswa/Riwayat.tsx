@@ -1,63 +1,48 @@
-import { HistoryRow, HistoryItemProps } from "@/components/HistoryRow";
+import { HistoryRow, HistoryItemProps, HistoryStatus } from "@/components/HistoryRow";
 import { HistoryDetailDialog } from "@/components/HistoryDetailDialog";
-import { History } from "lucide-react";
-import { useState } from "react";
-
-const mockHistoryData: HistoryItemProps[] = [
-  {
-    id: "H-1001",
-    title: "Analisis Algoritma Dijkstra pada Jaringan Distribusi",
-    type: "Skripsi",
-    borrowDate: "12 Jan 2024",
-    returnDate: "26 Jan 2024",
-    status: "RETURNED",
-    fine: 0,
-    note: "-"
-  },
-  {
-    id: "H-1002",
-    title: "Sistem Informasi Manajemen Perpustakaan Terintegrasi",
-    type: "Buku",
-    borrowDate: "05 Mar 2024",
-    returnDate: "12 Mar 2024",
-    status: "CANCELLED",
-    note: "Dibatalkan otomatis karena melewati batas waktu pengambilan."
-  },
-  {
-    id: "H-1003",
-    title: "Dasar-Dasar Keamanan Jaringan Komputer",
-    type: "Buku",
-    borrowDate: "10 Apr 2024",
-    returnDate: "11 Apr 2024",
-    status: "REJECTED",
-    note: "Arsip sedang dalam perbaikan fisik dan tidak dapat dipinjam."
-  },
-  {
-    id: "H-1004",
-    title: "Penerapan Machine Learning dalam Prediksi Cuaca",
-    type: "Naskah Publikasi",
-    borrowDate: "01 Mei 2024",
-    returnDate: "20 Mei 2024",
-    status: "LOST",
-    fine: 150000,
-    paymentDate: "22 Mei 2024",
-    note: "Mahasiswa melapor buku tertinggal di stasiun, mengganti dengan denda kehilangan."
-  },
-  {
-    id: "H-1005",
-    title: "Jaringan Syaraf Tiruan untuk Pengenalan Wajah",
-    type: "Skripsi",
-    borrowDate: "01 Jun 2024",
-    returnDate: "10 Jun 2024",
-    status: "DAMAGED",
-    fine: 50000,
-    note: "Sampul belakang robek saat dikembalikan, dikenakan denda kerusakan fisik."
-  }
-];
+import { History, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Riwayat() {
   const [selectedItem, setSelectedItem] = useState<HistoryItemProps | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [historyData, setHistoryData] = useState<HistoryItemProps[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/borrowings/my-history", {
+          withCredentials: true,
+        });
+
+        const completedStatuses = ["RETURNED", "CANCELLED", "REJECTED", "DAMAGED", "LOST"];
+        
+        // Filter dan petakan (map) data dari backend
+        const mappedData: HistoryItemProps[] = response.data
+          .filter((item: any) => completedStatuses.includes(item.status))
+          .map((item: any) => ({
+            id: item.id, // Kita gunakan ID asli
+            title: item.archive.title,
+            type: item.archive.archiveType,
+            borrowDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }),
+            returnDate: item.returnDate ? new Date(item.returnDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }) : "-",
+            status: item.status as HistoryStatus,
+            fine: item.fineAmount,
+            note: item.catatanKondisiKembali || "-", 
+          }));
+
+        setHistoryData(mappedData);
+      } catch (error) {
+        console.error("Gagal mengambil riwayat:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   const handleOpenDetail = (item: HistoryItemProps) => {
     setSelectedItem(item);
@@ -77,10 +62,15 @@ export default function Riwayat() {
       </div>
 
       {/* CONTENT SECTION */}
-      <div className="sm:rounded-xl sm:border border-slate-200 bg-white sm:shadow-sm sm:p-6 overflow-hidden">
-        {mockHistoryData.length > 0 ? (
+      <div className="sm:rounded-xl sm:border border-slate-200 bg-white sm:shadow-sm sm:p-6 overflow-hidden min-h-[400px]">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+            <Loader2 className="w-8 h-8 animate-spin mb-4" />
+            <p>Memuat riwayat...</p>
+          </div>
+        ) : historyData.length > 0 ? (
           <div className="flex flex-col">
-            {mockHistoryData.map((item) => (
+            {historyData.map((item) => (
               <HistoryRow 
                 key={item.id} 
                 item={item} 
@@ -93,9 +83,9 @@ export default function Riwayat() {
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
               <History className="h-6 w-6 text-slate-400" />
             </div>
-            <h3 className="mt-4 text-sm font-semibold text-slate-900">Belum Ada Riwayat</h3>
+            <h3 className="mt-4 text-sm font-semibold text-slate-900">Belum Ada Riwayat Selesai</h3>
             <p className="mt-1 text-sm text-slate-500 max-w-sm">
-              Anda belum memiliki rekam jejak transaksi peminjaman yang sudah selesai.
+              Anda belum memiliki rekam jejak transaksi peminjaman yang sudah selesai atau dikembalikan.
             </p>
           </div>
         )}
