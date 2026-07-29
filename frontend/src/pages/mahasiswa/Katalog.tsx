@@ -28,6 +28,7 @@ export default function Katalog() {
   const [selectedArchive, setSelectedArchive] = useState<any>(null);
   const [filterType, setFilterType] = useState<string>("Semua");
   const [filterCategory, setFilterCategory] = useState<string>("Semua");
+  const [filterAvailability, setFilterAvailability] = useState<string>("Semua");
 
   useEffect(() => {
     const fetchArchives = async () => {
@@ -58,7 +59,20 @@ export default function Katalog() {
       filterType === "Semua" || archive.archiveType === filterType;
     const matchCategory =
       filterCategory === "Semua" || archive.category === filterCategory;
-    return matchType && matchCategory;
+
+    // Cek Ketersediaan
+    let matchAvailability = true;
+    const isAvailable =
+      archive.quantity - archive.reservedQuantity > 0 &&
+      archive.status !== "DIPINJAM";
+
+    if (filterAvailability === "Tersedia") {
+      matchAvailability = isAvailable === true;
+    } else if (filterAvailability === "Dipinjam") {
+      matchAvailability = isAvailable === false;
+    }
+
+    return matchType && matchCategory && matchAvailability;
   });
 
   return (
@@ -128,6 +142,26 @@ export default function Katalog() {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Filter Ketersediaan */}
+          <div className="flex flex-col gap-1.5 flex-1 sm:w-48">
+            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+              Ketersediaan
+            </label>
+            <Select
+              value={filterAvailability}
+              onValueChange={(val) => setFilterAvailability(val || "Semua")}
+            >
+              <SelectTrigger className="bg-white border-slate-200 focus:ring-blue-600 shadow-sm h-9 w-full">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Semua">Semua Status</SelectItem>
+                <SelectItem value="Tersedia">Tersedia</SelectItem>
+                <SelectItem value="Dipinjam">Sedang Dipinjam</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -136,7 +170,7 @@ export default function Katalog() {
           <p>Memuat data dari server...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0 sm:gap-6 border-t border-slate-100 sm:border-none">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-6 border-t border-slate-100 sm:border-none">
           {filteredArchives.length > 0 ? (
             filteredArchives.map((archive) => (
               <ArchiveCard
