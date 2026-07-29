@@ -149,6 +149,7 @@ export default function Katalog() {
                 category={archive.category}
                 quantity={archive.quantity}
                 reservedQuantity={archive.reservedQuantity}
+                status={archive.status}
                 isRequestedByCurrentUser={archive.isRequestedByCurrentUser}
                 onClick={() => setSelectedArchive(archive)}
               />

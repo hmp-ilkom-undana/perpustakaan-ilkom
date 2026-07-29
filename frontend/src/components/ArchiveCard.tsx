@@ -19,6 +19,7 @@ interface ArchiveCardProps {
   category: string;
   quantity: number;
   reservedQuantity: number;
+  status: string; // Add status prop
   isRequestedByCurrentUser?: boolean;
 
   onClick: () => void;
@@ -49,6 +50,7 @@ export function ArchiveCard({
   category,
   quantity,
   reservedQuantity,
+  status,
   isRequestedByCurrentUser,
   onClick,
 }: ArchiveCardProps) {
@@ -63,7 +65,7 @@ export function ArchiveCard({
   if (isRequestedByMe) {
     displayStatus = "Sedang Anda Ajukan";
     badgeStyle = "border-blue-500 text-blue-700 bg-blue-50 rounded-sm"; // Warna Biru
-  } else if (availableStock <= 0) {
+  } else if (availableStock <= 0 || status === "DIPINJAM") {
     displayStatus = "Sedang Dipinjam";
     badgeStyle = "border-slate-400 text-slate-500 bg-slate-50 rounded-sm"; // Warna Abu-abu
   }

@@ -7,9 +7,6 @@ export class ArchiveService {
 
   async findAll() {
     return this.prisma.archive.findMany({
-      where: {
-        status: 'TERSEDIA',
-      },
       select: {
         id: true,
         title: true,

@@ -49,7 +49,7 @@ export function ArchiveDetailDialog({
   const isRequestedByMe = archive.isRequestedByCurrentUser;
 
   // 3. Status ketersediaan untuk orang lain
-  const isAvailable = availableStock > 0;
+  const isAvailable = availableStock > 0 && archive.status !== "DIPINJAM";
 
   let displayStatus = "Tersedia";
   let badgeStyle = "bg-green-100 text-green-700";
@@ -57,7 +57,7 @@ export function ArchiveDetailDialog({
     displayStatus = "Sedang Diajukan";
     badgeStyle = "bg-blue-100 text-blue-700";
   } else if (!isAvailable) {
-    displayStatus = "Habis (Diantre)";
+    displayStatus = "Sedang Dipinjam";
     badgeStyle = "bg-slate-100 text-slate-500";
   }
 
@@ -154,7 +154,7 @@ export function ArchiveDetailDialog({
                 ? "✓ Sedang Anda Ajukan (Cek Peminjaman)"
                 : isAvailable
                   ? `Ajukan Peminjaman (Sisa: ${availableStock})`
-                  : "Stok Habis (Diantre)"}
+                  : "Stok Habis"}
           </Button>
         </DialogFooter>
       </DialogContent>
