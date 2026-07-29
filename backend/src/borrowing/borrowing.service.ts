@@ -32,23 +32,25 @@ export class BorrowingService {
       let countNaskah = 0;
 
       for (const b of activeBorrowings) {
-        if (b.archive.archiveType === 'SKRIPSI') countSkripsi++;
-        else if (b.archive.archiveType === 'RINGKASAN_SKRIPSI')
-          countRingkasan++;
-        else if (b.archive.archiveType === 'NASKAH_PUBLIKASI') countNaskah++;
+        const type = b.archive.archiveType.toUpperCase().replace(' ', '_');
+        if (type === 'SKRIPSI') countSkripsi++;
+        else if (type === 'RINGKASAN_SKRIPSI') countRingkasan++;
+        else if (type === 'NASKAH_PUBLIKASI') countNaskah++;
       }
 
-      if (archive.archiveType === 'SKRIPSI' && countSkripsi >= 2) {
+      const reqType = archive.archiveType.toUpperCase().replace(' ', '_');
+
+      if (reqType === 'SKRIPSI' && countSkripsi >= 2) {
         throw new BadRequestException(
           'Batas maksimal peminjaman (2 Skripsi) telah tercapai.',
         );
       }
-      if (archive.archiveType === 'RINGKASAN_SKRIPSI' && countRingkasan >= 1) {
+      if (reqType === 'RINGKASAN_SKRIPSI' && countRingkasan >= 1) {
         throw new BadRequestException(
           'Batas maksimal peminjaman (1 Ringkasan Skripsi) telah tercapai.',
         );
       }
-      if (archive.archiveType === 'NASKAH_PUBLIKASI' && countNaskah >= 1) {
+      if (reqType === 'NASKAH_PUBLIKASI' && countNaskah >= 1) {
         throw new BadRequestException(
           'Batas maksimal peminjaman (1 Naskah Publikasi) telah tercapai.',
         );
