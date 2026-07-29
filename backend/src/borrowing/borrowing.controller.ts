@@ -5,6 +5,7 @@ import {
   Body,
   Req,
   UnauthorizedException,
+  Param,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { BorrowingService } from './borrowing.service';
@@ -51,7 +52,7 @@ export class BorrowingController {
   }
 
   @Post(':id/cancel')
-  async cancelBorrowing(@Req() req: Request, @Req() request: any) {
+  async cancelBorrowing(@Req() req: Request, @Param('id') borrowingId: string) {
     const sessionData = await this.authService.auth.api.getSession({
       headers: req.headers as any,
     });
@@ -62,7 +63,9 @@ export class BorrowingController {
       );
     }
 
-    const borrowingId = req.params?.id || request.params?.id;
-    return this.borrowingService.cancelBorrowing(sessionData.user.id, borrowingId);
+    return this.borrowingService.cancelBorrowing(
+      sessionData.user.id,
+      borrowingId,
+    );
   }
 }

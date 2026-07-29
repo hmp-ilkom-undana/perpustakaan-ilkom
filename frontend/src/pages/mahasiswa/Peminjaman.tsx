@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import { TicketProgress, ActiveTicketProps } from "@/components/TicketProgress";
 import axios from "axios";
 
-import { BookOpen, CheckCircle2, AlertCircle, Clock, Info, Loader2 } from "lucide-react";
+import {
+  BookOpen,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  Info,
+  Loader2,
+} from "lucide-react";
 import { BorrowingRow } from "@/components/BorrowingRow";
 
 export default function Peminjaman() {
@@ -13,12 +20,20 @@ export default function Peminjaman() {
   const fetchActiveBorrowings = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/borrowings/my-history", {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        "http://localhost:5000/api/borrowings/my-history",
+        {
+          withCredentials: true,
+        },
+      );
 
-      const activeStatuses = ["REQUESTED", "WAITING_PICKUP", "BORROWED", "OVERDUE"];
-      
+      const activeStatuses = [
+        "REQUESTED",
+        "WAITING_PICKUP",
+        "BORROWED",
+        "OVERDUE",
+      ];
+
       const mappedData: ActiveTicketProps[] = response.data
         .filter((item: any) => activeStatuses.includes(item.status))
         .map((item: any) => ({
@@ -26,9 +41,23 @@ export default function Peminjaman() {
           pickupCode: item.pickupCode || "Menunggu ACC",
           archiveTitle: item.archive.title,
           archiveType: item.archive.archiveType,
-          status: item.status as "REQUESTED" | "WAITING_PICKUP" | "BORROWED" | "OVERDUE",
-          requestDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }),
-          dueDate: item.returnDate ? new Date(item.returnDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }) : undefined,
+          status: item.status as
+            | "REQUESTED"
+            | "WAITING_PICKUP"
+            | "BORROWED"
+            | "OVERDUE",
+          requestDate: new Date(item.borrowDate).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+          dueDate: item.returnDate
+            ? new Date(item.returnDate).toLocaleDateString("id-ID", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : undefined,
         }));
 
       setTickets(mappedData);
@@ -53,7 +82,7 @@ export default function Peminjaman() {
         withCredentials: true
       });
       alert("Antrean berhasil dibatalkan!");
-      fetchActiveBorrowings(); // Refresh data setelah dibatalkan
+      fetchActiveBorrowings();
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || "Terjadi kesalahan sistem saat membatalkan antrean.";
       alert(`Gagal membatalkan: ${errorMsg}`);
@@ -98,17 +127,18 @@ export default function Peminjaman() {
               {selectedTicket?.id === ticket.id && (
                 <div className="border-b sm:border-b-0 border-slate-100 bg-slate-50/80 p-0 sm:p-6 animate-in slide-in-from-top-2 fade-in duration-200">
                   <div className="flex flex-col sm:gap-6">
-                    
                     {/* Info Arsip Singkat */}
                     <div className="flex items-center gap-2 text-sm text-slate-600 bg-white/60 p-4 sm:p-3 sm:rounded-lg border-y sm:border border-slate-200/60">
                       <Info className="h-4 w-4 text-blue-500 shrink-0" />
-                      <span className="truncate">Tipe Arsip: <strong>{ticket.archiveType}</strong></span>
+                      <span className="truncate">
+                        Tipe Arsip: <strong>{ticket.archiveType}</strong>
+                      </span>
                     </div>
 
                     {/* 1. STATUS TRACKER & TIMELINE */}
                     <div className="sm:rounded-lg border-b sm:border border-slate-200 bg-white p-4 sm:p-5 sm:shadow-sm">
-                      <TicketProgress 
-                        currentStatus={ticket.status} 
+                      <TicketProgress
+                        currentStatus={ticket.status}
                         requestDate={ticket.requestDate}
                         dueDate={ticket.dueDate}
                       />
@@ -120,28 +150,37 @@ export default function Peminjaman() {
                         Garis Waktu
                       </h4>
                       <div className="flex flex-col gap-4">
-                        
                         {/* Selalu Tampil: Waktu Pengajuan */}
                         <div className="flex items-center justify-between border-b border-slate-50 pb-3">
                           <div className="flex items-center gap-3">
                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
                               <CheckCircle2 className="h-4.5 w-4.5" />
                             </div>
-                            <span className="text-sm font-medium text-slate-700">Diajukan Pada</span>
+                            <span className="text-sm font-medium text-slate-700">
+                              Diajukan Pada
+                            </span>
                           </div>
-                          <span className="text-sm font-bold text-slate-900">{ticket.requestDate}</span>
+                          <span className="text-sm font-bold text-slate-900">
+                            {ticket.requestDate}
+                          </span>
                         </div>
 
                         {/* Tampil jika sudah di-ACC */}
-                        {(ticket.status === "WAITING_PICKUP" || ticket.status === "BORROWED" || ticket.status === "OVERDUE") && (
+                        {(ticket.status === "WAITING_PICKUP" ||
+                          ticket.status === "BORROWED" ||
+                          ticket.status === "OVERDUE") && (
                           <div className="flex items-center justify-between border-b border-slate-50 pb-3">
                             <div className="flex items-center gap-3">
                               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
                                 <CheckCircle2 className="h-4.5 w-4.5" />
                               </div>
-                              <span className="text-sm font-medium text-slate-700">Di-ACC Petugas</span>
+                              <span className="text-sm font-medium text-slate-700">
+                                Di-ACC Petugas
+                              </span>
                             </div>
-                            <span className="text-sm font-bold text-slate-900">Lihat Notifikasi</span>
+                            <span className="text-sm font-bold text-slate-900">
+                              Lihat Notifikasi
+                            </span>
                           </div>
                         )}
 
@@ -152,25 +191,33 @@ export default function Peminjaman() {
                               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600">
                                 <AlertCircle className="h-4.5 w-4.5" />
                               </div>
-                              <span className="text-sm font-medium text-slate-700">Batas Pengambilan (RUANGAN HMP)</span>
+                              <span className="text-sm font-medium text-slate-700">
+                                Batas Pengambilan (RUANGAN HMP)
+                              </span>
                             </div>
-                            <span className="text-sm font-bold text-rose-600">Segera Ambil</span>
+                            <span className="text-sm font-bold text-rose-600">
+                              Segera Ambil
+                            </span>
                           </div>
                         )}
 
                         {/* Tenggat Pengembalian: Relevan jika BORROWED atau OVERDUE */}
-                        {(ticket.status === "BORROWED" || ticket.status === "OVERDUE") && (
+                        {(ticket.status === "BORROWED" ||
+                          ticket.status === "OVERDUE") && (
                           <div className="flex items-center justify-between pb-1">
                             <div className="flex items-center gap-3">
                               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
                                 <Clock className="h-4.5 w-4.5" />
                               </div>
-                              <span className="text-sm font-medium text-slate-700">Tenggat Pengembalian</span>
+                              <span className="text-sm font-medium text-slate-700">
+                                Tenggat Pengembalian
+                              </span>
                             </div>
-                            <span className="text-sm font-bold text-amber-600">{ticket.dueDate || "Belum ditentukan"}</span>
+                            <span className="text-sm font-bold text-amber-600">
+                              {ticket.dueDate || "Belum ditentukan"}
+                            </span>
                           </div>
                         )}
-                        
                       </div>
                     </div>
 
@@ -236,9 +283,12 @@ export default function Peminjaman() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 mb-4">
               <BookOpen className="h-8 w-8 text-slate-300" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-800">Tidak ada peminjaman aktif</h3>
+            <h3 className="text-lg font-semibold text-slate-800">
+              Tidak ada peminjaman aktif
+            </h3>
             <p className="text-sm text-slate-500 max-w-sm mt-2">
-              Anda tidak memiliki arsip yang sedang dipinjam atau dalam proses antrean.
+              Anda tidak memiliki arsip yang sedang dipinjam atau dalam proses
+              antrean.
             </p>
           </div>
         )}

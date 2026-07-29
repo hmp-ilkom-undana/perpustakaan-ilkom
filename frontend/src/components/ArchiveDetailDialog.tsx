@@ -82,7 +82,7 @@ export function ArchiveDetailDialog({
 
       // Ambil pesan error spesifik dari backend
       const errorMsg =
-        error.response?.data?.error || "Terjadi kesalahan pada sistem.";
+        error.response?.data?.message || "Terjadi kesalahan pada sistem.";
 
       // Tampilkan notifikasi gagal
       toast.error("Pengajuan Gagal", {

@@ -111,11 +111,18 @@ export class BorrowingService {
       }
 
       if (borrowing.userId !== userId) {
-        throw new BadRequestException('Anda tidak berhak membatalkan antrean ini.');
+        throw new BadRequestException(
+          'Anda tidak berhak membatalkan antrean ini.',
+        );
       }
 
-      if (borrowing.status !== 'REQUESTED' && borrowing.status !== 'WAITING_PICKUP') {
-        throw new BadRequestException('Hanya antrean yang belum dipinjam yang dapat dibatalkan.');
+      if (
+        borrowing.status !== 'REQUESTED' &&
+        borrowing.status !== 'WAITING_PICKUP'
+      ) {
+        throw new BadRequestException(
+          'Hanya antrean yang belum dipinjam yang dapat dibatalkan.',
+        );
       }
 
       await tx.archive.update({

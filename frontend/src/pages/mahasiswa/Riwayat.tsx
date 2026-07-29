@@ -23,7 +23,7 @@ export default function Riwayat() {
         const mappedData: HistoryItemProps[] = response.data
           .filter((item: any) => completedStatuses.includes(item.status))
           .map((item: any) => ({
-            id: item.id, // Kita gunakan ID asli
+            id: item.id, 
             title: item.archive.title,
             type: item.archive.archiveType,
             borrowDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }),
