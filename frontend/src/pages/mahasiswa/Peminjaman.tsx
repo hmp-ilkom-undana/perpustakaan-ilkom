@@ -10,42 +10,54 @@ export default function Peminjaman() {
   const [tickets, setTickets] = useState<ActiveTicketProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchActiveBorrowings = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("http://localhost:5000/api/borrowings/my-history", {
+        withCredentials: true,
+      });
+
+      const activeStatuses = ["REQUESTED", "WAITING_PICKUP", "BORROWED", "OVERDUE"];
+      
+      const mappedData: ActiveTicketProps[] = response.data
+        .filter((item: any) => activeStatuses.includes(item.status))
+        .map((item: any) => ({
+          id: item.id,
+          pickupCode: item.pickupCode || "Menunggu ACC",
+          archiveTitle: item.archive.title,
+          archiveType: item.archive.archiveType,
+          status: item.status as "REQUESTED" | "WAITING_PICKUP" | "BORROWED" | "OVERDUE",
+          requestDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }),
+          dueDate: item.returnDate ? new Date(item.returnDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }) : undefined,
+        }));
+
+      setTickets(mappedData);
+    } catch (error) {
+      console.error("Gagal mengambil data peminjaman aktif:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchActiveBorrowings = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/borrowings/my-history", {
-          withCredentials: true,
-        });
-
-        const activeStatuses = ["REQUESTED", "WAITING_PICKUP", "BORROWED", "OVERDUE"];
-        
-        const mappedData: ActiveTicketProps[] = response.data
-          .filter((item: any) => activeStatuses.includes(item.status))
-          .map((item: any) => ({
-            id: item.id,
-            pickupCode: item.pickupCode || "Menunggu ACC",
-            archiveTitle: item.archive.title,
-            archiveType: item.archive.archiveType,
-            status: item.status as "REQUESTED" | "WAITING_PICKUP" | "BORROWED" | "OVERDUE",
-            requestDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }),
-            dueDate: item.returnDate ? new Date(item.returnDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }) : undefined,
-          }));
-
-        setTickets(mappedData);
-      } catch (error) {
-        console.error("Gagal mengambil data peminjaman aktif:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchActiveBorrowings();
   }, []);
 
-  const handleCancel = (id: string) => {
-    alert(
-      `Mensimulasikan pembatalan untuk ID: ${id}. Nanti akan diganti dengan API call.`,
-    );
+  const handleCancel = async (id: string) => {
+    if (!window.confirm("Apakah Anda yakin ingin membatalkan antrean ini?")) {
+      return;
+    }
+    
+    try {
+      await axios.post(`http://localhost:5000/api/borrowings/${id}/cancel`, {}, {
+        withCredentials: true
+      });
+      alert("Antrean berhasil dibatalkan!");
+      fetchActiveBorrowings(); // Refresh data setelah dibatalkan
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.message || "Terjadi kesalahan sistem saat membatalkan antrean.";
+      alert(`Gagal membatalkan: ${errorMsg}`);
+    }
   };
 
   return (
@@ -82,7 +94,7 @@ export default function Peminjaman() {
                 }
               />
 
-              {/* Area Detail (Expandable) - Clean & High Density */}
+              {/* Area Detail */}
               {selectedTicket?.id === ticket.id && (
                 <div className="border-b sm:border-b-0 border-slate-100 bg-slate-50/80 p-0 sm:p-6 animate-in slide-in-from-top-2 fade-in duration-200">
                   <div className="flex flex-col sm:gap-6">

@@ -99,4 +99,39 @@ export class BorrowingService {
       },
     });
   }
+
+  async cancelBorrowing(userId: string, borrowingId: string) {
+    return await this.prisma.$transaction(async (tx) => {
+      const borrowing = await tx.borrowing.findUnique({
+        where: { id: borrowingId },
+      });
+
+      if (!borrowing) {
+        throw new BadRequestException('Peminjaman tidak ditemukan.');
+      }
+
+      if (borrowing.userId !== userId) {
+        throw new BadRequestException('Anda tidak berhak membatalkan antrean ini.');
+      }
+
+      if (borrowing.status !== 'REQUESTED' && borrowing.status !== 'WAITING_PICKUP') {
+        throw new BadRequestException('Hanya antrean yang belum dipinjam yang dapat dibatalkan.');
+      }
+
+      await tx.archive.update({
+        where: { id: borrowing.archiveId },
+        data: { reservedQuantity: { decrement: 1 } },
+      });
+
+      const updatedBorrowing = await tx.borrowing.update({
+        where: { id: borrowingId },
+        data: {
+          status: 'CANCELLED',
+          returnDate: new Date(),
+        },
+      });
+
+      return updatedBorrowing;
+    });
+  }
 }

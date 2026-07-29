@@ -49,4 +49,20 @@ export class BorrowingController {
     }
     return this.borrowingService.getMyBorrowings(sessionData.user.id);
   }
+
+  @Post(':id/cancel')
+  async cancelBorrowing(@Req() req: Request, @Req() request: any) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+
+    if (!sessionData) {
+      throw new UnauthorizedException(
+        'Sesi tidak valid, Anda harus login terlebih dahulu.',
+      );
+    }
+
+    const borrowingId = req.params?.id || request.params?.id;
+    return this.borrowingService.cancelBorrowing(sessionData.user.id, borrowingId);
+  }
 }
