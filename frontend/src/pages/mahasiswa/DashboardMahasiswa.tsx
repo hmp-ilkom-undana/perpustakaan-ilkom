@@ -128,7 +128,7 @@ export default function DashboardMahasiswa() {
       <div className="flex flex-col gap-1.5 px-5 pt-8 sm:p-0">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 leading-tight">
           Selamat datang kembali,
-          <br className="sm:hidden" /> {firstName}!
+          <br className="sm:hidden" /> <span className="text-orange-600">{firstName}</span>!
         </h1>
         <p className="text-slate-500 font-medium text-sm mt-1">{currentDate}</p>
       </div>
@@ -153,51 +153,91 @@ export default function DashboardMahasiswa() {
 
       {/* 3. Zona Metrik Cepat */}
       <div className="w-full px-5 sm:px-0">
-        <div className="grid grid-cols-2 gap-4 sm:gap-6">
+        <div className="flex flex-col sm:grid sm:grid-cols-2 gap-6 sm:gap-6">
           {/* Metrik 1: Kuota Peminjaman */}
-          <div className="flex flex-col justify-between sm:p-5 sm:border border-slate-200 sm:rounded-xl sm:shadow-sm sm:bg-white">
+          <div className="flex flex-col justify-between p-5 border border-slate-200 rounded-xl shadow-sm bg-white">
             <div>
               <div className="flex items-center gap-2 mb-2 sm:mb-4">
-                <BookOpen className="w-4 h-4 text-blue-600 hidden sm:block" />
+                <BookOpen className="w-4 h-4 text-orange-600 hidden sm:block" />
                 <p className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
                   Peminjaman
                 </p>
               </div>
-              <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-none mb-3">
+              <div className="text-3xl sm:text-4xl font-extrabold text-orange-600 leading-none mb-3">
                 {terpakai}{" "}
-                <span className="text-xl sm:text-2xl text-slate-300 font-bold">
+                <span className="text-xl sm:text-2xl text-orange-200 font-bold">
                   / {maksimal}
                 </span>
               </div>
             </div>
-            <div className="space-y-2 mt-auto">
-              <Progress
-                value={progressValue}
-                className="h-1.5 sm:h-2 bg-slate-100"
-              />
-              <div className="flex flex-col gap-1 mt-2 text-[11px] sm:text-xs text-slate-500 font-medium">
-                <div className="flex justify-between items-center">
-                  <span>Skripsi</span>
-                  <span
-                    className={`font-bold ${countSkripsi >= 2 ? "text-red-500" : "text-slate-700"}`}
-                  >
-                    {countSkripsi} / 2
+            <div className="space-y-3 mt-auto">
+              {/* 1. SEGMENTED PROGRESS BAR */}
+              <div className="flex h-2 sm:h-2.5 w-full gap-1">
+                {/* Balok Kuning: Skripsi (Maks 2 -> 50%) */}
+                {countSkripsi > 0 && (
+                  <div
+                    className="bg-orange-400 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${(countSkripsi / maksimal) * 100}%` }}
+                  ></div>
+                )}
+
+                {/* Balok Biru: Ringkasan (Maks 1 -> 25%) */}
+                {countRingkasan > 0 && (
+                  <div
+                    className="bg-blue-500 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${(countRingkasan / maksimal) * 100}%` }}
+                  ></div>
+                )}
+
+                {/* Balok Ungu: Publikasi (Maks 1 -> 25%) */}
+                {countNaskah > 0 && (
+                  <div
+                    className="bg-yellow-400 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${(countNaskah / maksimal) * 100}%` }}
+                  ></div>
+                )}
+
+                {/* Balok Abu-abu: Sisa Kuota Kosong */}
+                {terpakai < maksimal && (
+                  <div
+                    className="bg-slate-100 h-full rounded-full transition-all duration-500"
+                    style={{ flexGrow: 1 }}
+                  ></div>
+                )}
+              </div>
+
+              {/* 2. LEGENDA WARNA  */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-[11px] sm:text-xs text-slate-500 font-medium">
+                {/* Legenda Skripsi */}
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0"></div>
+                  <span>
+                    Skripsi{" "}
+                    <span className="font-bold text-slate-700 ml-0.5">
+                      {countSkripsi}/2
+                    </span>
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span>Ringkasan Skripsi</span>
-                  <span
-                    className={`font-bold ${countRingkasan >= 1 ? "text-red-500" : "text-slate-700"}`}
-                  >
-                    {countRingkasan} / 1
+
+                {/* Legenda Ringkasan */}
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-sky-400 shrink-0"></div>
+                  <span>
+                    Ringkasan{" "}
+                    <span className="font-bold text-slate-700 ml-0.5">
+                      {countRingkasan}/1
+                    </span>
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span>Naskah Publikasi</span>
-                  <span
-                    className={`font-bold ${countNaskah >= 1 ? "text-red-500" : "text-slate-700"}`}
-                  >
-                    {countNaskah} / 1
+
+                {/* Legenda Naskah */}
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></div>
+                  <span>
+                    Publikasi{" "}
+                    <span className="font-bold text-slate-700 ml-0.5">
+                      {countNaskah}/1
+                    </span>
                   </span>
                 </div>
               </div>
@@ -205,7 +245,7 @@ export default function DashboardMahasiswa() {
           </div>
 
           {/* Metrik 2: Batas Waktu Terdekat */}
-          <div className="flex flex-col justify-between pl-4 border-l border-slate-100 sm:border-l-0 sm:p-5 sm:border border-slate-200 sm:rounded-xl sm:shadow-sm sm:bg-white">
+          <div className="flex flex-col justify-between p-5 border border-slate-200 rounded-xl shadow-sm bg-white">
             <div>
               <div className="flex items-center gap-2 mb-2 sm:mb-4">
                 <Clock className="w-4 h-4 text-orange-600 hidden sm:block" />
@@ -213,7 +253,7 @@ export default function DashboardMahasiswa() {
                   Tenggat
                 </p>
               </div>
-              <div className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight mb-2">
+              <div className="text-xl sm:text-2xl font-extrabold text-orange-600 leading-tight mb-2">
                 {tenggatTerdekat}
               </div>
             </div>
