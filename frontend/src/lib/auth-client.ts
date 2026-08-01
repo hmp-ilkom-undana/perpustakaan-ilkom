@@ -1,11 +1,12 @@
 import { createAuthClient } from "better-auth/react";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 import { usernameClient } from "better-auth/client/plugins";
-import type { auth } from "../../../backend/src/auth";
+import type { AuthType } from "./auth-types";
+import { API_BASE_URL } from "./api";
 
 export const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
-  plugins: [inferAdditionalFields<typeof auth>(), usernameClient()],
+  baseURL: API_BASE_URL,
+  plugins: [inferAdditionalFields<AuthType>(), usernameClient()],
 });
 
 export const { signIn, signOut, signUp, useSession } = authClient;

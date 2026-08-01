@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { TicketProgress, ActiveTicketProps } from "@/components/TicketProgress";
-import axios from "axios";
+import api from "@/lib/api";
 
 import {
   BookOpen,
@@ -20,11 +20,8 @@ export default function Peminjaman() {
   const fetchActiveBorrowings = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/borrowings/my-history",
-        {
-          withCredentials: true,
-        },
+      const response = await api.get(
+        "/api/borrowings/my-history"
       );
 
       const activeStatuses = [
@@ -78,9 +75,7 @@ export default function Peminjaman() {
     }
     
     try {
-      await axios.post(`http://localhost:5000/api/borrowings/${id}/cancel`, {}, {
-        withCredentials: true
-      });
+      await api.post(`/api/borrowings/${id}/cancel`);
       alert("Antrean berhasil dibatalkan!");
       fetchActiveBorrowings();
     } catch (error: any) {

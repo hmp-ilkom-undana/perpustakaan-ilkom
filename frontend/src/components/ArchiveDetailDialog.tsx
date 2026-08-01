@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -65,10 +65,9 @@ export function ArchiveDetailDialog({
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/borrowings",
-        { archiveId: archive.id },
-        { withCredentials: true },
+      const response = await api.post(
+        "/api/borrowings",
+        { archiveId: archive.id }
       );
 
       // Jika berhasil, tutup modal dan tampilkan notifikasi sukses

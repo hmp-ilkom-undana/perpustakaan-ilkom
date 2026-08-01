@@ -17,7 +17,7 @@ export class AuthService {
         enabled: true,
       },
       plugins: [username()],
-      trustedOrigins: ['http://localhost:5173'],
+      trustedOrigins: [process.env.FRONTEND_URL || '', 'http://localhost:5173'],
       user: {
         additionalFields: {
           role: {

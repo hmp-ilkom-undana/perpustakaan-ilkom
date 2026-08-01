@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import api from "@/lib/api";
 
 interface BorrowingData {
   id: string;
@@ -38,16 +39,8 @@ export default function DashboardMahasiswa() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/borrowings/my-history",
-          {
-            credentials: "include",
-          },
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setBorrowings(data);
-        }
+        const response = await api.get("/api/borrowings/my-history");
+        setBorrowings(response.data);
       } catch (error) {
         console.error("Gagal mengambil riwayat:", error);
       } finally {

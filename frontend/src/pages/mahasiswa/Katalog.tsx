@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArchiveCard } from "@/components/ArchiveCard";
 import { ArchiveDetailDialog } from "@/components/ArchiveDetailDialog";
+import api from "@/lib/api";
 import {
   Select,
   SelectContent,
@@ -33,17 +34,8 @@ export default function Katalog() {
   useEffect(() => {
     const fetchArchives = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/archives", {
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error("Gagal mengambil data dari server");
-        }
-
-        const data = await response.json();
-
-        setArchives(data);
+        const response = await api.get("/api/archives");
+        setArchives(response.data);
       } catch (error) {
         console.error("Error fetching archives:", error);
       } finally {

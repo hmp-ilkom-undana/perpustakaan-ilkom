@@ -2,7 +2,7 @@ import { HistoryRow, HistoryItemProps, HistoryStatus } from "@/components/Histor
 import { HistoryDetailDialog } from "@/components/HistoryDetailDialog";
 import { History, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 
 export default function Riwayat() {
   const [selectedItem, setSelectedItem] = useState<HistoryItemProps | null>(null);
@@ -13,9 +13,7 @@ export default function Riwayat() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/borrowings/my-history", {
-          withCredentials: true,
-        });
+        const response = await api.get("/api/borrowings/my-history");
 
         const completedStatuses = ["RETURNED", "CANCELLED", "REJECTED", "DAMAGED", "LOST"];
         
