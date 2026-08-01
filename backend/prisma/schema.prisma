@@ -50,6 +50,7 @@ model Borrowing {
   status                BorrowStatus @default(REQUESTED)
   fineAmount            Int          @default(0)
   pickupCode            String?      @unique
+  rejectReason          String?
 
   kondisiPinjam         KondisiArsip?
   catatanKondisiPinjam  String?
