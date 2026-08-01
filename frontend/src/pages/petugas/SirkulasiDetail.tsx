@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getCirculationItem, updateCirculationItem, CirculationItem } from "@/lib/mockData";
+import { CirculationItem } from "@/lib/mockData";
 import { ArrowLeft, CheckCircle, XCircle, Camera, CheckSquare, UploadCloud, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import api from "@/lib/api";
 import { toast } from "sonner";
 
 export default function SirkulasiDetail() {
@@ -16,25 +18,65 @@ export default function SirkulasiDetail() {
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
 
+  // Modal states
+  const [isAccModalOpen, setIsAccModalOpen] = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
-    if (id) {
-      const data = getCirculationItem(id);
-      if (data) setItem(data);
-      setLoading(false);
-    }
+    const fetchDetail = async () => {
+      if (id) {
+        try {
+          const response = await api.get("/api/borrowings/active");
+          const found = response.data.find((item: any) => item.id === id);
+          if (found) {
+            setItem({
+              id: found.id,
+              studentName: found.user.name,
+              studentId: found.user.nim,
+              archiveTitle: found.archive.title,
+              archiveType: found.archive.archiveType,
+              status: found.status,
+              requestDate: found.borrowDate,
+              dueDate: found.returnDate || "-",
+              fine: found.fineAmount,
+              approvedBy: found.pickupCode ? "Petugas" : undefined,
+            });
+          }
+        } catch (error) {
+          console.error("Gagal mengambil detail:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    fetchDetail();
   }, [id]);
 
   if (loading) return <div className="p-8 text-center text-slate-500">Memuat data transaksi...</div>;
   if (!item) return <div className="p-8 text-center text-rose-500">Transaksi tidak ditemukan!</div>;
 
-  const handleAction = (newStatus: CirculationItem['status'], successMsg: string) => {
-    updateCirculationItem(item.id, { 
-      status: newStatus,
-      ...(newStatus === "WAITING_PICKUP" && { approvedBy: "NIP-CURRENT (Petugas)" }),
-      ...(newStatus === "BORROWED" && { handoverBy: "NIP-CURRENT (Petugas)", borrowDate: new Date().toISOString() }),
-    });
-    toast.success(successMsg);
-    navigate("/petugas/sirkulasi"); // Kembali ke Hub
+  const handleAction = async (newStatus: CirculationItem['status'], successMsg: string) => {
+    try {
+      setIsSubmitting(true);
+      if (newStatus === "WAITING_PICKUP") {
+        await api.patch(`/api/borrowings/${item.id}/approve`);
+        setIsAccModalOpen(false);
+      } else if (newStatus === "REJECTED") {
+        await api.patch(`/api/borrowings/${item.id}/reject`, { reason: rejectReason });
+        setIsRejectModalOpen(false);
+      } else {
+        // Fallback untuk mockup Tahap 2 & 3
+      }
+      
+      toast.success(successMsg);
+      navigate("/petugas/sirkulasi");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Terjadi kesalahan sistem.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCameraMock = () => {
@@ -56,7 +98,7 @@ export default function SirkulasiDetail() {
         </Button>
         <div className="flex-1">
           <h1 className="text-lg font-bold text-slate-900 leading-tight">Detail Transaksi</h1>
-          <p className="text-xs font-semibold text-slate-500">{item.id}</p>
+          <p className="text-xs font-semibold text-slate-500">REQ-{item.id.substring(0, 6).toUpperCase()}</p>
         </div>
         <Badge variant="outline" className={`font-bold uppercase tracking-wider
           ${item.status === 'REQUESTED' && 'bg-blue-100 text-blue-700 border-blue-200'}
@@ -126,13 +168,13 @@ export default function SirkulasiDetail() {
             <Button 
               variant="outline" 
               className="flex-1 border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-bold h-12"
-              onClick={() => handleAction("REJECTED", "Pengajuan ditolak!")}
+              onClick={() => setIsRejectModalOpen(true)}
             >
               <XCircle className="w-5 h-5 mr-2" /> Tolak
             </Button>
             <Button 
               className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-12 shadow-lg shadow-emerald-500/20"
-              onClick={() => handleAction("WAITING_PICKUP", "Pengajuan di-ACC! Memulai timer 2 hari ambil.")}
+              onClick={() => setIsAccModalOpen(true)}
             >
               <CheckCircle className="w-5 h-5 mr-2" /> ACC (Tersedia)
             </Button>
@@ -211,6 +253,64 @@ export default function SirkulasiDetail() {
         )}
 
       </div>
+
+      {/* MODAL KONFIRMASI ACC */}
+      <Dialog open={isAccModalOpen} onOpenChange={setIsAccModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Konfirmasi Persetujuan</DialogTitle>
+            <DialogDescription>
+              Apakah Anda yakin ingin menyetujui pengajuan ini? Sistem akan membuat Pickup Code secara otomatis.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
+            <Button variant="outline" onClick={() => setIsAccModalOpen(false)} disabled={isSubmitting}>
+              Batal
+            </Button>
+            <Button 
+              className="bg-emerald-500 hover:bg-emerald-600 text-white" 
+              onClick={() => handleAction("WAITING_PICKUP", "Pengajuan di-ACC! Memulai timer 2 hari ambil.")}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Memproses..." : "Ya, Setujui"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL KONFIRMASI TOLAK */}
+      <Dialog open={isRejectModalOpen} onOpenChange={setIsRejectModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tolak Pengajuan</DialogTitle>
+            <DialogDescription>
+              Silakan tuliskan alasan mengapa pengajuan ini ditolak. Alasan ini akan dapat dilihat oleh mahasiswa.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="my-4">
+            <label className="text-sm font-semibold text-slate-700 mb-2 block">Alasan Penolakan</label>
+            <textarea
+              className="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all"
+              rows={3}
+              placeholder="Contoh: Buku sedang direstorasi karena halamannya robek..."
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            />
+          </div>
+          <DialogFooter className="flex gap-2 sm:justify-end">
+            <Button variant="outline" onClick={() => setIsRejectModalOpen(false)} disabled={isSubmitting}>
+              Batal
+            </Button>
+            <Button 
+              className="bg-rose-500 hover:bg-rose-600 text-white" 
+              onClick={() => handleAction("REJECTED", "Pengajuan berhasil ditolak!")}
+              disabled={isSubmitting || rejectReason.trim() === ""}
+            >
+              {isSubmitting ? "Memproses..." : "Tolak Pengajuan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

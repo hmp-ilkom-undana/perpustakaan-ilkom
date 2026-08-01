@@ -9,11 +9,11 @@ import {
   ScanBarcode,
 } from "lucide-react";
 import {
-  getCirculationData,
   CirculationItem,
   CircStatus,
 } from "@/lib/mockData";
 import { Badge } from "@/components/ui/badge";
+import api from "@/lib/api";
 
 export default function Sirkulasi() {
   const navigate = useNavigate();
@@ -22,8 +22,28 @@ export default function Sirkulasi() {
   const [activeTab, setActiveTab] = useState<CircStatus>("REQUESTED");
 
   useEffect(() => {
-    // Fetch initial data
-    setData(getCirculationData());
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/api/borrowings/active");
+        const mappedData: CirculationItem[] = response.data.map((item: any) => ({
+          id: item.id,
+          studentName: item.user.name,
+          studentId: item.user.nim,
+          archiveTitle: item.archive.title,
+          archiveType: item.archive.archiveType,
+          status: item.status as CircStatus,
+          requestDate: item.borrowDate,
+          dueDate: item.returnDate || "-",
+          fine: item.fineAmount,
+          approvedBy: item.pickupCode ? "Petugas" : undefined,
+        }));
+        setData(mappedData);
+      } catch (error) {
+        console.error("Gagal mengambil data sirkulasi", error);
+      }
+    };
+    
+    fetchData();
   }, []);
 
   const filteredData = data.filter(
@@ -83,6 +103,9 @@ export default function Sirkulasi() {
     const config = getStatusConfig(item.status);
     const Icon = config.icon;
 
+    // Membuat kode pengajuan pendek dari ID asli
+    const shortCode = `REQ-${item.id.substring(0, 6).toUpperCase()}`;
+
     return (
       <div
         key={item.id}
@@ -94,7 +117,7 @@ export default function Sirkulasi() {
             variant="outline"
             className={`${config.bg} ${config.color} ${config.border} rounded-md font-bold text-[10px] tracking-wider px-2 py-0.5 border-transparent`}
           >
-            {item.id}
+            {shortCode}
           </Badge>
           <div className="p-1.5 rounded-full bg-slate-50 text-slate-400 group-hover:bg-orange-50 group-hover:text-orange-500 transition-colors">
             <Icon className="w-4 h-4" />
@@ -138,8 +161,8 @@ export default function Sirkulasi() {
           </div>
           <input
             type="text"
-            className="block w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-lg font-medium text-slate-900 placeholder:text-slate-400 focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 transition-all outline-none shadow-sm"
-            placeholder="Ketik Kode Pengajuan (Contoh: REQ-XXXX)..."
+            className="block w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-sm md:text-lg font-medium text-slate-900 placeholder:text-slate-400 focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 transition-all outline-none shadow-sm"
+            placeholder="Cari Kode Pengajuan (Contoh: REQ-1A2B3C)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             autoFocus
