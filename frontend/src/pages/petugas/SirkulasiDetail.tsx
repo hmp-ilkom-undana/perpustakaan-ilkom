@@ -66,8 +66,10 @@ export default function SirkulasiDetail() {
       } else if (newStatus === "REJECTED") {
         await api.patch(`/api/borrowings/${item.id}/reject`, { reason: rejectReason });
         setIsRejectModalOpen(false);
+      } else if (newStatus === "BORROWED") {
+        await api.patch(`/api/borrowings/${item.id}/handover`);
       } else {
-        // Fallback untuk mockup Tahap 2 & 3
+        // Fallback untuk mockup Tahap 3
       }
       
       toast.success(successMsg);

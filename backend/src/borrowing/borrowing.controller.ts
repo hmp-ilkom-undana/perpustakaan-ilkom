@@ -109,7 +109,7 @@ export class BorrowingController {
   }
 
   @Patch(':id/reject')
-  async rejectBorrowing(@Req() req: Request, @Param('id') borrowingId: string) {
+  async rejectBorrowing(@Param('id') id: string, @Req() req: Request, @Body() body: { reason?: string }) {
     const sessionData = await this.authService.auth.api.getSession({
       headers: req.headers as any,
     });
@@ -122,6 +122,23 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.rejectBorrowing(borrowingId);
+    return this.borrowingService.rejectBorrowing(id, body.reason);
+  }
+
+  @Patch(':id/handover')
+  async handoverBorrowing(@Param('id') id: string, @Req() req: Request) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+
+    if (!sessionData) {
+      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
+    }
+
+    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
+    }
+
+    return this.borrowingService.handoverBorrowing(id);
   }
 }
