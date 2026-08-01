@@ -146,10 +146,12 @@ export class BorrowingService {
   // TAHAP 1: FITUR PETUGAS (ACC PEMINJAMAN)
   // ==========================================
 
-  async getRequestedBorrowings() {
+  async getActiveBorrowings() {
     return this.prisma.borrowing.findMany({
       where: {
-        status: 'REQUESTED',
+        status: {
+          in: ['REQUESTED', 'WAITING_PICKUP', 'BORROWED', 'OVERDUE'],
+        }
       },
       include: {
         user: {

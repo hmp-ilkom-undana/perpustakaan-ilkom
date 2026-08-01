@@ -74,8 +74,8 @@ export class BorrowingController {
   // TAHAP 1: FITUR PETUGAS (ACC PEMINJAMAN)
   // ==========================================
 
-  @Get('requested')
-  async getRequestedBorrowings(@Req() req: Request) {
+  @Get('active')
+  async getActiveBorrowings(@Req() req: Request) {
     const sessionData = await this.authService.auth.api.getSession({
       headers: req.headers as any,
     });
@@ -88,7 +88,7 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.getRequestedBorrowings();
+    return this.borrowingService.getActiveBorrowings();
   }
 
   @Patch(':id/approve')
