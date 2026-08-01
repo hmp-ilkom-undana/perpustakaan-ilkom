@@ -202,7 +202,7 @@ export class BorrowingService {
     });
   }
 
-  async rejectBorrowing(borrowingId: string) {
+  async rejectBorrowing(borrowingId: string, reason?: string) {
     return await this.prisma.$transaction(async (tx) => {
       const borrowing = await tx.borrowing.findUnique({
         where: { id: borrowingId }
@@ -228,8 +228,36 @@ export class BorrowingService {
         data: {
           status: 'REJECTED',
           returnDate: new Date(),
+          rejectReason: reason || null
         }
       });
+    });
+  }
+
+  async handoverBorrowing(borrowingId: string) {
+    const borrowing = await this.prisma.borrowing.findUnique({
+      where: { id: borrowingId }
+    });
+
+    if (!borrowing) {
+      throw new BadRequestException('Peminjaman tidak ditemukan.');
+    }
+
+    if (borrowing.status !== 'WAITING_PICKUP') {
+      throw new BadRequestException('Hanya pengajuan berstatus WAITING_PICKUP yang bisa diserahterimakan.');
+    }
+
+    const today = new Date();
+    const returnDate = new Date();
+    returnDate.setDate(today.getDate() + 30); // Argo 30 hari
+
+    return this.prisma.borrowing.update({
+      where: { id: borrowingId },
+      data: {
+        status: 'BORROWED',
+        borrowDate: today,
+        returnDate: returnDate
+      }
     });
   }
 }

@@ -294,7 +294,7 @@ export default function SirkulasiDetail() {
             <textarea
               className="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:border-rose-500 outline-none transition-all"
               rows={3}
-              placeholder="Contoh: Buku sedang direstorasi karena halamannya robek..."
+              placeholder="Contoh: Arsip sedang direstorasi karena halamannya robek..."
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
             />
