@@ -141,4 +141,93 @@ export class BorrowingService {
       return updatedBorrowing;
     });
   }
+
+  // ==========================================
+  // TAHAP 1: FITUR PETUGAS (ACC PEMINJAMAN)
+  // ==========================================
+
+  async getRequestedBorrowings() {
+    return this.prisma.borrowing.findMany({
+      where: {
+        status: 'REQUESTED',
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            nim: true,
+            role: true,
+          }
+        },
+        archive: {
+          select: {
+            title: true,
+            author: true,
+            archiveType: true,
+            category: true,
+          }
+        }
+      },
+      orderBy: {
+        borrowDate: 'asc', // Yang mengantre lebih dulu di atas
+      }
+    });
+  }
+
+  async approveBorrowing(borrowingId: string) {
+    const borrowing = await this.prisma.borrowing.findUnique({
+      where: { id: borrowingId }
+    });
+
+    if (!borrowing) {
+      throw new BadRequestException('Peminjaman tidak ditemukan.');
+    }
+
+    if (borrowing.status !== 'REQUESTED') {
+      throw new BadRequestException('Hanya peminjaman berstatus REQUESTED yang bisa disetujui.');
+    }
+
+    // Generate random pickup code (Contoh: P-A1B2C3)
+    const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const pickupCode = `P-${randomString}`;
+
+    return this.prisma.borrowing.update({
+      where: { id: borrowingId },
+      data: {
+        status: 'WAITING_PICKUP',
+        pickupCode: pickupCode,
+      }
+    });
+  }
+
+  async rejectBorrowing(borrowingId: string) {
+    return await this.prisma.$transaction(async (tx) => {
+      const borrowing = await tx.borrowing.findUnique({
+        where: { id: borrowingId }
+      });
+
+      if (!borrowing) {
+        throw new BadRequestException('Peminjaman tidak ditemukan.');
+      }
+
+      if (borrowing.status !== 'REQUESTED') {
+        throw new BadRequestException('Hanya peminjaman berstatus REQUESTED yang bisa ditolak.');
+      }
+
+      // Kembalikan stok
+      await tx.archive.update({
+        where: { id: borrowing.archiveId },
+        data: { reservedQuantity: { decrement: 1 } },
+      });
+
+      // Ubah status jadi REJECTED
+      return tx.borrowing.update({
+        where: { id: borrowingId },
+        data: {
+          status: 'REJECTED',
+          returnDate: new Date(),
+        }
+      });
+    });
+  }
 }

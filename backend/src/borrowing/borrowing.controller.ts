@@ -6,6 +6,7 @@ import {
   Req,
   UnauthorizedException,
   Param,
+  Patch,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { BorrowingService } from './borrowing.service';
@@ -67,5 +68,60 @@ export class BorrowingController {
       sessionData.user.id,
       borrowingId,
     );
+  }
+
+  // ==========================================
+  // TAHAP 1: FITUR PETUGAS (ACC PEMINJAMAN)
+  // ==========================================
+
+  @Get('requested')
+  async getRequestedBorrowings(@Req() req: Request) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+
+    if (!sessionData) {
+      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
+    }
+
+    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
+    }
+
+    return this.borrowingService.getRequestedBorrowings();
+  }
+
+  @Patch(':id/approve')
+  async approveBorrowing(@Req() req: Request, @Param('id') borrowingId: string) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+
+    if (!sessionData) {
+      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
+    }
+
+    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
+    }
+
+    return this.borrowingService.approveBorrowing(borrowingId);
+  }
+
+  @Patch(':id/reject')
+  async rejectBorrowing(@Req() req: Request, @Param('id') borrowingId: string) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+
+    if (!sessionData) {
+      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
+    }
+
+    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
+    }
+
+    return this.borrowingService.rejectBorrowing(borrowingId);
   }
 }
