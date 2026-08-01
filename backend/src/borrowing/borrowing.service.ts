@@ -198,6 +198,7 @@ export class BorrowingService {
       data: {
         status: 'WAITING_PICKUP',
         pickupCode: pickupCode,
+        accDate: new Date()
       }
     });
   }

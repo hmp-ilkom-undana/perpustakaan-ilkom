@@ -46,6 +46,7 @@ model Borrowing {
   userId                String
   archiveId             String   
   borrowDate            DateTime     @default(now())
+  accDate               DateTime?
   returnDate            DateTime?
   status                BorrowStatus @default(REQUESTED)
   fineAmount            Int          @default(0)

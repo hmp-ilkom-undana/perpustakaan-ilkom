@@ -8,6 +8,7 @@ export interface CirculationItem {
   archiveType: string;
   status: CircStatus;
   requestDate: string;
+  pickupCode?: string;
   approvedBy?: string;
   handoverBy?: string;
   borrowDate?: string;

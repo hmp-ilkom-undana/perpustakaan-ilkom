@@ -104,7 +104,7 @@ export default function Sirkulasi() {
     const Icon = config.icon;
 
     // Membuat kode pengajuan pendek dari ID asli
-    const shortCode = `REQ-${item.id.substring(0, 6).toUpperCase()}`;
+    const shortCode = item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`;
 
     return (
       <div

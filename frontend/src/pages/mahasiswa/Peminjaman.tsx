@@ -35,7 +35,7 @@ export default function Peminjaman() {
         .filter((item: any) => activeStatuses.includes(item.status))
         .map((item: any) => ({
           id: item.id,
-          pickupCode: item.pickupCode || "Menunggu ACC",
+          pickupCode: item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`,
           archiveTitle: item.archive.title,
           archiveType: item.archive.archiveType,
           status: item.status as
@@ -54,6 +54,24 @@ export default function Peminjaman() {
                 month: "short",
                 year: "numeric",
               })
+            : undefined,
+          accDate: item.accDate
+            ? new Date(item.accDate).toLocaleDateString("id-ID", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : undefined,
+          pickupDeadline: item.accDate
+            ? (() => {
+                const d = new Date(item.accDate);
+                d.setDate(d.getDate() + 3);
+                return d.toLocaleDateString("id-ID", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                }) + ", 16:00";
+              })()
             : undefined,
         }));
 
@@ -123,11 +141,19 @@ export default function Peminjaman() {
                 <div className="border-b sm:border-b-0 border-slate-100 bg-slate-50/80 p-0 sm:p-6 animate-in slide-in-from-top-2 fade-in duration-200">
                   <div className="flex flex-col sm:gap-6">
                     {/* Info Arsip Singkat */}
-                    <div className="flex items-center gap-2 text-sm text-slate-600 bg-white/60 p-4 sm:p-3 sm:rounded-lg border-y sm:border border-slate-200/60">
-                      <Info className="h-4 w-4 text-blue-500 shrink-0" />
-                      <span className="truncate">
-                        Tipe Arsip: <strong>{ticket.archiveType}</strong>
-                      </span>
+                    <div className="flex flex-col gap-2 text-sm text-slate-600 bg-white/60 p-4 sm:p-3 sm:rounded-lg border-y sm:border border-slate-200/60">
+                      <div className="flex items-start gap-2">
+                        <BookOpen className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                        <span className="font-bold text-slate-900 leading-snug">
+                          {ticket.archiveTitle}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 pl-6">
+                        <Info className="h-4 w-4 text-blue-500 shrink-0" />
+                        <span>
+                          Tipe Arsip: <strong>{ticket.archiveType}</strong>
+                        </span>
+                      </div>
                     </div>
 
                     {/* 1. STATUS TRACKER & TIMELINE */}
@@ -136,6 +162,8 @@ export default function Peminjaman() {
                         currentStatus={ticket.status}
                         requestDate={ticket.requestDate}
                         dueDate={ticket.dueDate}
+                        accDate={ticket.accDate}
+                        pickupDeadline={ticket.pickupDeadline}
                       />
                     </div>
 
@@ -174,7 +202,7 @@ export default function Peminjaman() {
                               </span>
                             </div>
                             <span className="text-sm font-bold text-slate-900">
-                              Lihat Notifikasi
+                              {ticket.accDate || "Lihat Notifikasi"}
                             </span>
                           </div>
                         )}
@@ -191,7 +219,7 @@ export default function Peminjaman() {
                               </span>
                             </div>
                             <span className="text-sm font-bold text-rose-600">
-                              Segera Ambil
+                              {ticket.pickupDeadline || "Segera Ambil"}
                             </span>
                           </div>
                         )}

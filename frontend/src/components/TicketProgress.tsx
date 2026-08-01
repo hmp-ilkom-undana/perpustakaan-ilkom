@@ -14,6 +14,8 @@ export interface ActiveTicketProps {
   status: BorrowingStatus;
   requestDate: string;
   dueDate?: string;
+  accDate?: string;
+  pickupDeadline?: string;
   onCancelClick?: (id: string) => void; // Fungsi yang dipanggil saat tombol Batal ditekan
 }
 
@@ -21,10 +23,14 @@ export function TicketProgress({
   currentStatus,
   requestDate,
   dueDate,
+  accDate,
+  pickupDeadline,
 }: {
   currentStatus: BorrowingStatus;
   requestDate: string;
   dueDate?: string;
+  accDate?: string;
+  pickupDeadline?: string;
 }) {
   const steps = [
     { id: "REQUESTED", label: "Diajukan Pada", desktopLabel: "Diajukan", desc: "Menunggu ACC", Icon: FileText },
@@ -50,7 +56,7 @@ export function TicketProgress({
         if (step.id === "REQUESTED") {
           dateText = requestDate;
         } else if (step.id === "WAITING_PICKUP" && (isActive || isPast)) {
-          dateText = "20 Jul 2026"; // Mock ACC Date
+          dateText = accDate || "Telah Disetujui";
         } else if (step.id === "BORROWED" && (isActive || isPast)) {
           dateText = dueDate || "Belum ditentukan";
         }
@@ -58,7 +64,7 @@ export function TicketProgress({
         // Tentukan warning text untuk batas pengambilan (Hanya untuk Mobile)
         let warningText = null;
         if (step.id === "WAITING_PICKUP" && isActive) {
-           warningText = "Batas Pengambilan: 22 Jul 2026, 16:00";
+           warningText = `Batas Ambil: ${pickupDeadline || "Segera"}`;
         }
 
         return (
