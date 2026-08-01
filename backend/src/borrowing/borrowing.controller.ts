@@ -7,7 +7,10 @@ import {
   UnauthorizedException,
   Param,
   Patch,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
 import { BorrowingService } from './borrowing.service';
 import { AuthService } from '../auth/auth.service';
@@ -126,7 +129,12 @@ export class BorrowingController {
   }
 
   @Patch(':id/handover')
-  async handoverBorrowing(@Param('id') id: string, @Req() req: Request) {
+  @UseInterceptors(FileInterceptor('photo'))
+  async handoverBorrowing(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
     const sessionData = await this.authService.auth.api.getSession({
       headers: req.headers as any,
     });
@@ -139,6 +147,6 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.handoverBorrowing(id);
+    return this.borrowingService.handoverBorrowing(id, file);
   }
 }

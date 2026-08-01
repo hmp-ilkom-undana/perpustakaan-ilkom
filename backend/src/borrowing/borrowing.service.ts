@@ -1,9 +1,13 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { DriveService } from './drive.service';
 
 @Injectable()
 export class BorrowingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly driveService: DriveService,
+  ) {}
 
   async requestBorrow(userId: string, archiveId: string) {
     return await this.prisma.$transaction(async (tx) => {
@@ -81,6 +85,7 @@ export class BorrowingService {
       return borrowing;
     });
   }
+  
   async getMyBorrowings(userId: string) {
     return this.prisma.borrowing.findMany({
       where: { userId: userId },
@@ -235,30 +240,43 @@ export class BorrowingService {
     });
   }
 
-  async handoverBorrowing(borrowingId: string) {
-    const borrowing = await this.prisma.borrowing.findUnique({
-      where: { id: borrowingId }
-    });
+  async handoverBorrowing(borrowingId: string, file?: Express.Multer.File) {
+    return await this.prisma.$transaction(async (tx) => {
+      const borrowing = await tx.borrowing.findUnique({
+        where: { id: borrowingId }
+      });
 
-    if (!borrowing) {
-      throw new BadRequestException('Peminjaman tidak ditemukan.');
-    }
-
-    if (borrowing.status !== 'WAITING_PICKUP') {
-      throw new BadRequestException('Hanya pengajuan berstatus WAITING_PICKUP yang bisa diserahterimakan.');
-    }
-
-    const today = new Date();
-    const returnDate = new Date();
-    returnDate.setDate(today.getDate() + 30); // Argo 30 hari
-
-    return this.prisma.borrowing.update({
-      where: { id: borrowingId },
-      data: {
-        status: 'BORROWED',
-        borrowDate: today,
-        returnDate: returnDate
+      if (!borrowing) {
+        throw new BadRequestException('Peminjaman tidak ditemukan.');
       }
+
+      if (borrowing.status !== 'WAITING_PICKUP') {
+        throw new BadRequestException('Hanya peminjaman berstatus WAITING_PICKUP yang bisa diserahkan.');
+      }
+
+      // Upload file jika ada
+      let fotoUrl: string | null = null;
+      if (file) {
+        const timestamp = new Date().getTime();
+        const fileName = `SerahTerima_${borrowing.pickupCode}_${timestamp}.jpg`;
+        fotoUrl = await this.driveService.uploadPhoto(file, fileName, 'PEMINJAMAN');
+      }
+
+      // 1. Ubah status jadi BORROWED
+      // 2. Set returnDate (+30 hari)
+      const today = new Date();
+      const returnDate = new Date();
+      returnDate.setDate(today.getDate() + 30);
+
+      return await tx.borrowing.update({
+        where: { id: borrowingId },
+        data: {
+          status: 'BORROWED',
+          borrowDate: today,
+          returnDate: returnDate,
+          fotoUrlPinjam: fotoUrl
+        }
+      });
     });
   }
 }

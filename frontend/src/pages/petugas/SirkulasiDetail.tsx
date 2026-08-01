@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CirculationItem } from "@/lib/mockData";
 import { ArrowLeft, CheckCircle, XCircle, Camera, CheckSquare, UploadCloud, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CameraCapture } from "@/components/CameraCapture";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import api from "@/lib/api";
@@ -17,6 +18,10 @@ export default function SirkulasiDetail() {
   // Skenario 2 states
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const [showCamera, setShowCamera] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputGalleryRef = useRef<HTMLInputElement>(null);
 
   // Modal states
   const [isAccModalOpen, setIsAccModalOpen] = useState(false);
@@ -67,7 +72,13 @@ export default function SirkulasiDetail() {
         await api.patch(`/api/borrowings/${item.id}/reject`, { reason: rejectReason });
         setIsRejectModalOpen(false);
       } else if (newStatus === "BORROWED") {
-        await api.patch(`/api/borrowings/${item.id}/handover`);
+        const formData = new FormData();
+        if (selectedPhoto) {
+          formData.append('photo', selectedPhoto);
+        }
+        await api.patch(`/api/borrowings/${item.id}/handover`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
         // Fallback untuk mockup Tahap 3
       }
@@ -81,21 +92,49 @@ export default function SirkulasiDetail() {
     }
   };
 
-  const handleCameraMock = () => {
-    setIsUploading(true);
-    // Simulasi kompresi 1.5 detik
-    setTimeout(() => {
-      setIsUploading(false);
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validasi ukuran max 5MB (misalnya)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Ukuran file maksimal 5MB.");
+        return;
+      }
+      setSelectedPhoto(file);
       setIsUploaded(true);
-      toast.success("Foto berhasil dikompresi (< 200KB) dan diunggah!");
-    }, 1500);
+      toast.success("Foto berhasil dipilih dan siap diunggah!");
+    }
+  };
+
+  const handleCameraMock = () => {
+    setShowCamera(true);
+  };
+
+  const handleWebRTCCapture = (file: File) => {
+    setSelectedPhoto(file);
+    setIsUploaded(true);
+    setShowCamera(false);
+    toast.success("Foto berhasil dijepret dan siap diunggah!");
+  };
+
+  const handleGalleryMock = () => {
+    if (fileInputGalleryRef.current) {
+      fileInputGalleryRef.current.click();
+    }
   };
 
   return (
-    <div className="flex flex-col h-full bg-white sm:rounded-2xl sm:border border-slate-200 overflow-hidden shadow-sm">
-      {/* HEADER TILE */}
-      <div className="flex items-center gap-4 p-4 border-b border-slate-100 bg-slate-50/50">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/petugas/sirkulasi")} className="shrink-0 rounded-full hover:bg-slate-200">
+    <>
+      {showCamera && (
+        <CameraCapture 
+          onCapture={handleWebRTCCapture} 
+          onCancel={() => setShowCamera(false)} 
+        />
+      )}
+      <div className="flex flex-col h-full bg-white sm:rounded-2xl sm:border border-slate-200 overflow-hidden shadow-sm">
+        {/* HEADER TILE */}
+        <div className="flex items-center gap-4 p-4 border-b border-slate-100 bg-slate-50/50">
+        <Button type="button" variant="ghost" size="icon" onClick={() => navigate("/petugas/sirkulasi")} className="shrink-0 rounded-full hover:bg-slate-200">
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Button>
         <div className="flex-1">
@@ -186,30 +225,39 @@ export default function SirkulasiDetail() {
         {/* Skenario 2: WAITING_PICKUP */}
         {item.status === "WAITING_PICKUP" && (
           <div className="flex flex-col gap-3">
+            <input 
+              type="file" 
+              accept="image/*"
+              capture="environment"
+              className="hidden" 
+              ref={fileInputRef} 
+              onChange={handleFileSelect}
+            />
+            <input 
+              type="file" 
+              accept="image/*"
+              className="hidden" 
+              ref={fileInputGalleryRef} 
+              onChange={handleFileSelect}
+            />
             {!isUploaded ? (
               <div className="grid grid-cols-2 gap-3">
                 <Button 
+                  type="button"
                   onClick={handleCameraMock}
                   disabled={isUploading}
                   className="bg-orange-500 hover:bg-orange-600 text-white font-bold h-14 text-sm shadow-lg shadow-orange-500/20 transition-all"
                 >
-                  {isUploading ? (
-                    <><RefreshCw className="w-5 h-5 mr-2 animate-spin" /> Memproses...</>
-                  ) : (
-                    <><Camera className="w-5 h-5 mr-2" /> Ambil Foto</>
-                  )}
+                  <Camera className="w-5 h-5 mr-2" /> Buka Kamera
                 </Button>
                 <Button 
-                  onClick={handleCameraMock} // Mock yang sama untuk purwarupa
+                  type="button"
+                  onClick={handleGalleryMock}
                   disabled={isUploading}
                   variant="outline"
                   className="border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700 font-bold h-14 text-sm transition-all"
                 >
-                  {isUploading ? (
-                    <><RefreshCw className="w-5 h-5 mr-2 animate-spin" /> Memproses...</>
-                  ) : (
-                    <><UploadCloud className="w-5 h-5 mr-2" /> Upload File</>
-                  )}
+                  <UploadCloud className="w-5 h-5 mr-2" /> Upload File
                 </Button>
               </div>
             ) : (
@@ -218,7 +266,11 @@ export default function SirkulasiDetail() {
                   <UploadCloud className="w-4 h-4" /> Foto Berhasil Diunggah
                 </div>
                 <Button 
-                  onClick={() => handleAction("BORROWED", "Serah terima sukses! Argometer 30 hari berjalan.")}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAction("BORROWED", "Serah terima sukses! Argometer 30 hari berjalan.");
+                  }}
                   className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-14 text-base shadow-lg shadow-emerald-500/20"
                 >
                   <CheckSquare className="w-5 h-5 mr-2" /> Konfirmasi Serah Terima
@@ -314,5 +366,6 @@ export default function SirkulasiDetail() {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 }
