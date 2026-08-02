@@ -84,21 +84,21 @@ export function TicketProgress({
             {/* Titik Indikator */}
             <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center bg-white">
               {isPast ? (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm">
-                  <Icon className="h-4 w-4" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 border border-blue-900 text-white shadow-[1px_1px_0px_#1E3A8A]">
+                  <Icon className="h-3.5 w-3.5" />
                 </div>
               ) : isActive ? (
                 <div
-                  className={`flex h-7 w-7 items-center justify-center rounded-full border-2 shadow-sm ${
+                  className={`flex h-7 w-7 items-center justify-center rounded-full border shadow-[1px_1px_0px_#1E3A8A] ${
                     isOverdue
-                      ? "border-rose-500 bg-rose-50 text-rose-500"
-                      : "border-blue-600 bg-blue-50 text-blue-600"
+                      ? "border-rose-600 bg-rose-50 text-rose-600"
+                      : "border-blue-900 bg-blue-50 text-blue-600"
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
                 </div>
               ) : (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-slate-200 bg-white text-slate-300">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-300">
                   <Icon className="h-3.5 w-3.5" />
                 </div>
               )}
@@ -135,7 +135,7 @@ export function TicketProgress({
 
               {/* Render warning text jika ada (Hanya Mobile) */}
               {warningText && (
-                <span className="mt-1.5 inline-flex sm:hidden w-fit items-center gap-1.5 rounded-md bg-rose-50 px-2 py-1 text-[10px] font-bold text-rose-600 border border-rose-100">
+                <span className="mt-1.5 inline-flex sm:hidden w-fit items-center gap-1.5 rounded-md bg-rose-50 px-2 py-1 text-[10px] font-bold text-rose-600 border border-rose-300 shadow-[1px_1px_0px_#f43f5e]">
                   <Package className="h-3 w-3" />
                   {warningText}
                 </span>
