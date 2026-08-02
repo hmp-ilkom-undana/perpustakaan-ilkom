@@ -35,7 +35,7 @@ export default function Peminjaman() {
         .filter((item: any) => activeStatuses.includes(item.status))
         .map((item: any) => ({
           id: item.id,
-          pickupCode: `REQ-${item.id.substring(0, 6).toUpperCase()}`,
+          pickupCode: item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`,
           archiveTitle: item.archive.title,
           archiveType: item.archive.archiveType,
           status: item.status as
