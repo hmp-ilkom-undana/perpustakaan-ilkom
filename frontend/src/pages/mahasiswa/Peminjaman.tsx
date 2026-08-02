@@ -117,7 +117,7 @@ export default function Peminjaman() {
       </div>
 
       {/* --- GRID KARTU TIKET --- */}
-      <div className="overflow-hidden sm:rounded-xl sm:border border-slate-200 bg-white sm:shadow-sm min-h-[300px]">
+      <div className="flex flex-col gap-4 min-h-[300px]">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin mb-4" />
@@ -125,7 +125,7 @@ export default function Peminjaman() {
           </div>
         ) : tickets.length > 0 ? (
           tickets.map((ticket) => (
-            <div key={ticket.id} className="flex flex-col">
+            <div key={ticket.id} className="group/card flex flex-col rounded-xl border border-blue-900/30 bg-white shadow-[2px_2px_0px_#1E3A8A] overflow-hidden transition-all hover:-translate-y-[1px] hover:-translate-x-[1px] hover:shadow-[4px_4px_0px_#1E3A8A]">
               {/* Baris List Utama */}
               <BorrowingRow
                 {...ticket}
@@ -138,7 +138,7 @@ export default function Peminjaman() {
 
               {/* Area Detail */}
               {selectedTicket?.id === ticket.id && (
-                <div className="border-b sm:border-b-0 border-slate-100 bg-slate-50/80 p-0 sm:p-6 animate-in slide-in-from-top-2 fade-in duration-200">
+                <div className="border-t border-blue-900/10 bg-slate-50/50 p-4 sm:p-6 animate-in slide-in-from-top-2 fade-in duration-200">
                   <div className="flex flex-col sm:gap-6">
                     {/* Info Arsip Singkat */}
                     <div className="flex flex-col gap-2 text-sm text-slate-600 bg-white/60 p-4 sm:p-3 sm:rounded-lg border-y sm:border border-slate-200/60">
@@ -157,7 +157,7 @@ export default function Peminjaman() {
                     </div>
 
                     {/* 1. STATUS TRACKER & TIMELINE */}
-                    <div className="sm:rounded-lg border-b sm:border border-slate-200 bg-white p-4 sm:p-5 sm:shadow-sm">
+                    <div className="sm:rounded-lg border-b sm:border border-blue-900/30 bg-white p-4 sm:p-5 sm:shadow-[2px_2px_0px_#1E3A8A]">
                       <TicketProgress
                         currentStatus={ticket.status}
                         requestDate={ticket.requestDate}
@@ -168,7 +168,7 @@ export default function Peminjaman() {
                     </div>
 
                     {/* 2. DYNAMIC TIMELINE (HANYA DESKTOP) */}
-                    <div className="hidden sm:block rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="hidden sm:block rounded-lg border border-blue-900/30 bg-white p-5 shadow-[2px_2px_0px_#1E3A8A]">
                       <h4 className="mb-5 text-xs font-bold uppercase tracking-widest text-slate-400">
                         Garis Waktu
                       </h4>
@@ -247,7 +247,7 @@ export default function Peminjaman() {
                     {/* 3. DYNAMIC BOTTOM ACTION / OVERDUE COUNTER CARD */}
                     {ticket.status === "OVERDUE" ? (
                       /* Komponen Peringatan Denda */
-                      <div className="mt-0 sm:mt-2 flex flex-col justify-between sm:rounded-xl border-b sm:border border-rose-200 bg-rose-50 p-4 sm:flex-row sm:items-center sm:p-5">
+                      <div className="mt-0 sm:mt-2 flex flex-col justify-between sm:rounded-xl border-b sm:border border-rose-300 shadow-none sm:shadow-[2px_2px_0px_#f43f5e] bg-rose-50 p-4 sm:flex-row sm:items-center sm:p-5">
                         <div className="flex items-center gap-4">
                           {/* Ikon Alert/Jam */}
                           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
@@ -290,7 +290,7 @@ export default function Peminjaman() {
                       <div className="mt-0 sm:mt-2 flex justify-end border-b sm:border-t border-slate-100 bg-white sm:bg-transparent p-4 sm:p-0">
                         <button
                           onClick={() => handleCancel(ticket.id)}
-                          className="rounded-md border border-rose-200 bg-rose-50 px-5 py-2 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
+                          className="rounded-md border border-rose-300 bg-rose-50 px-5 py-2 text-sm font-bold text-rose-600 transition-all hover:bg-rose-100 hover:text-rose-700 shadow-[2px_2px_0px_#f43f5e] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                         >
                           Batalkan Antrean
                         </button>
