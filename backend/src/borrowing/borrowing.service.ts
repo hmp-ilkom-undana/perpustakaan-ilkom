@@ -279,4 +279,74 @@ export class BorrowingService {
       });
     });
   }
+
+  async returnBorrowing(borrowingId: string, file: Express.Multer.File | undefined, kondisiStr: string, catatan?: string, fineAmountStr?: string) {
+    if (!file) {
+      throw new BadRequestException('Foto serah terima pengembalian wajib disertakan.');
+    }
+
+    return await this.prisma.$transaction(async (tx) => {
+      const borrowing = await tx.borrowing.findUnique({
+        where: { id: borrowingId }
+      });
+
+      if (!borrowing) {
+        throw new BadRequestException('Peminjaman tidak ditemukan.');
+      }
+
+      if (borrowing.status !== 'BORROWED' && borrowing.status !== 'OVERDUE') {
+        throw new BadRequestException('Hanya peminjaman berstatus BORROWED atau OVERDUE yang bisa dikembalikan.');
+      }
+
+      const timestamp = new Date().getTime();
+      const fileName = `SerahTerimaKembali_${borrowing.pickupCode}_${timestamp}.jpg`;
+      const fotoUrl = await this.driveService.uploadPhoto(file, fileName, 'PENGEMBALIAN');
+
+      // Validasi Kondisi
+      const kondisiKembali = kondisiStr === 'RUSAK' ? 'RUSAK' : (kondisiStr === 'HILANG' ? 'HILANG' : 'BAIK');
+      let newStatus: 'RETURNED' | 'DAMAGED' | 'LOST' = 'RETURNED';
+      if (kondisiKembali === 'RUSAK') newStatus = 'DAMAGED';
+      if (kondisiKembali === 'HILANG') newStatus = 'LOST';
+
+      // Kalkulasi Denda (Fines)
+      let fine = fineAmountStr ? parseInt(fineAmountStr) : 0;
+      if (!fine && borrowing.returnDate) {
+        const today = new Date();
+        // Jika telat
+        if (today > borrowing.returnDate) {
+          const diffTime = Math.abs(today.getTime() - borrowing.returnDate.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          fine = diffDays * 1000; // Rp 1.000 per hari
+        }
+      }
+
+      // Pengembalian stok
+      if (kondisiKembali !== 'HILANG') {
+        await tx.archive.update({
+          where: { id: borrowing.archiveId },
+          data: { reservedQuantity: { decrement: 1 } },
+        });
+      } else {
+        await tx.archive.update({
+          where: { id: borrowing.archiveId },
+          data: { 
+            reservedQuantity: { decrement: 1 },
+            quantity: { decrement: 1 } // Kurangi stok asli karena hilang
+          },
+        });
+      }
+
+      return await tx.borrowing.update({
+        where: { id: borrowingId },
+        data: {
+          status: newStatus,
+          kondisiKembali: kondisiKembali as any,
+          catatanKondisiKembali: catatan || null,
+          fotoUrlKembali: fotoUrl,
+          fineAmount: fine,
+          returnDate: new Date(), // Menyimpan tanggal aktual dikembalikan
+        }
+      });
+    });
+  }
 }

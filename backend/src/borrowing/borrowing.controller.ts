@@ -147,6 +147,26 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.handoverBorrowing(id, file);
+  @Patch(':id/return')
+  @UseInterceptors(FileInterceptor('photo'))
+  async returnBorrowing(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() body: { kondisiKembali: string; catatanKondisiKembali?: string; fineAmount?: string },
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+
+    if (!sessionData) {
+      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
+    }
+
+    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
+      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
+    }
+
+    return this.borrowingService.returnBorrowing(id, file, body.kondisiKembali, body.catatanKondisiKembali, body.fineAmount);
   }
 }
