@@ -29,16 +29,16 @@ const getArchiveTypeColor = (type: string) => {
   // Menggunakan toLowerCase() agar pencarian kebal terhadap huruf besar/kecil (case-insensitive)
   switch (type.toLowerCase()) {
     case "skripsi":
-      return "bg-blue-600 hover:bg-blue-700 text-white";
+      return "bg-blue-600";
 
     case "ringkasan skripsi":
-      return "bg-sky-500 hover:bg-sky-600 text-white";
+      return "bg-sky-400 text-blue-900";
 
     case "naskah publikasi":
-      return "bg-orange-500 hover:bg-orange-600 text-white";
+      return "bg-orange-500";
 
     default:
-      return "bg-slate-600 hover:bg-slate-700 text-white";
+      return "bg-slate-600";
   }
 };
 
@@ -60,30 +60,30 @@ export function ArchiveCard({
 
   // 2. Tentukan Teks dan Warna Badge
   let displayStatus = "Tersedia";
-  let badgeStyle = "border-green-600 text-green-700 bg-green-50 rounded-sm";
+  let badgeStyle = "bg-green-300";
 
   if (isRequestedByMe) {
     displayStatus = "Sedang Anda Ajukan";
-    badgeStyle = "border-blue-500 text-blue-700 bg-blue-50 rounded-sm"; // Warna Biru
+    badgeStyle = "bg-amber-400";
   } else if (availableStock <= 0 || status === "DIPINJAM") {
     displayStatus = "Sedang Dipinjam";
-    badgeStyle = "border-slate-400 text-slate-500 bg-slate-50 rounded-sm"; // Warna Abu-abu
+    badgeStyle = "bg-slate-300";
   }
 
   return (
     <Card
       onClick={onClick}
-      className="flex flex-col h-full bg-white border-x-0 border-t-0 border-b sm:border border-slate-200 rounded-none sm:rounded-xl shadow-none sm:shadow-sm hover:border-orange-500 hover:ring-1 hover:ring-orange-500 hover:shadow-lg hover:shadow-orange-500/15 transition-all duration-300 overflow-hidden cursor-pointer group"
+      className="flex flex-col h-full bg-white border border-blue-900/30 rounded-xl shadow-[2px_2px_0px_#1E3A8A] hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-[4px_4px_0px_#F97316] transition-all duration-300 overflow-hidden cursor-pointer group"
     >
       <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50">
         <div className="flex justify-between items-start mb-2 gap-2">
           <Badge
-            className={`${getArchiveTypeColor(archiveType)} font-medium shadow-none rounded-sm`}
+            className={`${getArchiveTypeColor(archiveType)} border border-blue-900/30 shadow-[1px_1px_0px_#1E3A8A]`}
           >
             {archiveType}
           </Badge>
 
-          <Badge variant="outline" className={badgeStyle}>
+          <Badge variant="outline" className={`${badgeStyle} border border-blue-900/30 shadow-[1px_1px_0px_#1E3A8A]`}>
             {displayStatus}
           </Badge>
         </div>

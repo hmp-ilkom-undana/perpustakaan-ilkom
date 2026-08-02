@@ -52,13 +52,13 @@ export function ArchiveDetailDialog({
   const isAvailable = availableStock > 0 && archive.status !== "DIPINJAM";
 
   let displayStatus = "Tersedia";
-  let badgeStyle = "bg-green-100 text-green-700";
+  let badgeStyle = "bg-green-300 text-slate-800 border border-blue-900/30 shadow-[1px_1px_0px_#1E3A8A]";
   if (isRequestedByMe) {
     displayStatus = "Sedang Diajukan";
-    badgeStyle = "bg-blue-100 text-blue-700";
+    badgeStyle = "bg-amber-400 text-slate-800 border border-blue-900/30 shadow-[1px_1px_0px_#1E3A8A]";
   } else if (!isAvailable) {
     displayStatus = "Sedang Dipinjam";
-    badgeStyle = "bg-slate-100 text-slate-500";
+    badgeStyle = "bg-slate-300 text-slate-800 border border-blue-900/30 shadow-[1px_1px_0px_#1E3A8A]";
   }
 
   const handleBorrow = async () => {
@@ -94,39 +94,39 @@ export function ArchiveDetailDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] border border-blue-900/30 shadow-[2px_2px_0px_#1E3A8A] rounded-xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-blue-900 leading-tight">
+          <DialogTitle className="text-2xl font-black text-blue-900 leading-tight uppercase">
             {archive.title}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="font-bold text-slate-500 mt-2">
             {archive.archiveType} • {archive.category}
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-4 space-y-4">
           <div className="grid grid-cols-3 gap-4 text-sm">
-            <div className="font-semibold text-slate-500">Penulis</div>
-            <div className="col-span-2 text-slate-800">{archive.author}</div>
+            <div className="font-black text-blue-900 uppercase">Penulis</div>
+            <div className="col-span-2 font-bold text-slate-800">{archive.author}</div>
 
-            <div className="font-semibold text-slate-500">Tahun</div>
-            <div className="col-span-2 text-slate-800">{archive.year}</div>
+            <div className="font-black text-blue-900 uppercase">Tahun</div>
+            <div className="col-span-2 font-bold text-slate-800">{archive.year}</div>
 
-            <div className="font-semibold text-slate-500">Status</div>
+            <div className="font-black text-blue-900 uppercase">Status</div>
             <div className="col-span-2">
-              <Badge className={`${badgeStyle} shadow-none`}>
+              <Badge className={badgeStyle}>
                 {displayStatus}
               </Badge>
             </div>
 
-            <div className="font-semibold text-slate-500">Sisa Stok</div>
-            <div className="col-span-2 text-slate-800">
+            <div className="font-black text-blue-900 uppercase">Sisa Stok</div>
+            <div className="col-span-2 font-bold text-slate-800">
               {/* Tampilkan sisa stok */}
               {availableStock} dari {archive.quantity} Eksemplar
             </div>
 
-            <div className="font-semibold text-slate-500">Lokasi Rak</div>
-            <div className="col-span-2 text-slate-800">
+            <div className="font-black text-blue-900 uppercase">Lokasi Rak</div>
+            <div className="col-span-2 font-bold text-slate-800">
               {archive.shelfLocation
                 ? archive.shelfLocation
                 : "Belum ditentukan"}
@@ -139,12 +139,12 @@ export function ArchiveDetailDialog({
             onClick={handleBorrow}
             // Tombol mati jika: Sedang loading, Sudah diantre user ini, ATAU stok habis
             disabled={isLoading || isRequestedByMe || !isAvailable}
-            className={`w-full font-bold shadow-none rounded-md transition-colors ${
+            className={`w-full font-bold transition-all ${
               isRequestedByMe
-                ? "bg-blue-50 text-blue-600 border border-blue-200 cursor-not-allowed" // STATE 1: Milik Saya
+                ? "bg-slate-200 text-slate-500 opacity-100" // STATE 1: Milik Saya
                 : isAvailable
-                  ? "bg-orange-500 hover:bg-orange-600 text-white" // STATE 2: Tersedia
-                  : "bg-slate-100 text-slate-400 cursor-not-allowed" // STATE 3: Habis
+                  ? "" // STATE 2: Tersedia (pakai default neobrutalist button)
+                  : "bg-slate-200 text-slate-500 opacity-100" // STATE 3: Habis
             }`}
           >
             {isLoading
