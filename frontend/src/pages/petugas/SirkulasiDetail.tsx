@@ -29,8 +29,7 @@ export default function SirkulasiDetail() {
   const [rejectReason, setRejectReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Modal Pengembalian
-  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  // State Pengembalian (Tertanam di Action Bar)
   const [returnCondition, setReturnCondition] = useState<"BAIK" | "RUSAK" | "HILANG">("BAIK");
   const [returnNote, setReturnNote] = useState("");
 
@@ -96,7 +95,11 @@ export default function SirkulasiDetail() {
         await api.patch(`/api/borrowings/${item.id}/return`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        setIsReturnModalOpen(false);
+        // Reset
+        setIsUploaded(false);
+        setSelectedPhoto(null);
+        setReturnCondition("BAIK");
+        setReturnNote("");
       }
       
       toast.success(successMsg);
@@ -219,6 +222,23 @@ export default function SirkulasiDetail() {
       {/* ACTION CENTER (Sticky Bottom) */}
       <div className="p-4 border-t border-slate-200 bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         
+        {/* Hidden inputs for camera/gallery (used by WAITING_PICKUP & RETURN logic) */}
+        <input 
+          type="file" 
+          accept="image/*"
+          capture="environment"
+          className="hidden" 
+          ref={fileInputRef} 
+          onChange={handleFileSelect}
+        />
+        <input 
+          type="file" 
+          accept="image/*"
+          className="hidden" 
+          ref={fileInputGalleryRef} 
+          onChange={handleFileSelect}
+        />
+
         {/* Skenario 1: REQUESTED */}
         {item.status === "REQUESTED" && (
           <div className="flex gap-3">
@@ -241,21 +261,6 @@ export default function SirkulasiDetail() {
         {/* Skenario 2: WAITING_PICKUP */}
         {item.status === "WAITING_PICKUP" && (
           <div className="flex flex-col gap-3">
-            <input 
-              type="file" 
-              accept="image/*"
-              capture="environment"
-              className="hidden" 
-              ref={fileInputRef} 
-              onChange={handleFileSelect}
-            />
-            <input 
-              type="file" 
-              accept="image/*"
-              className="hidden" 
-              ref={fileInputGalleryRef} 
-              onChange={handleFileSelect}
-            />
             {!isUploaded ? (
               <div className="grid grid-cols-2 gap-3">
                 <Button 
@@ -296,39 +301,76 @@ export default function SirkulasiDetail() {
           </div>
         )}
 
-        {/* Skenario 3: BORROWED */}
-        {item.status === "BORROWED" && (
+        {/* Skenario 3 & 4: BORROWED / OVERDUE (PENGEMBALIAN) */}
+        {(item.status === "BORROWED" || item.status === "OVERDUE") && (
           <div className="flex flex-col gap-3">
-            <Button 
-              onClick={() => setIsReturnModalOpen(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-14 text-base shadow-lg shadow-blue-500/20"
-            >
-              <CheckCircle className="w-5 h-5 mr-2" /> Terima Pengembalian
-            </Button>
-            <button 
-              onClick={() => setIsReturnModalOpen(true)}
-              className="text-xs font-bold text-slate-400 hover:text-slate-600 underline underline-offset-2"
-            >
-              Lapor Kerusakan / Kehilangan?
-            </button>
-          </div>
-        )}
+            <div className="space-y-3 mb-2">
+              <label className="text-sm font-semibold text-slate-700 block">Kondisi Arsip saat Dikembalikan</label>
+              <select 
+                value={returnCondition}
+                onChange={(e) => setReturnCondition(e.target.value as any)}
+                className="w-full border border-slate-200 rounded-lg p-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
+              >
+                <option value="BAIK">Bagus / Baik</option>
+                <option value="RUSAK">Rusak</option>
+                <option value="HILANG">Hilang</option>
+              </select>
 
-        {/* Skenario 4: OVERDUE */}
-        {item.status === "OVERDUE" && (
-          <div className="flex flex-col gap-3">
-            <Button 
-              onClick={() => setIsReturnModalOpen(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-14 text-base shadow-lg shadow-blue-500/20"
-            >
-              <CheckSquare className="w-5 h-5 mr-2" /> Catat Lunas & Terima Pengembalian
-            </Button>
-            <button 
-              onClick={() => setIsReturnModalOpen(true)}
-              className="text-xs font-bold text-slate-400 hover:text-slate-600 underline underline-offset-2"
-            >
-              Lapor Kerusakan tambahan?
-            </button>
+              {returnCondition !== "BAIK" && (
+                <div className="animate-in slide-in-from-top-1 fade-in">
+                  <textarea 
+                    value={returnNote}
+                    onChange={(e) => setReturnNote(e.target.value)}
+                    placeholder="Tuliskan catatan kerusakan / kehilangan..."
+                    className="w-full border border-rose-200 bg-rose-50/50 rounded-lg p-3 text-sm focus:ring-2 focus:ring-rose-500 outline-none mt-2"
+                    rows={2}
+                  />
+                </div>
+              )}
+            </div>
+
+            {!isUploaded ? (
+              <div className="grid grid-cols-2 gap-3">
+                <Button 
+                  type="button"
+                  onClick={handleCameraMock}
+                  disabled={isUploading}
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-bold h-14 text-sm shadow-lg shadow-orange-500/20 transition-all"
+                >
+                  <Camera className="w-5 h-5 mr-2" /> Buka Kamera
+                </Button>
+                <Button 
+                  type="button"
+                  onClick={handleGalleryMock}
+                  disabled={isUploading}
+                  variant="outline"
+                  className="border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700 font-bold h-14 text-sm transition-all"
+                >
+                  <UploadCloud className="w-5 h-5 mr-2" /> Upload File
+                </Button>
+              </div>
+            ) : (
+              <div className="animate-in slide-in-from-bottom-2 fade-in">
+                <div className="flex items-center gap-2 mb-3 justify-center text-emerald-600 bg-emerald-50 py-2 rounded-lg text-sm font-bold border border-emerald-100">
+                  <UploadCloud className="w-4 h-4" /> Foto Berhasil Diunggah
+                </div>
+                <Button 
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAction("RETURN", "Pengembalian berhasil dicatat!");
+                  }}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-14 text-base shadow-lg shadow-blue-500/20"
+                >
+                  <CheckSquare className="w-5 h-5 mr-2" /> 
+                  {item.status === "OVERDUE" ? "Catat Lunas & Terima Pengembalian" : "Konfirmasi Pengembalian"}
+                </Button>
+                <Button variant="ghost" className="w-full mt-2 text-slate-500" onClick={() => {
+                    setIsUploaded(false);
+                    setSelectedPhoto(null);
+                  }}>Ganti Foto</Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -387,102 +429,6 @@ export default function SirkulasiDetail() {
               disabled={isSubmitting || rejectReason.trim() === ""}
             >
               {isSubmitting ? "Memproses..." : "Tolak Pengajuan"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* MODAL PENGEMBALIAN */}
-      <Dialog open={isReturnModalOpen} onOpenChange={(open) => {
-        setIsReturnModalOpen(open);
-        if (!open) {
-          setIsUploaded(false);
-          setSelectedPhoto(null);
-          setReturnCondition("BAIK");
-          setReturnNote("");
-        }
-      }}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Konfirmasi Pengembalian</DialogTitle>
-            <DialogDescription>
-              Mohon unggah foto serah terima dan periksa kondisi fisik arsip.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 my-2">
-            <div>
-              <label className="text-sm font-semibold text-slate-700 block mb-2">Foto Serah Terima</label>
-              {!isUploaded ? (
-                <div className="grid grid-cols-2 gap-3">
-                  <Button 
-                    type="button"
-                    onClick={handleCameraMock}
-                    disabled={isUploading}
-                    className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs"
-                  >
-                    <Camera className="w-4 h-4 mr-2" /> Kamera
-                  </Button>
-                  <Button 
-                    type="button"
-                    onClick={handleGalleryMock}
-                    disabled={isUploading}
-                    variant="outline"
-                    className="border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700 font-bold text-xs"
-                  >
-                    <UploadCloud className="w-4 h-4 mr-2" /> Gallery
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-700 text-sm font-semibold">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4" /> Foto Terlampir
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={() => {
-                    setIsUploaded(false);
-                    setSelectedPhoto(null);
-                  }} className="text-emerald-700 hover:bg-emerald-100 h-7 px-2 text-xs">Ganti</Button>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="text-sm font-semibold text-slate-700 block mb-2">Kondisi Arsip</label>
-              <select 
-                value={returnCondition}
-                onChange={(e) => setReturnCondition(e.target.value as any)}
-                className="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              >
-                <option value="BAIK">Bagus / Baik</option>
-                <option value="RUSAK">Rusak</option>
-                <option value="HILANG">Hilang</option>
-              </select>
-            </div>
-
-            {returnCondition !== "BAIK" && (
-              <div className="animate-in slide-in-from-top-1 fade-in">
-                <label className="text-sm font-semibold text-slate-700 block mb-2">Catatan Kerusakan/Kehilangan</label>
-                <textarea 
-                  value={returnNote}
-                  onChange={(e) => setReturnNote(e.target.value)}
-                  placeholder="Deskripsikan kondisinya..."
-                  className="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  rows={2}
-                />
-              </div>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsReturnModalOpen(false)} disabled={isSubmitting}>
-              Batal
-            </Button>
-            <Button 
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold" 
-              onClick={() => handleAction("RETURN", "Pengembalian berhasil dicatat!")}
-              disabled={isSubmitting || !isUploaded}
-            >
-              {isSubmitting ? "Memproses..." : "Terima Pengembalian"}
             </Button>
           </DialogFooter>
         </DialogContent>
