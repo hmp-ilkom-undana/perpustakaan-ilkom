@@ -147,6 +147,9 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
+    return this.borrowingService.handoverBorrowing(id, file);
+  }
+
   @Patch(':id/return')
   @UseInterceptors(FileInterceptor('photo'))
   async returnBorrowing(
