@@ -216,17 +216,17 @@ export default function DashboardMahasiswa() {
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-[11px] sm:text-xs text-slate-500 font-medium">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 bg-orange-400 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
+                <div className="flex flex-row justify-between items-center pt-1 text-[10px] lg:text-[11px] text-slate-500 font-medium w-full gap-1">
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-orange-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
                     <span className="font-bold text-slate-700">Skripsi <span className="text-blue-900 font-black">{countSkripsi}/2</span></span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 bg-blue-500 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-blue-500 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
                     <span className="font-bold text-slate-700">Ringkasan <span className="text-blue-900 font-black">{countRingkasan}/1</span></span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 bg-yellow-400 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
                     <span className="font-bold text-slate-700">Publikasi <span className="text-blue-900 font-black">{countNaskah}/1</span></span>
                   </div>
                 </div>
@@ -296,7 +296,7 @@ export default function DashboardMahasiswa() {
                         </p>
                         <div className="bg-white border-2 border-blue-900 rounded-md px-4 py-2 w-full text-center shadow-[2px_2px_0px_#1E3A8A]">
                           <span className="text-lg font-mono font-bold tracking-widest text-orange-600">
-                            {task.pickupCode}
+                            {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
                           </span>
                         </div>
                       </div>
