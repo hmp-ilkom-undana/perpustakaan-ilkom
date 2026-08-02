@@ -316,9 +316,12 @@ export class BorrowingService {
           const diffTime = Math.abs(today.getTime() - borrowing.returnDate.getTime());
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
           
-          // Denda Keterlambatan: 1-7 hari = 0, hari ke-8 = 50k, hari ke-9+ = +10k/hari
-          if (diffDays >= 8) {
-            fine += 50000 + ((diffDays - 8) * 10000);
+          // Denda Keterlambatan: Hari 1-7 = 50k, Hari ke-8 dst = +10k/hari
+          if (diffDays >= 1) {
+            fine += 50000;
+            if (diffDays > 7) {
+              fine += (diffDays - 7) * 10000;
+            }
           }
         }
       }
