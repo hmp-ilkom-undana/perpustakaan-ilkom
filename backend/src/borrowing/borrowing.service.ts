@@ -308,16 +308,26 @@ export class BorrowingService {
       if (kondisiKembali === 'RUSAK') newStatus = 'DAMAGED';
       if (kondisiKembali === 'HILANG') newStatus = 'LOST';
 
-      // Kalkulasi Denda (Fines)
-      let fine = fineAmountStr ? parseInt(fineAmountStr) : 0;
-      if (!fine && borrowing.returnDate) {
+      // Kalkulasi Denda (Fines) otomatis
+      let fine = 0;
+      if (borrowing.returnDate) {
         const today = new Date();
-        // Jika telat
         if (today > borrowing.returnDate) {
           const diffTime = Math.abs(today.getTime() - borrowing.returnDate.getTime());
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          fine = diffDays * 1000; // Rp 1.000 per hari
+          
+          // Denda Keterlambatan: 1-7 hari = 0, hari ke-8 = 50k, hari ke-9+ = +10k/hari
+          if (diffDays >= 8) {
+            fine += 50000 + ((diffDays - 8) * 10000);
+          }
         }
+      }
+
+      // Denda Kondisi Fisik
+      if (kondisiKembali === 'RUSAK') {
+        fine += 75000;
+      } else if (kondisiKembali === 'HILANG') {
+        fine += 100000;
       }
 
       // Pengembalian stok
