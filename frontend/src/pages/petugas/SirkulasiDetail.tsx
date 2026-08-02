@@ -269,7 +269,7 @@ export default function SirkulasiDetail() {
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleAction("BORROWED", "Serah terima sukses! Argometer 30 hari berjalan.");
+                    handleAction("BORROWED", "Serah terima berhasil! Mahasiswa memiliki waktu 30 hari untuk mengembalikan.");
                   }}
                   className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-14 text-base shadow-lg shadow-emerald-500/20"
                 >
