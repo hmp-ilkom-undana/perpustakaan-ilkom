@@ -21,7 +21,8 @@ export default function Riwayat() {
         const mappedData: HistoryItemProps[] = response.data
           .filter((item: any) => completedStatuses.includes(item.status))
           .map((item: any) => ({
-            id: item.id, 
+            id: item.id,
+            pickupCode: item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`,
             title: item.archive.title,
             type: item.archive.archiveType,
             borrowDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }),
@@ -60,14 +61,14 @@ export default function Riwayat() {
       </div>
 
       {/* CONTENT SECTION */}
-      <div className="sm:rounded-xl sm:border border-slate-200 bg-white sm:shadow-sm sm:p-6 overflow-hidden min-h-[400px]">
+      <div className="flex flex-col min-h-[400px]">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400">
             <Loader2 className="w-8 h-8 animate-spin mb-4" />
             <p>Memuat riwayat...</p>
           </div>
         ) : historyData.length > 0 ? (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-4">
             {historyData.map((item) => (
               <HistoryRow 
                 key={item.id} 
@@ -77,8 +78,8 @@ export default function Riwayat() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+          <div className="flex flex-col items-center justify-center py-12 text-center rounded-xl border border-blue-900/30 bg-white shadow-[2px_2px_0px_#1E3A8A]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 border border-slate-200">
               <History className="h-6 w-6 text-slate-400" />
             </div>
             <h3 className="mt-4 text-sm font-semibold text-slate-900">Belum Ada Riwayat Selesai</h3>

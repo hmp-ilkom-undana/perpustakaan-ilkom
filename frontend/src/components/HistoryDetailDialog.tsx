@@ -28,15 +28,15 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
   const getStatusBadge = (status: HistoryStatus) => {
     switch (status) {
       case "RETURNED":
-        return <Badge className="bg-emerald-500 hover:bg-emerald-600 rounded-full text-xs font-bold px-3 py-1 border-transparent">DIKEMBALIKAN</Badge>;
+        return <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-600/30 shadow-[1px_1px_0px_#059669] hover:bg-emerald-100 rounded-full text-xs font-bold px-3 py-1">DIKEMBALIKAN</Badge>;
       case "DAMAGED":
-        return <Badge className="bg-amber-500 hover:bg-amber-600 rounded-full text-xs font-bold px-3 py-1 border-transparent">RUSAK</Badge>;
+        return <Badge className="bg-amber-50 text-amber-700 border border-amber-600/30 shadow-[1px_1px_0px_#d97706] hover:bg-amber-100 rounded-full text-xs font-bold px-3 py-1">RUSAK</Badge>;
       case "LOST":
-        return <Badge className="bg-rose-600 hover:bg-rose-700 rounded-full text-xs font-bold px-3 py-1 border-transparent">HILANG</Badge>;
+        return <Badge className="bg-rose-50 text-rose-700 border border-rose-600/30 shadow-[1px_1px_0px_#e11d48] hover:bg-rose-100 rounded-full text-xs font-bold px-3 py-1">HILANG</Badge>;
       case "CANCELLED":
-        return <Badge className="bg-slate-400 hover:bg-slate-500 rounded-full text-xs font-bold px-3 py-1 border-transparent">DIBATALKAN</Badge>;
+        return <Badge className="bg-slate-100 text-slate-600 border border-slate-300 shadow-[1px_1px_0px_#94a3b8] hover:bg-slate-200 rounded-full text-xs font-bold px-3 py-1">DIBATALKAN</Badge>;
       case "REJECTED":
-        return <Badge className="bg-rose-500 hover:bg-rose-600 rounded-full text-xs font-bold px-3 py-1 border-transparent">DITOLAK</Badge>;
+        return <Badge className="bg-rose-50 text-rose-700 border border-rose-600/30 shadow-[1px_1px_0px_#e11d48] hover:bg-rose-100 rounded-full text-xs font-bold px-3 py-1">DITOLAK</Badge>;
       default:
         return null;
     }
@@ -44,7 +44,7 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-white rounded-xl">
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-white rounded-xl border border-blue-900/30 shadow-[2px_2px_0px_#1E3A8A]">
         <DialogHeader className="p-6 pb-4 border-b border-slate-100 bg-slate-50/50">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm border border-slate-100 text-blue-600">
             <BookOpen className="h-6 w-6" />
@@ -55,7 +55,7 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
           <DialogDescription className="flex items-center flex-wrap gap-2 mt-2">
             {getStatusBadge(item.status)}
             <Badge variant="outline" className="text-slate-600 font-medium bg-white">{item.type}</Badge>
-            <span className="text-sm text-slate-500 ml-1">ID: {item.id}</span>
+            <span className="text-sm font-mono font-bold text-slate-500 ml-1 tracking-widest">{item.pickupCode}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +97,7 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
             <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">Informasi Tambahan</h4>
             
             {(item.fine !== undefined && item.fine > 0) && (
-              <div className="flex flex-col gap-3 p-4 rounded-lg bg-rose-50 border border-rose-100">
+              <div className="flex flex-col gap-3 p-4 rounded-lg bg-rose-50 border border-rose-300 shadow-[1px_1px_0px_#f43f5e]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-rose-600">
                     <Receipt className="h-4 w-4" />
@@ -123,7 +123,7 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
                       href={`https://wa.me/6281234567890?text=Halo%20Admin%20Perpustakaan,%20saya%20ingin%20menyelesaikan%20denda%20untuk%20Peminjaman%20ID%20${item.id}%20sebesar%20Rp%20${item.fine?.toLocaleString('id-ID')}.`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-md transition-colors w-full sm:w-auto"
+                      className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-md transition-all shadow-[1px_1px_0px_#c2410c] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none w-full sm:w-auto"
                     >
                       <Receipt className="w-3 h-3" />
                       Konfirmasi Pembayaran (WA)
@@ -134,7 +134,7 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
             )}
 
             {(item.fine === 0 || item.fine === undefined) && item.status === "RETURNED" && (
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-300 shadow-[1px_1px_0px_#059669]">
                 <FileText className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-emerald-700">Tepat Waktu</span>
@@ -146,7 +146,7 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
             {item.note && item.note !== "-" && (
               <div className="flex flex-col gap-2 mt-4">
                 <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Catatan Petugas</span>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-300 shadow-[1px_1px_0px_#94a3b8]">
                   <AlertCircle className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-slate-600 leading-relaxed">{item.note}</p>
                 </div>
