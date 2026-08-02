@@ -8,16 +8,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        default: "bg-orange-500 text-white font-bold border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] hover:bg-orange-400 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all",
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-2 border-blue-900 bg-white font-bold text-blue-900 shadow-[4px_4px_0px_#1E3A8A] hover:bg-slate-50 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-slate-200 text-blue-900 font-bold border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] hover:bg-slate-300 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all",
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "hover:bg-slate-100 hover:text-blue-900 font-bold text-slate-700",
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-red-500 text-white font-bold border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] hover:bg-red-600 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all",
+        link: "text-blue-900 underline-offset-4 hover:underline font-bold",
       },
       size: {
         default:

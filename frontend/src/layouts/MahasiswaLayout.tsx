@@ -49,9 +49,9 @@ export default function MahasiswaLayout() {
       {/* ================= NAVBAR ATAS ================= */}
       <header
         className={cn(
-          "sticky top-0 z-50 mx-auto w-full border-b border-transparent bg-white transition-all duration-300 ease-in-out",
+          "sticky top-0 z-50 mx-auto w-full border-b-2 border-transparent bg-white transition-all duration-300 ease-in-out",
           {
-            "border-slate-200 shadow-sm md:top-2 md:max-w-7xl md:rounded-xl md:border md:shadow-md":
+            "border-blue-900 md:top-2 md:max-w-7xl md:rounded-md md:border-2 md:shadow-[4px_4px_0px_#1E3A8A]":
               scrolled,
           },
         )}
@@ -67,7 +67,7 @@ export default function MahasiswaLayout() {
           >
             {/* Bagian Kiri: Logo & Nama Aplikasi */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg overflow-hidden relative flex-shrink-0 bg-white">
+              <div className="w-10 h-10 rounded-md border-2 border-blue-900 overflow-hidden relative flex-shrink-0 bg-white">
                 <img
                   src="/assets/Logo_Ilkom.png"
                   alt="Logo Ilkom"
@@ -76,10 +76,10 @@ export default function MahasiswaLayout() {
                 />
               </div>
 
-              <h1 className="text-xl font-bold text-blue-900 tracking-tight hidden sm:block">
+              <h1 className="text-xl font-black text-blue-900 tracking-tight hidden sm:block uppercase">
                 Perpustakaan ILKOM
               </h1>
-              <h1 className="text-xl font-bold text-blue-900 tracking-tight sm:hidden">
+              <h1 className="text-xl font-black text-blue-900 tracking-tight sm:hidden uppercase">
                 Perpus ILKOM
               </h1>
             </div>
@@ -93,13 +93,13 @@ export default function MahasiswaLayout() {
                   <Link
                     key={menu.path}
                     to={menu.path}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-semibold transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-bold transition-all ${
                       isActive
-                        ? "bg-blue-900 text-white shadow-md"
-                        : "text-slate-600 hover:bg-blue-50 hover:text-blue-900"
+                        ? "bg-amber-400 text-blue-900 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-blue-900 border-2 border-transparent hover:border-blue-900 hover:shadow-[2px_2px_0px_#1E3A8A]"
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${isActive ? "text-orange-500" : ""}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? "text-blue-900" : ""}`} />
                     {menu.name}
                   </Link>
                 );
@@ -157,13 +157,13 @@ export default function MahasiswaLayout() {
                     key={menu.path}
                     to={menu.path}
                     onClick={() => setIsMobileMenuOpen(false)} // Tutup menu saat diklik
-                    className={`flex items-center gap-3 px-3 py-3 rounded-md text-base font-semibold transition-all ${
+                    className={`flex items-center gap-3 px-3 py-3 rounded-md text-base font-bold transition-all ${
                       isActive
-                        ? "bg-blue-900 text-white shadow-md"
-                        : "text-slate-600 hover:bg-blue-50 hover:text-blue-900"
+                        ? "bg-amber-400 text-blue-900 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-blue-900 border-2 border-transparent hover:border-blue-900 hover:shadow-[2px_2px_0px_#1E3A8A]"
                     }`}
                   >
-                    <Icon className={`w-5 h-5 ${isActive ? "text-orange-500" : ""}`} />
+                    <Icon className={`w-5 h-5 ${isActive ? "text-blue-900" : ""}`} />
                     {menu.name}
                   </Link>
                 );

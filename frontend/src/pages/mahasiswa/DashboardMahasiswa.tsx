@@ -116,10 +116,12 @@ export default function DashboardMahasiswa() {
 
   const modifiersStyles = {
     hasTask: {
-      fontWeight: "bold",
-      backgroundColor: "#fff7ed",
-      color: "#ea580c",
-      border: "1px solid #fed7aa",
+      fontWeight: "900",
+      backgroundColor: "#f59e0b",
+      color: "#1e3a8a",
+      border: "2px solid #1e3a8a",
+      boxShadow: "2px 2px 0px #1e3a8a",
+      borderRadius: "4px"
     },
   };
 
@@ -171,7 +173,7 @@ export default function DashboardMahasiswa() {
           {/* Kolom Kiri: Kalender & Kuota (Desktop) / Atas (Mobile) */}
           <div className="md:col-span-2 flex flex-col gap-6">
             {/* Metrik: Kuota Peminjaman */}
-            <div className="flex flex-col justify-between p-5 border border-slate-200 rounded-xl shadow-sm bg-white">
+            <div className="flex flex-col justify-between p-5 border-2 border-blue-900 rounded-md shadow-[4px_4px_0px_#1E3A8A] bg-white">
               <div>
                 <div className="flex items-center gap-2 mb-2 sm:mb-4">
                   <BookOpen className="w-4 h-4 text-orange-600 hidden sm:block" />
@@ -216,23 +218,23 @@ export default function DashboardMahasiswa() {
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-[11px] sm:text-xs text-slate-500 font-medium">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-orange-400 shrink-0"></div>
-                    <span>Skripsi <span className="font-bold text-slate-700">{countSkripsi}/2</span></span>
+                    <div className="w-3 h-3 bg-orange-400 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
+                    <span className="font-bold text-slate-700">Skripsi <span className="text-blue-900 font-black">{countSkripsi}/2</span></span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
-                    <span>Ringkasan <span className="font-bold text-slate-700">{countRingkasan}/1</span></span>
+                    <div className="w-3 h-3 bg-blue-500 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
+                    <span className="font-bold text-slate-700">Ringkasan <span className="text-blue-900 font-black">{countRingkasan}/1</span></span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-yellow-400 shrink-0"></div>
-                    <span>Publikasi <span className="font-bold text-slate-700">{countNaskah}/1</span></span>
+                    <div className="w-3 h-3 bg-yellow-400 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
+                    <span className="font-bold text-slate-700">Publikasi <span className="text-blue-900 font-black">{countNaskah}/1</span></span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Kalender */}
-            <div className="bg-white p-2 sm:p-5 border border-slate-200 rounded-xl shadow-sm flex flex-col items-center">
+            <div className="bg-white p-2 sm:p-5 border-2 border-blue-900 rounded-md shadow-[4px_4px_0px_#1E3A8A] flex flex-col items-center">
               <Calendar
                 mode="single"
                 selected={date}
@@ -253,25 +255,22 @@ export default function DashboardMahasiswa() {
 
             <div className="flex flex-col gap-4">
               {tasksForSelectedDate.length === 0 ? (
-                <div className="bg-white border border-slate-200 border-dashed rounded-xl p-10 flex flex-col items-center justify-center text-center">
-                  <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                    <CalendarIcon className="w-8 h-8 text-slate-300" />
+                <div className="bg-white border-2 border-dashed border-blue-900 rounded-md shadow-[4px_4px_0px_#1E3A8A] p-10 flex flex-col items-center justify-center text-center">
+                  <div className="bg-slate-50 border-2 border-blue-900 w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-[2px_2px_0px_#1E3A8A]">
+                    <CalendarIcon className="w-8 h-8 text-blue-900" />
                   </div>
-                  <h3 className="font-bold text-slate-600">Tidak Ada Aktivitas</h3>
-                  <p className="text-slate-400 text-sm mt-1">Anda tidak memiliki tenggat pengembalian atau jadwal pengambilan pada tanggal ini.</p>
+                  <h3 className="font-bold text-slate-800">Tidak Ada Aktivitas</h3>
+                  <p className="text-slate-500 text-sm mt-1">Anda tidak memiliki tenggat pengembalian atau jadwal pengambilan pada tanggal ini.</p>
                 </div>
               ) : (
                 tasksForSelectedDate.map((task) => (
-                  <div key={task.id} className="bg-white border border-slate-200 rounded-xl flex flex-col sm:flex-row overflow-hidden hover:shadow-md transition-shadow group">
-                    <div className="p-5 flex-1 border-b sm:border-b-0 sm:border-r border-slate-100">
+                  <div key={task.id} className="bg-white border-2 border-blue-900 rounded-md shadow-[4px_4px_0px_#1E3A8A] flex flex-col sm:flex-row overflow-hidden group">
+                    <div className="p-5 flex-1 border-b sm:border-b-0 sm:border-r-2 border-blue-900">
                       <div className="flex justify-between items-start mb-3">
-                        <Badge
-                          variant="outline"
-                          className="font-bold px-2.5 py-0.5 text-[10px] bg-slate-50 border-slate-200 text-slate-700"
-                        >
+                        <Badge variant="outline">
                           {task.status === "BORROWED" ? "PENGEMBALIAN" : task.status === "WAITING_PICKUP" ? "PENGAMBILAN" : "PENGAJUAN"}
                         </Badge>
-                        <span className="text-[10px] font-mono text-slate-400 font-bold group-hover:text-orange-500 transition-colors">
+                        <span className="text-[10px] font-mono text-slate-500 font-bold group-hover:text-orange-500 transition-colors">
                           {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
                         </span>
                       </div>
@@ -291,11 +290,11 @@ export default function DashboardMahasiswa() {
                     
                     {/* Aksi / Status Cepat */}
                     {task.status === "WAITING_PICKUP" && (
-                      <div className="p-5 sm:w-40 flex flex-col justify-center items-center bg-orange-50/50">
-                        <p className="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2">
+                      <div className="p-5 sm:w-40 flex flex-col justify-center items-center bg-amber-50">
+                        <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2">
                           Pickup Code
                         </p>
-                        <div className="bg-white border border-orange-200 rounded-lg px-4 py-2 w-full text-center">
+                        <div className="bg-white border-2 border-blue-900 rounded-md px-4 py-2 w-full text-center shadow-[2px_2px_0px_#1E3A8A]">
                           <span className="text-lg font-mono font-bold tracking-widest text-orange-600">
                             {task.pickupCode}
                           </span>
@@ -304,8 +303,8 @@ export default function DashboardMahasiswa() {
                     )}
                     {task.status === "BORROWED" && (
                       <div className="p-5 sm:w-40 flex flex-col justify-center items-center bg-slate-50">
-                        <CheckCircle2 className="w-8 h-8 text-emerald-400 mb-2" />
-                        <p className="text-xs font-bold text-slate-600 text-center">
+                        <CheckCircle2 className="w-8 h-8 text-emerald-500 mb-2" />
+                        <p className="text-xs font-bold text-slate-800 text-center">
                           Sedang Dipinjam
                         </p>
                       </div>
@@ -322,7 +321,7 @@ export default function DashboardMahasiswa() {
       <div className="pt-6 pb-12 px-5 sm:px-0 flex justify-center w-full mt-auto">
         <Link
           to="/mahasiswa/katalog"
-          className="inline-flex items-center justify-center bg-slate-900 text-white hover:bg-slate-800 shadow-md sm:shadow-sm font-semibold h-14 sm:h-12 w-full sm:w-auto rounded-xl sm:px-8 transition-colors"
+          className="inline-flex items-center justify-center bg-orange-500 text-white font-bold border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] hover:bg-orange-400 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all h-14 sm:h-12 w-full sm:w-auto rounded-md sm:px-8"
         >
           Cari Arsip di Katalog
           <ArrowRight className="w-5 h-5 ml-2" />
