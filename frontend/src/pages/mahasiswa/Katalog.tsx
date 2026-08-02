@@ -85,14 +85,14 @@ export default function Katalog() {
         <div className="flex flex-row gap-4 w-full md:w-auto">
           {/* Filter Jenis Arsip */}
           <div className="flex flex-col gap-1.5 flex-1 sm:w-48">
-            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <label className="text-[11px] font-black text-blue-900 uppercase tracking-wider">
               Jenis Arsip
             </label>
             <Select
               value={filterType}
               onValueChange={(val) => setFilterType(val || "Semua")}
             >
-              <SelectTrigger className="bg-white border-slate-200 focus:ring-blue-600 shadow-sm h-9 w-full">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih Jenis" />
               </SelectTrigger>
               <SelectContent>
@@ -110,14 +110,14 @@ export default function Katalog() {
 
           {/* Filter Kategori */}
           <div className="flex flex-col gap-1.5 flex-1 sm:w-48">
-            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <label className="text-[11px] font-black text-blue-900 uppercase tracking-wider">
               Kategori
             </label>
             <Select
               value={filterCategory}
               onValueChange={(val) => setFilterCategory(val || "Semua")}
             >
-              <SelectTrigger className="bg-white border-slate-200 focus:ring-blue-600 shadow-sm h-9 w-full">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih Kategori" />
               </SelectTrigger>
               <SelectContent>
@@ -137,14 +137,14 @@ export default function Katalog() {
 
           {/* Filter Ketersediaan */}
           <div className="flex flex-col gap-1.5 flex-1 sm:w-48">
-            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <label className="text-[11px] font-black text-blue-900 uppercase tracking-wider">
               Ketersediaan
             </label>
             <Select
               value={filterAvailability}
               onValueChange={(val) => setFilterAvailability(val || "Semua")}
             >
-              <SelectTrigger className="bg-white border-slate-200 focus:ring-blue-600 shadow-sm h-9 w-full">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -182,11 +182,11 @@ export default function Katalog() {
             ))
           ) : (
             /* Tampilan jika database Backend masih kosong */
-            <div className="col-span-full flex flex-col items-center justify-center py-16 px-4 sm:bg-slate-50 sm:border border-slate-200 sm:rounded-xl text-center">
-              <p className="text-lg font-medium text-slate-600">
+            <div className="col-span-full flex flex-col items-center justify-center py-16 px-4 sm:bg-white border-2 border-blue-900 border-dashed rounded-md shadow-[4px_4px_0px_#1E3A8A] text-center">
+              <p className="text-lg font-bold text-slate-800">
                 Belum ada arsip yang tersedia.
               </p>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-sm text-slate-500 mt-1">
                 Koleksi arsip tugas akhir, ringkasan skripsi, dan naskah
                 publikasi sedang diperbarui. Silakan kembali lagi nanti.
               </p>
