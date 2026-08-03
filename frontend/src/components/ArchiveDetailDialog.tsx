@@ -94,7 +94,7 @@ export function ArchiveDetailDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[500px] border border-blue-900/30 shadow-[2px_2px_0px_#1E3A8A] rounded-xl">
+      <DialogContent className="sm:max-w-[500px] p-8 border border-blue-900/30 shadow-[2px_2px_0px_#1E3A8A] rounded-xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-black text-blue-900 leading-tight uppercase">
             {archive.title}
