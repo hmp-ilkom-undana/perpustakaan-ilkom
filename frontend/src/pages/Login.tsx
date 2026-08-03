@@ -63,13 +63,13 @@ export default function Login() {
       // Ambil peran (role) dari balasan server
       const role = authResponse.data?.user?.role;
 
-      // Arahkan (Redirect) sesuai peran masing-masing
+      // Arahkan (Redirect) sesuai peran masing-masing dengan hard-reload agar state auth benar-benar bersih
       if (role === "ADMIN") {
-        navigate("/admin");
+        window.location.href = "/admin";
       } else if (role === "PETUGAS") {
-        navigate("/petugas");
+        window.location.href = "/petugas";
       } else {
-        navigate("/mahasiswa");
+        window.location.href = "/mahasiswa";
       }
     }
   };

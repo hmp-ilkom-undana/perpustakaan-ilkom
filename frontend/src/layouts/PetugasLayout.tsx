@@ -25,7 +25,7 @@ export default function PetugasLayout() {
     try {
       await authClient.signOut();
       toast.success("Berhasil keluar dari sistem");
-      navigate("/login");
+      window.location.href = "/login";
     } catch (error) {
       toast.error("Gagal keluar dari sistem");
     }
