@@ -1,20 +1,10 @@
 import { useState, useEffect } from "react";
 import { Search, Plus, Filter, Package, Trash2, Edit2 } from "lucide-react";
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from "@/components/ui/table";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
+  Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,15 +12,22 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { 
-  CatalogItem, 
-  getCatalogData, 
-  addCatalogItem, 
-  updateCatalogItem, 
-  deleteCatalogItem,
-  ArchiveCategory,
-  ArchiveType
-} from "@/lib/mockData";
+import { fetchArchives, createArchive, updateArchive, deleteArchive } from "@/lib/api";
+
+// Definisikan tipe 
+export type ArchiveCategory = "Machine Learning" | "Sistem Pendukung Keputusan" | "Rekayasa Perangkat Lunak" | "Jaringan Komputer" | "Umum";
+export type ArchiveType = "Skripsi" | "Naskah Publikasi" | "Buku";
+
+export interface CatalogItem {
+  id: string;
+  title: string;
+  author: string;
+  year: number;
+  category: ArchiveCategory;
+  type: ArchiveType;
+  stock: number;
+  location: string;
+}
 
 export default function KatalogAdmin() {
   const [data, setData] = useState<CatalogItem[]>([]);
@@ -56,20 +53,31 @@ export default function KatalogAdmin() {
     loadData();
   }, []);
 
-  const loadData = () => {
-    setData(getCatalogData());
+  const loadData = async () => {
+    try {
+      const rawData = await fetchArchives();
+      // Mapping dari struktur backend ke frontend agar UI tidak rusak
+      const mapped: CatalogItem[] = rawData.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        author: item.author,
+        year: item.year,
+        category: item.category,
+        type: item.archiveType, 
+        stock: item.quantity, 
+        location: item.shelfLocation || "", 
+      }));
+      setData(mapped);
+    } catch (error) {
+      toast.error("Gagal mengambil data dari server");
+    }
   };
 
   const handleOpenAdd = () => {
     setEditingItem(null);
     setFormData({
-      title: "",
-      author: "",
-      year: new Date().getFullYear(),
-      category: "Umum",
-      type: "Buku",
-      stock: 1,
-      location: "",
+      title: "", author: "", year: new Date().getFullYear(),
+      category: "Umum", type: "Buku", stock: 1, location: "",
     });
     setIsSheetOpen(true);
   };
@@ -80,30 +88,49 @@ export default function KatalogAdmin() {
     setIsSheetOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Yakin ingin menghapus arsip ini?")) {
-      deleteCatalogItem(id);
-      loadData();
-      toast.success("Arsip berhasil dihapus");
+      try {
+        await deleteArchive(id);
+        toast.success("Arsip berhasil dihapus");
+        loadData();
+      } catch (error) {
+        toast.error("Gagal menghapus arsip");
+      }
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.title || !formData.author || !formData.location) {
       toast.error("Mohon lengkapi semua field yang wajib");
       return;
     }
 
-    if (editingItem) {
-      updateCatalogItem(editingItem.id, formData);
-      toast.success("Arsip berhasil diperbarui");
-    } else {
-      addCatalogItem(formData as Omit<CatalogItem, "id">);
-      toast.success("Arsip baru berhasil ditambahkan");
+    try {
+      // Mapping data frontend ke backend DTO
+      const payload = {
+        title: formData.title,
+        author: formData.author,
+        year: formData.year,
+        category: formData.category,
+        archiveType: formData.type,
+        quantity: formData.stock,
+        shelfLocation: formData.location
+      };
+
+      if (editingItem) {
+        await updateArchive(editingItem.id, payload);
+        toast.success("Arsip berhasil diperbarui");
+      } else {
+        await createArchive(payload);
+        toast.success("Arsip baru berhasil ditambahkan");
+      }
+      
+      setIsSheetOpen(false);
+      loadData();
+    } catch (error) {
+      toast.error("Gagal menyimpan data arsip");
     }
-    
-    setIsSheetOpen(false);
-    loadData();
   };
 
   const filteredData = data.filter(item => {
