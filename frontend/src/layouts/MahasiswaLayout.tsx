@@ -38,7 +38,7 @@ export default function MahasiswaLayout() {
     try {
       await authClient.signOut();
       toast.success("Berhasil keluar dari sistem");
-      navigate("/login");
+      window.location.href = "/login";
     } catch {
       toast.error("Gagal keluar dari sistem");
     }
