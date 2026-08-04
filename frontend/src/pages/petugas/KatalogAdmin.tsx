@@ -38,11 +38,12 @@ import {
 // Definisikan tipe
 export type ArchiveCategory =
   | "Machine Learning"
-  | "Sistem Pendukung Keputusan"
-  | "Rekayasa Perangkat Lunak"
-  | "Jaringan Komputer"
+  | "Sistem Informasi"
+  | "Sistem Pakar"
+  | "SPK"
+  | "Kriptografi"
   | "Umum";
-export type ArchiveType = "Skripsi" | "Naskah Publikasi" | "Buku";
+export type ArchiveType = "Skripsi" | "Ringkasan Skripsi" | "Naskah Publikasi";
 
 export interface CatalogItem {
   id: string;
@@ -58,7 +59,13 @@ export interface CatalogItem {
 export default function KatalogAdmin() {
   const [data, setData] = useState<CatalogItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [filterCategory, setFilterCategory] = useState<string>("");
+  const [filterType, setFilterType] = useState<string>("");
+
+  // --- STATE PAGINASI ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Sheet Form State
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -66,7 +73,7 @@ export default function KatalogAdmin() {
 
   // --- STATE & REF IMPORT EXCEL ---
   const [isImportSheetOpen, setIsImportSheetOpen] = useState(false);
-  const [importType, setImportType] = useState<ArchiveType>("Buku");
+  const [importType, setImportType] = useState<ArchiveType>("Skripsi");
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -109,19 +116,30 @@ export default function KatalogAdmin() {
     author: "",
     year: new Date().getFullYear(),
     category: "Umum",
-    type: "Buku",
+    type: "Skripsi",
     stock: 1,
     location: "",
   });
 
   useEffect(() => {
     loadData();
-  }, []);
-
-  const loadData = async () => {
+  }, [currentPage, filterCategory, filterType]);
+  const loadData = async (searchOverride?: string) => {
+    setIsLoading(true); // Memulai indikator loading
     try {
-      const rawData = await fetchArchives();
-      // Mapping dari struktur backend ke frontend agar UI tidak rusak
+      // 1. Tembak API Backend dengan membawa filter
+      const response = await fetchArchives({
+        page: currentPage,
+        limit: 10,
+        search: searchOverride !== undefined ? searchOverride : searchQuery,
+        category: filterCategory || undefined,
+        type: filterType || undefined,
+      });
+
+      // 2. Baca response yang strukturnya { data: [...], meta: {...} }
+      const rawData = response.data;
+
+      // 3. Mapping agar sesuai dengan interface CatalogItem
       const mapped: CatalogItem[] = rawData.map((item: any) => ({
         id: item.id,
         title: item.title,
@@ -132,9 +150,24 @@ export default function KatalogAdmin() {
         stock: item.quantity,
         location: item.shelfLocation || "",
       }));
+
+      // 4. Update state React
       setData(mapped);
+      setTotalPages(response.meta.totalPages || 1);
     } catch (error) {
       toast.error("Gagal mengambil data dari server");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // Fungsi untuk Trigger Pencarian 
+  const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      if (currentPage !== 1) {
+        setCurrentPage(1); 
+      } else {
+        loadData(searchQuery); 
+      }
     }
   };
 
@@ -145,7 +178,7 @@ export default function KatalogAdmin() {
       author: "",
       year: new Date().getFullYear(),
       category: "Umum",
-      type: "Buku",
+      type: "Skripsi",
       stock: 1,
       location: "",
     });
@@ -203,15 +236,7 @@ export default function KatalogAdmin() {
     }
   };
 
-  const filteredData = data.filter((item) => {
-    const matchesSearch =
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      filterCategory === "all" || item.type === filterCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredData = data;
 
   return (
     <div className="space-y-6">
@@ -230,13 +255,13 @@ export default function KatalogAdmin() {
           <Button
             onClick={() => setIsImportSheetOpen(true)}
             variant="outline"
-            className="font-semibold"
+            className="font-bold border-2 border-blue-900 text-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] active:translate-x-[4px] active:translate-y-[4px] active:[box-shadow:0px_0px_0px_#1E3A8A] transition-all"
           >
             Import Excel
           </Button>
           <Button
             onClick={handleOpenAdd}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] active:translate-x-[4px] active:translate-y-[4px] active:[box-shadow:0px_0px_0px_#1E3A8A] transition-all"
           >
             <Plus className="w-4 h-4 mr-2" />
             Tambah Arsip
@@ -245,93 +270,127 @@ export default function KatalogAdmin() {
       </div>
 
       {/* SEARCH & FILTER BAR */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col md:flex-row gap-4 items-center relative z-20">
+      <div className="bg-white p-4 border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col md:flex-row gap-4 items-center relative z-20">
         <div className="relative w-full md:flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
           <Input
-            placeholder="Cari judul, penulis, atau ID arsip..."
+            placeholder="Ketik lalu tekan Enter untuk mencari..."
             className="pl-10 w-full"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchSubmit}
           />
         </div>
-        <div className="w-full md:w-64 flex items-center gap-2">
+        <div className="w-full md:w-auto flex flex-col md:flex-row items-center gap-2">
           <Filter className="h-5 w-5 text-slate-400 hidden md:block" />
+
+          {/* Dropdown 1: Jenis Arsip */}
           <Select
-            value={filterCategory}
-            onValueChange={(val) => val && setFilterCategory(val)}
+            value={filterType}
+            onValueChange={(val) => {
+              setFilterType(val === "all" || !val ? "" : val);
+              setCurrentPage(1);
+            }}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full md:w-48">
               <SelectValue placeholder="Semua Jenis" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Semua Jenis</SelectItem>
               <SelectItem value="Skripsi">Skripsi</SelectItem>
-              <SelectItem value="Buku">Buku</SelectItem>
+              <SelectItem value="Ringkasan Skripsi">
+                Ringkasan Skripsi
+              </SelectItem>
               <SelectItem value="Naskah Publikasi">Naskah Publikasi</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Dropdown 2: Kategori Arsip */}
+          <Select
+            value={filterCategory}
+            onValueChange={(val) => {
+              setFilterCategory(val === "all" || !val ? "" : val);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue placeholder="Semua Kategori" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua Kategori</SelectItem>
+              <SelectItem value="Machine Learning">Machine Learning</SelectItem>
+              <SelectItem value="Sistem Informasi">Sistem Informasi</SelectItem>
+              <SelectItem value="Sistem Pakar">Sistem Pakar</SelectItem>
+              <SelectItem value="SPK">SPK</SelectItem>
+              <SelectItem value="Kriptografi">Kriptografi</SelectItem>
+              <SelectItem value="Umum">Umum</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
       {/* DATA VISUALIZATION */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden relative z-20">
+      <div className="bg-white border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] overflow-hidden relative z-20 flex flex-col">
         {/* MOBILE VIEW (< 768px) */}
-        <div className="md:hidden divide-y divide-slate-100">
-          {filteredData.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">
+        <div className="md:hidden flex flex-col divide-y-2 divide-blue-900">
+          {isLoading ? (
+            <div className="p-8 text-center text-slate-500 font-bold animate-pulse">
+              [ Memuat Data Arsip... ]
+            </div>
+          ) : filteredData.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 font-bold">
               Data tidak ditemukan
             </div>
           ) : (
             filteredData.map((item) => (
               <div
                 key={item.id}
-                className="p-4 space-y-3 flex flex-col hover:bg-slate-50"
+                className="p-5 flex flex-col bg-white hover:bg-slate-50 transition-colors"
               >
-                <div className="flex justify-between items-start gap-2">
-                  <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                    {item.id}
+                <div className="flex justify-between items-start mb-3 gap-2">
+                  <span className="text-xs font-black text-blue-900 bg-amber-300 px-2 py-1 border-2 border-blue-900 [box-shadow:2px_2px_0px_#1E3A8A] uppercase tracking-wider">
+                    {item.id.slice(0, 8)}
                   </span>
                   <Badge
                     variant={item.stock > 0 ? "default" : "destructive"}
-                    className={
+                    className={`border-2 border-blue-900 font-black uppercase ${
                       item.stock > 0
-                        ? "bg-emerald-500 hover:bg-emerald-600"
-                        : ""
-                    }
+                        ? "bg-emerald-400 text-blue-900 hover:bg-emerald-500 [box-shadow:2px_2px_0px_#1E3A8A]"
+                        : "bg-red-500 text-white"
+                    }`}
                   >
                     {item.stock > 0 ? `Stok: ${item.stock}` : "Habis"}
                   </Badge>
                 </div>
-                <div>
-                  <h3 className="font-bold text-slate-900 line-clamp-2 leading-tight">
+                <div className="mb-4">
+                  <h3 className="font-black text-blue-900 text-lg leading-tight mb-1">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-slate-500">
+                  <p className="font-medium text-slate-700">
                     {item.author} • {item.year}
                   </p>
                 </div>
-                <div className="flex justify-between items-center pt-2">
-                  <Badge
-                    variant="outline"
-                    className="text-xs border-slate-300 text-slate-600"
-                  >
-                    {item.type}
-                  </Badge>
+                <div className="flex justify-between items-end">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{item.category}</span>
+                    <Badge variant="outline" className="w-fit text-xs border-2 border-blue-900 text-blue-900 font-bold bg-slate-100">
+                      {item.type}
+                    </Badge>
+                  </div>
                   <div className="flex gap-2">
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
                       onClick={() => handleOpenEdit(item)}
-                      className="h-8 w-8 text-blue-600"
+                      className="h-10 w-10 border-2 border-blue-900 text-blue-900 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
                       onClick={() => handleDelete(item.id)}
-                      className="h-8 w-8 text-red-600"
+                      className="h-10 w-10 border-2 border-blue-900 text-red-600 bg-red-50 hover:bg-red-100 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -343,40 +402,46 @@ export default function KatalogAdmin() {
         </div>
 
         {/* DESKTOP VIEW (>= 768px) */}
-        <div className="hidden md:block overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto w-full">
           <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead className="w-[100px] font-bold">ID</TableHead>
-                <TableHead className="font-bold">Info Arsip</TableHead>
-                <TableHead className="font-bold">Jenis / Kategori</TableHead>
-                <TableHead className="font-bold">Lokasi</TableHead>
-                <TableHead className="font-bold text-center">Stok</TableHead>
-                <TableHead className="font-bold text-right">Aksi</TableHead>
+            <TableHeader className="bg-slate-100 border-b-2 border-blue-900">
+              <TableRow className="hover:bg-transparent border-none">
+                <TableHead className="w-[100px] font-black text-blue-900">ID</TableHead>
+                <TableHead className="font-black text-blue-900">INFO ARSIP</TableHead>
+                <TableHead className="font-black text-blue-900">JENIS / KATEGORI</TableHead>
+                <TableHead className="font-black text-blue-900">LOKASI</TableHead>
+                <TableHead className="font-black text-blue-900 text-center">STOK</TableHead>
+                <TableHead className="font-black text-blue-900 text-right">AKSI</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {filteredData.length === 0 ? (
+            <TableBody className="divide-y-2 divide-blue-900/10">
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-10">
+                    <div className="font-bold text-slate-500 animate-pulse">[ Memuat Data Arsip... ]</div>
+                  </TableCell>
+                </TableRow>
+              ) : filteredData.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={6}
-                    className="text-center py-10 text-slate-500"
+                    className="text-center py-10 font-bold text-slate-500"
                   >
                     Data tidak ditemukan
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredData.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-medium text-slate-600">
-                      {item.id}
+                  <TableRow key={item.id} className="hover:bg-slate-50 border-none">
+                    <TableCell className="font-bold text-slate-600 text-xs">
+                      {item.id.slice(0, 8)}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-bold text-slate-900 line-clamp-1">
+                        <span className="font-black text-blue-900 text-base line-clamp-1">
                           {item.title}
                         </span>
-                        <span className="text-sm text-slate-500">
+                        <span className="font-medium text-slate-600 mt-1">
                           {item.author} • {item.year}
                         </span>
                       </div>
@@ -384,48 +449,48 @@ export default function KatalogAdmin() {
                     <TableCell>
                       <div className="flex flex-col gap-1 items-start">
                         <Badge
-                          variant="secondary"
-                          className="text-xs bg-slate-100 text-slate-700 hover:bg-slate-200"
+                          variant="outline"
+                          className="text-xs border-2 border-blue-900 text-blue-900 font-bold bg-white"
                         >
                           {item.type}
                         </Badge>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">
                           {item.category}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-slate-600">
+                    <TableCell className="font-medium text-slate-700">
                       {item.location}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge
                         variant={item.stock > 0 ? "default" : "destructive"}
-                        className={
+                        className={`border-2 border-blue-900 font-black uppercase ${
                           item.stock > 0
-                            ? "bg-emerald-500 hover:bg-emerald-600"
-                            : ""
-                        }
+                            ? "bg-emerald-400 text-blue-900 hover:bg-emerald-500 [box-shadow:2px_2px_0px_#1E3A8A]"
+                            : "bg-red-500 text-white"
+                        }`}
                       >
                         {item.stock}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
+                      <div className="flex justify-end gap-2">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="icon"
                           onClick={() => handleOpenEdit(item)}
-                          className="text-slate-400 hover:text-blue-600"
+                          className="h-8 w-8 border-2 border-blue-900 text-blue-900 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Edit2 className="h-3 w-3" />
                         </Button>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="icon"
                           onClick={() => handleDelete(item.id)}
-                          className="text-slate-400 hover:text-red-600"
+                          className="h-8 w-8 border-2 border-blue-900 text-red-600 bg-red-50 hover:bg-red-100 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
                     </TableCell>
@@ -434,6 +499,32 @@ export default function KatalogAdmin() {
               )}
             </TableBody>
           </Table>
+        </div>
+        {/* --- UI NAVIGASI PAGINASI  --- */}
+        <div className="p-4 border-t-2 border-blue-900 flex justify-between items-center bg-slate-50">
+          <span className="text-sm text-blue-900 font-bold uppercase tracking-wider">
+            Halaman {currentPage} dari {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1 || isLoading}
+              className="font-bold border-2 border-blue-900 text-blue-900 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0"
+            >
+              Sebelumnya
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || isLoading}
+              className="font-bold border-2 border-blue-900 text-blue-900 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-x-0 disabled:translate-y-0"
+            >
+              Selanjutnya
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -526,7 +617,7 @@ export default function KatalogAdmin() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Skripsi">Skripsi</SelectItem>
-                  <SelectItem value="Buku">Buku</SelectItem>
+                  <SelectItem value="Ringkasan Skripsi">Ringkasan Skripsi</SelectItem>
                   <SelectItem value="Naskah Publikasi">
                     Naskah Publikasi
                   </SelectItem>
@@ -547,18 +638,11 @@ export default function KatalogAdmin() {
                   <SelectValue placeholder="Pilih Kategori" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Machine Learning">
-                    Machine Learning
-                  </SelectItem>
-                  <SelectItem value="Sistem Pendukung Keputusan">
-                    Sistem Pendukung Keputusan
-                  </SelectItem>
-                  <SelectItem value="Rekayasa Perangkat Lunak">
-                    Rekayasa Perangkat Lunak
-                  </SelectItem>
-                  <SelectItem value="Jaringan Komputer">
-                    Jaringan Komputer
-                  </SelectItem>
+                  <SelectItem value="Machine Learning">Machine Learning</SelectItem>
+                  <SelectItem value="Sistem Informasi">Sistem Informasi</SelectItem>
+                  <SelectItem value="Sistem Pakar">Sistem Pakar</SelectItem>
+                  <SelectItem value="SPK">SPK</SelectItem>
+                  <SelectItem value="Kriptografi">Kriptografi</SelectItem>
                   <SelectItem value="Umum">Umum</SelectItem>
                 </SelectContent>
               </Select>
@@ -624,7 +708,7 @@ export default function KatalogAdmin() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Skripsi">Skripsi</SelectItem>
-                  <SelectItem value="Buku">Buku</SelectItem>
+                  <SelectItem value="Ringkasan Skripsi">Ringkasan Skripsi</SelectItem>
                   <SelectItem value="Naskah Publikasi">
                     Naskah Publikasi
                   </SelectItem>

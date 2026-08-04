@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ArchiveService } from './archive.service';
@@ -20,15 +21,32 @@ export class ArchiveController {
   constructor(private readonly archiveService: ArchiveService) {}
 
   @Get()
-  async getCatalog() {
-    return this.archiveService.findAll();
+  async getCatalog(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('type') type?: string,
+    @Query('category') category?: string,
+  ) {
+    // Validasi NaN: jika query param bukan angka valid (contoh: ?page=abc),
+    // parseInt akan menghasilkan NaN. Kita paksa ke angka default agar Prisma tidak crash.
+    const parsedPage = parseInt(page ?? '', 10);
+    const parsedLimit = parseInt(limit ?? '', 10);
+
+    return this.archiveService.findAll({
+      page: !isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1,
+      limit: !isNaN(parsedLimit) && parsedLimit > 0 ? parsedLimit : 10,
+      search,
+      type,
+      category,
+    });
   }
 
   @Post('import')
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(
     @UploadedFile() file: Express.Multer.File,
-    @Body('archiveType') archiveType: string, 
+    @Body('archiveType') archiveType: string,
   ) {
     if (!file) {
       throw new BadRequestException('File Excel tidak ditemukan');

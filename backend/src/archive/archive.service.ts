@@ -3,20 +3,70 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateArchiveDto } from './dto/create-archive.dto';
 import { UpdateArchiveDto } from './dto/update-archive.dto';
-import * as xlsx from 'xlsx'; 
+import * as xlsx from 'xlsx';
 
 @Injectable()
 export class ArchiveService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
-    return this.prisma.archive.findMany({
-      select: {
-        id: true, title: true, author: true, year: true, category: true,
-        archiveType: true, quantity: true, reservedQuantity: true, shelfLocation: true,
+  async findAll(params: {
+    page: number;
+    limit: number;
+    search?: string;
+    type?: string;
+    category?: string;
+  }) {
+    // Lapisan pertahanan kedua: pastikan nilai page dan limit selalu angka valid (>= 1)
+    const pageNum = Math.max(1, Number.isInteger(params.page) ? params.page : 1);
+    const limitNum = Math.max(1, Number.isInteger(params.limit) ? params.limit : 10);
+    const { search, type, category } = params;
+    const skip = (pageNum - 1) * limitNum;
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { author: { contains: search, mode: 'insensitive' } },
+        { id: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (type && type !== 'all') {
+      where.archiveType = type;
+    }
+
+    if (category && category !== 'all') {
+      where.category = category;
+    }
+    const [data, total] = await Promise.all([
+      this.prisma.archive.findMany({
+        where,
+        skip,
+        take: limitNum,
+        select: {
+          id: true,
+          title: true,
+          author: true,
+          year: true,
+          category: true,
+          archiveType: true,
+          quantity: true,
+          reservedQuantity: true,
+          shelfLocation: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.archive.count({ where }),
+    ]);
+    return {
+      data,
+      meta: {
+        total,
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum),
       },
-      orderBy: { createdAt: 'desc' }
-    });
+    };
   }
 
   async create(createArchiveDto: CreateArchiveDto) {
@@ -34,8 +84,11 @@ export class ArchiveService {
   }
 
   async update(id: string, updateArchiveDto: UpdateArchiveDto) {
-    const existingArchive = await this.prisma.archive.findUnique({ where: { id } });
-    if (!existingArchive) throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
+    const existingArchive = await this.prisma.archive.findUnique({
+      where: { id },
+    });
+    if (!existingArchive)
+      throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
 
     return this.prisma.archive.update({
       where: { id },
@@ -44,13 +97,16 @@ export class ArchiveService {
   }
 
   async remove(id: string) {
-    const existingArchive = await this.prisma.archive.findUnique({ where: { id } });
-    if (!existingArchive) throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
+    const existingArchive = await this.prisma.archive.findUnique({
+      where: { id },
+    });
+    if (!existingArchive)
+      throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
 
     return this.prisma.archive.delete({ where: { id } });
   }
 
-  // LOGIKA IMPORT EXCEL 
+  // LOGIKA IMPORT EXCEL
   async importExcel(buffer: Buffer, archiveType: string) {
     // 1. Baca Buffer Excel menjadi JSON
     const workbook = xlsx.read(buffer, { type: 'buffer' });
@@ -63,10 +119,13 @@ export class ArchiveService {
 
     // 2. Ambil semua arsip existing untuk cek duplikasi secara efisien di memori (Set)
     const existingArchives = await this.prisma.archive.findMany({
-      select: { title: true, author: true, year: true }
+      select: { title: true, author: true, year: true },
     });
     const existingSet = new Set(
-      existingArchives.map(a => `${(a.title || '').trim().toLowerCase()}|${(a.author || '').trim().toLowerCase()}|${a.year}`)
+      existingArchives.map(
+        (a) =>
+          `${(a.title || '').trim().toLowerCase()}|${(a.author || '').trim().toLowerCase()}|${a.year}`,
+      ),
     );
 
     const validDataToInsert: any[] = [];
@@ -82,14 +141,23 @@ export class ArchiveService {
       const shelfLocation = row['Lokasi Rak'] || row['LOKASI RAK'] || null;
 
       // 4. Validasi kolom wajib (Skip jika kosong)
-      if (!title || !author || !yearRaw || quantityRaw === undefined || quantityRaw === null) {
+      if (
+        !title ||
+        !author ||
+        !yearRaw ||
+        quantityRaw === undefined ||
+        quantityRaw === null
+      ) {
         skippedCount++;
         continue;
       }
 
       // 5. Cleansing Data
       if (!category) category = 'Umum'; // Handle NaN / kosong
-      if (typeof category === 'string' && category.trim().toLowerCase() === 'machine larning') {
+      if (
+        typeof category === 'string' &&
+        category.trim().toLowerCase() === 'machine larning'
+      ) {
         category = 'Machine Learning'; // Fix Typo
       }
 
@@ -104,7 +172,7 @@ export class ArchiveService {
 
       const titleStr = title.toString().trim();
       const authorStr = author.toString().trim();
-      
+
       // 6. Cek Duplikasi
       const uniqueKey = `${titleStr.toLowerCase()}|${authorStr.toLowerCase()}|${year}`;
       if (existingSet.has(uniqueKey)) {
@@ -127,7 +195,7 @@ export class ArchiveService {
       });
     }
 
-    // 7. Bulk Insert 
+    // 7. Bulk Insert
     if (validDataToInsert.length > 0) {
       await this.prisma.archive.createMany({
         data: validDataToInsert,
