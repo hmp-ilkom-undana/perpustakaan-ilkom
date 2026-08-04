@@ -12,8 +12,14 @@ export const api = axios.create({
 });
 
 // --- API KATALOG ARSIP ---
-export const fetchArchives = async () => {
-  const response = await api.get("/api/archives");
+export const fetchArchives = async (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  type?: string;
+  category?: string;
+}) => {
+  const response = await api.get("/api/archives", { params });
   return response.data;
 };
 export const createArchive = async (data: any) => {

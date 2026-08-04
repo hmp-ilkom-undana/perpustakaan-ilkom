@@ -38,11 +38,12 @@ import {
 // Definisikan tipe
 export type ArchiveCategory =
   | "Machine Learning"
-  | "Sistem Pendukung Keputusan"
-  | "Rekayasa Perangkat Lunak"
-  | "Jaringan Komputer"
+  | "Sistem Informasi"
+  | "Sistem Pakar"
+  | "SPK"
+  | "Kriptografi"
   | "Umum";
-export type ArchiveType = "Skripsi" | "Naskah Publikasi" | "Buku";
+export type ArchiveType = "Skripsi" | "Ringkasan Skripsi" | "Naskah Publikasi";
 
 export interface CatalogItem {
   id: string;
