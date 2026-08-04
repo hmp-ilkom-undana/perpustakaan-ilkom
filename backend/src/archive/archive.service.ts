@@ -54,7 +54,10 @@ export class ArchiveService {
   async importExcel(buffer: Buffer, archiveType: string) {
     // 1. Baca Buffer Excel menjadi JSON
     const workbook = xlsx.read(buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0]; // Ambil sheet pertama
+    const sheetName = workbook.SheetNames?.[0]; // Ambil sheet pertama
+    if (!sheetName) {
+      return { success: 0, skipped: 0, total: 0 };
+    }
     const sheet = workbook.Sheets[sheetName];
     const rows = xlsx.utils.sheet_to_json<any>(sheet);
 
@@ -63,7 +66,7 @@ export class ArchiveService {
       select: { title: true, author: true, year: true }
     });
     const existingSet = new Set(
-      existingArchives.map(a => `${a.title.toLowerCase()}|${a.author.toLowerCase()}|${a.year}`)
+      existingArchives.map(a => `${(a.title || '').trim().toLowerCase()}|${(a.author || '').trim().toLowerCase()}|${a.year}`)
     );
 
     const validDataToInsert: any[] = [];
