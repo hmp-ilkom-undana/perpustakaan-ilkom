@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ArchiveService } from './archive.service';
@@ -20,15 +21,27 @@ export class ArchiveController {
   constructor(private readonly archiveService: ArchiveService) {}
 
   @Get()
-  async getCatalog() {
-    return this.archiveService.findAll();
+  async getCatalog(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('type') type?: string,
+    @Query('category') category?: string,
+  ) {
+    return this.archiveService.findAll({
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 10,
+      search,
+      type,
+      category,
+    });
   }
 
   @Post('import')
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(
     @UploadedFile() file: Express.Multer.File,
-    @Body('archiveType') archiveType: string, 
+    @Body('archiveType') archiveType: string,
   ) {
     if (!file) {
       throw new BadRequestException('File Excel tidak ditemukan');
