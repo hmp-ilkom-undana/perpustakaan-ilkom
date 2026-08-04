@@ -160,11 +160,14 @@ export default function KatalogAdmin() {
       setIsLoading(false);
     }
   };
-  // 5. Fungsi untuk Trigger Pencarian via Keyboard (Enter)
+  // Fungsi untuk Trigger Pencarian 
   const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      setCurrentPage(1); // Kembali ke hal 1 saat mencari kata baru
-      loadData(searchQuery);
+      if (currentPage !== 1) {
+        setCurrentPage(1); 
+      } else {
+        loadData(searchQuery); 
+      }
     }
   };
 

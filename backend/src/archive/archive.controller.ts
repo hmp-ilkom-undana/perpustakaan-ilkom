@@ -28,9 +28,14 @@ export class ArchiveController {
     @Query('type') type?: string,
     @Query('category') category?: string,
   ) {
+    // Validasi NaN: jika query param bukan angka valid (contoh: ?page=abc),
+    // parseInt akan menghasilkan NaN. Kita paksa ke angka default agar Prisma tidak crash.
+    const parsedPage = parseInt(page ?? '', 10);
+    const parsedLimit = parseInt(limit ?? '', 10);
+
     return this.archiveService.findAll({
-      page: page ? parseInt(page, 10) : 1,
-      limit: limit ? parseInt(limit, 10) : 10,
+      page: !isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1,
+      limit: !isNaN(parsedLimit) && parsedLimit > 0 ? parsedLimit : 10,
       search,
       type,
       category,

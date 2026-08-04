@@ -16,8 +16,11 @@ export class ArchiveService {
     type?: string;
     category?: string;
   }) {
-    const { page, limit, search, type, category } = params;
-    const skip = (page - 1) * limit;
+    // Lapisan pertahanan kedua: pastikan nilai page dan limit selalu angka valid (>= 1)
+    const pageNum = Math.max(1, Number.isInteger(params.page) ? params.page : 1);
+    const limitNum = Math.max(1, Number.isInteger(params.limit) ? params.limit : 10);
+    const { search, type, category } = params;
+    const skip = (pageNum - 1) * limitNum;
     const where: any = {};
 
     if (search) {
@@ -39,7 +42,7 @@ export class ArchiveService {
       this.prisma.archive.findMany({
         where,
         skip,
-        take: limit,
+        take: limitNum,
         select: {
           id: true,
           title: true,
@@ -59,9 +62,9 @@ export class ArchiveService {
       data,
       meta: {
         total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+        page: pageNum,
+        limit: limitNum,
+        totalPages: Math.ceil(total / limitNum),
       },
     };
   }
