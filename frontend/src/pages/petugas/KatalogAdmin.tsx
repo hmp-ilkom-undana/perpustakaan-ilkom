@@ -47,6 +47,7 @@ export type ArchiveType = "Skripsi" | "Ringkasan Skripsi" | "Naskah Publikasi";
 
 export interface CatalogItem {
   id: string;
+  archiveCode: string;
   title: string;
   author: string;
   year: number;
@@ -142,6 +143,7 @@ export default function KatalogAdmin() {
       // 3. Mapping agar sesuai dengan interface CatalogItem
       const mapped: CatalogItem[] = rawData.map((item: any) => ({
         id: item.id,
+        archiveCode: item.archiveCode,
         title: item.title,
         author: item.author,
         year: item.year,
@@ -349,7 +351,7 @@ export default function KatalogAdmin() {
               >
                 <div className="flex justify-between items-start mb-3 gap-2">
                   <span className="text-xs font-black text-blue-900 bg-amber-300 px-2 py-1 border-2 border-blue-900 [box-shadow:2px_2px_0px_#1E3A8A] uppercase tracking-wider">
-                    {item.id.slice(0, 8)}
+                    {item.archiveCode}
                   </span>
                   <Badge
                     variant={item.stock > 0 ? "default" : "destructive"}
@@ -433,8 +435,8 @@ export default function KatalogAdmin() {
               ) : (
                 filteredData.map((item) => (
                   <TableRow key={item.id} className="hover:bg-slate-50 border-none">
-                    <TableCell className="font-bold text-slate-600 text-xs">
-                      {item.id.slice(0, 8)}
+                    <TableCell className="font-bold text-slate-600 text-xs uppercase">
+                      {item.archiveCode}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
