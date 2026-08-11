@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useScroll } from "@/hooks/use-scroll";
+import { useScroll } from "@/hooks/useScroll";
 
 // Daftar Menu Mahasiswa
 const menus = [
@@ -72,7 +72,6 @@ export default function MahasiswaLayout() {
                   src="/assets/Logo_Ilkom.png"
                   alt="Logo Ilkom"
                   className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 scale-[1.8] origin-top object-cover max-w-none w-full"
-
                 />
               </div>
 
@@ -99,7 +98,9 @@ export default function MahasiswaLayout() {
                         : "text-slate-600 hover:bg-slate-100 hover:text-blue-900 border-2 border-transparent hover:border-blue-900 hover:shadow-[2px_2px_0px_#1E3A8A]"
                     }`}
                   >
-                    <Icon className={`w-4 h-4 ${isActive ? "text-blue-900" : ""}`} />
+                    <Icon
+                      className={`w-4 h-4 ${isActive ? "text-blue-900" : ""}`}
+                    />
                     {menu.name}
                   </Link>
                 );
@@ -163,7 +164,9 @@ export default function MahasiswaLayout() {
                         : "text-slate-600 hover:bg-slate-100 hover:text-blue-900 border-2 border-transparent hover:border-blue-900 hover:shadow-[2px_2px_0px_#1E3A8A]"
                     }`}
                   >
-                    <Icon className={`w-5 h-5 ${isActive ? "text-blue-900" : ""}`} />
+                    <Icon
+                      className={`w-5 h-5 ${isActive ? "text-blue-900" : ""}`}
+                    />
                     {menu.name}
                   </Link>
                 );

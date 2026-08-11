@@ -34,28 +34,7 @@ import {
   updateArchive,
   deleteArchive,
 } from "@/lib/api";
-
-// Definisikan tipe
-export type ArchiveCategory =
-  | "Machine Learning"
-  | "Sistem Informasi"
-  | "Sistem Pakar"
-  | "SPK"
-  | "Kriptografi"
-  | "Umum";
-export type ArchiveType = "Skripsi" | "Ringkasan Skripsi" | "Naskah Publikasi";
-
-export interface CatalogItem {
-  id: string;
-  archiveCode: string;
-  title: string;
-  author: string;
-  year: number;
-  category: ArchiveCategory;
-  type: ArchiveType;
-  stock: number;
-  location: string;
-}
+import { ArchiveCategory, ArchiveType, CatalogItem } from "@/types/katalog";
 
 export default function KatalogAdmin() {
   const [data, setData] = useState<CatalogItem[]>([]);
@@ -162,13 +141,13 @@ export default function KatalogAdmin() {
       setIsLoading(false);
     }
   };
-  // Fungsi untuk Trigger Pencarian 
+  // Fungsi untuk Trigger Pencarian
   const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       if (currentPage !== 1) {
-        setCurrentPage(1); 
+        setCurrentPage(1);
       } else {
-        loadData(searchQuery); 
+        loadData(searchQuery);
       }
     }
   };
@@ -374,8 +353,13 @@ export default function KatalogAdmin() {
                 </div>
                 <div className="flex justify-between items-end">
                   <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{item.category}</span>
-                    <Badge variant="outline" className="w-fit text-xs border-2 border-blue-900 text-blue-900 font-bold bg-slate-100">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                      {item.category}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="w-fit text-xs border-2 border-blue-900 text-blue-900 font-bold bg-slate-100"
+                    >
                       {item.type}
                     </Badge>
                   </div>
@@ -408,19 +392,33 @@ export default function KatalogAdmin() {
           <Table>
             <TableHeader className="bg-slate-100 border-b-2 border-blue-900">
               <TableRow className="hover:bg-transparent border-none">
-                <TableHead className="w-[100px] font-black text-blue-900">ID</TableHead>
-                <TableHead className="font-black text-blue-900">INFO ARSIP</TableHead>
-                <TableHead className="font-black text-blue-900">JENIS / KATEGORI</TableHead>
-                <TableHead className="font-black text-blue-900">LOKASI</TableHead>
-                <TableHead className="font-black text-blue-900 text-center">STOK</TableHead>
-                <TableHead className="font-black text-blue-900 text-right">AKSI</TableHead>
+                <TableHead className="w-[100px] font-black text-blue-900">
+                  ID
+                </TableHead>
+                <TableHead className="font-black text-blue-900">
+                  INFO ARSIP
+                </TableHead>
+                <TableHead className="font-black text-blue-900">
+                  JENIS / KATEGORI
+                </TableHead>
+                <TableHead className="font-black text-blue-900">
+                  LOKASI
+                </TableHead>
+                <TableHead className="font-black text-blue-900 text-center">
+                  STOK
+                </TableHead>
+                <TableHead className="font-black text-blue-900 text-right">
+                  AKSI
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y-2 divide-blue-900/10">
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-10">
-                    <div className="font-bold text-slate-500 animate-pulse">[ Memuat Data Arsip... ]</div>
+                    <div className="font-bold text-slate-500 animate-pulse">
+                      [ Memuat Data Arsip... ]
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : filteredData.length === 0 ? (
@@ -434,7 +432,10 @@ export default function KatalogAdmin() {
                 </TableRow>
               ) : (
                 filteredData.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-slate-50 border-none">
+                  <TableRow
+                    key={item.id}
+                    className="hover:bg-slate-50 border-none"
+                  >
                     <TableCell className="font-bold text-slate-600 text-xs uppercase">
                       {item.archiveCode}
                     </TableCell>
@@ -619,7 +620,9 @@ export default function KatalogAdmin() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Skripsi">Skripsi</SelectItem>
-                  <SelectItem value="Ringkasan Skripsi">Ringkasan Skripsi</SelectItem>
+                  <SelectItem value="Ringkasan Skripsi">
+                    Ringkasan Skripsi
+                  </SelectItem>
                   <SelectItem value="Naskah Publikasi">
                     Naskah Publikasi
                   </SelectItem>
@@ -640,8 +643,12 @@ export default function KatalogAdmin() {
                   <SelectValue placeholder="Pilih Kategori" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Machine Learning">Machine Learning</SelectItem>
-                  <SelectItem value="Sistem Informasi">Sistem Informasi</SelectItem>
+                  <SelectItem value="Machine Learning">
+                    Machine Learning
+                  </SelectItem>
+                  <SelectItem value="Sistem Informasi">
+                    Sistem Informasi
+                  </SelectItem>
                   <SelectItem value="Sistem Pakar">Sistem Pakar</SelectItem>
                   <SelectItem value="SPK">SPK</SelectItem>
                   <SelectItem value="Kriptografi">Kriptografi</SelectItem>
@@ -710,7 +717,9 @@ export default function KatalogAdmin() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Skripsi">Skripsi</SelectItem>
-                  <SelectItem value="Ringkasan Skripsi">Ringkasan Skripsi</SelectItem>
+                  <SelectItem value="Ringkasan Skripsi">
+                    Ringkasan Skripsi
+                  </SelectItem>
                   <SelectItem value="Naskah Publikasi">
                     Naskah Publikasi
                   </SelectItem>
