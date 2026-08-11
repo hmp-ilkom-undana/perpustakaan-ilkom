@@ -32,6 +32,7 @@ model Archive {
   year          Int
   category      String
   status        ArchiveStatus   @default(TERSEDIA)
+  archiveCode   String         @unique
   archiveType   String          
   quantity      Int             @default(1)
   reservedQuantity Int          @default(0)
