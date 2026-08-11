@@ -13,7 +13,8 @@ interface Props {
   setImportType: (type: ArchiveType) => void;
   isImporting: boolean;
   onImport: () => void;
-  fileInputRef: RefObject<HTMLInputElement>;
+    fileInputRef: React.RefObject<HTMLInputElement | null>;
+
 }
 
 export function KatalogImportSheet({ isOpen, onOpenChange, importType, setImportType, isImporting, onImport, fileInputRef }: Props) {
