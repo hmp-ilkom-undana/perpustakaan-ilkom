@@ -17,8 +17,14 @@ export class ArchiveService {
     category?: string;
   }) {
     // Lapisan pertahanan kedua: pastikan nilai page dan limit selalu angka valid (>= 1)
-    const pageNum = Math.max(1, Number.isInteger(params.page) ? params.page : 1);
-    const limitNum = Math.max(1, Number.isInteger(params.limit) ? params.limit : 10);
+    const pageNum = Math.max(
+      1,
+      Number.isInteger(params.page) ? params.page : 1,
+    );
+    const limitNum = Math.max(
+      1,
+      Number.isInteger(params.limit) ? params.limit : 10,
+    );
     const { search, type, category } = params;
     const skip = (pageNum - 1) * limitNum;
     const where: any = {};
@@ -45,6 +51,7 @@ export class ArchiveService {
         take: limitNum,
         select: {
           id: true,
+          archiveCode:true,
           title: true,
           author: true,
           year: true,
@@ -69,9 +76,31 @@ export class ArchiveService {
     };
   }
 
+  async generateArchiveCode(archiveType: string): Promise<string> {
+    let prefix = 'UMM'; // Default
+    if (archiveType === 'Skripsi') prefix = 'SKR';
+    else if (archiveType === 'Ringkasan Skripsi') prefix = 'RKS';
+    else if (archiveType === 'Naskah Publikasi') prefix = 'NPB';
+    const lastArchive = await this.prisma.archive.findFirst({
+      where: { archiveCode: { startsWith: `${prefix}-` } },
+      orderBy: { archiveCode: 'desc' },
+    });
+    if (!lastArchive || !lastArchive.archiveCode) {
+      return `${prefix}-0001`; 
+    }
+    const lastNumberStr = lastArchive.archiveCode.split('-')[1];
+    const nextNumber = parseInt(lastNumberStr, 10) + 1;
+
+    const paddedNumber = nextNumber.toString().padStart(4, '0');
+    return `${prefix}-${paddedNumber}`;
+  }
   async create(createArchiveDto: CreateArchiveDto) {
+    const generatedCode = await this.generateArchiveCode(
+      createArchiveDto.archiveType,
+    );
     return this.prisma.archive.create({
       data: {
+        archiveCode: generatedCode,
         title: createArchiveDto.title,
         author: createArchiveDto.author,
         year: createArchiveDto.year,
@@ -128,6 +157,20 @@ export class ArchiveService {
       ),
     );
 
+let prefix = 'UMM';
+    if (archiveType === 'Skripsi') prefix = 'SKR';
+    else if (archiveType === 'Ringkasan Skripsi') prefix = 'RKS';
+    else if (archiveType === 'Naskah Publikasi') prefix = 'NPB';
+    let nextSeqNumber = 1;
+    const lastArchive = await this.prisma.archive.findFirst({
+      where: { archiveCode: { startsWith: `${prefix}-` } },
+      orderBy: { archiveCode: 'desc' },
+    });
+    if (lastArchive && lastArchive.archiveCode) {
+      const lastNumberStr = lastArchive.archiveCode.split('-')[1];
+      nextSeqNumber = parseInt(lastNumberStr, 10) + 1;
+    }
+
     const validDataToInsert: any[] = [];
     let skippedCount = 0;
 
@@ -183,8 +226,13 @@ export class ArchiveService {
       // Tandai sudah diproses agar tidak ada duplikasi internal di dalam file Excel itu sendiri
       existingSet.add(uniqueKey);
 
+     const paddedNumber = nextSeqNumber.toString().padStart(4, '0');
+      const generatedCode = `${prefix}-${paddedNumber}`;
+      nextSeqNumber++; 
+
       // Siapkan data yang valid
       validDataToInsert.push({
+        archiveCode: generatedCode, 
         title: titleStr,
         author: authorStr,
         year: year,
