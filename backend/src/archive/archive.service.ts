@@ -83,13 +83,14 @@ export class ArchiveService {
     else if (archiveType === 'Naskah Publikasi') prefix = 'NPB';
     const lastArchive = await this.prisma.archive.findFirst({
       where: { archiveCode: { startsWith: `${prefix}-` } },
-      orderBy: { archiveCode: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
     if (!lastArchive || !lastArchive.archiveCode) {
       return `${prefix}-0001`; 
     }
     const lastNumberStr = lastArchive.archiveCode.split('-')[1];
-    const nextNumber = parseInt(lastNumberStr, 10) + 1;
+    const parsedNumber = parseInt(lastNumberStr, 10);
+    const nextNumber = isNaN(parsedNumber) ? 1 : parsedNumber + 1;
 
     const paddedNumber = nextNumber.toString().padStart(4, '0');
     return `${prefix}-${paddedNumber}`;
@@ -164,11 +165,12 @@ let prefix = 'UMM';
     let nextSeqNumber = 1;
     const lastArchive = await this.prisma.archive.findFirst({
       where: { archiveCode: { startsWith: `${prefix}-` } },
-      orderBy: { archiveCode: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
     if (lastArchive && lastArchive.archiveCode) {
       const lastNumberStr = lastArchive.archiveCode.split('-')[1];
-      nextSeqNumber = parseInt(lastNumberStr, 10) + 1;
+      const parsedNumber = parseInt(lastNumberStr, 10);
+      nextSeqNumber = isNaN(parsedNumber) ? 1 : parsedNumber + 1;
     }
 
     const validDataToInsert: any[] = [];

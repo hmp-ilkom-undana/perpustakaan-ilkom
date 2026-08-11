@@ -167,8 +167,19 @@ async function main() {
   ];
 
   // Eksekusi penambahan data menggunakan prisma.archive
+  let skrCounter = 1;
+  let rksCounter = 1;
+  let npbCounter = 1;
+
   for (const data of devArchives) {
-    await prisma.archive.create({ data });
+    let prefix = 'UMM';
+    let num = 1;
+    if (data.archiveType === 'Skripsi') { prefix = 'SKR'; num = skrCounter++; }
+    else if (data.archiveType === 'Ringkasan Skripsi') { prefix = 'RKS'; num = rksCounter++; }
+    else if (data.archiveType === 'Naskah Publikasi') { prefix = 'NPB'; num = npbCounter++; }
+    
+    const archiveCode = `${prefix}-${num.toString().padStart(4, '0')}`;
+    await prisma.archive.create({ data: { ...data, archiveCode } });
   }
 
   console.log(
