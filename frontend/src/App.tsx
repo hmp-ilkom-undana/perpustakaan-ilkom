@@ -89,7 +89,7 @@ function App() {
         {/* Redirect dari root (/) ke /login */}
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
-      <Toaster richColors position="top-center" />
+      <Toaster position="top-center" />
     </BrowserRouter>
   );
 }
