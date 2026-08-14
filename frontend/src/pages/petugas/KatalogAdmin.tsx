@@ -7,6 +7,7 @@ import { KatalogDesktopTable } from "./components/KatalogDesktopTable";
 import { KatalogMobileList } from "./components/KatalogMobileList";
 import { KatalogFormSheet } from "./components/KatalogFormSheet";
 import { KatalogImportSheet } from "./components/KatalogImportSheet";
+import { KatalogDetailSheet } from "./components/KatalogDetailSheet";
 
 export default function KatalogAdmin() {
   const {
@@ -16,9 +17,12 @@ export default function KatalogAdmin() {
     filterType, setFilterType,
     currentPage, setCurrentPage,
     totalPages,
+    totalRecords,
     isLoading,
     isSheetOpen, setIsSheetOpen,
     editingItem,
+    isDetailOpen, setIsDetailOpen,
+    detailItem,
     formData, setFormData,
     isImportSheetOpen, setIsImportSheetOpen,
     importType, setImportType,
@@ -26,6 +30,7 @@ export default function KatalogAdmin() {
     fileInputRef,
     handleSearchSubmit,
     handleOpenAdd,
+    handleOpenDetail,
     handleOpenEdit,
     handleDelete,
     handleSave,
@@ -125,6 +130,7 @@ export default function KatalogAdmin() {
         <KatalogMobileList
           data={data}
           isLoading={isLoading}
+          onDetail={handleOpenDetail}
           onEdit={handleOpenEdit}
           onDelete={handleDelete}
         />
@@ -133,15 +139,30 @@ export default function KatalogAdmin() {
         <KatalogDesktopTable
           data={data}
           isLoading={isLoading}
+          currentPage={currentPage}
+          pageSize={10}
+          onDetail={handleOpenDetail}
           onEdit={handleOpenEdit}
           onDelete={handleDelete}
         />
 
         {/* PAGINATION UI */}
-        <div className="p-4 border-t-2 border-blue-900 flex justify-between items-center bg-slate-50">
-          <span className="text-sm text-blue-900 font-bold uppercase tracking-wider">
-            Halaman {currentPage} dari {totalPages}
-          </span>
+        <div className="p-4 border-t-2 border-blue-900 flex flex-col sm:flex-row justify-between items-center gap-3 bg-slate-50">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 text-sm text-blue-950 font-bold">
+            <span className="uppercase tracking-wider text-xs text-slate-600">
+              Menampilkan{" "}
+              <span className="text-blue-900 font-black">
+                {data.length > 0 ? (currentPage - 1) * 10 + 1 : 0}–
+                {Math.min(currentPage * 10, totalRecords)}
+              </span>{" "}
+              dari{" "}
+              <span className="text-blue-900 font-black">{totalRecords}</span> arsip
+            </span>
+            <span className="text-xs text-slate-400 hidden sm:inline">•</span>
+            <span className="text-xs text-slate-500 font-medium">
+              Halaman {currentPage} dari {totalPages}
+            </span>
+          </div>
           <div className="flex gap-2">
             <Button
               variant="outline" size="sm"
@@ -162,6 +183,14 @@ export default function KatalogAdmin() {
           </div>
         </div>
       </div>
+
+      {/* DETAIL SHEET */}
+      <KatalogDetailSheet
+        isOpen={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        item={detailItem}
+        onEdit={handleOpenEdit}
+      />
 
       {/* FORM & IMPORT SHEETS */}
       <KatalogFormSheet

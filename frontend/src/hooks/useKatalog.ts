@@ -16,10 +16,14 @@ export function useKatalog() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CatalogItem | null>(null);
+
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [detailItem, setDetailItem] = useState<CatalogItem | null>(null);
 
   const [isImportSheetOpen, setIsImportSheetOpen] = useState(false);
   const [importType, setImportType] = useState<ArchiveType>("Skripsi");
@@ -66,6 +70,7 @@ export function useKatalog() {
 
       setData(mapped);
       setTotalPages(response.meta.totalPages || 1);
+      setTotalRecords(response.meta.total || 0);
     } catch (error) {
       toast.error("Gagal mengambil data dari server");
     } finally {
@@ -95,6 +100,11 @@ export function useKatalog() {
       location: "",
     });
     setIsSheetOpen(true);
+  };
+
+  const handleOpenDetail = (item: CatalogItem) => {
+    setDetailItem(item);
+    setIsDetailOpen(true);
   };
 
   const handleOpenEdit = (item: CatalogItem) => {
@@ -189,10 +199,14 @@ export function useKatalog() {
     currentPage,
     setCurrentPage,
     totalPages,
+    totalRecords,
     isLoading,
     isSheetOpen,
     setIsSheetOpen,
     editingItem,
+    isDetailOpen,
+    setIsDetailOpen,
+    detailItem,
     formData,
     setFormData,
     isImportSheetOpen,
@@ -203,6 +217,7 @@ export function useKatalog() {
     fileInputRef,
     handleSearchSubmit,
     handleOpenAdd,
+    handleOpenDetail,
     handleOpenEdit,
     handleDelete,
     handleSave,

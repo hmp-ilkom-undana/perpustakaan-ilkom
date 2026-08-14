@@ -72,7 +72,7 @@ export default function PetugasLayout() {
 
       {/* SIDEBAR */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 bg-[#0F172A] text-white shadow-xl transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col",
+        "fixed inset-y-0 left-0 z-50 w-64 bg-[#0F172A] text-white shadow-xl transform transition-transform duration-300 ease-in-out md:sticky md:top-0 md:h-screen md:translate-x-0 flex flex-col shrink-0",
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Sidebar Header (Desktop) */}
