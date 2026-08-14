@@ -22,6 +22,10 @@ export const fetchArchives = async (params?: {
   const response = await api.get("/api/archives", { params });
   return response.data;
 };
+export const fetchArchiveById = async (id: string) => {
+  const response = await api.get(`/api/archives/${id}`);
+  return response.data;
+};
 export const createArchive = async (data: any) => {
   const response = await api.post("/api/archives", data);
   return response.data;

@@ -113,6 +113,18 @@ export class ArchiveService {
     });
   }
 
+  async findOne(id: string) {
+    const archive = await this.prisma.archive.findUnique({
+      where: { id },
+    });
+
+    if (!archive) {
+      throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
+    }
+
+    return archive;
+  }
+
   async update(id: string, updateArchiveDto: UpdateArchiveDto) {
     const existingArchive = await this.prisma.archive.findUnique({
       where: { id },

@@ -42,6 +42,11 @@ export class ArchiveController {
     });
   }
 
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.archiveService.findOne(id);
+  }
+
   @Post('import')
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(
