@@ -11,7 +11,12 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   // Cari semua arsip yang kode arsipnya masih kosong
   const archives = await prisma.archive.findMany({
-    where: { archiveCode: null },
+    where: {
+      OR: [
+        { archiveCode: '' },
+        { archiveCode: null as unknown as string },
+      ],
+    },
     orderBy: { createdAt: 'asc' },
   });
 

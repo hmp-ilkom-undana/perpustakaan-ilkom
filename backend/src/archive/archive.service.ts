@@ -31,6 +31,7 @@ export class ArchiveService {
 
     if (search) {
       where.OR = [
+        { archiveCode: { contains: search, mode: 'insensitive' } },
         { title: { contains: search, mode: 'insensitive' } },
         { author: { contains: search, mode: 'insensitive' } },
         { id: { contains: search, mode: 'insensitive' } },
@@ -83,7 +84,7 @@ export class ArchiveService {
     else if (archiveType === 'Naskah Publikasi') prefix = 'NPB';
     const lastArchive = await this.prisma.archive.findFirst({
       where: { archiveCode: { startsWith: `${prefix}-` } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { archiveCode: 'desc' },
     });
     if (!lastArchive || !lastArchive.archiveCode) {
       return `${prefix}-0001`; 
@@ -113,6 +114,18 @@ export class ArchiveService {
     });
   }
 
+  async findOne(id: string) {
+    const archive = await this.prisma.archive.findUnique({
+      where: { id },
+    });
+
+    if (!archive) {
+      throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
+    }
+
+    return archive;
+  }
+
   async update(id: string, updateArchiveDto: UpdateArchiveDto) {
     const existingArchive = await this.prisma.archive.findUnique({
       where: { id },
@@ -140,32 +153,41 @@ export class ArchiveService {
   async importExcel(buffer: Buffer, archiveType: string) {
     // 1. Baca Buffer Excel menjadi JSON
     const workbook = xlsx.read(buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames?.[0]; // Ambil sheet pertama
+    const sheetName = workbook.SheetNames?.[0];
     if (!sheetName) {
       return { success: 0, skipped: 0, total: 0 };
     }
     const sheet = workbook.Sheets[sheetName];
     const rows = xlsx.utils.sheet_to_json<any>(sheet);
 
-    // 2. Ambil semua arsip existing untuk cek duplikasi secara efisien di memori (Set)
+    console.log(
+      `[IMPORT] Memproses import Excel untuk jenis: "${archiveType}", Total baris dibaca: ${rows.length}`,
+    );
+    if (rows.length > 0) {
+      console.log('[IMPORT] Sample kolom baris pertama:', Object.keys(rows[0]));
+    }
+
+    // 2. Ambil semua arsip existing DENGAN archiveType untuk cek duplikasi secara spesifik per jenis arsip
     const existingArchives = await this.prisma.archive.findMany({
-      select: { title: true, author: true, year: true },
+      where: { archiveType: archiveType },
+      select: { title: true, author: true, year: true, archiveType: true },
     });
     const existingSet = new Set(
       existingArchives.map(
         (a) =>
-          `${(a.title || '').trim().toLowerCase()}|${(a.author || '').trim().toLowerCase()}|${a.year}`,
+          `${(a.title || '').trim().toLowerCase()}|${(a.author || '').trim().toLowerCase()}|${a.year}|${(a.archiveType || '').trim().toLowerCase()}`,
       ),
     );
 
-let prefix = 'UMM';
+    let prefix = 'UMM';
     if (archiveType === 'Skripsi') prefix = 'SKR';
     else if (archiveType === 'Ringkasan Skripsi') prefix = 'RKS';
     else if (archiveType === 'Naskah Publikasi') prefix = 'NPB';
+
     let nextSeqNumber = 1;
     const lastArchive = await this.prisma.archive.findFirst({
       where: { archiveCode: { startsWith: `${prefix}-` } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { archiveCode: 'desc' },
     });
     if (lastArchive && lastArchive.archiveCode) {
       const lastNumberStr = lastArchive.archiveCode.split('-')[1];
@@ -177,64 +199,154 @@ let prefix = 'UMM';
     let skippedCount = 0;
 
     for (const row of rows) {
-      // 3. Ekstrak data (Handle nama kolom yang beda kapitalisasinya)
-      const title = row['JUDUL'] || row['Judul'] || row['judul'];
-      const author = row['PENULIS'] || row['Penulis'] || row['penulis'];
-      const yearRaw = row['TAHUN'] || row['Tahun'] || row['tahun'];
-      let category = row['KATEGORI'] || row['Kategori'] || row['kategori'];
-      const quantityRaw = row['JUMLAH'] || row['Jumlah'] || row['jumlah'];
-      const shelfLocation = row['Lokasi Rak'] || row['LOKASI RAK'] || null;
+      let title = '';
+      let author = '';
+      let year: number | null = null;
+      let category = 'Umum';
+      let quantity = 1;
+      let shelfLocation: string | null = null;
 
-      // 4. Validasi kolom wajib (Skip jika kosong)
-      if (
-        !title ||
-        !author ||
-        !yearRaw ||
-        quantityRaw === undefined ||
-        quantityRaw === null
-      ) {
+      // 3. Ekstrak data secara fleksibel (toleran terhadap variasi nama kolom dan huruf besar/kecil)
+      for (const [rawKey, rawVal] of Object.entries(row)) {
+        if (rawVal === undefined || rawVal === null) continue;
+        const key = rawKey.trim().toLowerCase();
+        const val = rawVal.toString().trim();
+        if (!val) continue;
+
+        if (
+          !title &&
+          (key.includes('judul') ||
+            key.includes('title') ||
+            key.includes('naskah') ||
+            key.includes('makalah') ||
+            key.includes('karya') ||
+            key === 'skripsi')
+        ) {
+          title = val;
+        } else if (
+          !author &&
+          (key.includes('penulis') ||
+            key.includes('author') ||
+            key.includes('pengarang') ||
+            key === 'nama' ||
+            key === 'nama mahasiswa' ||
+            key.startsWith('nama'))
+        ) {
+          if (
+            !key.includes('pembimbing') &&
+            !key.includes('penguji') &&
+            !key.includes('dosen')
+          ) {
+            author = val;
+          }
+        } else if (
+          year === null &&
+          (key.includes('tahun') || key.includes('year') || key.includes('thn'))
+        ) {
+          const match = val.match(/\b(19\d{2}|20\d{2})\b/);
+          if (match) {
+            year = parseInt(match[0], 10);
+          }
+        } else if (
+          key.includes('kategori') ||
+          key.includes('category') ||
+          key.includes('bidang') ||
+          key.includes('topik') ||
+          key.includes('peminatan')
+        ) {
+          category = val;
+        } else if (
+          key.includes('jumlah') ||
+          key.includes('stok') ||
+          key.includes('qty') ||
+          key.includes('stock') ||
+          key.includes('eks')
+        ) {
+          const parsedQty = parseInt(val, 10);
+          if (!isNaN(parsedQty) && parsedQty > 0) {
+            quantity = parsedQty;
+          }
+        } else if (
+          key.includes('lokasi') ||
+          key.includes('rak') ||
+          key.includes('shelf') ||
+          key.includes('lemari')
+        ) {
+          shelfLocation = val;
+        }
+      }
+
+      // Fallback matching jika belum terdeteksi dari perulangan
+      if (!title) {
+        title =
+          row['JUDUL'] ||
+          row['Judul'] ||
+          row['judul'] ||
+          row['Title'] ||
+          row['TITLE'] ||
+          '';
+      }
+      if (!author) {
+        author =
+          row['PENULIS'] ||
+          row['Penulis'] ||
+          row['penulis'] ||
+          row['NAMA'] ||
+          row['Nama'] ||
+          row['nama'] ||
+          '';
+      }
+      if (year === null) {
+        const rawYear =
+          row['TAHUN'] ||
+          row['Tahun'] ||
+          row['tahun'] ||
+          row['Year'] ||
+          row['YEAR'];
+        if (rawYear) {
+          const match = rawYear.toString().match(/\b(19\d{2}|20\d{2})\b/);
+          year = match
+            ? parseInt(match[0], 10)
+            : parseInt(rawYear.toString(), 10);
+        }
+        if (!year || isNaN(year)) {
+          year = new Date().getFullYear();
+        }
+      }
+
+      // 4. Validasi kolom wajib (Skip HANYA jika Judul atau Penulis kosong)
+      if (!title || !author) {
         skippedCount++;
         continue;
       }
 
-      // 5. Cleansing Data
-      if (!category) category = 'Umum'; // Handle NaN / kosong
+      // 5. Cleansing Kategori
+      if (!category) category = 'Umum';
       if (
         typeof category === 'string' &&
         category.trim().toLowerCase() === 'machine larning'
       ) {
-        category = 'Machine Learning'; // Fix Typo
-      }
-
-      const year = parseInt(yearRaw.toString(), 10);
-      const quantity = parseInt(quantityRaw.toString(), 10);
-
-      // Lewati jika tahun atau jumlah gagal di-parse menjadi angka
-      if (isNaN(year) || isNaN(quantity)) {
-        skippedCount++;
-        continue;
+        category = 'Machine Learning';
       }
 
       const titleStr = title.toString().trim();
       const authorStr = author.toString().trim();
 
-      // 6. Cek Duplikasi
-      const uniqueKey = `${titleStr.toLowerCase()}|${authorStr.toLowerCase()}|${year}`;
+      // 6. Cek Duplikasi (Spesifik per jenis arsip)
+      const uniqueKey = `${titleStr.toLowerCase()}|${authorStr.toLowerCase()}|${year}|${archiveType.trim().toLowerCase()}`;
       if (existingSet.has(uniqueKey)) {
         skippedCount++;
-        continue; // Skip jika sudah ada di database atau sudah ditambahkan dari baris Excel sebelumnya
+        continue;
       }
 
-      // Tandai sudah diproses agar tidak ada duplikasi internal di dalam file Excel itu sendiri
       existingSet.add(uniqueKey);
 
-     const paddedNumber = nextSeqNumber.toString().padStart(4, '0');
+      const paddedNumber = nextSeqNumber.toString().padStart(4, '0');
       const generatedCode = `${prefix}-${paddedNumber}`;
-      nextSeqNumber++; 
+      nextSeqNumber++;
 
-      // Siapkan data yang valid
       validDataToInsert.push({
-        archiveCode: generatedCode, 
+        archiveCode: generatedCode,
         title: titleStr,
         author: authorStr,
         year: year,
@@ -245,12 +357,16 @@ let prefix = 'UMM';
       });
     }
 
-    // 7. Bulk Insert
+    // 7. Bulk Insert ke Database
     if (validDataToInsert.length > 0) {
       await this.prisma.archive.createMany({
         data: validDataToInsert,
       });
     }
+
+    console.log(
+      `[IMPORT] Selesai: Berhasil insert ${validDataToInsert.length} baris, Skip ${skippedCount} baris`,
+    );
 
     return {
       success: validDataToInsert.length,

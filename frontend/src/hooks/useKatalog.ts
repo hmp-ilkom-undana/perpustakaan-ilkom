@@ -16,10 +16,18 @@ export function useKatalog() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CatalogItem | null>(null);
+
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [detailItem, setDetailItem] = useState<CatalogItem | null>(null);
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletingItem, setDeletingItem] = useState<CatalogItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [isImportSheetOpen, setIsImportSheetOpen] = useState(false);
   const [importType, setImportType] = useState<ArchiveType>("Skripsi");
@@ -36,17 +44,31 @@ export function useKatalog() {
     location: "",
   });
 
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, filterCategory, filterType]);
+
   useEffect(() => {
     loadData();
-  }, [currentPage, filterCategory, filterType]);
+  }, [currentPage, debouncedSearch, filterCategory, filterType]);
 
   const loadData = async (searchOverride?: string) => {
     setIsLoading(true);
     try {
+      const activeSearch = searchOverride !== undefined ? searchOverride : debouncedSearch;
       const response = await fetchArchives({
         page: currentPage,
         limit: 10,
-        search: searchOverride !== undefined ? searchOverride : searchQuery,
+        search: activeSearch.trim() || undefined,
         category: filterCategory || undefined,
         type: filterType || undefined,
       });
@@ -66,6 +88,7 @@ export function useKatalog() {
 
       setData(mapped);
       setTotalPages(response.meta.totalPages || 1);
+      setTotalRecords(response.meta.total || 0);
     } catch (error) {
       toast.error("Gagal mengambil data dari server");
     } finally {
@@ -75,12 +98,19 @@ export function useKatalog() {
 
   const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      setDebouncedSearch(searchQuery);
       if (currentPage !== 1) {
         setCurrentPage(1);
       } else {
         loadData(searchQuery);
       }
     }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setDebouncedSearch("");
+    setCurrentPage(1);
   };
 
   const handleOpenAdd = () => {
@@ -97,21 +127,35 @@ export function useKatalog() {
     setIsSheetOpen(true);
   };
 
+  const handleOpenDetail = (item: CatalogItem) => {
+    setDetailItem(item);
+    setIsDetailOpen(true);
+  };
+
   const handleOpenEdit = (item: CatalogItem) => {
     setEditingItem(item);
     setFormData({ ...item });
     setIsSheetOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Yakin ingin menghapus arsip ini?")) {
-      try {
-        await deleteArchive(id);
-        toast.success("Arsip berhasil dihapus");
-        loadData();
-      } catch (error) {
-        toast.error("Gagal menghapus arsip");
-      }
+  const handleOpenDelete = (item: CatalogItem) => {
+    setDeletingItem(item);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingItem) return;
+    setIsDeleting(true);
+    try {
+      await deleteArchive(deletingItem.id);
+      toast.success(`Arsip [${deletingItem.archiveCode}] berhasil dihapus`);
+      setIsDeleteDialogOpen(false);
+      setDeletingItem(null);
+      loadData();
+    } catch {
+      toast.error("Gagal menghapus data arsip");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -163,9 +207,15 @@ export function useKatalog() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const { success, skipped, total } = response.data;
-      toast.success(
-        `Import selesai! Sukses: ${success}, Di-skip: ${skipped} (Total dibaca: ${total})`,
-      );
+      if (success === 0 && skipped > 0) {
+        toast.info("Tidak Ada Data Baru", {
+          description: `Semua ${skipped} data dalam file sudah ada di database.`,
+        });
+      } else {
+        toast.success(`Import Data [${importType}] Berhasil!`, {
+          description: `${success} arsip berhasil ditambahkan (${skipped} duplikat dilewati dari total ${total} data).`,
+        });
+      }
       setIsImportSheetOpen(false);
       loadData();
     } catch (error: any) {
@@ -189,10 +239,18 @@ export function useKatalog() {
     currentPage,
     setCurrentPage,
     totalPages,
+    totalRecords,
     isLoading,
     isSheetOpen,
     setIsSheetOpen,
     editingItem,
+    isDetailOpen,
+    setIsDetailOpen,
+    detailItem,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    deletingItem,
+    isDeleting,
     formData,
     setFormData,
     isImportSheetOpen,
@@ -202,9 +260,12 @@ export function useKatalog() {
     isImporting,
     fileInputRef,
     handleSearchSubmit,
+    handleClearSearch,
     handleOpenAdd,
+    handleOpenDetail,
     handleOpenEdit,
-    handleDelete,
+    handleOpenDelete,
+    handleConfirmDelete,
     handleSave,
     handleImport,
   };

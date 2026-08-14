@@ -1,4 +1,4 @@
-import { Search, Plus, Filter } from "lucide-react";
+import { Search, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,6 +7,8 @@ import { KatalogDesktopTable } from "./components/KatalogDesktopTable";
 import { KatalogMobileList } from "./components/KatalogMobileList";
 import { KatalogFormSheet } from "./components/KatalogFormSheet";
 import { KatalogImportSheet } from "./components/KatalogImportSheet";
+import { KatalogDetailSheet } from "./components/KatalogDetailSheet";
+import { KatalogDeleteDialog } from "./components/KatalogDeleteDialog";
 
 export default function KatalogAdmin() {
   const {
@@ -16,18 +18,27 @@ export default function KatalogAdmin() {
     filterType, setFilterType,
     currentPage, setCurrentPage,
     totalPages,
+    totalRecords,
     isLoading,
     isSheetOpen, setIsSheetOpen,
     editingItem,
+    isDetailOpen, setIsDetailOpen,
+    detailItem,
+    isDeleteDialogOpen, setIsDeleteDialogOpen,
+    deletingItem,
+    isDeleting,
     formData, setFormData,
     isImportSheetOpen, setIsImportSheetOpen,
     importType, setImportType,
     isImporting,
     fileInputRef,
     handleSearchSubmit,
+    handleClearSearch,
     handleOpenAdd,
+    handleOpenDetail,
     handleOpenEdit,
-    handleDelete,
+    handleOpenDelete,
+    handleConfirmDelete,
     handleSave,
     handleImport
   } = useKatalog();
@@ -66,18 +77,26 @@ export default function KatalogAdmin() {
       {/* SEARCH & FILTER BAR */}
       <div className="bg-white p-4 border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col md:flex-row gap-4 items-center relative z-20">
         <div className="relative w-full md:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
           <Input
-            placeholder="Ketik lalu tekan Enter untuk mencari..."
-            className="pl-10 w-full"
+            placeholder="Cari berdasarkan judul, penulis, atau kode arsip..."
+            className="pl-10 pr-10 w-full border-2 border-blue-900 bg-white font-semibold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-none h-10 placeholder:text-slate-400"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleSearchSubmit}
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 transition-colors cursor-pointer p-1"
+              title="Hapus pencarian"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
         <div className="w-full md:w-auto flex flex-col md:flex-row items-center gap-2">
-          <Filter className="h-5 w-5 text-slate-400 hidden md:block" />
-
           <Select
             value={filterType}
             onValueChange={(val) => {
@@ -125,23 +144,33 @@ export default function KatalogAdmin() {
         <KatalogMobileList
           data={data}
           isLoading={isLoading}
+          onDetail={handleOpenDetail}
           onEdit={handleOpenEdit}
-          onDelete={handleDelete}
+          onDelete={handleOpenDelete}
         />
 
         {/* DESKTOP VIEW */}
         <KatalogDesktopTable
           data={data}
           isLoading={isLoading}
+          currentPage={currentPage}
+          pageSize={10}
+          onDetail={handleOpenDetail}
           onEdit={handleOpenEdit}
-          onDelete={handleDelete}
+          onDelete={handleOpenDelete}
         />
 
         {/* PAGINATION UI */}
-        <div className="p-4 border-t-2 border-blue-900 flex justify-between items-center bg-slate-50">
-          <span className="text-sm text-blue-900 font-bold uppercase tracking-wider">
-            Halaman {currentPage} dari {totalPages}
-          </span>
+        <div className="p-4 border-t-2 border-blue-900 flex flex-col sm:flex-row justify-between items-center gap-3 bg-slate-50">
+          <div className="flex items-center gap-2 text-sm text-blue-950 font-bold">
+            <span className="uppercase tracking-wider text-xs text-slate-600 font-bold">
+              Total <span className="text-blue-900 font-black">{totalRecords}</span> Arsip
+            </span>
+            <span className="text-xs text-slate-300">•</span>
+            <span className="text-xs text-slate-600 font-medium">
+              Halaman {currentPage} dari {totalPages}
+            </span>
+          </div>
           <div className="flex gap-2">
             <Button
               variant="outline" size="sm"
@@ -162,6 +191,23 @@ export default function KatalogAdmin() {
           </div>
         </div>
       </div>
+
+      {/* DETAIL SHEET */}
+      <KatalogDetailSheet
+        isOpen={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        item={detailItem}
+        onEdit={handleOpenEdit}
+      />
+
+      {/* DELETE CONFIRMATION DIALOG */}
+      <KatalogDeleteDialog
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        item={deletingItem}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+      />
 
       {/* FORM & IMPORT SHEETS */}
       <KatalogFormSheet
