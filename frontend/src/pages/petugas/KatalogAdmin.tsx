@@ -1,4 +1,4 @@
-import { Search, Plus, Filter } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -86,8 +86,6 @@ export default function KatalogAdmin() {
           />
         </div>
         <div className="w-full md:w-auto flex flex-col md:flex-row items-center gap-2">
-          <Filter className="h-5 w-5 text-slate-400 hidden md:block" />
-
           <Select
             value={filterType}
             onValueChange={(val) => {
@@ -153,18 +151,12 @@ export default function KatalogAdmin() {
 
         {/* PAGINATION UI */}
         <div className="p-4 border-t-2 border-blue-900 flex flex-col sm:flex-row justify-between items-center gap-3 bg-slate-50">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 text-sm text-blue-950 font-bold">
-            <span className="uppercase tracking-wider text-xs text-slate-600">
-              Menampilkan{" "}
-              <span className="text-blue-900 font-black">
-                {data.length > 0 ? (currentPage - 1) * 10 + 1 : 0}–
-                {Math.min(currentPage * 10, totalRecords)}
-              </span>{" "}
-              dari{" "}
-              <span className="text-blue-900 font-black">{totalRecords}</span> arsip
+          <div className="flex items-center gap-2 text-sm text-blue-950 font-bold">
+            <span className="uppercase tracking-wider text-xs text-slate-600 font-bold">
+              Total <span className="text-blue-900 font-black">{totalRecords}</span> Arsip
             </span>
-            <span className="text-xs text-slate-400 hidden sm:inline">•</span>
-            <span className="text-xs text-slate-500 font-medium">
+            <span className="text-xs text-slate-300">•</span>
+            <span className="text-xs text-slate-600 font-medium">
               Halaman {currentPage} dari {totalPages}
             </span>
           </div>
