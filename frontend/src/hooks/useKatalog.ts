@@ -207,9 +207,15 @@ export function useKatalog() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const { success, skipped, total } = response.data;
-      toast.success(
-        `Import selesai! Sukses: ${success}, Di-skip: ${skipped} (Total dibaca: ${total})`,
-      );
+      if (success === 0 && skipped > 0) {
+        toast.info("Tidak Ada Data Baru", {
+          description: `Semua ${skipped} data dalam file sudah ada di database.`,
+        });
+      } else {
+        toast.success(`Import Data [${importType}] Berhasil!`, {
+          description: `${success} arsip berhasil ditambahkan (${skipped} duplikat dilewati dari total ${total} data).`,
+        });
+      }
       setIsImportSheetOpen(false);
       loadData();
     } catch (error: any) {
