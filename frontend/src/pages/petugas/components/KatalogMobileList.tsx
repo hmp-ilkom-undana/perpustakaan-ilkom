@@ -8,7 +8,7 @@ interface Props {
   isLoading: boolean;
   onDetail: (item: CatalogItem) => void;
   onEdit: (item: CatalogItem) => void;
-  onDelete: (id: string) => void;
+  onDelete: (item: CatalogItem) => void;
 }
 
 export function KatalogMobileList({
@@ -98,7 +98,7 @@ export function KatalogMobileList({
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => onDelete(item.id)}
+                  onClick={() => onDelete(item)}
                   className="h-9 w-9 border-2 border-blue-900 text-red-600 bg-red-50 hover:bg-red-100 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
                   title="Hapus Arsip"
                 >

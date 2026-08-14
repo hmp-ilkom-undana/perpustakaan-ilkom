@@ -8,6 +8,7 @@ import { KatalogMobileList } from "./components/KatalogMobileList";
 import { KatalogFormSheet } from "./components/KatalogFormSheet";
 import { KatalogImportSheet } from "./components/KatalogImportSheet";
 import { KatalogDetailSheet } from "./components/KatalogDetailSheet";
+import { KatalogDeleteDialog } from "./components/KatalogDeleteDialog";
 
 export default function KatalogAdmin() {
   const {
@@ -23,6 +24,9 @@ export default function KatalogAdmin() {
     editingItem,
     isDetailOpen, setIsDetailOpen,
     detailItem,
+    isDeleteDialogOpen, setIsDeleteDialogOpen,
+    deletingItem,
+    isDeleting,
     formData, setFormData,
     isImportSheetOpen, setIsImportSheetOpen,
     importType, setImportType,
@@ -32,7 +36,8 @@ export default function KatalogAdmin() {
     handleOpenAdd,
     handleOpenDetail,
     handleOpenEdit,
-    handleDelete,
+    handleOpenDelete,
+    handleConfirmDelete,
     handleSave,
     handleImport
   } = useKatalog();
@@ -132,7 +137,7 @@ export default function KatalogAdmin() {
           isLoading={isLoading}
           onDetail={handleOpenDetail}
           onEdit={handleOpenEdit}
-          onDelete={handleDelete}
+          onDelete={handleOpenDelete}
         />
 
         {/* DESKTOP VIEW */}
@@ -143,7 +148,7 @@ export default function KatalogAdmin() {
           pageSize={10}
           onDetail={handleOpenDetail}
           onEdit={handleOpenEdit}
-          onDelete={handleDelete}
+          onDelete={handleOpenDelete}
         />
 
         {/* PAGINATION UI */}
@@ -190,6 +195,15 @@ export default function KatalogAdmin() {
         onOpenChange={setIsDetailOpen}
         item={detailItem}
         onEdit={handleOpenEdit}
+      />
+
+      {/* DELETE CONFIRMATION DIALOG */}
+      <KatalogDeleteDialog
+        isOpen={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        item={deletingItem}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
       />
 
       {/* FORM & IMPORT SHEETS */}

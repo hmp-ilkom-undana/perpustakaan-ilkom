@@ -25,6 +25,10 @@ export function useKatalog() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [detailItem, setDetailItem] = useState<CatalogItem | null>(null);
 
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletingItem, setDeletingItem] = useState<CatalogItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [isImportSheetOpen, setIsImportSheetOpen] = useState(false);
   const [importType, setImportType] = useState<ArchiveType>("Skripsi");
   const [isImporting, setIsImporting] = useState(false);
@@ -113,15 +117,24 @@ export function useKatalog() {
     setIsSheetOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Yakin ingin menghapus arsip ini?")) {
-      try {
-        await deleteArchive(id);
-        toast.success("Arsip berhasil dihapus");
-        loadData();
-      } catch (error) {
-        toast.error("Gagal menghapus arsip");
-      }
+  const handleOpenDelete = (item: CatalogItem) => {
+    setDeletingItem(item);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingItem) return;
+    setIsDeleting(true);
+    try {
+      await deleteArchive(deletingItem.id);
+      toast.success(`Arsip [${deletingItem.archiveCode}] berhasil dihapus`);
+      setIsDeleteDialogOpen(false);
+      setDeletingItem(null);
+      loadData();
+    } catch {
+      toast.error("Gagal menghapus data arsip");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -207,6 +220,10 @@ export function useKatalog() {
     isDetailOpen,
     setIsDetailOpen,
     detailItem,
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    deletingItem,
+    isDeleting,
     formData,
     setFormData,
     isImportSheetOpen,
@@ -219,7 +236,8 @@ export function useKatalog() {
     handleOpenAdd,
     handleOpenDetail,
     handleOpenEdit,
-    handleDelete,
+    handleOpenDelete,
+    handleConfirmDelete,
     handleSave,
     handleImport,
   };
