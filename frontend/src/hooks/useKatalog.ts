@@ -44,17 +44,31 @@ export function useKatalog() {
     location: "",
   });
 
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, filterCategory, filterType]);
+
   useEffect(() => {
     loadData();
-  }, [currentPage, filterCategory, filterType]);
+  }, [currentPage, debouncedSearch, filterCategory, filterType]);
 
   const loadData = async (searchOverride?: string) => {
     setIsLoading(true);
     try {
+      const activeSearch = searchOverride !== undefined ? searchOverride : debouncedSearch;
       const response = await fetchArchives({
         page: currentPage,
         limit: 10,
-        search: searchOverride !== undefined ? searchOverride : searchQuery,
+        search: activeSearch.trim() || undefined,
         category: filterCategory || undefined,
         type: filterType || undefined,
       });
@@ -84,12 +98,19 @@ export function useKatalog() {
 
   const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      setDebouncedSearch(searchQuery);
       if (currentPage !== 1) {
         setCurrentPage(1);
       } else {
         loadData(searchQuery);
       }
     }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setDebouncedSearch("");
+    setCurrentPage(1);
   };
 
   const handleOpenAdd = () => {
@@ -233,6 +254,7 @@ export function useKatalog() {
     isImporting,
     fileInputRef,
     handleSearchSubmit,
+    handleClearSearch,
     handleOpenAdd,
     handleOpenDetail,
     handleOpenEdit,

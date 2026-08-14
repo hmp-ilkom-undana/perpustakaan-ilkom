@@ -1,4 +1,4 @@
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -33,6 +33,7 @@ export default function KatalogAdmin() {
     isImporting,
     fileInputRef,
     handleSearchSubmit,
+    handleClearSearch,
     handleOpenAdd,
     handleOpenDetail,
     handleOpenEdit,
@@ -76,14 +77,24 @@ export default function KatalogAdmin() {
       {/* SEARCH & FILTER BAR */}
       <div className="bg-white p-4 border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col md:flex-row gap-4 items-center relative z-20">
         <div className="relative w-full md:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
           <Input
-            placeholder="Ketik lalu tekan Enter untuk mencari..."
-            className="pl-10 w-full"
+            placeholder="Cari berdasarkan judul, penulis, atau kode arsip..."
+            className="pl-10 pr-10 w-full border-2 border-blue-900 bg-white font-semibold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-none h-10 placeholder:text-slate-400"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleSearchSubmit}
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 transition-colors cursor-pointer p-1"
+              title="Hapus pencarian"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
         <div className="w-full md:w-auto flex flex-col md:flex-row items-center gap-2">
           <Select

@@ -31,6 +31,7 @@ export class ArchiveService {
 
     if (search) {
       where.OR = [
+        { archiveCode: { contains: search, mode: 'insensitive' } },
         { title: { contains: search, mode: 'insensitive' } },
         { author: { contains: search, mode: 'insensitive' } },
         { id: { contains: search, mode: 'insensitive' } },
