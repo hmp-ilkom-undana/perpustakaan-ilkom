@@ -21,13 +21,46 @@ export const userService = {
     return response.data;
   },
 
-  getStudents: async (): Promise<UserItem[]> => {
-    const response = await api.get("/api/users/students");
+  getStudents: async (search?: string): Promise<UserItem[]> => {
+    const response = await api.get("/api/users/students", {
+      params: search ? { search } : undefined,
+    });
     return response.data;
   },
 
-  getStaff: async (): Promise<UserItem[]> => {
-    const response = await api.get("/api/users/staff");
+  getStaff: async (search?: string): Promise<UserItem[]> => {
+    const response = await api.get("/api/users/staff", {
+      params: search ? { search } : undefined,
+    });
+    return response.data;
+  },
+
+  createStaff: async (data: {
+    name: string;
+    email: string;
+    wa_number?: string;
+    password?: string;
+    status?: string;
+  }) => {
+    const response = await api.post("/api/users/staff", data);
+    return response.data;
+  },
+
+  updateStaff: async (
+    id: string,
+    data: {
+      name?: string;
+      email?: string;
+      wa_number?: string;
+      status?: string;
+    }
+  ) => {
+    const response = await api.patch(`/api/users/staff/${id}`, data);
+    return response.data;
+  },
+
+  deleteStaff: async (id: string) => {
+    const response = await api.delete(`/api/users/staff/${id}`);
     return response.data;
   },
 

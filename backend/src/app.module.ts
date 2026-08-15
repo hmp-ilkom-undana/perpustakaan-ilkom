@@ -9,6 +9,7 @@ import { ArchiveModule } from './archive/archive.module';
 import { BorrowingModule } from './borrowing/borrowing.module';
 import { CronModule } from './cron/cron.module';
 import { FineModule } from './fine/fine.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { FineModule } from './fine/fine.module';
     BorrowingModule,
     CronModule,
     FineModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

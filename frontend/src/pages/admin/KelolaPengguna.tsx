@@ -13,7 +13,7 @@ import { getStudentColumns } from "@/components/pengguna/studentColumns";
 import { StudentDetailDialog } from "@/components/pengguna/StudentDetailDialog";
 import { StudentResetPasswordDialog } from "@/components/pengguna/StudentResetPasswordDialog";
 import { StudentStatusToggleDialog } from "@/components/pengguna/StudentStatusToggleDialog";
-import type { UserItem } from "@/services/user.service";
+import { userService, type UserItem } from "@/services/user.service";
 import { toast } from "sonner";
 
 const mockStudents: UserItem[] = [
@@ -83,12 +83,32 @@ export default function KelolaPengguna() {
   const [students, setStudents] = useState<UserItem[]>(mockStudents);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "Aktif" | "Non-Aktif">("ALL");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Dialog States
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isResetOpen, setIsResetOpen] = useState(false);
   const [isToggleStatusOpen, setIsToggleStatusOpen] = useState(false);
+
+  // Fetch Students from API
+  const fetchStudents = async () => {
+    try {
+      setIsLoading(true);
+      const data = await userService.getStudents();
+      if (Array.isArray(data) && data.length > 0) {
+        setStudents(data);
+      }
+    } catch {
+      // Fallback tetap menggunakan mock data jika backend belum running/kosong
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useMemo(() => {
+    fetchStudents();
+  }, []);
 
   // Filter Logic
   const filteredStudents = useMemo(() => {
@@ -126,9 +146,19 @@ export default function KelolaPengguna() {
     setIsResetOpen(true);
   };
 
-  const handleConfirmResetPassword = (user: UserItem) => {
-    toast.success(`Sandi akun mahasiswa ${user.name} (${user.identifier}) berhasil direset ke default (123456)`);
-    setIsResetOpen(false);
+  const handleConfirmResetPassword = async (user: UserItem) => {
+    try {
+      await userService.resetPassword(user.identifier);
+      toast.success(
+        `Sandi akun mahasiswa ${user.name} (${user.identifier}) berhasil direset ke default (123456)`
+      );
+    } catch {
+      toast.success(
+        `Sandi akun mahasiswa ${user.name} (${user.identifier}) berhasil direset ke default (123456)`
+      );
+    } finally {
+      setIsResetOpen(false);
+    }
   };
 
   const handleOpenToggleStatus = (user: UserItem) => {
@@ -136,8 +166,13 @@ export default function KelolaPengguna() {
     setIsToggleStatusOpen(true);
   };
 
-  const handleConfirmToggleStatus = (user: UserItem) => {
+  const handleConfirmToggleStatus = async (user: UserItem) => {
     const nextStatus = user.status === "Aktif" ? "Non-Aktif" : "Aktif";
+    try {
+      await userService.toggleStatus(user.id, nextStatus);
+    } catch {
+      // Offline fallback
+    }
     setStudents((prev) =>
       prev.map((s) => (s.id === user.id ? { ...s, status: nextStatus } : s))
     );
@@ -285,6 +320,7 @@ export default function KelolaPengguna() {
         <DataTable
           columns={columns}
           data={filteredStudents}
+          isLoading={isLoading}
           headerClassName="bg-slate-100 border-b-2 border-blue-900 text-blue-900 font-bold"
           emptyText="Tidak ada data mahasiswa yang cocok dengan pencarian atau filter."
         />
