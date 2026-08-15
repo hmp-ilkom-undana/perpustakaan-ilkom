@@ -108,12 +108,11 @@ export class FineService {
       this.prisma.borrowing.findMany({
         where: {
           fineAmount: { gt: 0 },
-          finePaidAt: { not: null },
+          finePaidAt: { gte: startOfMonth },
         },
         select: {
           id: true,
           fineAmount: true,
-          finePaidAt: true,
         },
       }),
     ]);
@@ -125,14 +124,11 @@ export class FineService {
     const unpaidCount = unpaidBorrowings.length;
 
     // Total denda terbayar (bulan ini)
-    const paidThisMonth = paidBorrowings.filter(
-      (item) => item.finePaidAt && item.finePaidAt >= startOfMonth,
-    );
-    const totalPaidAmount = paidThisMonth.reduce(
+    const totalPaidAmount = paidBorrowings.reduce(
       (sum, item) => sum + item.fineAmount,
       0,
     );
-    const paidCount = paidThisMonth.length;
+    const paidCount = paidBorrowings.length;
 
     // Mahasiswa terblokir (memiliki denda unpaid > 0)
     const blockedStudentsCount = new Set(

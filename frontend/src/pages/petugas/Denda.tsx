@@ -61,14 +61,17 @@ export default function Denda() {
 
   const handleConfirmPayment = async () => {
     if (!selectedFine) return;
-    await payFineMutation.mutateAsync({
-      id: selectedFine.id,
-      payload: {
-        paymentMethod,
-        notes: paymentNotes,
-      },
-    });
-    setIsPaymentOpen(false);
+    try {
+      await payFineMutation.mutateAsync({
+        id: selectedFine.id,
+        payload: {
+          paymentMethod,
+          notes: paymentNotes,
+        },
+      });
+      setIsPaymentOpen(false);
+    } catch {
+    }
   };
 
   const getFineBadgeStyle = (fineType: string) => {
