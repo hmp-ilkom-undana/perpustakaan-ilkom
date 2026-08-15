@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/useScroll";
+import { NavLogo } from "@/components/NavLogo";
 
 // Daftar Menu Mahasiswa
 const menus = [
@@ -67,13 +68,7 @@ export default function MahasiswaLayout() {
           >
             {/* Bagian Kiri: Logo & Nama Aplikasi */}
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-md border-2 border-blue-900 overflow-hidden relative flex-shrink-0 bg-white">
-                <img
-                  src="/assets/Logo_Ilkom.png"
-                  alt="Logo Ilkom"
-                  className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 scale-[1.8] origin-top object-cover max-w-none w-full"
-                />
-              </div>
+              <NavLogo size="md" variant="brutalist" />
 
               <h1 className="text-xl font-black text-blue-900 tracking-tight hidden sm:block uppercase">
                 Perpustakaan ILKOM

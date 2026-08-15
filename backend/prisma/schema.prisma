@@ -62,6 +62,12 @@ model Borrowing {
   catatanKondisiKembali String?
   fotoUrlKembali        String?
 
+  // Audit Pelunasan Denda (Fine Settlement)
+  finePaidAt            DateTime?
+  finePaymentMethod     String?
+  fineReceivedBy        String?
+  fineNotes             String?
+
   user                  User         @relation(fields: [userId], references: [id])
   archive               Archive      @relation(fields: [archiveId], references: [id])
 
