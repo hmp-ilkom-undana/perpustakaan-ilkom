@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -8,43 +8,16 @@ import {
   AlertCircle,
   ScanBarcode,
 } from "lucide-react";
-import {
-  CirculationItem,
-  CircStatus,
-} from "@/lib/mockData";
+import type { CirculationItem, CircStatus } from "@/services/borrowing.service";
 import { Badge } from "@/components/ui/badge";
-import api from "@/lib/api";
+import { useBorrowingActiveQuery } from "@/hooks/queries/useBorrowingQuery";
 
 export default function Sirkulasi() {
   const navigate = useNavigate();
-  const [data, setData] = useState<CirculationItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<CircStatus>("REQUESTED");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get("/api/borrowings/active");
-        const mappedData: CirculationItem[] = response.data.map((item: any) => ({
-          id: item.id,
-          studentName: item.user.name,
-          studentId: item.user.nim,
-          archiveTitle: item.archive.title,
-          archiveType: item.archive.archiveType,
-          status: item.status as CircStatus,
-          requestDate: item.borrowDate,
-          dueDate: item.returnDate || "-",
-          fine: item.fineAmount,
-          approvedBy: item.pickupCode ? "Petugas" : undefined,
-        }));
-        setData(mappedData);
-      } catch (error) {
-        console.error("Gagal mengambil data sirkulasi", error);
-      }
-    };
-    
-    fetchData();
-  }, []);
+  const { data = [], isPending } = useBorrowingActiveQuery();
 
   const filteredData = data.filter(
     (item) =>

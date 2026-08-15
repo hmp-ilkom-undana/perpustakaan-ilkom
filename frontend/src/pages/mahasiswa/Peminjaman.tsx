@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TicketProgress, ActiveTicketProps } from "@/components/TicketProgress";
 import api from "@/lib/api";
 
@@ -11,81 +11,59 @@ import {
   Loader2,
 } from "lucide-react";
 import { BorrowingRow } from "@/components/BorrowingRow";
+import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
+import { useQueryClient } from "@tanstack/react-query";
+import { BORROWING_QUERY_KEY } from "@/hooks/queries/useBorrowingQuery";
 
 export default function Peminjaman() {
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
-  const [tickets, setTickets] = useState<ActiveTicketProps[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchActiveBorrowings = async () => {
-    setIsLoading(true);
-    try {
-      const response = await api.get(
-        "/api/borrowings/my-history"
-      );
+  const { data: rawHistory = [], isPending: isLoading } = useMyBorrowingHistoryQuery();
 
-      const activeStatuses = [
-        "REQUESTED",
-        "WAITING_PICKUP",
-        "BORROWED",
-        "OVERDUE",
-      ];
+  const activeStatuses = ["REQUESTED", "WAITING_PICKUP", "BORROWED", "OVERDUE"];
 
-      const mappedData: ActiveTicketProps[] = response.data
-        .filter((item: any) => activeStatuses.includes(item.status))
-        .map((item: any) => ({
-          id: item.id,
-          pickupCode: item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`,
-          archiveTitle: item.archive.title,
-          archiveType: item.archive.archiveType,
-          status: item.status as
-            | "REQUESTED"
-            | "WAITING_PICKUP"
-            | "BORROWED"
-            | "OVERDUE",
-          requestDate: new Date(item.borrowDate).toLocaleDateString("id-ID", {
+  const tickets: ActiveTicketProps[] = rawHistory
+    .filter((item: any) => activeStatuses.includes(item.status))
+    .map((item: any) => ({
+      id: item.id,
+      pickupCode: item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`,
+      archiveTitle: item.archive.title,
+      archiveType: item.archive.archiveType,
+      status: item.status as "REQUESTED" | "WAITING_PICKUP" | "BORROWED" | "OVERDUE",
+      requestDate: new Date(item.borrowDate).toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      dueDate: item.returnDate
+        ? new Date(item.returnDate).toLocaleDateString("id-ID", {
             day: "2-digit",
             month: "short",
             year: "numeric",
-          }),
-          dueDate: item.returnDate
-            ? new Date(item.returnDate).toLocaleDateString("id-ID", {
+          })
+        : undefined,
+      accDate: item.accDate
+        ? new Date(item.accDate).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : undefined,
+      pickupDeadline: item.accDate
+        ? (() => {
+            const d = new Date(item.accDate);
+            d.setDate(d.getDate() + 3);
+            return (
+              d.toLocaleDateString("id-ID", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
-              })
-            : undefined,
-          accDate: item.accDate
-            ? new Date(item.accDate).toLocaleDateString("id-ID", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              })
-            : undefined,
-          pickupDeadline: item.accDate
-            ? (() => {
-                const d = new Date(item.accDate);
-                d.setDate(d.getDate() + 3);
-                return d.toLocaleDateString("id-ID", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                }) + ", 16:00";
-              })()
-            : undefined,
-        }));
-
-      setTickets(mappedData);
-    } catch (error) {
-      console.error("Gagal mengambil data peminjaman aktif:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchActiveBorrowings();
-  }, []);
+              }) + ", 16:00"
+            );
+          })()
+        : undefined,
+    }));
 
   const handleCancel = async (id: string) => {
     if (!window.confirm("Apakah Anda yakin ingin membatalkan antrean ini?")) {
@@ -95,12 +73,13 @@ export default function Peminjaman() {
     try {
       await api.post(`/api/borrowings/${id}/cancel`);
       alert("Antrean berhasil dibatalkan!");
-      fetchActiveBorrowings();
+      queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || "Terjadi kesalahan sistem saat membatalkan antrean.";
       alert(`Gagal membatalkan: ${errorMsg}`);
     }
   };
+
 
   return (
     <div className="flex flex-col gap-0 sm:gap-6 pb-6 sm:p-6 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
