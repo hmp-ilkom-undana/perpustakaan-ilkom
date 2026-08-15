@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useSession, authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
@@ -16,7 +16,7 @@ export default function Beranda() {
       await authClient.signOut();
       
       toast.success("Berhasil keluar dari sistem");
-      navigate("/login"); // Kembalikan ke halaman login
+      navigate({ to: "/login" }); // Kembalikan ke halaman login
     } catch (error) {
       toast.error("Gagal keluar dari sistem");
     }

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   ArrowRight,
@@ -12,9 +12,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import api from "@/lib/api";
+import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 
 interface BorrowingData {
   id: string;
@@ -35,24 +35,10 @@ interface BorrowingData {
 export default function DashboardMahasiswa() {
   const { data: session, isPending: isSessionLoading } =
     authClient.useSession();
-  const [borrowings, setBorrowings] = useState<BorrowingData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const [date, setDate] = useState<Date | undefined>(new Date());
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const response = await api.get("/api/borrowings/my-history");
-        setBorrowings(response.data);
-      } catch (error) {
-        console.error("Gagal mengambil riwayat:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchHistory();
-  }, []);
+  const { data: borrowings = [], isPending: isLoading } = useMyBorrowingHistoryQuery();
 
   if (isSessionLoading || isLoading) {
     return (

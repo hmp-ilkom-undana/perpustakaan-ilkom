@@ -1,0 +1,55 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { borrowingService } from "@/services/borrowing.service";
+import { toast } from "sonner";
+import { BORROWING_QUERY_KEY } from "./useBorrowingQuery";
+
+export function useApproveBorrowingMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => borrowingService.approve(id),
+    onSuccess: () => {
+      toast.success("Pengajuan berhasil di-ACC");
+      queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
+    },
+    onError: () => toast.error("Gagal mengubah status pengajuan"),
+  });
+}
+
+export function useRejectBorrowingMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      borrowingService.reject(id, reason),
+    onSuccess: () => {
+      toast.success("Pengajuan berhasil ditolak");
+      queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
+    },
+    onError: () => toast.error("Gagal menolak pengajuan"),
+  });
+}
+
+export function useHandoverBorrowingMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
+      borrowingService.handover(id, formData),
+    onSuccess: () => {
+      toast.success("Serah terima arsip berhasil dicatat");
+      queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
+    },
+    onError: () => toast.error("Gagal mencatat serah terima"),
+  });
+}
+
+export function useReturnBorrowingMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
+      borrowingService.returnItem(id, formData),
+    onSuccess: () => {
+      toast.success("Pengembalian berhasil dicatat");
+      queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
+    },
+    onError: () => toast.error("Gagal mencatat pengembalian"),
+  });
+}

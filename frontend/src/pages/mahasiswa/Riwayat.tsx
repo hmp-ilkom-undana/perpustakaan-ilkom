@@ -1,47 +1,34 @@
 import { HistoryRow, HistoryItemProps, HistoryStatus } from "@/components/HistoryRow";
 import { HistoryDetailDialog } from "@/components/HistoryDetailDialog";
 import { History, Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
-import api from "@/lib/api";
+import { useState } from "react";
+import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 
 export default function Riwayat() {
   const [selectedItem, setSelectedItem] = useState<HistoryItemProps | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [historyData, setHistoryData] = useState<HistoryItemProps[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const response = await api.get("/api/borrowings/my-history");
+  const { data: rawHistory = [], isPending: isLoading } = useMyBorrowingHistoryQuery();
 
-        const completedStatuses = ["RETURNED", "CANCELLED", "REJECTED", "DAMAGED", "LOST"];
-        
-        // Filter dan petakan (map) data dari backend
-        const mappedData: HistoryItemProps[] = response.data
-          .filter((item: any) => completedStatuses.includes(item.status))
-          .map((item: any) => ({
-            id: item.id,
-            pickupCode: item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`,
-            title: item.archive.title,
-            type: item.archive.archiveType,
-            borrowDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }),
-            returnDate: item.returnDate ? new Date(item.returnDate).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' }) : "-",
-            status: item.status as HistoryStatus,
-            fine: item.fineAmount,
-            note: item.catatanKondisiKembali || "-", 
-          }));
+  const completedStatuses = ["RETURNED", "CANCELLED", "REJECTED", "DAMAGED", "LOST"];
 
-        setHistoryData(mappedData);
-      } catch (error) {
-        console.error("Gagal mengambil riwayat:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const historyData: HistoryItemProps[] = rawHistory
+    .filter((item: any) => completedStatuses.includes(item.status))
+    .map((item: any) => ({
+      id: item.id,
+      pickupCode: item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`,
+      title: item.archive.title,
+      type: item.archive.archiveType,
+      borrowDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }),
+      returnDate: item.returnDate
+        ? new Date(item.returnDate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })
+        : "-",
+      status: item.status as HistoryStatus,
+      fine: item.fineAmount,
+      note: item.catatanKondisiKembali || "-",
+    }));
 
-    fetchHistory();
-  }, []);
+
 
   const handleOpenDetail = (item: HistoryItemProps) => {
     setSelectedItem(item);

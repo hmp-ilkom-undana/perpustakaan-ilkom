@@ -8,8 +8,13 @@ const dummyAuth = betterAuth({
     additionalFields: {
       role: {
         type: "string",
+        required: false,
+        defaultValue: "MAHASISWA",
       },
       nim: {
+        type: "string",
+      },
+      wa_number: {
         type: "string",
       },
     },

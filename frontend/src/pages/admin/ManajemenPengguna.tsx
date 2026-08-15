@@ -1,17 +1,9 @@
-import { useState } from "react";
-import { Search, MoreVertical, ShieldAlert } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Search, ShieldAlert } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DataTable } from "@/components/ui/data-table";
+import { getUserColumns } from "@/components/pengguna/columns";
+import type { UserItem } from "@/services/user.service";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,8 +15,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-// Dummy data
-const users = [
+const users: UserItem[] = [
   { id: "1", name: "Admin Utama", identifier: "admin@ilkom.com", role: "ADMIN", status: "Aktif" },
   { id: "2", name: "Petugas 1", identifier: "petugas@ilkom.com", role: "PETUGAS", status: "Aktif" },
   { id: "3", name: "Mahasiswa A", identifier: "M0521001", role: "MAHASISWA", status: "Aktif" },
@@ -35,23 +26,32 @@ const users = [
 export default function ManajemenPengguna() {
   const [search, setSearch] = useState("");
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<{ id: string; name: string; identifier: string } | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
 
-  const filteredUsers = users.filter((u) => 
-    u.name.toLowerCase().includes(search.toLowerCase()) || 
-    u.identifier.toLowerCase().includes(search.toLowerCase())
+  const filteredUsers = useMemo(
+    () =>
+      users.filter(
+        (u) =>
+          u.name.toLowerCase().includes(search.toLowerCase()) ||
+          u.identifier.toLowerCase().includes(search.toLowerCase())
+      ),
+    [search]
   );
 
-  const handleResetPassword = (user: typeof users[0]) => {
+  const handleResetPassword = (user: UserItem) => {
     setSelectedUser(user);
     setIsResetDialogOpen(true);
   };
 
   const confirmReset = () => {
-    // API Call to reset password would go here
     console.log("Resetting password for", selectedUser?.identifier);
     setIsResetDialogOpen(false);
   };
+
+  const columns = useMemo(
+    () => getUserColumns({ onResetPassword: handleResetPassword }),
+    []
+  );
 
   return (
     <div className="space-y-6">
@@ -75,95 +75,17 @@ export default function ManajemenPengguna() {
           </div>
         </div>
         
-        {/* Data Table */}
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow className="border-slate-200">
-                <TableHead className="font-semibold text-slate-600">Nama</TableHead>
-                <TableHead className="font-semibold text-slate-600">Email / NIM</TableHead>
-                <TableHead className="font-semibold text-slate-600">Role</TableHead>
-                <TableHead className="font-semibold text-slate-600">Status</TableHead>
-                <TableHead className="text-right font-semibold text-slate-600 w-[100px]">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id} className="border-slate-100 hover:bg-slate-50 transition-colors">
-                    <TableCell className="font-medium text-slate-900">{user.name}</TableCell>
-                    <TableCell className="text-slate-500">{user.identifier}</TableCell>
-                    <TableCell>
-                      {user.role === 'ADMIN' && (
-                        <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100">
-                          Admin
-                        </Badge>
-                      )}
-                      {user.role === 'PETUGAS' && (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100">
-                          Petugas
-                        </Badge>
-                      )}
-                      {user.role === 'MAHASISWA' && (
-                        <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100">
-                          Mahasiswa
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-                        {user.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium hover:bg-slate-100 hover:text-slate-900 h-8 w-8 text-slate-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-300">
-                          <span className="sr-only">Buka menu</span>
-                          <MoreVertical className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[200px]">
-                          <DropdownMenuLabel>Aksi Akun</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          {user.role === 'MAHASISWA' && (
-                            <DropdownMenuItem className="cursor-pointer">
-                              Jadikan Petugas
-                            </DropdownMenuItem>
-                          )}
-                          {user.role === 'PETUGAS' && (
-                            <DropdownMenuItem className="cursor-pointer">
-                              Turunkan ke Mahasiswa
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem 
-                            onClick={() => handleResetPassword(user)}
-                            className="text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer"
-                          >
-                            Reset Password
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-slate-500">
-                    Tidak ada data pengguna yang ditemukan.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        {/* TanStack Data Table */}
+        <DataTable
+          columns={columns}
+          data={filteredUsers}
+          headerClassName="bg-slate-50 border-b border-slate-200"
+          emptyText="Tidak ada data pengguna yang ditemukan."
+        />
         
-        {/* Pagination Placeholder */}
+        {/* Pagination Info */}
         <div className="p-4 border-t border-slate-100 flex items-center justify-between text-sm text-slate-500 bg-slate-50/50">
-          <div>Menampilkan 1 hingga 5 dari 5 pengguna</div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled>Sebelumnya</Button>
-            <Button variant="outline" size="sm" disabled>Selanjutnya</Button>
-          </div>
+          <div>Menampilkan {filteredUsers.length} dari {users.length} pengguna</div>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Search,
   Clock,
@@ -8,43 +8,16 @@ import {
   AlertCircle,
   ScanBarcode,
 } from "lucide-react";
-import {
-  CirculationItem,
-  CircStatus,
-} from "@/lib/mockData";
+import type { CirculationItem, CircStatus } from "@/services/borrowing.service";
 import { Badge } from "@/components/ui/badge";
-import api from "@/lib/api";
+import { useBorrowingActiveQuery } from "@/hooks/queries/useBorrowingQuery";
 
 export default function Sirkulasi() {
   const navigate = useNavigate();
-  const [data, setData] = useState<CirculationItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<CircStatus>("REQUESTED");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get("/api/borrowings/active");
-        const mappedData: CirculationItem[] = response.data.map((item: any) => ({
-          id: item.id,
-          studentName: item.user.name,
-          studentId: item.user.nim,
-          archiveTitle: item.archive.title,
-          archiveType: item.archive.archiveType,
-          status: item.status as CircStatus,
-          requestDate: item.borrowDate,
-          dueDate: item.returnDate || "-",
-          fine: item.fineAmount,
-          approvedBy: item.pickupCode ? "Petugas" : undefined,
-        }));
-        setData(mappedData);
-      } catch (error) {
-        console.error("Gagal mengambil data sirkulasi", error);
-      }
-    };
-    
-    fetchData();
-  }, []);
+  const { data = [], isPending } = useBorrowingActiveQuery();
 
   const filteredData = data.filter(
     (item) =>
@@ -109,7 +82,12 @@ export default function Sirkulasi() {
     return (
       <div
         key={item.id}
-        onClick={() => navigate(`/petugas/sirkulasi/${item.id}`)}
+        onClick={() =>
+          navigate({
+            to: "/petugas/sirkulasi/$id",
+            params: { id: item.id },
+          })
+        }
         className="group relative bg-white border border-slate-200 p-4 rounded-xl cursor-pointer hover:border-orange-500 hover:shadow-md hover:shadow-orange-500/10 transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
       >
         <div className="flex justify-between items-start mb-3">

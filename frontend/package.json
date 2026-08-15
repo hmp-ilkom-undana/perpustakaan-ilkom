@@ -15,6 +15,12 @@
     "@hookform/resolvers": "^5.4.0",
     "@phosphor-icons/react": "^2.1.10",
     "@tailwindcss/vite": "^4.3.1",
+    "@tanstack/react-query": "^5.101.4",
+    "@tanstack/react-query-devtools": "^5.101.4",
+    "@tanstack/react-router": "^1.170.29",
+    "@tanstack/react-table": "^8.20.6",
+    "@tanstack/router-devtools": "^1.167.1",
+    "@tanstack/router-plugin": "^1.168.32",
     "@tsparticles/react": "^4.3.1",
     "@tsparticles/slim": "^4.3.1",
     "axios": "^1.18.1",
@@ -30,7 +36,6 @@
     "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.81.0",
-    "react-router-dom": "^7.18.0",
     "recharts": "^3.10.0",
     "shadcn": "^4.13.0",
     "sonner": "^2.0.7",
@@ -51,6 +56,7 @@
     "globals": "^17.6.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.1",
+    "typescript": "^7.0.2",
     "vite": "^8.0.12"
   }
 }

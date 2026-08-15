@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArchiveCard } from "@/components/ArchiveCard";
 import { ArchiveDetailDialog } from "@/components/ArchiveDetailDialog";
-import api from "@/lib/api";
+import { usePublicArchiveQuery } from "@/hooks/queries/useArchiveQuery";
 import {
   Select,
   SelectContent,
@@ -24,27 +24,15 @@ interface ArchiveData {
 }
 
 export default function Katalog() {
-  const [archives, setArchives] = useState<ArchiveData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [selectedArchive, setSelectedArchive] = useState<any>(null);
   const [filterType, setFilterType] = useState<string>("Semua");
   const [filterCategory, setFilterCategory] = useState<string>("Semua");
   const [filterAvailability, setFilterAvailability] = useState<string>("Semua");
 
-  useEffect(() => {
-    const fetchArchives = async () => {
-      try {
-        const response = await api.get("/api/archives");
-        setArchives(response.data);
-      } catch (error) {
-        console.error("Error fetching archives:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArchives();
-  }, []);
+  const { data: rawArchives = [], isPending: loading } = usePublicArchiveQuery();
+  const archives: ArchiveData[] = Array.isArray(rawArchives)
+    ? rawArchives
+    : (rawArchives as any)?.data ?? [];
 
   const filteredArchives = archives.filter((archive) => {
     const matchType =

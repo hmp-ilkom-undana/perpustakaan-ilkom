@@ -1,10 +1,10 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "@tanstack/react-router";
 import { useSession } from "@/lib/auth-client";
 
 export default function ProtectedRoute({
   children,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   const { data, isPending } = useSession();
 
@@ -21,5 +21,6 @@ export default function ProtectedRoute({
   if (!data) {
     return <Navigate to="/login" replace />;
   }
-  return <>{children}</>;
+
+  return children ? <>{children}</> : <Outlet />;
 }

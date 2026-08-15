@@ -1,21 +1,24 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { CirculationItem } from "@/lib/mockData";
+import { useState, useRef } from "react";
+import { useParams, useNavigate } from "@tanstack/react-router";
+import type { CirculationItem } from "@/services/borrowing.service";
 import { ArrowLeft, CheckCircle, XCircle, Camera, CheckSquare, UploadCloud, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/CameraCapture";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import api from "@/lib/api";
+import { useBorrowingDetailQuery } from "@/hooks/queries/useBorrowingQuery";
+import {
+  useApproveBorrowingMutation,
+  useRejectBorrowingMutation,
+  useHandoverBorrowingMutation,
+  useReturnBorrowingMutation,
+} from "@/hooks/queries/useBorrowingMutation";
 import { toast } from "sonner";
 
 export default function SirkulasiDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams({ strict: false });
   const navigate = useNavigate();
-  const [item, setItem] = useState<CirculationItem | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  // Skenario 2 states
   const [isUploading, setIsUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
@@ -23,93 +26,56 @@ export default function SirkulasiDetail() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputGalleryRef = useRef<HTMLInputElement>(null);
 
-  // Modal states
   const [isAccModalOpen, setIsAccModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // State Pengembalian (Tertanam di Action Bar)
   const [returnCondition, setReturnCondition] = useState<"BAIK" | "RUSAK" | "HILANG">("BAIK");
   const [returnNote, setReturnNote] = useState("");
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      if (id) {
-        try {
-          const response = await api.get("/api/borrowings/active");
-          const found = response.data.find((item: any) => item.id === id);
-          if (found) {
-            setItem({
-              id: found.id,
-              studentName: found.user.name,
-              studentId: found.user.nim,
-              archiveTitle: found.archive.title,
-              archiveType: found.archive.archiveType,
-              status: found.status,
-              requestDate: found.borrowDate,
-              dueDate: found.returnDate || "-",
-              fine: found.fineAmount,
-              approvedBy: found.pickupCode ? "Petugas" : undefined,
-            });
-          }
-        } catch (error) {
-          console.error("Gagal mengambil detail:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    fetchDetail();
-  }, [id]);
+  const { data: item, isPending: loading } = useBorrowingDetailQuery(id);
+
+  const approveMutation = useApproveBorrowingMutation();
+  const rejectMutation = useRejectBorrowingMutation();
+  const handoverMutation = useHandoverBorrowingMutation();
+  const returnMutation = useReturnBorrowingMutation();
+
+  const isSubmitting =
+    approveMutation.isPending ||
+    rejectMutation.isPending ||
+    handoverMutation.isPending ||
+    returnMutation.isPending;
 
   if (loading) return <div className="p-8 text-center text-slate-500">Memuat data transaksi...</div>;
   if (!item) return <div className="p-8 text-center text-rose-500">Transaksi tidak ditemukan!</div>;
 
-  const handleAction = async (newStatus: string, successMsg: string) => {
-    try {
-      setIsSubmitting(true);
-      if (newStatus === "WAITING_PICKUP") {
-        await api.patch(`/api/borrowings/${item.id}/approve`);
-        setIsAccModalOpen(false);
-      } else if (newStatus === "REJECTED") {
-        await api.patch(`/api/borrowings/${item.id}/reject`, { reason: rejectReason });
-        setIsRejectModalOpen(false);
-      } else if (newStatus === "BORROWED") {
-        const formData = new FormData();
-        if (selectedPhoto) {
-          formData.append('photo', selectedPhoto);
-        }
-        await api.patch(`/api/borrowings/${item.id}/handover`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-      } else if (newStatus === "RETURN") {
-        const formData = new FormData();
-        if (selectedPhoto) {
-          formData.append('photo', selectedPhoto);
-        }
-        formData.append('kondisiKembali', returnCondition);
-        if (returnNote) {
-          formData.append('catatanKondisiKembali', returnNote);
-        }
-        await api.patch(`/api/borrowings/${item.id}/return`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        // Reset
-        setIsUploaded(false);
-        setSelectedPhoto(null);
-        setReturnCondition("BAIK");
-        setReturnNote("");
-      }
-      
-      toast.success(successMsg);
-      navigate("/petugas/sirkulasi");
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Terjadi kesalahan sistem.");
-    } finally {
-      setIsSubmitting(false);
+  const handleAction = async (newStatus: string) => {
+    if (newStatus === "WAITING_PICKUP") {
+      await approveMutation.mutateAsync(item.id);
+      setIsAccModalOpen(false);
+      navigate({ to: "/petugas/sirkulasi" });
+    } else if (newStatus === "REJECTED") {
+      await rejectMutation.mutateAsync({ id: item.id, reason: rejectReason });
+      setIsRejectModalOpen(false);
+      navigate({ to: "/petugas/sirkulasi" });
+    } else if (newStatus === "BORROWED") {
+      const formData = new FormData();
+      if (selectedPhoto) formData.append("photo", selectedPhoto);
+      await handoverMutation.mutateAsync({ id: item.id, formData });
+      navigate({ to: "/petugas/sirkulasi" });
+    } else if (newStatus === "RETURN") {
+      const formData = new FormData();
+      if (selectedPhoto) formData.append("photo", selectedPhoto);
+      formData.append("kondisiKembali", returnCondition);
+      if (returnNote) formData.append("catatanKondisiKembali", returnNote);
+      await returnMutation.mutateAsync({ id: item.id, formData });
+      setIsUploaded(false);
+      setSelectedPhoto(null);
+      setReturnCondition("BAIK");
+      setReturnNote("");
+      navigate({ to: "/petugas/sirkulasi" });
     }
   };
+
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -153,7 +119,7 @@ export default function SirkulasiDetail() {
       <div className="flex flex-col h-full bg-white sm:rounded-2xl sm:border border-slate-200 overflow-hidden shadow-sm">
         {/* HEADER TILE */}
         <div className="flex items-center gap-4 p-4 border-b border-slate-100 bg-slate-50/50">
-        <Button type="button" variant="ghost" size="icon" onClick={() => navigate("/petugas/sirkulasi")} className="shrink-0 rounded-full hover:bg-slate-200">
+        <Button type="button" variant="ghost" size="icon" onClick={() => navigate({ to: "/petugas/sirkulasi" })} className="shrink-0 rounded-full hover:bg-slate-200">
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Button>
         <div className="flex-1">
@@ -290,7 +256,7 @@ export default function SirkulasiDetail() {
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleAction("BORROWED", "Serah terima berhasil! Mahasiswa memiliki waktu 30 hari untuk mengembalikan.");
+                    handleAction("BORROWED");
                   }}
                   className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-14 text-base shadow-lg shadow-emerald-500/20"
                 >
@@ -358,7 +324,7 @@ export default function SirkulasiDetail() {
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleAction("RETURN", "Pengembalian berhasil dicatat!");
+                    handleAction("RETURN");
                   }}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-14 text-base shadow-lg shadow-blue-500/20"
                 >
@@ -391,7 +357,7 @@ export default function SirkulasiDetail() {
             </Button>
             <Button 
               className="bg-emerald-500 hover:bg-emerald-600 text-white" 
-              onClick={() => handleAction("WAITING_PICKUP", "Pengajuan di-ACC! Memulai timer 2 hari ambil.")}
+              onClick={() => handleAction("WAITING_PICKUP")}
               disabled={isSubmitting}
             >
               {isSubmitting ? "Memproses..." : "Ya, Setujui"}
@@ -425,7 +391,7 @@ export default function SirkulasiDetail() {
             </Button>
             <Button 
               className="bg-rose-500 hover:bg-rose-600 text-white" 
-              onClick={() => handleAction("REJECTED", "Pengajuan berhasil ditolak!")}
+              onClick={() => handleAction("REJECTED")}
               disabled={isSubmitting || rejectReason.trim() === ""}
             >
               {isSubmitting ? "Memproses..." : "Tolak Pengajuan"}
