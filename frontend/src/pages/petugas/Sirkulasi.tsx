@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Search,
   Clock,
@@ -82,7 +82,12 @@ export default function Sirkulasi() {
     return (
       <div
         key={item.id}
-        onClick={() => navigate(`/petugas/sirkulasi/${item.id}`)}
+        onClick={() =>
+          navigate({
+            to: "/petugas/sirkulasi/$id",
+            params: { id: item.id },
+          })
+        }
         className="group relative bg-white border border-slate-200 p-4 rounded-xl cursor-pointer hover:border-orange-500 hover:shadow-md hover:shadow-orange-500/10 transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
       >
         <div className="flex justify-between items-start mb-3">

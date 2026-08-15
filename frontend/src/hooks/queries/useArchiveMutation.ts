@@ -50,7 +50,7 @@ export function useImportArchiveMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => archiveService.import(formData),
-    onSuccess: (data) => {
+    onSuccess: (data, formData) => {
       const { success, skipped, total } = data;
       if (success === 0 && skipped > 0) {
         toast.info("Tidak Ada Data Baru", {

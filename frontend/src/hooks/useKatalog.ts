@@ -122,6 +122,17 @@ export function useKatalog() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setCurrentPage(1);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
   return {
     data: data?.data ?? [],
     totalPages: data?.meta.totalPages ?? 1,
@@ -153,6 +164,8 @@ export function useKatalog() {
     setImportType,
     isImporting: importMutation.isPending,
     fileInputRef,
+    handleSearchSubmit,
+    handleClearSearch,
     handleOpenAdd,
     handleOpenDetail,
     handleOpenEdit,

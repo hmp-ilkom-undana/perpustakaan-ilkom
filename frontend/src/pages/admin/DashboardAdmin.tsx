@@ -6,7 +6,6 @@ import {
   Library, RefreshCcw, BadgeDollarSign, AlertTriangle, 
   FileText, ArrowRight, CircleAlert, Activity, CheckCircle2
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";

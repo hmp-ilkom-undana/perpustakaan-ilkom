@@ -17,6 +17,9 @@
     "@tailwindcss/vite": "^4.3.1",
     "@tanstack/react-query": "^5.101.4",
     "@tanstack/react-query-devtools": "^5.101.4",
+    "@tanstack/react-router": "^1.170.29",
+    "@tanstack/router-devtools": "^1.167.1",
+    "@tanstack/router-plugin": "^1.168.32",
     "@tsparticles/react": "^4.3.1",
     "@tsparticles/slim": "^4.3.1",
     "axios": "^1.18.1",
@@ -53,6 +56,7 @@
     "globals": "^17.6.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.1",
+    "typescript": "^7.0.2",
     "vite": "^8.0.12"
   }
 }

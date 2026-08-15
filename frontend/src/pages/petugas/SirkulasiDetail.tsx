@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "@tanstack/react-router";
 import type { CirculationItem } from "@/services/borrowing.service";
 import { ArrowLeft, CheckCircle, XCircle, Camera, CheckSquare, UploadCloud, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 
 export default function SirkulasiDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams({ strict: false });
   const navigate = useNavigate();
 
   const [isUploading, setIsUploading] = useState(false);
@@ -52,16 +52,16 @@ export default function SirkulasiDetail() {
     if (newStatus === "WAITING_PICKUP") {
       await approveMutation.mutateAsync(item.id);
       setIsAccModalOpen(false);
-      navigate("/petugas/sirkulasi");
+      navigate({ to: "/petugas/sirkulasi" });
     } else if (newStatus === "REJECTED") {
       await rejectMutation.mutateAsync({ id: item.id, reason: rejectReason });
       setIsRejectModalOpen(false);
-      navigate("/petugas/sirkulasi");
+      navigate({ to: "/petugas/sirkulasi" });
     } else if (newStatus === "BORROWED") {
       const formData = new FormData();
       if (selectedPhoto) formData.append("photo", selectedPhoto);
       await handoverMutation.mutateAsync({ id: item.id, formData });
-      navigate("/petugas/sirkulasi");
+      navigate({ to: "/petugas/sirkulasi" });
     } else if (newStatus === "RETURN") {
       await returnMutation.mutateAsync({
         id: item.id,
@@ -72,7 +72,7 @@ export default function SirkulasiDetail() {
       setSelectedPhoto(null);
       setReturnCondition("BAIK");
       setReturnNote("");
-      navigate("/petugas/sirkulasi");
+      navigate({ to: "/petugas/sirkulasi" });
     }
   };
 
@@ -119,7 +119,7 @@ export default function SirkulasiDetail() {
       <div className="flex flex-col h-full bg-white sm:rounded-2xl sm:border border-slate-200 overflow-hidden shadow-sm">
         {/* HEADER TILE */}
         <div className="flex items-center gap-4 p-4 border-b border-slate-100 bg-slate-50/50">
-        <Button type="button" variant="ghost" size="icon" onClick={() => navigate("/petugas/sirkulasi")} className="shrink-0 rounded-full hover:bg-slate-200">
+        <Button type="button" variant="ghost" size="icon" onClick={() => navigate({ to: "/petugas/sirkulasi" })} className="shrink-0 rounded-full hover:bg-slate-200">
           <ArrowLeft className="w-5 h-5 text-slate-600" />
         </Button>
         <div className="flex-1">
