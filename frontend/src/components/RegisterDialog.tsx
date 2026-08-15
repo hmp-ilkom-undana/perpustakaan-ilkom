@@ -2,6 +2,18 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import {
+  UserPlus,
+  User,
+  Hash,
+  Phone,
+  Mail,
+  Lock,
+  Loader2,
+  AlertCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,11 +25,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 // =============================================================================
-// SCHEMA
+// VALIDATION SCHEMA
 // =============================================================================
-
 const registerSchema = z
   .object({
     name: z.string().min(3, "Nama minimal 3 karakter"),
@@ -35,30 +47,30 @@ const registerSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Password tidak cocok",
+    message: "Konfirmasi kata sandi tidak cocok",
     path: ["confirmPassword"],
   });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 // =============================================================================
-// PROPS
+// PROPS INTERFACE
 // =============================================================================
-
 interface RegisterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 // =============================================================================
-// KOMPONEN
+// REGISTER DIALOG COMPONENT (NEO-BRUTALISM)
 // =============================================================================
-
 export default function RegisterDialog({
   open,
   onOpenChange,
 }: RegisterDialogProps) {
   const [registerError, setRegisterError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -69,6 +81,7 @@ export default function RegisterDialog({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
+      username: "",
       nim: "",
       wa_number: "",
       email: "",
@@ -82,6 +95,8 @@ export default function RegisterDialog({
     if (!nextOpen) {
       reset();
       setRegisterError(null);
+      setShowPassword(false);
+      setShowConfirmPassword(false);
     }
   };
 
@@ -96,14 +111,15 @@ export default function RegisterDialog({
         username: values.username,
         wa_number: values.wa_number,
       });
+
       if (error) {
         setRegisterError(
-          error.message || "Gagal mendaftar. Email mungkin sudah digunakan.",
+          error.message || "Gagal mendaftar. Email atau NIM mungkin sudah terdaftar.",
         );
       } else {
         handleOpenChange(false);
-        alert(
-          "Pendaftaran berhasil! Silakan login menggunakan akun baru Anda.",
+        toast.success(
+          "Pendaftaran akun berhasil! Silakan masuk menggunakan akun baru Anda.",
         );
       }
     } catch {
@@ -113,147 +129,220 @@ export default function RegisterDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md bg-white border border-zinc-200 shadow-[0_8px_32px_rgba(37,99,235,0.06)] rounded-2xl">
-        <DialogHeader className="pt-2">
-          <DialogTitle className="flex justify-center text-base font-bold text-zinc-900 tracking-tight">
-            Buat Akun Baru
+      <DialogContent className="sm:max-w-lg bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] rounded-2xl p-6 max-h-[90vh] overflow-y-auto z-[60]">
+        {/* HEADER SECTION */}
+        <DialogHeader className="border-b-2 border-blue-900 pb-3 text-center sm:text-left">
+          <DialogTitle className="text-lg sm:text-xl font-black text-blue-950 uppercase tracking-tight flex items-center justify-center sm:justify-start gap-2">
+            <UserPlus className="w-5 h-5 text-orange-500" />
+            Buat Akun Mahasiswa Baru
           </DialogTitle>
-          <DialogDescription className="text-xs text-zinc-500 font-medium">
-            Lengkapi data berikut untuk mendaftar ke sistem perpustakaan ILKOM.
+          <DialogDescription className="text-xs font-bold text-slate-500">
+            Lengkapi data identitas berikut untuk mengakses katalog dan sirkulasi peminjaman.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 mt-1">
-          {registerError && (
-            <div className="p-2.5 bg-red-50 text-red-600 text-xs rounded-md border border-red-200 font-medium">
-              {registerError}
-            </div>
-          )}
-          {/* Nama */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-zinc-700">Nama</Label>
+        {/* ERROR ALERT BOX */}
+        {registerError && (
+          <div className="p-3 bg-red-100 border-2 border-blue-900 rounded-lg text-red-900 font-bold text-xs shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-2 mt-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>{registerError}</span>
+          </div>
+        )}
+
+        {/* FORM BODY */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
+          {/* Field: Nama Lengkap */}
+          <div className="space-y-1">
+            <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
+              <User className="w-3.5 h-3.5 text-blue-900" />
+              Nama Lengkap
+            </Label>
             <Input
-              placeholder="Masukkan nama anda..."
-              className="h-9 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
+              placeholder="Masukkan nama lengkap sesuai KTM..."
+              className="h-10 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
               {...register("name")}
             />
             {errors.name && (
-              <p className="text-red-500 text-[10px] font-medium">
+              <p className="text-red-600 text-xs font-bold">
                 {errors.name.message}
               </p>
             )}
           </div>
 
-          {/* NIM */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-zinc-700">NIM</Label>
-            <Input
-              placeholder="Masukkan NIM anda..."
-              className="h-9 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
-              {...register("nim")}
-            />
-            {errors.nim && (
-              <p className="text-red-500 text-[10px] font-medium">
-                {errors.nim.message}
-              </p>
-            )}
+          {/* Grid 2 Kolom: NIM & Username */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Field: NIM */}
+            <div className="space-y-1">
+              <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
+                <Hash className="w-3.5 h-3.5 text-blue-900" />
+                NIM (10 Digit)
+              </Label>
+              <Input
+                placeholder="2306080001"
+                className="h-10 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
+                {...register("nim")}
+              />
+              {errors.nim && (
+                <p className="text-red-600 text-xs font-bold">
+                  {errors.nim.message}
+                </p>
+              )}
+            </div>
+
+            {/* Field: Username */}
+            <div className="space-y-1">
+              <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
+                <User className="w-3.5 h-3.5 text-blue-900" />
+                Username
+              </Label>
+              <Input
+                placeholder="contoh_user"
+                className="h-10 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
+                {...register("username")}
+              />
+              {errors.username && (
+                <p className="text-red-600 text-xs font-bold">
+                  {errors.username.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* WA Number */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-zinc-700">
-              Nomor WA
-            </Label>
-            <Input
-              placeholder="Masukkan nomor WA anda..."
-              className="h-9 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
-              {...register("wa_number")}
-            />
-            {errors.wa_number && (
-              <p className="text-red-500 text-[10px] font-medium">
-                {errors.wa_number.message}
-              </p>
-            )}
+          {/* Grid 2 Kolom: Nomor WA & Email */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Field: Nomor WA */}
+            <div className="space-y-1">
+              <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
+                <Phone className="w-3.5 h-3.5 text-blue-900" />
+                Nomor WhatsApp
+              </Label>
+              <Input
+                placeholder="08123456789"
+                className="h-10 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
+                {...register("wa_number")}
+              />
+              {errors.wa_number && (
+                <p className="text-red-600 text-xs font-bold">
+                  {errors.wa_number.message}
+                </p>
+              )}
+            </div>
+
+            {/* Field: Email */}
+            <div className="space-y-1">
+              <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
+                <Mail className="w-3.5 h-3.5 text-blue-900" />
+                Alamat Email
+              </Label>
+              <Input
+                type="email"
+                placeholder="nama@gmail.com"
+                className="h-10 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-red-600 text-xs font-bold">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Email */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-zinc-700">Email</Label>
-            <Input
-              type="email"
-              placeholder="mahasiswa@gmail.com"
-              className="h-9 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-red-500 text-[10px] font-medium">
-                {errors.email.message}
-              </p>
-            )}
+          {/* Grid 2 Kolom: Kata Sandi & Konfirmasi Sandi */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Field: Password */}
+            <div className="space-y-1">
+              <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
+                <Lock className="w-3.5 h-3.5 text-blue-900" />
+                Kata Sandi
+              </Label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Min. 8 karakter"
+                  className="h-10 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white pr-10"
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-900 hover:text-orange-500 transition-colors p-1"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-red-600 text-xs font-bold">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* Field: Confirm Password */}
+            <div className="space-y-1">
+              <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
+                <Lock className="w-3.5 h-3.5 text-blue-900" />
+                Ulangi Kata Sandi
+              </Label>
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Ulangi kata sandi"
+                  className="h-10 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white pr-10"
+                  {...register("confirmPassword")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-900 hover:text-orange-500 transition-colors p-1"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="text-red-600 text-xs font-bold">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Username */}
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-blue-950 font-medium">
-              Username
-            </Label>
-            <Input
-              id="username"
-              placeholder="Masukan username anda... "
-              {...register("username")}
-              className={errors.username ? "border-red-500" : ""}
-            />
-            {errors.username && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.username.message}
-              </p>
-            )}
+          {/* ACTION BUTTONS (NEO-BRUTALISM) */}
+          <div className="pt-3 border-t-2 border-blue-900/30 flex flex-col sm:flex-row items-center gap-2.5">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleOpenChange(false)}
+              className="w-full sm:w-1/3 border-2 border-blue-900 font-bold text-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-11 uppercase text-xs"
+            >
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full sm:w-2/3 bg-blue-900 hover:bg-blue-950 text-white font-black text-sm h-11 rounded-lg border-2 border-blue-900 shadow-[4px_4px_0px_#F97316] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Mendaftarkan...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Daftarkan Akun
+                </>
+              )}
+            </Button>
           </div>
-
-          {/* Password */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-zinc-700">
-              Kata Sandi
-            </Label>
-            <Input
-              type="password"
-              placeholder="Min. 8 karakter"
-              className="h-9 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-[10px] font-medium">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          {/* Confirm Password */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold text-zinc-700">
-              Konfirmasi Sandi
-            </Label>
-            <Input
-              type="password"
-              placeholder="Ulangi kata sandi"
-              className="h-9 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
-              {...register("confirmPassword")}
-            />
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-[10px] font-medium">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-
-          {/* Button Daftar Akun */}
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-blue-700 hover:bg-blue-800 active:scale-[0.98] text-white font-semibold h-9 rounded-lg shadow-sm shadow-blue-700/20 transition-all duration-300 cursor-pointer mt-3"
-          >
-            {isSubmitting ? "Mendaftar..." : "Daftar Akun"}
-          </Button>
         </form>
       </DialogContent>
     </Dialog>
