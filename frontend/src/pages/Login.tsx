@@ -91,7 +91,7 @@ export default function Login() {
                 <img
                   src="/assets/Logo_Ilkom.png"
                   alt="Logo Ilmu Komputer"
-                  className="h-20 w-auto object-contain mix-blend-multiply"
+                  className="h-16 w-auto object-contain mix-blend-multiply"
                 />
               </div>
             </div>
@@ -204,17 +204,17 @@ export default function Login() {
           <img
             src="/assets/Undana.png"
             alt="Logo Undana"
-            className="h-14 w-auto object-contain"
+            className="h-12 w-auto object-contain"
           />
           <img
             src="/assets/Logo_Ilkom.png"
             alt="Logo ILKOM"
-            className="h-14 w-auto object-contain"
+            className="h-12 w-auto object-contain"
           />
           <img
             src="/assets/Arthasena.png"
             alt="Logo Arthasena"
-            className="h-21 w-auto object-contain"
+            className="h-12 w-auto object-contain"
           />
         </div>
         <p className="text-[10px] tracking-wide font-medium text-zinc-400 uppercase">

@@ -16,6 +16,8 @@ import {
   Users
 } from "lucide-react";
 
+import { NavLogo } from "@/components/NavLogo";
+
 export default function AdminLayout() {
   const { data: session } = useSession();
   const navigate = useNavigate();
@@ -45,13 +47,7 @@ export default function AdminLayout() {
       {/* MOBILE HEADER */}
       <div className="md:hidden flex items-center justify-between p-4 bg-[#0F172A] text-white shadow-md z-40 sticky top-0">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg overflow-hidden relative flex-shrink-0 bg-white">
-            <img
-              src="/assets/Logo_Ilkom.png"
-              alt="Logo"
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 scale-[1.8] origin-top object-cover max-w-none w-full"
-            />
-          </div>
+          <NavLogo size="sm" />
           <h1 className="font-bold tracking-tight text-lg">Panel Admin</h1>
         </div>
         <Button 
@@ -79,13 +75,7 @@ export default function AdminLayout() {
       )}>
         {/* Sidebar Header (Desktop) */}
         <div className="hidden md:flex items-center gap-3 p-6 border-b border-slate-800">
-          <div className="w-10 h-10 rounded-lg overflow-hidden relative flex-shrink-0 bg-white">
-            <img
-              src="/assets/Logo_Ilkom.png"
-              alt="Logo"
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 scale-[1.8] origin-top object-cover"
-            />
-          </div>
+          <NavLogo size="md" />
           <div>
             <h1 className="font-bold tracking-tight text-lg leading-tight">Perpus ILKOM</h1>
             <p className="text-[10px] text-blue-500 font-semibold tracking-widest uppercase">Admin</p>
