@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock, User, LogIn, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -12,16 +12,19 @@ import RegisterDialog from "@/components/RegisterDialog";
 import ParticleBackground from "@/components/ParticleBackground";
 import { toast } from "sonner";
 
-// SCHEMA 
+// =============================================================================
+// VALIDATION SCHEMA
+// =============================================================================
 const loginSchema = z.object({
-  email: z.string().min(1, "Username / Email wajib diisi"),
-  password: z.string().min(1, "Password wajib diisi"),
+  email: z.string().min(1, "Username atau Email wajib diisi"),
+  password: z.string().min(1, "Kata sandi wajib diisi"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-// KOMPONEN
-
+// =============================================================================
+// LOGIN PAGE COMPONENT
+// =============================================================================
 export default function Login() {
   const [isRegisterOpen, setRegisterOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -57,10 +60,8 @@ export default function Login() {
       );
     } else {
       toast.success("Berhasil masuk!");
-      // Ambil peran (role) dari balasan server
       const role = authResponse.data?.user?.role;
 
-      // Arahkan (Redirect) sesuai peran masing-masing dengan hard-reload agar state auth benar-benar bersih
       if (role === "ADMIN") {
         window.location.href = "/admin";
       } else if (role === "PETUGAS") {
@@ -71,78 +72,83 @@ export default function Login() {
     }
   };
 
-  // RENDER
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-between bg-blue-950 p-6 relative overflow-hidden">
-      {/* BACKGROUND: Circuit Board Canvas */}
+    <div className="min-h-screen w-full flex flex-col items-center justify-between bg-blue-950 p-4 sm:p-6 relative overflow-hidden">
+      {/* BACKGROUND: Circuit Board Canvas & Radial Lights */}
       <ParticleBackground />
+      <div className="fixed top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/[0.08] rounded-full blur-[140px] pointer-events-none z-[2]" />
+      <div className="fixed bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-orange-500/[0.06] rounded-full blur-[140px] pointer-events-none z-[2]" />
 
-      {/* Pendaran cahaya (Radial Blur) - ILKOM Identity */}
-      <div className="fixed top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-600/[0.07] rounded-full blur-[140px] pointer-events-none z-[2]" />
-      <div className="fixed bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-orange-500/[0.05] rounded-full blur-[140px] pointer-events-none z-[2]" />
-
-      {/* Form Login — Tengah layar */}
-      <div className="flex-1 flex items-center justify-center w-full z-20">
-        <Card className="w-full max-w-sm bg-white border border-blue-50/80 shadow-[0_4px_24px_0_rgba(29,78,216,0.06)] rounded-2xl overflow-hidden relative">
-          {/* Header: Logo + Judul */}
-          <CardHeader className="space-y-2 text-center pt-9 pb-5 px-6">
-            <div className="flex justify-center mb-4">
-              <div className="p-3.5 rounded-2xl bg-blue-50/60 ring-1 ring-blue-100/60 shadow-sm shadow-blue-900/5">
+      {/* FORM LOGIN (NEO-BRUTALISM CARD) */}
+      <div className="flex-1 flex items-center justify-center w-full z-20 my-auto py-6">
+        <Card className="w-full max-w-sm bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] rounded-2xl overflow-hidden relative">
+          {/* Header Card: Logo + Identitas */}
+          <CardHeader className="space-y-3 text-center pt-8 pb-4 px-6 border-b-2 border-blue-900/20">
+            <div className="flex justify-center">
+              <div className="p-3 rounded-xl bg-amber-50 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] flex items-center justify-center">
                 <img
                   src="/assets/Logo_Ilkom.png"
                   alt="Logo Ilmu Komputer"
-                  className="h-16 w-auto object-contain mix-blend-multiply"
+                  className="h-14 w-auto object-contain mix-blend-multiply"
                 />
               </div>
             </div>
-            <CardTitle className="text-[17px] font-bold tracking-tight text-zinc-900 leading-snug">
-              Sistem Informasi Perpustakaan
-              <span className="block mt-0.5">
-                <span className="text-blue-700">Ilmu</span>{" "}
-                <span className="text-orange-500">Komputer</span>
-              </span>
-            </CardTitle>
-            <p className="text-[11px] text-zinc-400 font-medium tracking-wide pt-1">
-              Universitas Nusa Cendana
-            </p>
+            <div>
+              <CardTitle className="text-base sm:text-lg font-black tracking-tight text-blue-950 uppercase leading-snug">
+                Sistem Informasi Perpustakaan
+                <span className="block mt-0.5">
+                  <span className="text-blue-900">Ilmu</span>{" "}
+                  <span className="text-orange-500">Komputer</span>
+                </span>
+              </CardTitle>
+              <p className="text-[11px] text-slate-500 font-bold tracking-wider uppercase pt-1">
+                Universitas Nusa Cendana
+              </p>
+            </div>
           </CardHeader>
 
-          {/* Form Body */}
-          <CardContent className="pb-8 px-6">
+          {/* Body Form */}
+          <CardContent className="pt-6 pb-8 px-6 space-y-5">
             <form onSubmit={handleSubmit(onLogin)} className="space-y-4">
-              {/* Input Username / Email */}
+              {/* Field: Username / Email */}
               <div className="space-y-1.5">
                 <Label
                   htmlFor="email"
-                  className="text-[13px] font-bold text-zinc-700"
+                  className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5"
                 >
+                  <User className="w-3.5 h-3.5 text-blue-900" />
                   Username / Email
                 </Label>
                 <Input
                   id="email"
-                  placeholder="mahasiswa@gmail.com"
-                  className="h-10 text-sm bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300"
+                  placeholder="NIM / Username / Email..."
+                  className="h-11 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
                   {...register("email")}
                 />
                 {errors.email && (
-                  <p className="text-red-500 text-[10px] font-medium">
+                  <p className="text-red-600 text-xs font-bold mt-1">
                     {errors.email.message}
                   </p>
                 )}
               </div>
 
-              {/* Input Password + Lupa Sandi */}
+              {/* Field: Password */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <Label
                     htmlFor="password"
-                    className="text-[13px] font-bold text-zinc-700"
+                    className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5"
                   >
+                    <Lock className="w-3.5 h-3.5 text-blue-900" />
                     Kata Sandi
                   </Label>
                   <a
                     href="#"
-                    className="text-[13px] font-semibold text-blue-600 hover:text-orange-500 hover:underline transition-colors duration-300 text-right"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toast.info("Silakan hubungi petugas perpustakaan untuk reset kata sandi.");
+                    }}
+                    className="text-[11px] font-black text-blue-900 hover:text-orange-500 transition-colors uppercase tracking-wider"
                   >
                     Lupa Sandi?
                   </a>
@@ -151,42 +157,56 @@ export default function Login() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="h-10 bg-white border-zinc-300 text-zinc-900 placeholder:text-zinc-400 focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:border-blue-500 rounded-lg transition-all duration-300 pr-10"
+                    placeholder="Masukkan kata sandi..."
+                    className="h-11 bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white pr-10"
                     {...register("password")}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-900 hover:text-orange-500 transition-colors p-1"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-500 text-[10px] font-medium">
+                  <p className="text-red-600 text-xs font-bold mt-1">
                     {errors.password.message}
                   </p>
                 )}
               </div>
 
-              {/* Tombol Masuk */}
+              {/* Tombol Masuk (Neo-Brutalist Button) */}
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-700 hover:bg-blue-800 active:scale-[0.98] text-white font-semibold h-10 rounded-lg shadow-sm shadow-blue-700/20 transition-all duration-300 cursor-pointer mt-4"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-sm h-11 rounded-lg border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider mt-5"
               >
-                {isSubmitting ? "Memverifikasi..." : "Masuk"}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Memverifikasi...
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Masuk ke Sistem
+                  </>
+                )}
               </Button>
             </form>
 
-            {/* Pemicu Dialog Register */}
-            <div className="mt-6 text-center text-[13px] text-zinc-500 font-medium">
+            {/* Pemicu Modal Daftar Akun */}
+            <div className="pt-2 text-center text-xs text-slate-600 font-bold">
               Belum punya akun?{" "}
               <button
                 type="button"
                 onClick={() => setRegisterOpen(true)}
-                className="text-blue-700 font-bold hover:text-orange-500 hover:underline transition-colors duration-300 cursor-pointer"
+                className="text-orange-500 font-black hover:underline cursor-pointer inline-block ml-1"
               >
                 Daftar di sini
               </button>
@@ -195,29 +215,29 @@ export default function Login() {
         </Card>
       </div>
 
-      {/* Register Dialog (Pemisahan Concern) */}
+      {/* MODAL PENDAFTARAN AKUN */}
       <RegisterDialog open={isRegisterOpen} onOpenChange={setRegisterOpen} />
 
-      {/* Footer Logo */}
-      <footer className="w-full max-w-md border-t border-white/10 pt-5 pb-3 flex flex-col items-center gap-4 text-center z-20">
+      {/* FOOTER LOGOS & IDENTITY */}
+      <footer className="w-full max-w-md bg-blue-900/60 backdrop-blur-sm border-2 border-blue-800 rounded-xl px-5 py-3.5 flex flex-col items-center gap-3 text-center z-20 shadow-[3px_3px_0px_rgba(0,0,0,0.3)] mt-auto">
         <div className="flex items-center justify-center gap-6">
           <img
             src="/assets/Undana.png"
             alt="Logo Undana"
-            className="h-12 w-auto object-contain"
+            className="h-10 w-auto object-contain"
           />
           <img
             src="/assets/Logo_Ilkom.png"
             alt="Logo ILKOM"
-            className="h-12 w-auto object-contain"
+            className="h-10 w-auto object-contain"
           />
           <img
             src="/assets/Arthasena.png"
             alt="Logo Arthasena"
-            className="h-12 w-auto object-contain"
+            className="h-10 w-auto object-contain"
           />
         </div>
-        <p className="text-[10px] tracking-wide font-medium text-zinc-400 uppercase">
+        <p className="text-[10px] tracking-wider font-bold text-blue-200 uppercase">
           Dikelola oleh HMP Ilmu Komputer Kabinet Arthasena
         </p>
       </footer>
