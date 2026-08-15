@@ -95,9 +95,6 @@ export function KatalogDetailSheet({
             <SheetTitle className="text-xl font-black text-white leading-snug">
               Detail Informasi Arsip
             </SheetTitle>
-            <SheetDescription className="text-xs text-blue-200">
-              ID Database: {currentItem?.id || "-"}
-            </SheetDescription>
           </SheetHeader>
         </div>
 
