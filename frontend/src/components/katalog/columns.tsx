@@ -87,14 +87,14 @@ export function getKatalogColumns({
       },
     }),
     columnHelper.accessor("location", {
-      header: () => <span className="font-black text-blue-900">LOKASI</span>,
+      header: () => <div className="text-center font-black text-blue-900">LOKASI</div>,
       size: 110,
       cell: ({ getValue }) => {
         const val = getValue();
         return (
-          <span className="font-semibold text-slate-700 text-sm">
+          <div className="text-center font-semibold text-slate-700 text-sm">
             {val || <span className="text-slate-400 font-normal italic">-</span>}
-          </span>
+          </div>
         );
       },
     }),
