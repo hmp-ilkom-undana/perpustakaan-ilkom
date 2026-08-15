@@ -1,124 +1,326 @@
 import { useState, useMemo } from "react";
-import { Search, ShieldAlert, Users } from "lucide-react";
+import { 
+  Search, 
+  Users, 
+  UserCheck, 
+  UserX, 
+  BookOpen, 
+  SlidersHorizontal 
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
-import { getUserColumns } from "@/components/pengguna/columns";
+import { getStudentColumns } from "@/components/pengguna/studentColumns";
+import { StudentDetailDialog } from "@/components/pengguna/StudentDetailDialog";
+import { StudentResetPasswordDialog } from "@/components/pengguna/StudentResetPasswordDialog";
+import { StudentStatusToggleDialog } from "@/components/pengguna/StudentStatusToggleDialog";
 import type { UserItem } from "@/services/user.service";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
-const initialStudents: UserItem[] = [
-  { id: "1", name: "Ahmad Dahlan", identifier: "M0521001", role: "MAHASISWA", status: "Aktif" },
-  { id: "2", name: "Budi Santoso", identifier: "M0521002", role: "MAHASISWA", status: "Aktif" },
-  { id: "3", name: "Citra Lestari", identifier: "M0521003", role: "MAHASISWA", status: "Aktif" },
-  { id: "4", name: "Dewi Anggraini", identifier: "M0521004", role: "MAHASISWA", status: "Non-Aktif" },
+const mockStudents: UserItem[] = [
+  {
+    id: "1",
+    name: "Ahmad Dahlan",
+    identifier: "M0521001",
+    nim: "M0521001",
+    email: "ahmad.dahlan@student.ilkom.ac.id",
+    wa_number: "081234567890",
+    role: "MAHASISWA",
+    status: "Aktif",
+    createdAt: "12 Januari 2024",
+    activeBorrowings: 1,
+  },
+  {
+    id: "2",
+    name: "Budi Santoso",
+    identifier: "M0521002",
+    nim: "M0521002",
+    email: "budi.santoso@student.ilkom.ac.id",
+    wa_number: "081298765432",
+    role: "MAHASISWA",
+    status: "Aktif",
+    createdAt: "15 Januari 2024",
+    activeBorrowings: 0,
+  },
+  {
+    id: "3",
+    name: "Citra Lestari",
+    identifier: "M0521003",
+    nim: "M0521003",
+    email: "citra.lestari@student.ilkom.ac.id",
+    wa_number: "082145678901",
+    role: "MAHASISWA",
+    status: "Aktif",
+    createdAt: "18 Januari 2024",
+    activeBorrowings: 2,
+  },
+  {
+    id: "4",
+    name: "Dewi Anggraini",
+    identifier: "M0521004",
+    nim: "M0521004",
+    email: "dewi.anggraini@student.ilkom.ac.id",
+    wa_number: "085712345678",
+    role: "MAHASISWA",
+    status: "Non-Aktif",
+    createdAt: "22 Februari 2024",
+    activeBorrowings: 0,
+  },
+  {
+    id: "5",
+    name: "Eko Prasetyo",
+    identifier: "M0521005",
+    nim: "M0521005",
+    email: "eko.prasetyo@student.ilkom.ac.id",
+    wa_number: "087812349988",
+    role: "MAHASISWA",
+    status: "Aktif",
+    createdAt: "01 Maret 2024",
+    activeBorrowings: 1,
+  },
 ];
 
 export default function KelolaPengguna() {
+  const [students, setStudents] = useState<UserItem[]>(mockStudents);
   const [search, setSearch] = useState("");
-  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "Aktif" | "Non-Aktif">("ALL");
+
+  // Dialog States
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isResetOpen, setIsResetOpen] = useState(false);
+  const [isToggleStatusOpen, setIsToggleStatusOpen] = useState(false);
 
-  const filteredUsers = useMemo(
-    () =>
-      initialStudents.filter(
-        (u) =>
-          u.name.toLowerCase().includes(search.toLowerCase()) ||
-          u.identifier.toLowerCase().includes(search.toLowerCase())
-      ),
-    [search]
-  );
+  // Filter Logic
+  const filteredStudents = useMemo(() => {
+    return students.filter((item) => {
+      const matchesSearch =
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.identifier.toLowerCase().includes(search.toLowerCase()) ||
+        (item.email && item.email.toLowerCase().includes(search.toLowerCase()));
 
-  const handleResetPassword = (user: UserItem) => {
+      const matchesStatus =
+        statusFilter === "ALL" ? true : item.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [students, search, statusFilter]);
+
+  // Statistics Calculation
+  const stats = useMemo(() => {
+    const total = students.length;
+    const active = students.filter((s) => s.status === "Aktif").length;
+    const inactive = students.filter((s) => s.status === "Non-Aktif").length;
+    const totalBorrowings = students.reduce((acc, s) => acc + (s.activeBorrowings || 0), 0);
+
+    return { total, active, inactive, totalBorrowings };
+  }, [students]);
+
+  // Handlers
+  const handleViewDetail = (user: UserItem) => {
     setSelectedUser(user);
-    setIsResetDialogOpen(true);
+    setIsDetailOpen(true);
   };
 
-  const confirmReset = () => {
-    setIsResetDialogOpen(false);
+  const handleOpenResetPassword = (user: UserItem) => {
+    setSelectedUser(user);
+    setIsResetOpen(true);
+  };
+
+  const handleConfirmResetPassword = (user: UserItem) => {
+    toast.success(`Sandi akun mahasiswa ${user.name} (${user.identifier}) berhasil direset ke default (123456)`);
+    setIsResetOpen(false);
+  };
+
+  const handleOpenToggleStatus = (user: UserItem) => {
+    setSelectedUser(user);
+    setIsToggleStatusOpen(true);
+  };
+
+  const handleConfirmToggleStatus = (user: UserItem) => {
+    const nextStatus = user.status === "Aktif" ? "Non-Aktif" : "Aktif";
+    setStudents((prev) =>
+      prev.map((s) => (s.id === user.id ? { ...s, status: nextStatus } : s))
+    );
+    toast.success(
+      `Status akun ${user.name} berhasil diubah menjadi "${nextStatus}"`
+    );
+    setIsToggleStatusOpen(false);
   };
 
   const columns = useMemo(
-    () => getUserColumns({ onResetPassword: handleResetPassword }),
+    () =>
+      getStudentColumns({
+        onViewDetail: handleViewDetail,
+        onResetPassword: handleOpenResetPassword,
+        onToggleStatus: handleOpenToggleStatus,
+      }),
     []
   );
 
   return (
     <div className="space-y-6">
+      {/* Page Title & Subtitle */}
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-blue-900 text-white rounded-md [box-shadow:2px_2px_0px_#1E3A8A]">
-            <Users className="w-5 h-5" />
+        <div className="flex items-center gap-2.5">
+          <div className="p-2.5 bg-blue-900 text-white rounded-md [box-shadow:2px_2px_0px_#1E3A8A]">
+            <Users className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-blue-900">
-            Kelola Pengguna
-          </h1>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-blue-900">
+              Kelola Pengguna
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium">
+              Manajemen akun mahasiswa, pemantauan status keanggotaan, dan reset sandi akses.
+            </p>
+          </div>
         </div>
-        <p className="text-sm md:text-base text-slate-600 font-medium">
-          Daftar seluruh akun mahasiswa dan anggota umum perpustakaan.
-        </p>
       </div>
 
+      {/* Summary Metric Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 bg-white border-2 border-blue-900 rounded-lg [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-blue-900">Total Mahasiswa</span>
+            <Users className="w-4 h-4 text-blue-900" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-blue-950">
+            {stats.total}
+          </div>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">Terdaftar di sistem</p>
+        </div>
+
+        <div className="p-4 bg-white border-2 border-blue-900 rounded-lg [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-emerald-800">Akun Aktif</span>
+            <UserCheck className="w-4 h-4 text-emerald-700" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-emerald-700">
+            {stats.active}
+          </div>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">Dapat meminjam buku</p>
+        </div>
+
+        <div className="p-4 bg-white border-2 border-blue-900 rounded-lg [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-rose-800">Non-Aktif</span>
+            <UserX className="w-4 h-4 text-rose-700" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-rose-700">
+            {stats.inactive}
+          </div>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">Akses dinonaktifkan</p>
+        </div>
+
+        <div className="p-4 bg-white border-2 border-blue-900 rounded-lg [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
+            <span className="text-xs font-black uppercase tracking-wider text-amber-800">Pinjaman Aktif</span>
+            <BookOpen className="w-4 h-4 text-amber-700" />
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-blue-900">
+            {stats.totalBorrowings}
+          </div>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">Buku sedang dipinjam</p>
+        </div>
+      </div>
+
+      {/* Main Table Container */}
       <div className="bg-white rounded-lg border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] overflow-hidden">
-        <div className="p-4 sm:p-6 border-b-2 border-blue-900 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between bg-slate-50">
-          <div className="relative w-full max-w-md">
+        {/* Search & Filter Toolbar */}
+        <div className="p-4 sm:p-5 border-b-2 border-blue-900 bg-slate-50/70 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
               type="text"
-              placeholder="Cari berdasarkan NIM atau Nama Mahasiswa..."
+              placeholder="Cari berdasarkan NIM, Nama, atau Email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 h-11 text-sm border-2 border-blue-900 bg-white rounded-md focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-blue-900 font-medium"
             />
           </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1 bg-white p-1 border-2 border-blue-900 rounded-md">
+              <span className="text-xs font-black text-blue-900 px-2 flex items-center gap-1">
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                Status:
+              </span>
+              <button
+                type="button"
+                onClick={() => setStatusFilter("ALL")}
+                className={`px-2.5 py-1 text-xs font-bold rounded transition-all ${
+                  statusFilter === "ALL"
+                    ? "bg-blue-900 text-white"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                Semua
+              </button>
+              <button
+                type="button"
+                onClick={() => setStatusFilter("Aktif")}
+                className={`px-2.5 py-1 text-xs font-bold rounded transition-all ${
+                  statusFilter === "Aktif"
+                    ? "bg-emerald-600 text-white"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                Aktif
+              </button>
+              <button
+                type="button"
+                onClick={() => setStatusFilter("Non-Aktif")}
+                className={`px-2.5 py-1 text-xs font-bold rounded transition-all ${
+                  statusFilter === "Non-Aktif"
+                    ? "bg-rose-600 text-white"
+                    : "text-slate-600 hover:bg-slate-100"
+                }`}
+              >
+                Non-Aktif
+              </button>
+            </div>
+          </div>
         </div>
 
+        {/* Data Table */}
         <DataTable
           columns={columns}
-          data={filteredUsers}
+          data={filteredStudents}
           headerClassName="bg-slate-100 border-b-2 border-blue-900 text-blue-900 font-bold"
-          emptyText="Tidak ada data mahasiswa yang ditemukan."
+          emptyText="Tidak ada data mahasiswa yang cocok dengan pencarian atau filter."
         />
 
-        <div className="p-4 border-t-2 border-blue-900 flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-700 bg-slate-50">
-          <div>Menampilkan {filteredUsers.length} dari {initialStudents.length} pengguna</div>
+        {/* Table Footer / Counter */}
+        <div className="p-4 border-t-2 border-blue-900 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm font-semibold text-slate-700 bg-slate-50 gap-2">
+          <div>
+            Menampilkan <span className="font-bold text-blue-900">{filteredStudents.length}</span> dari <span className="font-bold text-blue-900">{students.length}</span> mahasiswa terdaftar
+          </div>
+          <div className="text-[11px] text-slate-500 font-medium">
+            *Untuk mengubah sandi, klik tombol aksi pada baris mahasiswa.
+          </div>
         </div>
       </div>
 
-      <AlertDialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <AlertDialogContent className="border-2 border-blue-900 [box-shadow:6px_6px_0px_#1E3A8A] rounded-lg">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-red-600 font-bold">
-              <ShieldAlert className="w-5 h-5 text-red-600" />
-              Konfirmasi Reset Sandi
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-700 pt-2 font-medium">
-              Apakah Anda yakin ingin mereset sandi untuk pengguna <strong>{selectedUser?.name}</strong> ({selectedUser?.identifier})?
-              <br /><br />
-              Sandi akan dikembalikan ke sandi standar (<code className="bg-slate-100 px-1.5 py-0.5 border border-slate-300 rounded font-bold text-blue-900">123456</code>).
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4">
-            <AlertDialogCancel className="border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md">
-              Batal
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmReset}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-md transition-all"
-            >
-              Ya, Reset Sandi
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Interactive Dialogs */}
+      <StudentDetailDialog
+        user={selectedUser}
+        isOpen={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        onResetPassword={handleOpenResetPassword}
+      />
+
+      <StudentResetPasswordDialog
+        user={selectedUser}
+        isOpen={isResetOpen}
+        onOpenChange={setIsResetOpen}
+        onConfirm={handleConfirmResetPassword}
+      />
+
+      <StudentStatusToggleDialog
+        user={selectedUser}
+        isOpen={isToggleStatusOpen}
+        onOpenChange={setIsToggleStatusOpen}
+        onConfirm={handleConfirmToggleStatus}
+      />
     </div>
   );
 }
