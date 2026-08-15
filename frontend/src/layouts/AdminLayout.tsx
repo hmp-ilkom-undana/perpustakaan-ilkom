@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   UserCircle,
-  Users
+  Users,
+  ShieldCheck
 } from "lucide-react";
 
 import { NavLogo } from "@/components/NavLogo";
@@ -39,7 +40,8 @@ export default function AdminLayout() {
     { name: "Sirkulasi", path: "/admin/sirkulasi", icon: ArrowRightLeft },
     { name: "Katalog Data", path: "/admin/katalog", icon: Library },
     { name: "Kelola Denda", path: "/admin/denda", icon: Receipt },
-    { name: "Manajemen Pengguna", path: "/admin/pengguna", icon: Users },
+    { name: "Kelola Pengguna", path: "/admin/pengguna", icon: Users },
+    { name: "Kelola Petugas", path: "/admin/petugas", icon: ShieldCheck },
   ];
 
   return (
@@ -78,7 +80,7 @@ export default function AdminLayout() {
           <NavLogo size="md" />
           <div>
             <h1 className="font-bold tracking-tight text-lg leading-tight">Perpus ILKOM</h1>
-            <p className="text-[10px] text-blue-500 font-semibold tracking-widest uppercase">Admin</p>
+            <p className="text-[10px] text-blue-500 font-semibold tracking-widest uppercase">Panel Admin</p>
           </div>
         </div>
 

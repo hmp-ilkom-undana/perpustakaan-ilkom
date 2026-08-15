@@ -11,7 +11,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Admin Imports
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
-import ManajemenPengguna from "./pages/admin/ManajemenPengguna";
+import KelolaPengguna from "./pages/admin/KelolaPengguna";
+import KelolaPetugas from "./pages/admin/KelolaPetugas";
 
 // Petugas Imports
 import PetugasLayout from "./layouts/PetugasLayout";
@@ -101,7 +102,13 @@ const adminDendaRoute = createRoute({
 const adminPenggunaRoute = createRoute({
   getParentRoute: () => adminLayoutRoute,
   path: "pengguna",
-  component: ManajemenPengguna,
+  component: KelolaPengguna,
+});
+
+const adminPetugasRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "petugas",
+  component: KelolaPetugas,
 });
 
 // 5. Petugas Layout & Routes
@@ -190,6 +197,7 @@ const routeTree = rootRoute.addChildren([
       adminKatalogRoute,
       adminDendaRoute,
       adminPenggunaRoute,
+      adminPetugasRoute,
     ]),
     petugasLayoutRoute.addChildren([
       petugasIndexRoute,
