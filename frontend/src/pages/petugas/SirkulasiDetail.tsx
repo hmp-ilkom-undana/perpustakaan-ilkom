@@ -63,11 +63,11 @@ export default function SirkulasiDetail() {
       await handoverMutation.mutateAsync({ id: item.id, formData });
       navigate({ to: "/petugas/sirkulasi" });
     } else if (newStatus === "RETURN") {
-      await returnMutation.mutateAsync({
-        id: item.id,
-        condition: returnCondition,
-        note: returnNote,
-      });
+      const formData = new FormData();
+      if (selectedPhoto) formData.append("photo", selectedPhoto);
+      formData.append("kondisiKembali", returnCondition);
+      if (returnNote) formData.append("catatanKondisiKembali", returnNote);
+      await returnMutation.mutateAsync({ id: item.id, formData });
       setIsUploaded(false);
       setSelectedPhoto(null);
       setReturnCondition("BAIK");

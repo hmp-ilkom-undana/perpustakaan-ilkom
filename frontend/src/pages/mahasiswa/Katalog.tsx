@@ -29,7 +29,10 @@ export default function Katalog() {
   const [filterCategory, setFilterCategory] = useState<string>("Semua");
   const [filterAvailability, setFilterAvailability] = useState<string>("Semua");
 
-  const { data: archives = [], isPending: loading } = usePublicArchiveQuery();
+  const { data: rawArchives = [], isPending: loading } = usePublicArchiveQuery();
+  const archives: ArchiveData[] = Array.isArray(rawArchives)
+    ? rawArchives
+    : (rawArchives as any)?.data ?? [];
 
   const filteredArchives = archives.filter((archive) => {
     const matchType =

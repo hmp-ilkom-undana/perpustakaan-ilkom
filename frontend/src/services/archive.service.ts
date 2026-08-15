@@ -50,8 +50,8 @@ export const archiveService = {
   },
 
   getPublic: async (): Promise<any[]> => {
-    const response = await api.get("/api/archives");
-    return response.data;
+    const response = await api.get("/api/archives", { params: { limit: 100 } });
+    return response.data.data ?? response.data;
   },
 
   create: async (payload: ArchivePayload) => {

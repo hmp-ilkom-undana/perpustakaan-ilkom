@@ -44,8 +44,8 @@ export function useHandoverBorrowingMutation() {
 export function useReturnBorrowingMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, condition, note }: { id: string; condition: string; note: string }) =>
-      borrowingService.returnItem(id, { condition, note }),
+    mutationFn: ({ id, formData }: { id: string; formData: FormData }) =>
+      borrowingService.returnItem(id, formData),
     onSuccess: () => {
       toast.success("Pengembalian berhasil dicatat");
       queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });

@@ -104,8 +104,10 @@ export const borrowingService = {
     return response.data;
   },
 
-  returnItem: async (id: string, payload: { condition: string; note: string }) => {
-    const response = await api.patch(`/api/borrowings/${id}/return`, payload);
+  returnItem: async (id: string, formData: FormData) => {
+    const response = await api.patch(`/api/borrowings/${id}/return`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   },
 };
