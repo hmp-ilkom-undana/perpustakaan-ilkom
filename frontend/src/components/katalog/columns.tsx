@@ -24,7 +24,9 @@ export function getKatalogColumns({
   return [
     columnHelper.display({
       id: "no",
-      header: () => <div className="text-center font-black text-blue-900">NO.</div>,
+      header: () => (
+        <div className="text-center font-black text-blue-900">NO.</div>
+      ),
       size: 50,
       cell: ({ row }) => (
         <div className="text-center font-black text-slate-500 text-xs">
@@ -33,7 +35,9 @@ export function getKatalogColumns({
       ),
     }),
     columnHelper.accessor("archiveCode", {
-      header: () => <div className="text-center font-black text-blue-900">KODE ARSIP</div>,
+      header: () => (
+        <div className="text-center font-black text-blue-900">KODE ARSIP</div>
+      ),
       size: 125,
       cell: ({ getValue }) => (
         <div className="text-center font-mono text-xs font-black">
@@ -44,7 +48,9 @@ export function getKatalogColumns({
       ),
     }),
     columnHelper.accessor("title", {
-      header: () => <span className="font-black text-blue-900">INFO ARSIP</span>,
+      header: () => (
+        <span className="font-black text-blue-900">INFO ARSIP</span>
+      ),
       cell: ({ row }) => {
         const item = row.original;
         return (
@@ -60,26 +66,31 @@ export function getKatalogColumns({
               </span>
             </button>
             <span className="font-semibold text-slate-600 mt-1 text-xs tracking-tight">
-              {item.author} • <span className="text-slate-500">{item.year}</span>
+              {item.author} •{" "}
+              <span className="text-slate-500">{item.year}</span>
             </span>
           </div>
         );
       },
     }),
     columnHelper.accessor("type", {
-      header: () => <span className="font-black text-blue-900">JENIS / KATEGORI</span>,
+      header: () => (
+        <div className="text-center font-black text-blue-900">
+          JENIS / KATEGORI
+        </div>
+      ),
       size: 180,
       cell: ({ row }) => {
         const item = row.original;
         return (
-          <div className="flex flex-col gap-1 items-start">
+          <div className="flex flex-col gap-1 items-center justify-center text-center">
             <Badge
               variant="outline"
               className="text-xs border-2 border-blue-900 text-blue-900 font-bold bg-white shadow-[1px_1px_0px_#1E3A8A]"
             >
               {item.type}
             </Badge>
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center">
               {item.category}
             </span>
           </div>
@@ -87,19 +98,25 @@ export function getKatalogColumns({
       },
     }),
     columnHelper.accessor("location", {
-      header: () => <div className="text-center font-black text-blue-900">LOKASI</div>,
+      header: () => (
+        <div className="text-center font-black text-blue-900">LOKASI</div>
+      ),
       size: 110,
       cell: ({ getValue }) => {
         const val = getValue();
         return (
           <div className="text-center font-semibold text-slate-700 text-sm">
-            {val || <span className="text-slate-400 font-normal italic">-</span>}
+            {val || (
+              <span className="text-slate-400 font-normal italic">-</span>
+            )}
           </div>
         );
       },
     }),
     columnHelper.accessor("stock", {
-      header: () => <div className="text-center font-black text-blue-900">STOK</div>,
+      header: () => (
+        <div className="text-center font-black text-blue-900">STOK</div>
+      ),
       size: 80,
       cell: ({ getValue }) => {
         const stock = getValue();
@@ -121,7 +138,9 @@ export function getKatalogColumns({
     }),
     columnHelper.display({
       id: "actions",
-      header: () => <div className="text-center font-black text-blue-900">AKSI</div>,
+      header: () => (
+        <div className="text-center font-black text-blue-900">AKSI</div>
+      ),
       size: 140,
       cell: ({ row }) => {
         const item = row.original;
