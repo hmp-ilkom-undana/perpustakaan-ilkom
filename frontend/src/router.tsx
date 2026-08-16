@@ -31,6 +31,7 @@ import Riwayat from "./pages/mahasiswa/Riwayat";
 
 // Auth & Public Imports
 import Login from "./pages/Login";
+import LupaSandi from "./pages/LupaSandi";
 
 // 1. Root Route
 const rootRoute = createRootRoute({
@@ -53,6 +54,12 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login",
   component: Login,
+});
+
+const lupaSandiRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/lupa-sandi",
+  component: LupaSandi,
 });
 
 // 3. Authenticated Route Wrapper
@@ -189,6 +196,7 @@ const mahasiswaProfilRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
+  lupaSandiRoute,
   authenticatedRoute.addChildren([
     adminLayoutRoute.addChildren([
       adminIndexRoute,

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { 
   Search, 
   ShieldCheck, 
@@ -21,34 +21,34 @@ import { toast } from "sonner";
 
 const mockStaff: UserItem[] = [
   {
-    id: "101",
-    name: "Siti Rahmawati, S.Kom.",
-    identifier: "petugas1@ilkom.ac.id",
-    email: "petugas1@ilkom.ac.id",
-    wa_number: "081234567801",
+    id: "s1",
+    name: "Siti Rahmawati, S.Kom",
+    identifier: "petugas.siti@ilkom.ac.id",
+    email: "petugas.siti@ilkom.ac.id",
+    wa_number: "081233445566",
     role: "PETUGAS",
     status: "Aktif",
     createdAt: "10 Januari 2024",
   },
   {
-    id: "102",
-    name: "Rian Hidayat, A.Md.",
-    identifier: "petugas2@ilkom.ac.id",
-    email: "petugas2@ilkom.ac.id",
-    wa_number: "081234567802",
+    id: "s2",
+    name: "Hendra Wijaya",
+    identifier: "petugas.hendra@ilkom.ac.id",
+    email: "petugas.hendra@ilkom.ac.id",
+    wa_number: "081988776655",
     role: "PETUGAS",
     status: "Aktif",
-    createdAt: "15 Februari 2024",
+    createdAt: "01 Februari 2024",
   },
   {
-    id: "103",
-    name: "Nurul Fauziah",
-    identifier: "petugas3@ilkom.ac.id",
-    email: "petugas3@ilkom.ac.id",
-    wa_number: "081234567803",
+    id: "s3",
+    name: "Rina Kusuma",
+    identifier: "petugas.rina@ilkom.ac.id",
+    email: "petugas.rina@ilkom.ac.id",
+    wa_number: "085611223344",
     role: "PETUGAS",
     status: "Non-Aktif",
-    createdAt: "01 Maret 2024",
+    createdAt: "15 Maret 2024",
   },
 ];
 
@@ -60,11 +60,11 @@ export default function KelolaPetugas() {
 
   // Dialog States
   const [selectedStaff, setSelectedStaff] = useState<UserItem | null>(null);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [isResetOpen, setIsResetOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isToggleStatusOpen, setIsToggleStatusOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   // Fetch Staff from API
   const fetchStaff = async () => {
@@ -81,7 +81,7 @@ export default function KelolaPetugas() {
     }
   };
 
-  useMemo(() => {
+  useEffect(() => {
     fetchStaff();
   }, []);
 

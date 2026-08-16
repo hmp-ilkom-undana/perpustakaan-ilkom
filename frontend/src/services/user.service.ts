@@ -91,7 +91,7 @@ export const userService = {
   },
 
   toggleStatus: async (id: string, status: "Aktif" | "Non-Aktif") => {
-    const response = await api.patch(`/api/users/${id}/status`, { status });
+    const response = await api.patch(`/api/users/staff/${id}`, { status });
     return response.data;
   },
 };

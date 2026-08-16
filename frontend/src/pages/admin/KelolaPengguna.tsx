@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Users,
@@ -106,7 +106,7 @@ export default function KelolaPengguna() {
     }
   };
 
-  useMemo(() => {
+  useEffect(() => {
     fetchStudents();
   }, []);
 
