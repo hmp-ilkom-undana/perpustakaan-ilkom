@@ -71,7 +71,7 @@ export default function KelolaPetugas() {
     try {
       setIsLoading(true);
       const data = await userService.getStaff();
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         setStaffList(data);
       }
     } catch {
@@ -127,30 +127,30 @@ export default function KelolaPetugas() {
   ) => {
     try {
       setIsLoading(true);
-      await userService.createBatchStaff(staffListToCreate);
-      toast.success(
-        `Berhasil mendaftarkan ${staffListToCreate.length} akun petugas baru!`
-      );
+      const res = await userService.createBatchStaff(staffListToCreate);
+
+      if (res?.totalFailed > 0 && res?.totalCreated === 0) {
+        toast.error(res.errors?.[0]?.error || "Gagal mendaftarkan akun petugas");
+        return;
+      }
+
+      if (res?.totalFailed > 0) {
+        toast.warning(
+          `Berhasil mendaftarkan ${res.totalCreated} petugas, ${res.totalFailed} gagal: ${res.errors?.[0]?.error}`
+        );
+      } else {
+        toast.success(
+          `Berhasil mendaftarkan ${res.totalCreated || staffListToCreate.length} akun petugas baru!`
+        );
+      }
+
       await fetchStaff();
-    } catch {
-      // Fallback ke mock data jika offline
-      const newStaffItems: UserItem[] = staffListToCreate.map((item, idx) => {
-        const username = item.email.split("@")[0];
-        const formattedName = `Petugas ${username.charAt(0).toUpperCase() + username.slice(1)}`;
-        return {
-          id: String(Date.now() + idx),
-          name: formattedName,
-          identifier: item.email,
-          email: item.email,
-          role: "PETUGAS",
-          status: "Aktif",
-          createdAt: "Baru saja",
-        };
-      });
-      setStaffList((prev) => [...newStaffItems, ...prev]);
-      toast.success(
-        `Berhasil mendaftarkan ${staffListToCreate.length} akun petugas baru!`
-      );
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        "Gagal mendaftarkan akun petugas";
+      toast.error(errorMsg);
     } finally {
       setIsLoading(false);
     }

@@ -183,9 +183,13 @@ export class UserService {
       throw new BadRequestException(`Email ${data.email} sudah terdaftar`);
     }
 
-    const usernamePart = data.email.split('@')[0] || `staff_${Date.now().toString().slice(-4)}`;
-    const formattedName = `Petugas ${usernamePart.charAt(0).toUpperCase() + usernamePart.slice(1)}`;
-    const generatedNIM = `STF-${Date.now().toString().slice(-6)}`;
+    const baseUsername = (data.email.split('@')[0] || 'staff')
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, '');
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    const uniqueUsername = `${baseUsername}_${randomSuffix}`;
+    const formattedName = `Petugas ${baseUsername.charAt(0).toUpperCase() + baseUsername.slice(1)}`;
+    const uniqueNIM = `STF-${Date.now().toString().slice(-4)}${Math.floor(1000 + Math.random() * 9000)}`;
 
     // Daftarkan via Better-Auth SignUp API agar hashing sandi & token tersinkronisasi
     const result = await this.authService.auth.api.signUpEmail({
@@ -193,9 +197,8 @@ export class UserService {
         email: data.email,
         password: data.password || 'petugas_123',
         name: formattedName,
-        username: usernamePart,
-        nim: generatedNIM,
-        wa_number: '081234567890',
+        username: uniqueUsername,
+        nim: uniqueNIM,
       },
     });
 
@@ -218,6 +221,7 @@ export class UserService {
         name: updated.name,
         email: updated.email,
         role: updated.role,
+        status: 'Aktif',
       },
     };
   }
@@ -241,8 +245,14 @@ export class UserService {
         });
         results.push(created);
       } catch (err: any) {
-        errors.push({ email: item.email, error: err.message });
+        errors.push({ email: item.email, error: err.message || 'Gagal membuat akun' });
       }
+    }
+
+    if (results.length === 0 && errors.length > 0) {
+      throw new BadRequestException(
+        errors.map((e) => `${e.email}: ${e.error}`).join('; ')
+      );
     }
 
     return {

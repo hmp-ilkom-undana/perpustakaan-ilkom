@@ -22,9 +22,16 @@ export class AuthService {
         additionalFields: {
           role: {
             type: 'string',
+            required: false,
+            defaultValue: 'MAHASISWA',
           },
           nim: {
             type: 'string',
+            required: false,
+          },
+          wa_number: {
+            type: 'string',
+            required: false,
           },
         },
       },
