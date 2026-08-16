@@ -11,7 +11,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Admin Imports
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
-import ManajemenPengguna from "./pages/admin/ManajemenPengguna";
+import KelolaPengguna from "./pages/admin/KelolaPengguna";
+import KelolaPetugas from "./pages/admin/KelolaPetugas";
 
 // Petugas Imports
 import PetugasLayout from "./layouts/PetugasLayout";
@@ -30,6 +31,7 @@ import Riwayat from "./pages/mahasiswa/Riwayat";
 
 // Auth & Public Imports
 import Login from "./pages/Login";
+import LupaSandi from "./pages/LupaSandi";
 
 // 1. Root Route
 const rootRoute = createRootRoute({
@@ -52,6 +54,12 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login",
   component: Login,
+});
+
+const lupaSandiRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/lupa-sandi",
+  component: LupaSandi,
 });
 
 // 3. Authenticated Route Wrapper
@@ -101,7 +109,13 @@ const adminDendaRoute = createRoute({
 const adminPenggunaRoute = createRoute({
   getParentRoute: () => adminLayoutRoute,
   path: "pengguna",
-  component: ManajemenPengguna,
+  component: KelolaPengguna,
+});
+
+const adminPetugasRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "petugas",
+  component: KelolaPetugas,
 });
 
 // 5. Petugas Layout & Routes
@@ -182,6 +196,7 @@ const mahasiswaProfilRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
+  lupaSandiRoute,
   authenticatedRoute.addChildren([
     adminLayoutRoute.addChildren([
       adminIndexRoute,
@@ -190,6 +205,7 @@ const routeTree = rootRoute.addChildren([
       adminKatalogRoute,
       adminDendaRoute,
       adminPenggunaRoute,
+      adminPetugasRoute,
     ]),
     petugasLayoutRoute.addChildren([
       petugasIndexRoute,

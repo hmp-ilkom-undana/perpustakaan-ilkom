@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Eye, EyeOff, Lock, User, LogIn, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -142,16 +143,12 @@ export default function Login() {
                     <Lock className="w-3.5 h-3.5 text-blue-900" />
                     Kata Sandi
                   </Label>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toast.info("Silakan hubungi petugas perpustakaan untuk reset kata sandi.");
-                    }}
+                  <Link
+                    to="/lupa-sandi"
                     className="text-[11px] font-black text-blue-900 hover:text-orange-500 transition-colors uppercase tracking-wider"
                   >
                     Lupa Sandi?
-                  </a>
+                  </Link>
                 </div>
                 <div className="relative">
                   <Input
