@@ -7,6 +7,7 @@ import {
   UserCheck, 
   UserX, 
   KeyRound, 
+  Trash2,
   ShieldCheck,
   ShieldAlert
 } from "lucide-react";
@@ -21,11 +22,13 @@ const columnHelper = createColumnHelper<UserItem>();
 export interface StaffColumnActions {
   onToggleStatus: (staff: UserItem) => void;
   onResetPassword: (staff: UserItem) => void;
+  onDelete: (staff: UserItem) => void;
 }
 
 export function getStaffColumns({
   onToggleStatus,
   onResetPassword,
+  onDelete,
 }: StaffColumnActions): ColumnDef<UserItem, any>[] {
   return [
     columnHelper.display({
@@ -150,7 +153,7 @@ export function getStaffColumns({
     columnHelper.display({
       id: "actions",
       header: () => <div className="text-center w-full">Aksi</div>,
-      size: 110,
+      size: 130,
       cell: ({ row }) => {
         const staff = row.original;
         const isActive = staff.status === "Aktif";
@@ -169,7 +172,7 @@ export function getStaffColumns({
                     onClick={() => onToggleStatus(staff)}
                     className={`h-8 w-8 border-2 border-blue-900 rounded-md transition-all [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A] ${
                       isAdmin
-                        ? "opacity-50 cursor-not-allowed bg-slate-100 text-slate-400"
+                        ? "opacity-40 cursor-not-allowed bg-slate-100 text-slate-400"
                         : isActive
                         ? "bg-amber-100 hover:bg-amber-200 text-amber-900 cursor-pointer"
                         : "bg-emerald-100 hover:bg-emerald-200 text-emerald-900 cursor-pointer"
@@ -200,14 +203,38 @@ export function getStaffColumns({
                     variant="outline"
                     size="icon"
                     onClick={() => onResetPassword(staff)}
-                    className="h-8 w-8 border-2 border-blue-900 bg-rose-100 hover:bg-rose-200 text-rose-900 rounded-md transition-all cursor-pointer [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
+                    className="h-8 w-8 border-2 border-blue-900 bg-sky-100 hover:bg-sky-200 text-blue-900 rounded-md transition-all cursor-pointer [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
                   />
                 }
               >
                 <KeyRound className="h-4 w-4" />
               </TooltipTrigger>
-              <TooltipContent side="top" align="end">
+              <TooltipContent side="top" align="center">
                 {isAdmin ? "Reset Sandi Administrator" : "Reset Kata Sandi Petugas"}
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Action 3: Hapus Akun Petugas */}
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={isAdmin}
+                    onClick={() => onDelete(staff)}
+                    className={`h-8 w-8 border-2 border-blue-900 rounded-md transition-all [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A] ${
+                      isAdmin
+                        ? "opacity-40 cursor-not-allowed bg-slate-100 text-slate-400"
+                        : "bg-rose-100 hover:bg-rose-200 text-rose-800 cursor-pointer"
+                    }`}
+                  />
+                }
+              >
+                <Trash2 className="h-4 w-4" />
+              </TooltipTrigger>
+              <TooltipContent side="top" align="end">
+                {isAdmin ? "Akun Administrator tidak dapat dihapus" : "Hapus Akun Petugas"}
               </TooltipContent>
             </Tooltip>
           </div>

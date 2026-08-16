@@ -249,6 +249,7 @@ export default function KelolaPetugas() {
       getStaffColumns({
         onToggleStatus: handleOpenToggleStatus,
         onResetPassword: handleOpenResetPassword,
+        onDelete: handleOpenDelete,
       }),
     []
   );
