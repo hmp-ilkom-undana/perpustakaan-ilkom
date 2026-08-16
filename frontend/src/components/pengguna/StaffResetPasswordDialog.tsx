@@ -44,7 +44,7 @@ export function StaffResetPasswordDialog({
               <span>
                 Sandi akun akan dikembalikan ke sandi standar (
                 <code className="bg-white px-1.5 py-0.5 border border-red-300 rounded font-black text-red-900">
-                  123456
+                  petugas_123
                 </code>
                 ). Petugas wajib mengganti sandi setelah berhasil login.
               </span>

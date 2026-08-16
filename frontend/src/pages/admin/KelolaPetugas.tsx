@@ -196,11 +196,11 @@ export default function KelolaPetugas() {
     try {
       await userService.resetPassword(staff.email || staff.identifier);
       toast.success(
-        `Sandi akun petugas ${staff.name} berhasil direset ke default (123456)`
+        `Sandi akun petugas ${staff.name} berhasil direset ke default (petugas_123)`
       );
     } catch {
       toast.success(
-        `Sandi akun petugas ${staff.name} berhasil direset ke default (123456)`
+        `Sandi akun petugas ${staff.name} berhasil direset ke default (petugas_123)`
       );
     } finally {
       setIsResetOpen(false);
@@ -247,10 +247,8 @@ export default function KelolaPetugas() {
   const columns = useMemo(
     () =>
       getStaffColumns({
-        onEdit: handleOpenEdit,
         onToggleStatus: handleOpenToggleStatus,
         onResetPassword: handleOpenResetPassword,
-        onDelete: handleOpenDelete,
       }),
     []
   );
