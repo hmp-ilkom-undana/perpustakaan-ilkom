@@ -111,12 +111,21 @@ export function StaffFormDialog({
     }
 
     // Validation for Create Mode (Email only)
+    const emailSet = new Set<string>();
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      if (!row.email.trim() || !row.email.includes("@")) {
+      const email = row.email.trim().toLowerCase();
+
+      if (!email || !email.includes("@")) {
         toast.error(`Email pada baris ke-${i + 1} tidak valid`);
         return;
       }
+
+      if (emailSet.has(email)) {
+        toast.error(`Email pada baris ke-${i + 1} duplikat dengan baris sebelumnya`);
+        return;
+      }
+      emailSet.add(email);
     }
 
     onSubmitBatch(

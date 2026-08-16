@@ -193,8 +193,6 @@ export class UserService {
         .filter(Boolean)
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ') || 'Staf';
-    const uniqueNIM = `STF-${Date.now().toString().slice(-4)}${Math.floor(1000 + Math.random() * 9000)}`;
-
     // Daftarkan via Better-Auth SignUp API agar hashing sandi & token tersinkronisasi
     const result = await this.authService.auth.api.signUpEmail({
       body: {
@@ -202,7 +200,6 @@ export class UserService {
         password: data.password || 'petugas_123',
         name: formattedName,
         username: uniqueUsername,
-        nim: uniqueNIM,
       },
     });
 
