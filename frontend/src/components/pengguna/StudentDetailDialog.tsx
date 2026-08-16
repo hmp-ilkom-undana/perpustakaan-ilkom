@@ -8,20 +8,33 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, Calendar, BookOpen, Shield, CheckCircle2, XCircle } from "lucide-react";
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  Calendar, 
+  BookOpen, 
+  Shield, 
+  CheckCircle2, 
+  XCircle,
+  MessageCircle,
+  Clock
+} from "lucide-react";
 
 interface StudentDetailDialogProps {
   user: UserItem | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onResetPassword: (user: UserItem) => void;
+  onViewHistory: (user: UserItem) => void;
+  onWhatsApp: (user: UserItem) => void;
 }
 
 export function StudentDetailDialog({
   user,
   isOpen,
   onOpenChange,
-  onResetPassword,
+  onViewHistory,
+  onWhatsApp,
 }: StudentDetailDialogProps) {
   if (!user) return null;
 
@@ -43,7 +56,7 @@ export function StudentDetailDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 pt-2">
+        <div className="space-y-5 pt-2">
           {/* Avatar Header Box */}
           <div className="flex items-center gap-4 p-4 bg-slate-50 border-2 border-blue-900 rounded-lg [box-shadow:3px_3px_0px_#1E3A8A]">
             <div className="w-14 h-14 rounded-md bg-blue-100 border-2 border-blue-900 text-blue-900 font-black text-xl flex items-center justify-center shrink-0 [box-shadow:2px_2px_0px_#1E3A8A]">
@@ -121,7 +134,7 @@ export function StudentDetailDialog({
               <div>
                 <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Pinjaman Aktif</p>
                 <p className="text-sm font-black text-blue-950">
-                  {user.activeBorrowings ?? 0} Buku / Arsip
+                  {user.activeBorrowings ?? 0} Arsip
                 </p>
               </div>
             </div>
@@ -140,17 +153,31 @@ export function StudentDetailDialog({
         </div>
 
         <DialogFooter className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-between items-center">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => {
-              onOpenChange(false);
-              onResetPassword(user);
-            }}
-            className="w-full sm:w-auto text-red-600 hover:text-red-700 hover:bg-red-50 border-2 border-blue-900 font-bold rounded-md"
-          >
-            Reset Sandi Akun
-          </Button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                onOpenChange(false);
+                onViewHistory(user);
+              }}
+              className="flex-1 sm:flex-none border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md text-xs"
+            >
+              <Clock className="w-3.5 h-3.5 mr-1.5 text-blue-900" />
+              Riwayat Peminjaman
+            </Button>
+            {user.wa_number && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onWhatsApp(user)}
+                className="flex-1 sm:flex-none border-2 border-emerald-800 text-emerald-800 hover:bg-emerald-50 font-bold rounded-md text-xs"
+              >
+                <MessageCircle className="w-3.5 h-3.5 mr-1.5 text-emerald-700" />
+                Kirim WhatsApp
+              </Button>
+            )}
+          </div>
           <Button
             type="button"
             onClick={() => onOpenChange(false)}

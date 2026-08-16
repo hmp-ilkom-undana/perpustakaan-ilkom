@@ -14,6 +14,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -137,53 +138,55 @@ export function getStaffColumns({
                 <MoreVertical className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[210px] border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] rounded-md font-medium bg-white p-1">
-                <DropdownMenuLabel className="text-blue-900 font-bold text-xs uppercase tracking-wider">
-                  Aksi Petugas
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-blue-900/20" />
-                
-                <DropdownMenuItem
-                  onClick={() => onEdit(staff)}
-                  className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
-                >
-                  <Edit3 className="w-4 h-4 text-blue-800" />
-                  Edit Data Petugas
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-blue-900 font-bold text-xs uppercase tracking-wider">
+                    Aksi Petugas
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-blue-900/20" />
+                  
+                  <DropdownMenuItem
+                    onClick={() => onEdit(staff)}
+                    className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
+                  >
+                    <Edit3 className="w-4 h-4 text-blue-800" />
+                    Edit Data Petugas
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  onClick={() => onToggleStatus(staff)}
-                  className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
-                >
-                  {isActive ? (
-                    <>
-                      <UserX className="w-4 h-4 text-amber-600" />
-                      Nonaktifkan Akses
-                    </>
-                  ) : (
-                    <>
-                      <UserCheck className="w-4 h-4 text-emerald-600" />
-                      Aktifkan Akses
-                    </>
-                  )}
-                </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => onToggleStatus(staff)}
+                    className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
+                  >
+                    {isActive ? (
+                      <>
+                        <UserX className="w-4 h-4 text-amber-600" />
+                        Nonaktifkan Akses
+                      </>
+                    ) : (
+                      <>
+                        <UserCheck className="w-4 h-4 text-emerald-600" />
+                        Aktifkan Akses
+                      </>
+                    )}
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  onClick={() => onResetPassword(staff)}
-                  className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
-                >
-                  <KeyRound className="w-4 h-4 text-amber-600" />
-                  Reset Sandi
-                </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => onResetPassword(staff)}
+                    className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
+                  >
+                    <KeyRound className="w-4 h-4 text-amber-600" />
+                    Reset Sandi
+                  </DropdownMenuItem>
 
-                <DropdownMenuSeparator className="bg-blue-900/20" />
+                  <DropdownMenuSeparator className="bg-blue-900/20" />
 
-                <DropdownMenuItem
-                  onClick={() => onDelete(staff)}
-                  className="text-red-600 hover:bg-red-50 focus:text-red-700 cursor-pointer flex items-center gap-2 font-bold"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Cabut / Hapus Akun
-                </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => onDelete(staff)}
+                    className="text-red-600 hover:bg-red-50 focus:text-red-700 cursor-pointer flex items-center gap-2 font-bold"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Cabut / Hapus Akun
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

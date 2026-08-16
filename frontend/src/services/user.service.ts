@@ -15,6 +15,20 @@ export interface UserItem {
   activeBorrowings?: number;
 }
 
+export interface BorrowingHistoryItem {
+  id: string;
+  archiveTitle: string;
+  archiveCode: string;
+  category: string;
+  archiveType: string;
+  borrowDate: string;
+  returnDate: string | null;
+  status: string;
+  fineAmount: number;
+  kondisiKembali?: string | null;
+  pickupCode?: string | null;
+}
+
 export const userService = {
   getAll: async (): Promise<UserItem[]> => {
     const response = await api.get("/api/users");
@@ -25,6 +39,13 @@ export const userService = {
     const response = await api.get("/api/users/students", {
       params: search ? { search } : undefined,
     });
+    return response.data;
+  },
+
+  getStudentBorrowings: async (
+    userId: string
+  ): Promise<BorrowingHistoryItem[]> => {
+    const response = await api.get(`/api/users/students/${userId}/borrowings`);
     return response.data;
   },
 

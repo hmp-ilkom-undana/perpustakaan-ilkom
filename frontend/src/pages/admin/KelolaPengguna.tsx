@@ -1,18 +1,17 @@
 import { useState, useMemo } from "react";
-import { 
-  Search, 
-  Users, 
-  UserCheck, 
-  UserX, 
-  BookOpen, 
-  SlidersHorizontal 
+import {
+  Search,
+  Users,
+  UserCheck,
+  UserX,
+  BookOpen,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { getStudentColumns } from "@/components/pengguna/studentColumns";
 import { StudentDetailDialog } from "@/components/pengguna/StudentDetailDialog";
-import { StudentResetPasswordDialog } from "@/components/pengguna/StudentResetPasswordDialog";
-import { StudentStatusToggleDialog } from "@/components/pengguna/StudentStatusToggleDialog";
+import { StudentHistoryDialog } from "@/components/pengguna/StudentHistoryDialog";
 import { userService, type UserItem } from "@/services/user.service";
 import { toast } from "sonner";
 
@@ -82,14 +81,15 @@ const mockStudents: UserItem[] = [
 export default function KelolaPengguna() {
   const [students, setStudents] = useState<UserItem[]>(mockStudents);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"ALL" | "Aktif" | "Non-Aktif">("ALL");
+  const [statusFilter, setStatusFilter] = useState<
+    "ALL" | "Aktif" | "Non-Aktif"
+  >("ALL");
   const [isLoading, setIsLoading] = useState(false);
 
   // Dialog States
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [isResetOpen, setIsResetOpen] = useState(false);
-  const [isToggleStatusOpen, setIsToggleStatusOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   // Fetch Students from API
   const fetchStudents = async () => {
@@ -130,66 +130,55 @@ export default function KelolaPengguna() {
     const total = students.length;
     const active = students.filter((s) => s.status === "Aktif").length;
     const inactive = students.filter((s) => s.status === "Non-Aktif").length;
-    const totalBorrowings = students.reduce((acc, s) => acc + (s.activeBorrowings || 0), 0);
+    const totalBorrowings = students.reduce(
+      (acc, s) => acc + (s.activeBorrowings || 0),
+      0,
+    );
 
     return { total, active, inactive, totalBorrowings };
   }, [students]);
 
-  // Handlers
+  // Action Handlers
   const handleViewDetail = (user: UserItem) => {
     setSelectedUser(user);
     setIsDetailOpen(true);
   };
 
-  const handleOpenResetPassword = (user: UserItem) => {
+  const handleViewHistory = (user: UserItem) => {
     setSelectedUser(user);
-    setIsResetOpen(true);
+    setIsHistoryOpen(true);
   };
 
-  const handleConfirmResetPassword = async (user: UserItem) => {
-    try {
-      await userService.resetPassword(user.identifier);
-      toast.success(
-        `Sandi akun mahasiswa ${user.name} (${user.identifier}) berhasil direset ke default (123456)`
-      );
-    } catch {
-      toast.success(
-        `Sandi akun mahasiswa ${user.name} (${user.identifier}) berhasil direset ke default (123456)`
-      );
-    } finally {
-      setIsResetOpen(false);
+  const handleWhatsApp = (user: UserItem) => {
+    if (!user.wa_number) {
+      toast.error(`Mahasiswa ${user.name} belum mencantumkan nomor WhatsApp`);
+      return;
     }
-  };
 
-  const handleOpenToggleStatus = (user: UserItem) => {
-    setSelectedUser(user);
-    setIsToggleStatusOpen(true);
-  };
-
-  const handleConfirmToggleStatus = async (user: UserItem) => {
-    const nextStatus = user.status === "Aktif" ? "Non-Aktif" : "Aktif";
-    try {
-      await userService.toggleStatus(user.id, nextStatus);
-    } catch {
-      // Offline fallback
+    let cleanedNumber = user.wa_number.replace(/\D/g, "");
+    if (cleanedNumber.startsWith("0")) {
+      cleanedNumber = "62" + cleanedNumber.slice(1);
+    } else if (!cleanedNumber.startsWith("62")) {
+      cleanedNumber = "62" + cleanedNumber;
     }
-    setStudents((prev) =>
-      prev.map((s) => (s.id === user.id ? { ...s, status: nextStatus } : s))
+
+    const greetingMessage = encodeURIComponent(
+      `Halo ${user.name} (${user.nim || user.identifier}), kami dari Layanan Perpustakaan ILKOM Undana. Ingin mengonfirmasi status peminjaman arsip dan sirkulasi Anda. Terima kasih.`,
     );
-    toast.success(
-      `Status akun ${user.name} berhasil diubah menjadi "${nextStatus}"`
+
+    window.open(
+      `https://wa.me/${cleanedNumber}?text=${greetingMessage}`,
+      "_blank",
     );
-    setIsToggleStatusOpen(false);
+    toast.success(`Membuka WhatsApp untuk menghubungi ${user.name}`);
   };
 
   const columns = useMemo(
     () =>
       getStudentColumns({
         onViewDetail: handleViewDetail,
-        onResetPassword: handleOpenResetPassword,
-        onToggleStatus: handleOpenToggleStatus,
       }),
-    []
+    [],
   );
 
   return (
@@ -205,7 +194,8 @@ export default function KelolaPengguna() {
               Kelola Pengguna
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 font-medium">
-              Manajemen akun mahasiswa, pemantauan status keanggotaan, dan reset sandi akses.
+              Manajemen akun mahasiswa, pemantauan status keanggotaan, dan audit
+              sirkulasi peminjaman.
             </p>
           </div>
         </div>
@@ -215,46 +205,62 @@ export default function KelolaPengguna() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="p-4 bg-white border-2 border-blue-900 rounded-lg [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-black uppercase tracking-wider text-blue-900">Total Mahasiswa</span>
+            <span className="text-xs font-black uppercase tracking-wider text-blue-900">
+              Total Mahasiswa
+            </span>
             <Users className="w-4 h-4 text-blue-900" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-blue-950">
             {stats.total}
           </div>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Terdaftar di sistem</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">
+            Terdaftar di sistem
+          </p>
         </div>
 
         <div className="p-4 bg-white border-2 border-blue-900 rounded-lg [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-black uppercase tracking-wider text-emerald-800">Akun Aktif</span>
+            <span className="text-xs font-black uppercase tracking-wider text-emerald-800">
+              Akun Aktif
+            </span>
             <UserCheck className="w-4 h-4 text-emerald-700" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-emerald-700">
             {stats.active}
           </div>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Dapat meminjam buku</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">
+            Dapat meminjam buku
+          </p>
         </div>
 
         <div className="p-4 bg-white border-2 border-blue-900 rounded-lg [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-black uppercase tracking-wider text-rose-800">Non-Aktif</span>
+            <span className="text-xs font-black uppercase tracking-wider text-rose-800">
+              Non-Aktif
+            </span>
             <UserX className="w-4 h-4 text-rose-700" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-rose-700">
             {stats.inactive}
           </div>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Akses dinonaktifkan</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">
+            Akses dinonaktifkan
+          </p>
         </div>
 
         <div className="p-4 bg-white border-2 border-blue-900 rounded-lg [box-shadow:4px_4px_0px_#1E3A8A] flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-black uppercase tracking-wider text-amber-800">Pinjaman Aktif</span>
+            <span className="text-xs font-black uppercase tracking-wider text-amber-800">
+              Pinjaman Aktif
+            </span>
             <BookOpen className="w-4 h-4 text-amber-700" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-blue-900">
             {stats.totalBorrowings}
           </div>
-          <p className="text-[11px] font-semibold text-slate-500 mt-1">Buku sedang dipinjam</p>
+          <p className="text-[11px] font-semibold text-slate-500 mt-1">
+            Buku sedang dipinjam
+          </p>
         </div>
       </div>
 
@@ -328,10 +334,13 @@ export default function KelolaPengguna() {
         {/* Table Footer / Counter */}
         <div className="p-4 border-t-2 border-blue-900 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm font-semibold text-slate-700 bg-slate-50 gap-2">
           <div>
-            Menampilkan <span className="font-bold text-blue-900">{filteredStudents.length}</span> dari <span className="font-bold text-blue-900">{students.length}</span> mahasiswa terdaftar
-          </div>
-          <div className="text-[11px] text-slate-500 font-medium">
-            *Untuk mengubah sandi, klik tombol aksi pada baris mahasiswa.
+            Menampilkan{" "}
+            <span className="font-bold text-blue-900">
+              {filteredStudents.length}
+            </span>{" "}
+            dari{" "}
+            <span className="font-bold text-blue-900">{students.length}</span>{" "}
+            mahasiswa terdaftar
           </div>
         </div>
       </div>
@@ -341,21 +350,14 @@ export default function KelolaPengguna() {
         user={selectedUser}
         isOpen={isDetailOpen}
         onOpenChange={setIsDetailOpen}
-        onResetPassword={handleOpenResetPassword}
+        onViewHistory={handleViewHistory}
+        onWhatsApp={handleWhatsApp}
       />
 
-      <StudentResetPasswordDialog
+      <StudentHistoryDialog
         user={selectedUser}
-        isOpen={isResetOpen}
-        onOpenChange={setIsResetOpen}
-        onConfirm={handleConfirmResetPassword}
-      />
-
-      <StudentStatusToggleDialog
-        user={selectedUser}
-        isOpen={isToggleStatusOpen}
-        onOpenChange={setIsToggleStatusOpen}
-        onConfirm={handleConfirmToggleStatus}
+        isOpen={isHistoryOpen}
+        onOpenChange={setIsHistoryOpen}
       />
     </div>
   );

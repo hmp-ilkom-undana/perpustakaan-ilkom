@@ -19,6 +19,11 @@ export class UserController {
     return this.userService.getStudents(search);
   }
 
+  @Get('students/:id/borrowings')
+  async getStudentBorrowings(@Param('id') id: string) {
+    return this.userService.getStudentBorrowings(id);
+  }
+
   @Get('staff')
   async getStaff(@Query('search') search?: string) {
     return this.userService.getStaff(search);

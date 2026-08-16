@@ -71,6 +71,52 @@ export class UserService {
   }
 
   /**
+   * Mengambil riwayat transaksi peminjaman mahasiswa tertentu
+   */
+  async getStudentBorrowings(userId: string) {
+    const borrowings = await this.prisma.borrowing.findMany({
+      where: { userId },
+      include: {
+        archive: {
+          select: {
+            title: true,
+            archiveCode: true,
+            category: true,
+            archiveType: true,
+          },
+        },
+      },
+      orderBy: {
+        borrowDate: 'desc',
+      },
+    });
+
+    return borrowings.map((b) => ({
+      id: b.id,
+      archiveTitle: b.archive?.title || 'Arsip Tidak Ditemukan',
+      archiveCode: b.archive?.archiveCode || '-',
+      category: b.archive?.category || '-',
+      archiveType: b.archive?.archiveType || '-',
+      borrowDate: new Intl.DateTimeFormat('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }).format(new Date(b.borrowDate)),
+      returnDate: b.returnDate
+        ? new Intl.DateTimeFormat('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          }).format(new Date(b.returnDate))
+        : null,
+      status: b.status,
+      fineAmount: b.fineAmount,
+      kondisiKembali: b.kondisiKembali,
+      pickupCode: b.pickupCode,
+    }));
+  }
+
+  /**
    * Mengambil seluruh data staf operasional (Petugas & Admin)
    */
   async getStaff(search?: string) {
