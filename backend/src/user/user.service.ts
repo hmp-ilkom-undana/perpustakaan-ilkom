@@ -191,7 +191,7 @@ export class UserService {
     const result = await this.authService.auth.api.signUpEmail({
       body: {
         email: data.email,
-        password: data.password || '123456',
+        password: data.password || 'petugas_123',
         name: formattedName,
         username: usernamePart,
         nim: generatedNIM,

@@ -18,14 +18,15 @@ import {
   Plus, 
   Trash2, 
   User, 
-  Users 
+  Users, 
+  KeyRound, 
+  Info 
 } from "lucide-react";
 import { toast } from "sonner";
 
-export interface StaffRowItem {
+export interface StaffEmailRowItem {
   id: string;
   email: string;
-  password: string;
 }
 
 interface StaffFormDialogProps {
@@ -34,7 +35,7 @@ interface StaffFormDialogProps {
   staff: UserItem | null;
   mode: "create" | "edit";
   onSubmitSingle: (staffData: Partial<UserItem> & { password?: string }) => void;
-  onSubmitBatch: (staffList: Array<{ email: string; password?: string }>) => void;
+  onSubmitBatch: (staffList: Array<{ email: string }>) => void;
 }
 
 export function StaffFormDialog({
@@ -47,9 +48,9 @@ export function StaffFormDialog({
 }: StaffFormDialogProps) {
   const isEdit = mode === "edit";
 
-  // Batch Rows State for Create Mode
-  const [rows, setRows] = useState<StaffRowItem[]>([
-    { id: "1", email: "", password: "" },
+  // Batch Rows State for Create Mode (Email only)
+  const [rows, setRows] = useState<StaffEmailRowItem[]>([
+    { id: "1", email: "" },
   ]);
 
   // Single Edit State for Edit Mode
@@ -66,7 +67,7 @@ export function StaffFormDialog({
         setEditPassword("");
         setEditStatus((staff.status as "Aktif" | "Non-Aktif") || "Aktif");
       } else {
-        setRows([{ id: "1", email: "", password: "" }]);
+        setRows([{ id: "1", email: "" }]);
       }
     }
   }, [isOpen, isEdit, staff]);
@@ -74,7 +75,7 @@ export function StaffFormDialog({
   // Multi-Row Handlers
   const handleAddRow = () => {
     const newId = Date.now().toString();
-    setRows((prev) => [...prev, { id: newId, email: "", password: "" }]);
+    setRows((prev) => [...prev, { id: newId, email: "" }]);
   };
 
   const handleRemoveRow = (id: string) => {
@@ -82,13 +83,9 @@ export function StaffFormDialog({
     setRows((prev) => prev.filter((r) => r.id !== id));
   };
 
-  const handleRowChange = (
-    id: string,
-    field: "email" | "password",
-    value: string
-  ) => {
+  const handleEmailChange = (id: string, value: string) => {
     setRows((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, [field]: value } : r))
+      prev.map((r) => (r.id === id ? { ...r, email: value } : r))
     );
   };
 
@@ -113,15 +110,11 @@ export function StaffFormDialog({
       return;
     }
 
-    // Validation for Create (Batch) Mode
+    // Validation for Create Mode (Email only)
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       if (!row.email.trim() || !row.email.includes("@")) {
         toast.error(`Email pada baris ke-${i + 1} tidak valid`);
-        return;
-      }
-      if (!row.password.trim() || row.password.length < 6) {
-        toast.error(`Password pada baris ke-${i + 1} minimal 6 karakter`);
         return;
       }
     }
@@ -129,7 +122,6 @@ export function StaffFormDialog({
     onSubmitBatch(
       rows.map((r) => ({
         email: r.email.trim(),
-        password: r.password.trim(),
       }))
     );
 
@@ -138,7 +130,7 @@ export function StaffFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl border-2 border-blue-900 [box-shadow:6px_6px_0px_#1E3A8A] rounded-lg p-6 max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-lg border-2 border-blue-900 [box-shadow:6px_6px_0px_#1E3A8A] rounded-lg p-6 max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-black text-blue-900">
             {isEdit ? (
@@ -153,22 +145,35 @@ export function StaffFormDialog({
               </>
             )}
           </DialogTitle>
-          <p className="text-xs text-slate-600 font-medium pt-1">
+          <p className="text-xs text-slate-600 font-medium pt-0.5">
             {isEdit
               ? "Ubah data kredensial atau status hak akses petugas perpustakaan."
-              : "Masukkan email dan password untuk mendaftarkan satu atau banyak petugas sekaligus."}
+              : "Cukup masukkan alamat email resmi untuk mendaftarkan akun petugas."}
           </p>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden space-y-3 pt-1">
-          {/* Create Mode: Dynamic Multi-Row (Email & Password Only) */}
+          {/* Create Mode: Email Only & Default Password Notification */}
           {!isEdit ? (
             <>
+              {/* Default Password Info Card */}
+              <div className="p-3 bg-amber-50 border-2 border-blue-900 rounded-md [box-shadow:2px_2px_0px_#1E3A8A] flex items-start gap-2.5 text-xs text-blue-950">
+                <KeyRound className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <p className="font-bold text-amber-950">
+                    Password Default: <code className="px-1.5 py-0.5 bg-amber-200 border border-blue-900 rounded font-mono font-bold text-blue-900">petugas_123</code>
+                  </p>
+                  <p className="text-[11px] text-slate-600 font-medium">
+                    Petugas baru dapat login dengan password default ini, lalu menggantinya melalui menu profil.
+                  </p>
+                </div>
+              </div>
+
               {/* Sticky / Fixed Control Bar on Top (No scrolling needed to add row) */}
               <div className="flex items-center justify-between bg-slate-100 border-2 border-blue-900 rounded-md p-2 px-3 [box-shadow:2px_2px_0px_#1E3A8A] shrink-0">
                 <div className="flex items-center gap-2 text-xs font-black text-blue-900">
                   <Users className="w-4 h-4" />
-                  <span>Daftar Akun Petugas ({rows.length})</span>
+                  <span>Daftar Email Petugas ({rows.length})</span>
                 </div>
 
                 <Button
@@ -183,22 +188,23 @@ export function StaffFormDialog({
               </div>
 
               {/* Scrollable Container for Row Cards Only */}
-              <div className="flex-1 overflow-y-auto pr-1 space-y-3 max-h-[340px]">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 max-h-[300px]">
                 {rows.map((row, index) => (
                   <div
                     key={row.id}
-                    className="p-3 bg-slate-50 border-2 border-blue-900 rounded-lg [box-shadow:3px_3px_0px_#1E3A8A] space-y-2.5 relative group"
+                    className="p-3 bg-slate-50 border-2 border-blue-900 rounded-lg [box-shadow:3px_3px_0px_#1E3A8A] space-y-1.5 relative group"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-black text-blue-900 bg-amber-100 border border-blue-900 rounded">
-                        Petugas #{index + 1}
-                      </span>
+                      <Label className="text-[11px] font-black text-blue-900 uppercase tracking-wider flex items-center gap-1">
+                        <Mail className="w-3 h-3 text-blue-900" />
+                        Email Resmi Petugas #{index + 1}
+                      </Label>
 
                       {rows.length > 1 && (
                         <button
                           type="button"
                           onClick={() => handleRemoveRow(row.id)}
-                          className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition-colors flex items-center gap-1 text-xs font-bold"
+                          className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition-colors flex items-center gap-1 text-[11px] font-bold"
                           title="Hapus baris ini"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -207,50 +213,23 @@ export function StaffFormDialog({
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      {/* Field 1: Email */}
-                      <div className="space-y-1">
-                        <Label className="text-[11px] font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1">
-                          <Mail className="w-3 h-3 text-blue-900" />
-                          Email Resmi
-                        </Label>
-                        <Input
-                          type="email"
-                          placeholder="petugas@ilkom.ac.id"
-                          value={row.email}
-                          onChange={(e) =>
-                            handleRowChange(row.id, "email", e.target.value)
-                          }
-                          className="h-10 bg-white border-2 border-blue-900 rounded-md text-xs font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
-                          required
-                        />
-                      </div>
-
-                      {/* Field 2: Password */}
-                      <div className="space-y-1">
-                        <Label className="text-[11px] font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1">
-                          <Lock className="w-3 h-3 text-blue-900" />
-                          Password
-                        </Label>
-                        <Input
-                          type="password"
-                          placeholder="Minimal 6 karakter"
-                          value={row.password}
-                          onChange={(e) =>
-                            handleRowChange(row.id, "password", e.target.value)
-                          }
-                          className="h-10 bg-white border-2 border-blue-900 rounded-md text-xs font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
-                          required
-                        />
-                      </div>
-                    </div>
+                    <Input
+                      type="email"
+                      placeholder="Contoh: petugas1@ilkom.ac.id"
+                      value={row.email}
+                      onChange={(e) =>
+                        handleEmailChange(row.id, e.target.value)
+                      }
+                      className="h-10 bg-white border-2 border-blue-900 rounded-md text-xs font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
+                      required
+                    />
                   </div>
                 ))}
               </div>
             </>
           ) : (
             /* Edit Mode */
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               <div className="space-y-1.5">
                 <Label className="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5" />
@@ -330,7 +309,7 @@ export function StaffFormDialog({
             <div className="text-xs font-bold text-slate-600">
               {!isEdit && (
                 <span>
-                  Total: <strong className="text-blue-900">{rows.length}</strong> akun petugas baru
+                  Total: <strong className="text-blue-900">{rows.length}</strong> akun petugas
                 </span>
               )}
             </div>
