@@ -1,37 +1,31 @@
 import { createColumnHelper, ColumnDef } from "@tanstack/react-table";
 import type { UserItem } from "@/services/user.service";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { 
-  MoreVertical, 
   Mail, 
   UserCheck, 
   UserX, 
   KeyRound, 
-  Edit3, 
-  Trash2, 
-  ShieldCheck 
+  Trash2,
+  ShieldCheck,
+  ShieldAlert
 } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const columnHelper = createColumnHelper<UserItem>();
 
 export interface StaffColumnActions {
-  onEdit: (staff: UserItem) => void;
   onToggleStatus: (staff: UserItem) => void;
   onResetPassword: (staff: UserItem) => void;
   onDelete: (staff: UserItem) => void;
 }
 
 export function getStaffColumns({
-  onEdit,
   onToggleStatus,
   onResetPassword,
   onDelete,
@@ -48,10 +42,12 @@ export function getStaffColumns({
       size: 60,
     }),
     columnHelper.accessor("name", {
-      header: "Nama Petugas",
+      header: "Nama Petugas / Administrator",
+      size: 240,
       cell: ({ row }) => {
         const staff = row.original;
-        const initials = staff.name
+        const isAdmin = staff.role === "ADMIN";
+        const initials = (staff.name || "User")
           .split(" ")
           .map((n) => n[0])
           .slice(0, 2)
@@ -60,13 +56,18 @@ export function getStaffColumns({
 
         return (
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-md bg-orange-100 text-orange-950 border-2 border-blue-900 flex items-center justify-center font-black text-xs shrink-0 [box-shadow:2px_2px_0px_#1E3A8A]">
+            <div
+              className={`w-9 h-9 rounded-md border-2 border-blue-900 flex items-center justify-center font-black text-xs shrink-0 [box-shadow:2px_2px_0px_#1E3A8A] ${
+                isAdmin
+                  ? "bg-purple-200 text-purple-950"
+                  : "bg-orange-100 text-orange-950"
+              }`}
+            >
               {initials}
             </div>
-            <div>
-              <p className="font-bold text-blue-950 text-sm">{staff.name}</p>
-              <p className="text-xs text-slate-500 font-medium md:hidden">
-                {staff.email || staff.identifier}
+            <div className="min-w-0">
+              <p className="font-bold text-blue-950 text-sm truncate">
+                {staff.name}
               </p>
             </div>
           </div>
@@ -75,29 +76,47 @@ export function getStaffColumns({
     }),
     columnHelper.accessor((row) => row.email || row.identifier, {
       id: "email",
-      header: "Email / Akun",
+      header: "Email",
       size: 240,
       cell: ({ getValue }) => (
         <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
           <Mail className="w-3.5 h-3.5 text-blue-900 shrink-0" />
-          <span className="truncate max-w-[200px]">{getValue()}</span>
+          <span className="truncate max-w-[210px]">{getValue()}</span>
         </div>
       ),
     }),
     columnHelper.accessor("role", {
       header: () => <div className="text-center w-full">Hak Akses</div>,
-      size: 130,
-      cell: () => (
-        <div className="flex justify-center">
-          <Badge
-            variant="outline"
-            className="bg-blue-50 text-blue-900 border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] flex items-center gap-1 w-fit"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-900" />
-            Petugas
-          </Badge>
-        </div>
-      ),
+      size: 140,
+      cell: ({ getValue }) => {
+        const role = getValue();
+        const isAdmin = role === "ADMIN";
+
+        return (
+          <div className="flex justify-center">
+            <Badge
+              variant="outline"
+              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] flex items-center gap-1.5 w-fit ${
+                isAdmin
+                  ? "bg-purple-100 text-purple-950 border-blue-900"
+                  : "bg-blue-50 text-blue-900 border-blue-900"
+              }`}
+            >
+              {isAdmin ? (
+                <>
+                  <ShieldAlert className="w-3.5 h-3.5 text-purple-700" />
+                  Administrator
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="w-3.5 h-3.5 text-blue-900" />
+                  Petugas
+                </>
+              )}
+            </Badge>
+          </div>
+        );
+      },
     }),
     columnHelper.accessor("createdAt", {
       header: () => <div className="text-center w-full">Terdaftar</div>,
@@ -134,70 +153,90 @@ export function getStaffColumns({
     columnHelper.display({
       id: "actions",
       header: () => <div className="text-center w-full">Aksi</div>,
-      size: 80,
+      size: 130,
       cell: ({ row }) => {
         const staff = row.original;
         const isActive = staff.status === "Aktif";
+        const isAdmin = staff.role === "ADMIN";
 
         return (
-          <div className="flex justify-center items-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-8 w-8 text-blue-900 hover:bg-slate-200 border-2 border-transparent hover:border-blue-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 transition-all cursor-pointer">
-                <span className="sr-only">Buka menu</span>
-                <MoreVertical className="h-4 w-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[210px] border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] rounded-md font-medium bg-white p-1">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-blue-900 font-bold text-xs uppercase tracking-wider">
-                    Aksi Petugas
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-blue-900/20" />
-                  
-                  <DropdownMenuItem
-                    onClick={() => onEdit(staff)}
-                    className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
-                  >
-                    <Edit3 className="w-4 h-4 text-blue-800" />
-                    Edit Data Petugas
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem
+          <div className="flex justify-center items-center gap-1.5">
+            {/* Action 1: Toggle Status (Nonaktifkan / Aktifkan) */}
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={isAdmin}
                     onClick={() => onToggleStatus(staff)}
-                    className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
-                  >
-                    {isActive ? (
-                      <>
-                        <UserX className="w-4 h-4 text-amber-600" />
-                        Nonaktifkan Akses
-                      </>
-                    ) : (
-                      <>
-                        <UserCheck className="w-4 h-4 text-emerald-600" />
-                        Aktifkan Akses
-                      </>
-                    )}
-                  </DropdownMenuItem>
+                    className={`h-8 w-8 border-2 border-blue-900 rounded-md transition-all [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A] ${
+                      isAdmin
+                        ? "opacity-40 cursor-not-allowed bg-slate-100 text-slate-400"
+                        : isActive
+                        ? "bg-amber-100 hover:bg-amber-200 text-amber-900 cursor-pointer"
+                        : "bg-emerald-100 hover:bg-emerald-200 text-emerald-900 cursor-pointer"
+                    }`}
+                  />
+                }
+              >
+                {isActive ? (
+                  <UserX className="h-4 w-4" />
+                ) : (
+                  <UserCheck className="h-4 w-4" />
+                )}
+              </TooltipTrigger>
+              <TooltipContent side="top" align="center">
+                {isAdmin
+                  ? "Akun Administrator Utama tidak dapat dinonaktifkan"
+                  : isActive
+                  ? "Nonaktifkan Akses Petugas"
+                  : "Aktifkan Akses Petugas"}
+              </TooltipContent>
+            </Tooltip>
 
-                  <DropdownMenuItem
+            {/* Action 2: Reset Sandi */}
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="icon"
                     onClick={() => onResetPassword(staff)}
-                    className="cursor-pointer flex items-center gap-2 text-slate-800 hover:bg-slate-100 font-semibold"
-                  >
-                    <KeyRound className="w-4 h-4 text-amber-600" />
-                    Reset Sandi
-                  </DropdownMenuItem>
+                    className="h-8 w-8 border-2 border-blue-900 bg-sky-100 hover:bg-sky-200 text-blue-900 rounded-md transition-all cursor-pointer [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
+                  />
+                }
+              >
+                <KeyRound className="h-4 w-4" />
+              </TooltipTrigger>
+              <TooltipContent side="top" align="center">
+                {isAdmin ? "Reset Sandi Administrator" : "Reset Kata Sandi Petugas"}
+              </TooltipContent>
+            </Tooltip>
 
-                  <DropdownMenuSeparator className="bg-blue-900/20" />
-
-                  <DropdownMenuItem
+            {/* Action 3: Hapus Akun Petugas */}
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    disabled={isAdmin}
                     onClick={() => onDelete(staff)}
-                    className="text-red-600 hover:bg-red-50 focus:text-red-700 cursor-pointer flex items-center gap-2 font-bold"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Cabut / Hapus Akun
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    className={`h-8 w-8 border-2 border-blue-900 rounded-md transition-all [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A] ${
+                      isAdmin
+                        ? "opacity-40 cursor-not-allowed bg-slate-100 text-slate-400"
+                        : "bg-rose-100 hover:bg-rose-200 text-rose-800 cursor-pointer"
+                    }`}
+                  />
+                }
+              >
+                <Trash2 className="h-4 w-4" />
+              </TooltipTrigger>
+              <TooltipContent side="top" align="end">
+                {isAdmin ? "Akun Administrator tidak dapat dihapus" : "Hapus Akun Petugas"}
+              </TooltipContent>
+            </Tooltip>
           </div>
         );
       },

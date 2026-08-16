@@ -57,13 +57,17 @@ export const userService = {
   },
 
   createStaff: async (data: {
-    name: string;
     email: string;
-    wa_number?: string;
     password?: string;
-    status?: string;
   }) => {
     const response = await api.post("/api/users/staff", data);
+    return response.data;
+  },
+
+  createBatchStaff: async (
+    staffList: Array<{ email: string; password?: string }>
+  ) => {
+    const response = await api.post("/api/users/staff/batch", { staffList });
     return response.data;
   },
 

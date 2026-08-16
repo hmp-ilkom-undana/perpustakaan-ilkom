@@ -71,7 +71,7 @@ export default function KelolaPetugas() {
     try {
       setIsLoading(true);
       const data = await userService.getStaff();
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         setStaffList(data);
       }
     } catch {
@@ -122,33 +122,42 @@ export default function KelolaPetugas() {
     setIsFormOpen(true);
   };
 
-  const handleSaveStaff = async (staffData: Partial<UserItem> & { password?: string }) => {
-    if (formMode === "create") {
-      try {
-        await userService.createStaff({
-          name: staffData.name || "",
-          email: staffData.email || "",
-          wa_number: staffData.wa_number,
-          password: staffData.password,
-          status: staffData.status || "Aktif",
-        });
-      } catch {
-        // Offline / mock fallback
+  const handleBatchCreateStaff = async (
+    staffListToCreate: Array<{ email: string; password?: string }>
+  ) => {
+    try {
+      setIsLoading(true);
+      const res = await userService.createBatchStaff(staffListToCreate);
+
+      if (res?.totalFailed > 0 && res?.totalCreated === 0) {
+        toast.error(res.errors?.[0]?.error || "Gagal mendaftarkan akun petugas");
+        return;
       }
 
-      const newStaff: UserItem = {
-        id: String(Date.now()),
-        name: staffData.name || "",
-        identifier: staffData.email || "",
-        email: staffData.email || "",
-        wa_number: staffData.wa_number || "",
-        role: "PETUGAS",
-        status: staffData.status || "Aktif",
-        createdAt: "Baru saja",
-      };
-      setStaffList((prev) => [newStaff, ...prev]);
-      toast.success(`Akun petugas "${newStaff.name}" berhasil dibuat`);
-    } else if (staffData.id) {
+      if (res?.totalFailed > 0) {
+        toast.warning(
+          `Berhasil mendaftarkan ${res.totalCreated} petugas, ${res.totalFailed} gagal: ${res.errors?.[0]?.error}`
+        );
+      } else {
+        toast.success(
+          `Berhasil mendaftarkan ${res.totalCreated || staffListToCreate.length} akun petugas baru!`
+        );
+      }
+
+      await fetchStaff();
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        "Gagal mendaftarkan akun petugas";
+      toast.error(errorMsg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveStaff = async (staffData: Partial<UserItem> & { password?: string }) => {
+    if (staffData.id) {
       try {
         await userService.updateStaff(staffData.id, {
           name: staffData.name,
@@ -174,7 +183,7 @@ export default function KelolaPetugas() {
             : s
         )
       );
-      toast.success(`Data petugas "${staffData.name}" berhasil diperbarui`);
+      toast.success(`Data petugas "${staffData.name || staffData.email}" berhasil diperbarui`);
     }
   };
 
@@ -187,11 +196,11 @@ export default function KelolaPetugas() {
     try {
       await userService.resetPassword(staff.email || staff.identifier);
       toast.success(
-        `Sandi akun petugas ${staff.name} berhasil direset ke default (123456)`
+        `Sandi akun petugas ${staff.name} berhasil direset ke default (petugas_123)`
       );
     } catch {
       toast.success(
-        `Sandi akun petugas ${staff.name} berhasil direset ke default (123456)`
+        `Sandi akun petugas ${staff.name} berhasil direset ke default (petugas_123)`
       );
     } finally {
       setIsResetOpen(false);
@@ -238,7 +247,6 @@ export default function KelolaPetugas() {
   const columns = useMemo(
     () =>
       getStaffColumns({
-        onEdit: handleOpenEdit,
         onToggleStatus: handleOpenToggleStatus,
         onResetPassword: handleOpenResetPassword,
         onDelete: handleOpenDelete,
@@ -395,7 +403,8 @@ export default function KelolaPetugas() {
         onOpenChange={setIsFormOpen}
         staff={selectedStaff}
         mode={formMode}
-        onSubmit={handleSaveStaff}
+        onSubmitSingle={handleSaveStaff}
+        onSubmitBatch={handleBatchCreateStaff}
       />
 
       <StaffResetPasswordDialog

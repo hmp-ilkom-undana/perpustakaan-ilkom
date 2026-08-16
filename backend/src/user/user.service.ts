@@ -167,14 +167,11 @@ export class UserService {
   }
 
   /**
-   * Mendaftarkan akun petugas baru
+   * Mendaftarkan akun petugas baru (Hanya Email & Password)
    */
   async createStaff(data: {
-    name: string;
     email: string;
-    wa_number?: string;
     password?: string;
-    status?: string;
   }) {
     const existing = await this.prisma.user.findFirst({
       where: {
@@ -183,22 +180,26 @@ export class UserService {
     });
 
     if (existing) {
-      throw new BadRequestException('Email sudah terdaftar dalam sistem');
+      throw new BadRequestException(`Email ${data.email} sudah terdaftar`);
     }
 
-    const generatedUsername =
-      data.email.split('@')[0] || `staff_${Date.now().toString().slice(-4)}`;
-    const generatedNIM = `STF-${Date.now().toString().slice(-6)}`;
-
+    const rawUsername = data.email.split('@')[0] || 'staff';
+    const baseUsername = rawUsername.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    const uniqueUsername = `${baseUsername}_${randomSuffix}`;
+    const formattedName =
+      rawUsername
+        .split(/[._-]+/)
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ') || 'Staf';
     // Daftarkan via Better-Auth SignUp API agar hashing sandi & token tersinkronisasi
     const result = await this.authService.auth.api.signUpEmail({
       body: {
         email: data.email,
-        password: data.password || '123456',
-        name: data.name,
-        username: generatedUsername,
-        nim: generatedNIM,
-        wa_number: data.wa_number || '081234567890',
+        password: data.password || 'petugas_123',
+        name: formattedName,
+        username: uniqueUsername,
       },
     });
 
@@ -221,7 +222,46 @@ export class UserService {
         name: updated.name,
         email: updated.email,
         role: updated.role,
+        status: 'Aktif',
       },
+    };
+  }
+
+  /**
+   * Mendaftarkan banyak akun petugas sekaligus (Batch Add)
+   */
+  async createBatchStaff(staffList: Array<{ email: string; password?: string }>) {
+    if (!staffList || staffList.length === 0) {
+      throw new BadRequestException('Daftar petugas tidak boleh kosong');
+    }
+
+    const results: Array<{ message: string; user: any }> = [];
+    const errors: Array<{ email: string; error: string }> = [];
+
+    for (const item of staffList) {
+      try {
+        const created = await this.createStaff({
+          email: item.email,
+          password: item.password,
+        });
+        results.push(created);
+      } catch (err: any) {
+        errors.push({ email: item.email, error: err.message || 'Gagal membuat akun' });
+      }
+    }
+
+    if (results.length === 0 && errors.length > 0) {
+      throw new BadRequestException(
+        errors.map((e) => `${e.email}: ${e.error}`).join('; ')
+      );
+    }
+
+    return {
+      success: true,
+      totalCreated: results.length,
+      totalFailed: errors.length,
+      results,
+      errors,
     };
   }
 

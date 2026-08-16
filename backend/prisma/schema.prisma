@@ -11,9 +11,9 @@ model User {
   name            String
   username        String      @unique
   displayUsername String?
-  nim             String      @unique
+  nim             String?     @unique
   email           String      @unique
-  wa_number       String
+  wa_number       String?
   password        String?
   role            Role        @default(MAHASISWA)
   borrowings      Borrowing[]
