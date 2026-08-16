@@ -183,12 +183,16 @@ export class UserService {
       throw new BadRequestException(`Email ${data.email} sudah terdaftar`);
     }
 
-    const baseUsername = (data.email.split('@')[0] || 'staff')
-      .toLowerCase()
-      .replace(/[^a-z0-9_]/g, '');
+    const rawUsername = data.email.split('@')[0] || 'staff';
+    const baseUsername = rawUsername.toLowerCase().replace(/[^a-z0-9_]/g, '');
     const randomSuffix = Math.random().toString(36).substring(2, 6);
     const uniqueUsername = `${baseUsername}_${randomSuffix}`;
-    const formattedName = `Petugas ${baseUsername.charAt(0).toUpperCase() + baseUsername.slice(1)}`;
+    const formattedName =
+      rawUsername
+        .split(/[._-]+/)
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ') || 'Staf';
     const uniqueNIM = `STF-${Date.now().toString().slice(-4)}${Math.floor(1000 + Math.random() * 9000)}`;
 
     // Daftarkan via Better-Auth SignUp API agar hashing sandi & token tersinkronisasi
