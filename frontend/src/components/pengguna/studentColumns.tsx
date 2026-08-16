@@ -16,7 +16,7 @@ export function getStudentColumns({
   return [
     columnHelper.display({
       id: "index",
-      header: () => <div className="text-center w-10">No.</div>,
+      header: () => <div className="text-center w-full">No.</div>,
       cell: ({ row }) => (
         <div className="text-center font-bold text-slate-600">
           {row.index + 1}
@@ -52,23 +52,27 @@ export function getStudentColumns({
     }),
     columnHelper.accessor((row) => row.nim || row.identifier, {
       id: "nim",
-      header: "NIM",
+      header: () => <div className="text-center w-full">NIM</div>,
+      size: 150,
       cell: ({ getValue }) => (
-        <span className="inline-block px-2.5 py-1 text-xs font-mono font-black text-blue-900 bg-amber-100 border-2 border-blue-900 rounded [box-shadow:2px_2px_0px_#1E3A8A]">
-          {getValue()}
-        </span>
+        <div className="text-center">
+          <span className="inline-block px-2.5 py-1 text-xs font-mono font-black text-blue-900 bg-amber-100 border-2 border-blue-900 rounded [box-shadow:2px_2px_0px_#1E3A8A]">
+            {getValue()}
+          </span>
+        </div>
       ),
     }),
     columnHelper.display({
       id: "contact",
       header: "Kontak",
+      size: 260,
       cell: ({ row }) => {
         const user = row.original;
         return (
           <div className="space-y-1 text-xs">
             <div className="flex items-center gap-1.5 text-slate-700 font-medium">
               <Mail className="w-3.5 h-3.5 text-blue-900 shrink-0" />
-              <span className="truncate max-w-[180px]">{user.email || user.identifier}</span>
+              <span className="truncate max-w-[200px]">{user.email || user.identifier}</span>
             </div>
             {user.wa_number && (
               <div className="flex items-center gap-1.5 text-slate-600 font-mono">
@@ -81,28 +85,32 @@ export function getStudentColumns({
       },
     }),
     columnHelper.accessor("status", {
-      header: "Status",
+      header: () => <div className="text-center w-full">Status</div>,
+      size: 120,
       cell: ({ getValue }) => {
         const status = getValue();
         const isActive = status === "Aktif";
 
         return (
-          <Badge
-            variant="outline"
-            className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] ${
-              isActive
-                ? "bg-emerald-100 text-emerald-900"
-                : "bg-rose-100 text-rose-900"
-            }`}
-          >
-            {status}
-          </Badge>
+          <div className="flex justify-center items-center">
+            <Badge
+              variant="outline"
+              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] ${
+                isActive
+                  ? "bg-emerald-100 text-emerald-900"
+                  : "bg-rose-100 text-rose-900"
+              }`}
+            >
+              {status}
+            </Badge>
+          </div>
         );
       },
     }),
     columnHelper.display({
       id: "actions",
-      header: () => <div className="text-center">Aksi</div>,
+      header: () => <div className="text-center w-full">Aksi</div>,
+      size: 80,
       cell: ({ row }) => {
         const user = row.original;
 

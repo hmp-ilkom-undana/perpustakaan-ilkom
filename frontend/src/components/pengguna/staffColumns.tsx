@@ -39,7 +39,7 @@ export function getStaffColumns({
   return [
     columnHelper.display({
       id: "index",
-      header: () => <div className="text-center w-10">No.</div>,
+      header: () => <div className="text-center w-full">No.</div>,
       cell: ({ row }) => (
         <div className="text-center font-bold text-slate-600">
           {row.index + 1}
@@ -76,6 +76,7 @@ export function getStaffColumns({
     columnHelper.accessor((row) => row.email || row.identifier, {
       id: "email",
       header: "Email / Akun",
+      size: 240,
       cell: ({ getValue }) => (
         <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
           <Mail className="w-3.5 h-3.5 text-blue-900 shrink-0" />
@@ -84,54 +85,62 @@ export function getStaffColumns({
       ),
     }),
     columnHelper.accessor("role", {
-      header: "Hak Akses",
+      header: () => <div className="text-center w-full">Hak Akses</div>,
+      size: 130,
       cell: () => (
-        <Badge
-          variant="outline"
-          className="bg-blue-50 text-blue-900 border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] flex items-center gap-1 w-fit"
-        >
-          <ShieldCheck className="w-3.5 h-3.5 text-blue-900" />
-          Petugas
-        </Badge>
+        <div className="flex justify-center">
+          <Badge
+            variant="outline"
+            className="bg-blue-50 text-blue-900 border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] flex items-center gap-1 w-fit"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-900" />
+            Petugas
+          </Badge>
+        </div>
       ),
     }),
     columnHelper.accessor("createdAt", {
-      header: "Terdaftar",
+      header: () => <div className="text-center w-full">Terdaftar</div>,
+      size: 140,
       cell: ({ getValue }) => (
-        <span className="text-xs font-semibold text-slate-600">
+        <div className="text-center text-xs font-semibold text-slate-600">
           {getValue() || "Agustus 2026"}
-        </span>
+        </div>
       ),
     }),
     columnHelper.accessor("status", {
-      header: "Status",
+      header: () => <div className="text-center w-full">Status</div>,
+      size: 120,
       cell: ({ getValue }) => {
         const status = getValue();
         const isActive = status === "Aktif";
 
         return (
-          <Badge
-            variant="outline"
-            className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] ${
-              isActive
-                ? "bg-emerald-100 text-emerald-900"
-                : "bg-rose-100 text-rose-900"
-            }`}
-          >
-            {status}
-          </Badge>
+          <div className="flex justify-center items-center">
+            <Badge
+              variant="outline"
+              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] ${
+                isActive
+                  ? "bg-emerald-100 text-emerald-900"
+                  : "bg-rose-100 text-rose-900"
+              }`}
+            >
+              {status}
+            </Badge>
+          </div>
         );
       },
     }),
     columnHelper.display({
       id: "actions",
-      header: () => <div className="text-right">Aksi</div>,
+      header: () => <div className="text-center w-full">Aksi</div>,
+      size: 80,
       cell: ({ row }) => {
         const staff = row.original;
         const isActive = staff.status === "Aktif";
 
         return (
-          <div className="text-right">
+          <div className="flex justify-center items-center">
             <DropdownMenu>
               <DropdownMenuTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-8 w-8 text-blue-900 hover:bg-slate-200 border-2 border-transparent hover:border-blue-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-900 transition-all cursor-pointer">
                 <span className="sr-only">Buka menu</span>

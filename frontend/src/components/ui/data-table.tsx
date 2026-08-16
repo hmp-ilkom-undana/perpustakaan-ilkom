@@ -50,19 +50,28 @@ export function DataTable<TData, TValue = any>({
         <TableHeader className={headerClassName || "bg-slate-100 border-b-2 border-blue-900"}>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="hover:bg-transparent border-none">
-              {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  className="font-black text-blue-900"
-                  style={{
-                    width: header.column.columnDef.size ? `${header.column.columnDef.size}px` : undefined,
-                  }}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const size = header.column.columnDef.size;
+                return (
+                  <TableHead
+                    key={header.id}
+                    className="font-black text-blue-900"
+                    style={
+                      size
+                        ? {
+                            width: `${size}px`,
+                            minWidth: `${size}px`,
+                            maxWidth: `${size}px`,
+                          }
+                        : undefined
+                    }
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                );
+              })}
             </TableRow>
           ))}
         </TableHeader>
@@ -82,11 +91,25 @@ export function DataTable<TData, TValue = any>({
                 key={row.id}
                 className="hover:bg-slate-50/80 transition-colors border-none group"
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  const size = cell.column.columnDef.size;
+                  return (
+                    <TableCell
+                      key={cell.id}
+                      style={
+                        size
+                          ? {
+                              width: `${size}px`,
+                              minWidth: `${size}px`,
+                              maxWidth: `${size}px`,
+                            }
+                          : undefined
+                      }
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))
           ) : (
