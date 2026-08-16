@@ -122,33 +122,42 @@ export default function KelolaPetugas() {
     setIsFormOpen(true);
   };
 
-  const handleSaveStaff = async (staffData: Partial<UserItem> & { password?: string }) => {
-    if (formMode === "create") {
-      try {
-        await userService.createStaff({
-          name: staffData.name || "",
-          email: staffData.email || "",
-          wa_number: staffData.wa_number,
-          password: staffData.password,
-          status: staffData.status || "Aktif",
-        });
-      } catch {
-        // Offline / mock fallback
-      }
+  const handleBatchCreateStaff = async (
+    staffListToCreate: Array<{ email: string; password?: string }>
+  ) => {
+    try {
+      setIsLoading(true);
+      await userService.createBatchStaff(staffListToCreate);
+      toast.success(
+        `Berhasil mendaftarkan ${staffListToCreate.length} akun petugas baru!`
+      );
+      await fetchStaff();
+    } catch {
+      // Fallback ke mock data jika offline
+      const newStaffItems: UserItem[] = staffListToCreate.map((item, idx) => {
+        const username = item.email.split("@")[0];
+        const formattedName = `Petugas ${username.charAt(0).toUpperCase() + username.slice(1)}`;
+        return {
+          id: String(Date.now() + idx),
+          name: formattedName,
+          identifier: item.email,
+          email: item.email,
+          role: "PETUGAS",
+          status: "Aktif",
+          createdAt: "Baru saja",
+        };
+      });
+      setStaffList((prev) => [...newStaffItems, ...prev]);
+      toast.success(
+        `Berhasil mendaftarkan ${staffListToCreate.length} akun petugas baru!`
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      const newStaff: UserItem = {
-        id: String(Date.now()),
-        name: staffData.name || "",
-        identifier: staffData.email || "",
-        email: staffData.email || "",
-        wa_number: staffData.wa_number || "",
-        role: "PETUGAS",
-        status: staffData.status || "Aktif",
-        createdAt: "Baru saja",
-      };
-      setStaffList((prev) => [newStaff, ...prev]);
-      toast.success(`Akun petugas "${newStaff.name}" berhasil dibuat`);
-    } else if (staffData.id) {
+  const handleSaveStaff = async (staffData: Partial<UserItem> & { password?: string }) => {
+    if (staffData.id) {
       try {
         await userService.updateStaff(staffData.id, {
           name: staffData.name,
@@ -174,7 +183,7 @@ export default function KelolaPetugas() {
             : s
         )
       );
-      toast.success(`Data petugas "${staffData.name}" berhasil diperbarui`);
+      toast.success(`Data petugas "${staffData.name || staffData.email}" berhasil diperbarui`);
     }
   };
 
@@ -395,7 +404,8 @@ export default function KelolaPetugas() {
         onOpenChange={setIsFormOpen}
         staff={selectedStaff}
         mode={formMode}
-        onSubmit={handleSaveStaff}
+        onSubmitSingle={handleSaveStaff}
+        onSubmitBatch={handleBatchCreateStaff}
       />
 
       <StaffResetPasswordDialog

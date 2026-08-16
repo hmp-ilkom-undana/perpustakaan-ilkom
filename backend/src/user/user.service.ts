@@ -167,14 +167,11 @@ export class UserService {
   }
 
   /**
-   * Mendaftarkan akun petugas baru
+   * Mendaftarkan akun petugas baru (Hanya Email & Password)
    */
   async createStaff(data: {
-    name: string;
     email: string;
-    wa_number?: string;
     password?: string;
-    status?: string;
   }) {
     const existing = await this.prisma.user.findFirst({
       where: {
@@ -183,11 +180,11 @@ export class UserService {
     });
 
     if (existing) {
-      throw new BadRequestException('Email sudah terdaftar dalam sistem');
+      throw new BadRequestException(`Email ${data.email} sudah terdaftar`);
     }
 
-    const generatedUsername =
-      data.email.split('@')[0] || `staff_${Date.now().toString().slice(-4)}`;
+    const usernamePart = data.email.split('@')[0] || `staff_${Date.now().toString().slice(-4)}`;
+    const formattedName = `Petugas ${usernamePart.charAt(0).toUpperCase() + usernamePart.slice(1)}`;
     const generatedNIM = `STF-${Date.now().toString().slice(-6)}`;
 
     // Daftarkan via Better-Auth SignUp API agar hashing sandi & token tersinkronisasi
@@ -195,10 +192,10 @@ export class UserService {
       body: {
         email: data.email,
         password: data.password || '123456',
-        name: data.name,
-        username: generatedUsername,
+        name: formattedName,
+        username: usernamePart,
         nim: generatedNIM,
-        wa_number: data.wa_number || '081234567890',
+        wa_number: '081234567890',
       },
     });
 
@@ -222,6 +219,38 @@ export class UserService {
         email: updated.email,
         role: updated.role,
       },
+    };
+  }
+
+  /**
+   * Mendaftarkan banyak akun petugas sekaligus (Batch Add)
+   */
+  async createBatchStaff(staffList: Array<{ email: string; password?: string }>) {
+    if (!staffList || staffList.length === 0) {
+      throw new BadRequestException('Daftar petugas tidak boleh kosong');
+    }
+
+    const results: Array<{ message: string; user: any }> = [];
+    const errors: Array<{ email: string; error: string }> = [];
+
+    for (const item of staffList) {
+      try {
+        const created = await this.createStaff({
+          email: item.email,
+          password: item.password,
+        });
+        results.push(created);
+      } catch (err: any) {
+        errors.push({ email: item.email, error: err.message });
+      }
+    }
+
+    return {
+      success: true,
+      totalCreated: results.length,
+      totalFailed: errors.length,
+      results,
+      errors,
     };
   }
 

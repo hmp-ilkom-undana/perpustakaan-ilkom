@@ -33,14 +33,21 @@ export class UserController {
   async createStaff(
     @Body()
     body: {
-      name: string;
       email: string;
-      wa_number?: string;
       password?: string;
-      status?: string;
     },
   ) {
     return this.userService.createStaff(body);
+  }
+
+  @Post('staff/batch')
+  async createBatchStaff(
+    @Body()
+    body: {
+      staffList: Array<{ email: string; password?: string }>;
+    },
+  ) {
+    return this.userService.createBatchStaff(body.staffList);
   }
 
   @Patch('staff/:id')
