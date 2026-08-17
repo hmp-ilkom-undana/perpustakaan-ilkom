@@ -6,6 +6,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       className="toaster group"
       position="top-center"
+      duration={4500}
+      closeButton
       icons={{
         success: (
           <div className="w-6 h-6 shrink-0 bg-emerald-400 border-2 border-blue-900 flex items-center justify-center text-blue-950 shadow-[1.5px_1.5px_0px_#1E3A8A]">

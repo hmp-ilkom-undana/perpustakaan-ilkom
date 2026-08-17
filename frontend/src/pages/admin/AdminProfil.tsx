@@ -108,14 +108,16 @@ export default function AdminProfil() {
           email: email.trim().toLowerCase()
         });
       }
-      toast.success("Biodata dan email administrator berhasil diperbarui!");
-      // Reload session to reflect updated data in sidebar
+      toast.success("Biodata dan email administrator berhasil diperbarui!", {
+        duration: 4000,
+      });
+      // Berikan waktu yang cukup agar notifikasi terbaca sebelum sinkronisasi sesi
       setTimeout(() => {
         window.location.reload();
-      }, 500);
+      }, 2500);
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || "Gagal memperbarui profil";
-      toast.error(msg);
+      toast.error(msg, { duration: 4000 });
     } finally {
       setIsUpdatingProfile(false);
     }
@@ -134,17 +136,21 @@ export default function AdminProfil() {
       });
 
       if (res.error) {
-        toast.error(res.error.message || "Kata sandi lama yang Anda masukkan salah");
+        toast.error(res.error.message || "Kata sandi lama yang Anda masukkan salah", {
+          duration: 4500,
+        });
         return;
       }
 
-      toast.success("Kata sandi berhasil diubah! Sesi login Anda telah diamankan.");
+      toast.success("Kata sandi berhasil diubah! Sesi login Anda telah diamankan.", {
+        duration: 4500,
+      });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: any) {
       const msg = err.message || "Gagal mengganti kata sandi";
-      toast.error(msg);
+      toast.error(msg, { duration: 4500 });
     } finally {
       setIsChangingPassword(false);
     }
