@@ -40,27 +40,43 @@ export default function Login() {
   });
 
   const onLogin = async (values: LoginFormValues) => {
-    const isEmail = values.email.includes("@");
+    const rawInput = values.email.trim();
+    const isEmail = rawInput.includes("@");
     let authResponse;
 
     if (isEmail) {
       authResponse = await authClient.signIn.email({
-        email: values.email,
+        email: rawInput.toLowerCase(),
         password: values.password,
       });
     } else {
+      // Non-email input (Username / NIM Mahasiswa)
       authResponse = await authClient.signIn.username({
-        username: values.email,
+        username: rawInput,
         password: values.password,
       });
+
+      // Guardrail Keamanan: Administrator dan Petugas DILARANG login via username
+      if (authResponse?.data?.user) {
+        const userRole = (authResponse.data.user as any).role;
+        if (userRole === "ADMIN" || userRole === "PETUGAS") {
+          await authClient.signOut();
+          toast.error(
+            "Akun Administrator dan Petugas wajib masuk menggunakan Alamat Email.",
+            { duration: 5000 }
+          );
+          return;
+        }
+      }
     }
 
     if (authResponse.error) {
       toast.error(
         authResponse.error.message || "Gagal masuk. Periksa kembali akun Anda.",
+        { duration: 4500 }
       );
     } else {
-      toast.success("Berhasil masuk!");
+      toast.success("Berhasil masuk!", { duration: 3000 });
       const role = authResponse.data?.user?.role;
 
       if (role === "ADMIN") {
@@ -111,18 +127,18 @@ export default function Login() {
           {/* Body Form */}
           <CardContent className="pt-6 pb-8 px-6 space-y-5">
             <form onSubmit={handleSubmit(onLogin)} className="space-y-4">
-              {/* Field: Username / Email */}
+              {/* Field: Email / Username */}
               <div className="space-y-1.5">
                 <Label
                   htmlFor="email"
                   className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5"
                 >
                   <User className="w-3.5 h-3.5 text-blue-900" />
-                  Username / Email
+                  Email / Username
                 </Label>
                 <Input
                   id="email"
-                  placeholder="NIM / Username / Email..."
+                  placeholder="nama@email.com atau username..."
                   className="h-11 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
                   {...register("email")}
                 />
