@@ -1,11 +1,10 @@
 import 'dotenv/config';
-import pkg from '@prisma/client';
+import { PrismaClient, ArchiveStatus, Role } from '@prisma/client';
 import pg from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { username } from 'better-auth/plugins';
-const { PrismaClient, ArchiveStatus, Role } = pkg;
 
 // Konfigurasi koneksi Neon Serverless
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
@@ -185,6 +184,31 @@ async function main() {
   console.log(
     `Seeding selesai! ${devArchives.length} Data Arsip berhasil ditambahkan ke database.`,
   );
+
+  // SEEDING SYSTEM SETTINGS DEFAULT
+  console.log('Menyiapkan Pengaturan Sistem Default...');
+  await prisma.systemSetting.upsert({
+    where: { id: 'DEFAULT' },
+    update: {},
+    create: {
+      id: 'DEFAULT',
+      operatingDays: [1, 2, 3, 4, 5], // Senin - Jumat
+      pickupDurationDays: 3,
+      autoCancelUnpicked: true,
+      loanDurationDays: 30,
+      maxActiveSkripsi: 2,
+      maxActiveRingkasan: 1,
+      maxActiveNaskah: 1,
+      lateBaseFine: 50000,
+      lateThresholdDays: 7,
+      lateDailyFine: 10000,
+      damagedFine: 75000,
+      lostFine: 100000,
+      adminWaNumber: '082339113591',
+      adminContactName: 'Admin Perpustakaan ILKOM',
+    },
+  });
+  console.log('[+] Pengaturan Sistem Default berhasil disiapkan!');
 }
 
 main()

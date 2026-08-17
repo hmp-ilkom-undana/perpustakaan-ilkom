@@ -149,3 +149,36 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+
+model SystemSetting {
+  id                 String   @id @default("DEFAULT")
+  
+  // 1. Hari Operasional (0: Minggu, 1: Senin, 2: Selasa, 3: Rabu, 4: Kamis, 5: Jumat, 6: Sabtu)
+  operatingDays      Int[]    @default([1, 2, 3, 4, 5])
+  
+  // 2. Batas Pengambilan (Masa Tunggu WAITING_PICKUP)
+  pickupDurationDays Int      @default(3)
+  autoCancelUnpicked Boolean  @default(true)
+  
+  // 3. Durasi & Kuota Peminjaman
+  loanDurationDays   Int      @default(30)
+  maxActiveSkripsi   Int      @default(2)
+  maxActiveRingkasan Int      @default(1)
+  maxActiveNaskah    Int      @default(1)
+  
+  // 4. Tarif Denda
+  lateBaseFine       Int      @default(50000)
+  lateThresholdDays  Int      @default(7)
+  lateDailyFine      Int      @default(10000)
+  damagedFine        Int      @default(75000)
+  lostFine           Int      @default(100000)
+
+  // 5. Kontak Admin HMP
+  adminWaNumber      String   @default("082339113591")
+  adminContactName   String   @default("Admin Perpustakaan ILKOM")
+
+  updatedAt          DateTime @updatedAt
+  updatedBy          String?  @default("SYSTEM")
+
+  @@map("system_setting")
+}
