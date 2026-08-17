@@ -5,12 +5,17 @@ import {
   IsOptional,
   IsString,
   Min,
+  Max,
+  ArrayMinSize,
 } from 'class-validator';
 
 export class UpdateSettingDto {
   @IsOptional()
   @IsArray()
+  @ArrayMinSize(1)
   @IsInt({ each: true })
+  @Min(0, { each: true })
+  @Max(6, { each: true })
   operatingDays?: number[];
 
   @IsOptional()

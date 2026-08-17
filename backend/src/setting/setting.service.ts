@@ -93,6 +93,7 @@ export class SettingService {
     endDate: Date,
     operatingDays: number[] = [1, 2, 3, 4, 5],
   ): number {
+    const validDays = operatingDays?.length ? operatingDays : [1, 2, 3, 4, 5];
     const current = new Date(startDate);
     current.setHours(0, 0, 0, 0);
 
@@ -104,7 +105,7 @@ export class SettingService {
     let count = 0;
     while (current < target) {
       current.setDate(current.getDate() + 1);
-      if (operatingDays.includes(current.getDay())) {
+      if (validDays.includes(current.getDay())) {
         count++;
       }
     }
@@ -116,12 +117,13 @@ export class SettingService {
     businessDaysToAdd: number,
     operatingDays: number[] = [1, 2, 3, 4, 5],
   ): Date {
+    const validDays = operatingDays?.length ? operatingDays : [1, 2, 3, 4, 5];
     const result = new Date(startDate);
     let added = 0;
 
     while (added < businessDaysToAdd) {
       result.setDate(result.getDate() + 1);
-      if (operatingDays.includes(result.getDay())) {
+      if (validDays.includes(result.getDay())) {
         added++;
       }
     }
