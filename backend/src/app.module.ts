@@ -10,6 +10,7 @@ import { BorrowingModule } from './borrowing/borrowing.module';
 import { CronModule } from './cron/cron.module';
 import { FineModule } from './fine/fine.module';
 import { UserModule } from './user/user.module';
+import { SettingModule } from './setting/setting.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     CronModule,
     FineModule,
     UserModule,
+    SettingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

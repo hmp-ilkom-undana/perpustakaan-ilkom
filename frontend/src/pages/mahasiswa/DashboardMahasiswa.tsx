@@ -7,14 +7,17 @@ import {
   Calendar as CalendarIcon,
   Loader2,
   CheckCircle2,
+  Phone,
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
+import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
 
 interface BorrowingData {
   id: string;
@@ -39,6 +42,7 @@ export default function DashboardMahasiswa() {
   const [date, setDate] = useState<Date | undefined>(new Date());
 
   const { data: borrowings = [], isPending: isLoading } = useMyBorrowingHistoryQuery();
+  const { data: setting } = useSystemSettingQuery();
 
   if (isSessionLoading || isLoading) {
     return (
@@ -60,8 +64,11 @@ export default function DashboardMahasiswa() {
     activeStatuses.includes(b.status),
   );
 
+  const maxSkripsi = setting?.maxActiveSkripsi ?? 2;
+  const maxRingkasan = setting?.maxActiveRingkasan ?? 1;
+  const maxNaskah = setting?.maxActiveNaskah ?? 1;
+  const maksimal = maxSkripsi + maxRingkasan + maxNaskah;
   const terpakai = activeBorrowings.length;
-  const maksimal = 4;
   const progressValue = (terpakai / maksimal) * 100;
 
   let countSkripsi = 0;
@@ -81,6 +88,20 @@ export default function DashboardMahasiswa() {
   );
 
   const firstName = session?.user?.name?.split(" ")[0] || "Mahasiswa";
+
+  const handleContactAdminWa = () => {
+    const rawNumber = setting?.adminWaNumber || "082339113591";
+    const cleanNumber = rawNumber.replace(/\D/g, "");
+    const formattedNumber = cleanNumber.startsWith("0") ? "62" + cleanNumber.slice(1) : cleanNumber;
+    const studentName = session?.user?.name || "Mahasiswa";
+    const studentNim = (session?.user as any)?.nim || "-";
+
+    const text = encodeURIComponent(
+      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pelunasan tunggakan denda perpustakaan:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Total Denda: Rp ${totalDenda.toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
+    );
+
+    window.open(`https://wa.me/${formattedNumber}?text=${text}`, "_blank");
+  };
 
   // Data Kalender
   const getTaskDate = (b: any) => {
@@ -136,18 +157,29 @@ export default function DashboardMahasiswa() {
 
       {/* 2. Alert Peringatan Denda */}
       {totalDenda > 0 && (
-        <div className="w-full sm:px-0">
-          <div className="bg-red-50 sm:border border-red-200 px-5 py-4 sm:p-4 sm:rounded-lg flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
-              <h3 className="text-red-800 font-bold text-base">
-                Tunggakan Denda: Rp {totalDenda.toLocaleString("id-ID")}
-              </h3>
+        <div className="w-full px-5 sm:px-0">
+          <div className="bg-red-50 border-2 border-red-500 rounded-md p-4 sm:p-5 [box-shadow:4px_4px_0px_#DC2626] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-red-950 font-black text-base">
+                  Tunggakan Denda: Rp {totalDenda.toLocaleString("id-ID")}
+                </h3>
+                <p className="text-red-800 text-xs font-medium mt-0.5 leading-relaxed">
+                  Harap segera lunasi untuk membuka kembali akses peminjaman Anda.
+                  Hubungi pengurus HMP untuk konfirmasi pembayaran denda.
+                </p>
+              </div>
             </div>
-            <p className="text-red-700/90 text-sm font-medium leading-relaxed">
-              Harap segera lunasi untuk membuka kembali akses peminjaman Anda.
-              Silahkan hubungi admin atau anggota HMP.
-            </p>
+
+            <Button
+              type="button"
+              onClick={handleContactAdminWa}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs border-2 border-blue-950 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] shrink-0 flex items-center gap-2 w-full sm:w-auto justify-center"
+            >
+              <Phone className="w-4 h-4" />
+              Bayar Denda via WhatsApp
+            </Button>
           </div>
         </div>
       )}
@@ -205,15 +237,15 @@ export default function DashboardMahasiswa() {
                 <div className="flex flex-row justify-between items-center pt-1 text-[10px] lg:text-[11px] text-slate-500 font-medium w-full gap-1">
                   <div className="flex items-center gap-1 sm:gap-1.5">
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-orange-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
-                    <span className="font-bold text-slate-700">Skripsi <span className="text-blue-900 font-black">{countSkripsi}/2</span></span>
+                    <span className="font-bold text-slate-700">Skripsi <span className="text-blue-900 font-black">{countSkripsi}/{maxSkripsi}</span></span>
                   </div>
                   <div className="flex items-center gap-1 sm:gap-1.5">
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-blue-500 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
-                    <span className="font-bold text-slate-700">Ringkasan <span className="text-blue-900 font-black">{countRingkasan}/1</span></span>
+                    <span className="font-bold text-slate-700">Ringkasan <span className="text-blue-900 font-black">{countRingkasan}/{maxRingkasan}</span></span>
                   </div>
                   <div className="flex items-center gap-1 sm:gap-1.5">
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
-                    <span className="font-bold text-slate-700">Publikasi <span className="text-blue-900 font-black">{countNaskah}/1</span></span>
+                    <span className="font-bold text-slate-700">Publikasi <span className="text-blue-900 font-black">{countNaskah}/{maxNaskah}</span></span>
                   </div>
                 </div>
               </div>

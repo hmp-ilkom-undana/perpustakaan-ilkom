@@ -15,7 +15,8 @@ import {
   UserCircle,
   Users,
   ShieldCheck,
-  Settings
+  Settings,
+  SlidersHorizontal,
 } from "lucide-react";
 
 import { NavLogo } from "@/components/NavLogo";
@@ -48,6 +49,7 @@ export default function AdminLayout() {
     { name: "Kelola Denda", path: "/admin/denda", icon: Receipt },
     { name: "Kelola Pengguna", path: "/admin/pengguna", icon: Users },
     { name: "Kelola Petugas", path: "/admin/petugas", icon: ShieldCheck },
+    { name: "Pengaturan Sistem", path: "/admin/pengaturan", icon: SlidersHorizontal },
   ];
 
   return (

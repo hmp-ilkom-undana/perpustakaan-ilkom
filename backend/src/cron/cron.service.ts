@@ -1,19 +1,25 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
+import { SettingService } from '../setting/setting.service';
 
 @Injectable()
 export class CronService {
   private readonly logger = new Logger(CronService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly settingService: SettingService,
+  ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async handleOverdueBorrowings() {
-    this.logger.log('Menjalankan pengecekan peminjaman terlambat (Cron Job)...');
+  async handleDailyMaintenance() {
+    this.logger.log('Menjalankan pemeliharaan harian sistem (Cron Job)...');
 
+    const settings = await this.settingService.getSettings();
     const now = new Date();
 
+    // 1. Pengecekan Keterlambatan & Denda Harian (Overdue)
     const activeBorrowings = await this.prisma.borrowing.findMany({
       where: {
         status: {
@@ -25,37 +31,77 @@ export class CronService {
     for (const borrowing of activeBorrowings) {
       if (!borrowing.returnDate) continue;
 
-      const isLate = now > borrowing.returnDate;
+      const fineResult = this.settingService.calculateFine({
+        returnDate: borrowing.returnDate,
+        actualDate: now,
+        settings,
+      });
 
-      if (isLate) {
-        const diffTime = now.getTime() - borrowing.returnDate.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const newStatus = fineResult.isLate ? 'OVERDUE' : borrowing.status;
+      const calculatedFine = fineResult.fineAmount;
 
-        let newStatus = borrowing.status;
-        let calculatedFine = 0;
+      if (
+        borrowing.status !== newStatus ||
+        borrowing.fineAmount !== calculatedFine
+      ) {
+        await this.prisma.borrowing.update({
+          where: { id: borrowing.id },
+          data: {
+            status: newStatus,
+            fineAmount: calculatedFine,
+          },
+        });
+        this.logger.log(
+          `[Overdue Cron] ID: ${borrowing.id} | Status: ${newStatus} | Denda: Rp${calculatedFine} (${fineResult.lateDays} hari kerja)`,
+        );
+      }
+    }
 
-        if (diffDays >= 1) {
-          newStatus = 'OVERDUE';
-          
-          if (diffDays > 7) {
-            const extraDays = diffDays - 7;
-            calculatedFine = 50000 + (extraDays * 10000);
-          }
-        }
+    // 2. Auto-Cancel Arsip yang Belum Diambil (Unpicked WAITING_PICKUP)
+    if (settings.autoCancelUnpicked) {
+      this.logger.log(
+        `Menjalankan pengecekan auto-cancel arsip (Batas: ${settings.pickupDurationDays} hari kerja)...`,
+      );
 
-        if (borrowing.status !== newStatus || borrowing.fineAmount !== calculatedFine) {
-          await this.prisma.borrowing.update({
-            where: { id: borrowing.id },
-            data: {
-              status: newStatus,
-              fineAmount: calculatedFine,
-            },
-          });
-          this.logger.log(`Memperbarui ID: ${borrowing.id} | Status: ${newStatus} | Denda: Rp${calculatedFine}`);
+      const waitingPickups = await this.prisma.borrowing.findMany({
+        where: {
+          status: 'WAITING_PICKUP',
+          accDate: { not: null },
+        },
+      });
+
+      for (const pickup of waitingPickups) {
+        if (!pickup.accDate) continue;
+
+        const elapsedBusinessDays = this.settingService.countBusinessDays(
+          pickup.accDate,
+          now,
+          settings.operatingDays,
+        );
+
+        if (elapsedBusinessDays >= settings.pickupDurationDays) {
+          await this.prisma.$transaction([
+            this.prisma.archive.update({
+              where: { id: pickup.archiveId },
+              data: { reservedQuantity: { decrement: 1 } },
+            }),
+            this.prisma.borrowing.update({
+              where: { id: pickup.id },
+              data: {
+                status: 'CANCELLED',
+                returnDate: now,
+                rejectReason: `Dibatalkan otomatis oleh sistem karena tidak diambil dalam batas ${settings.pickupDurationDays} hari kerja.`,
+              },
+            }),
+          ]);
+
+          this.logger.log(
+            `[Auto-Cancel] ID: ${pickup.id} dibatalkan otomatis (${elapsedBusinessDays} hari kerja terlewati).`,
+          );
         }
       }
     }
-    
-    this.logger.log('Pengecekan selesai.');
+
+    this.logger.log('Pemeliharaan harian selesai.');
   }
 }

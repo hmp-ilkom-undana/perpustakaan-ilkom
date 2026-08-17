@@ -1,15 +1,19 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { DriveService } from './drive.service';
+import { SettingService } from '../setting/setting.service';
 
 @Injectable()
 export class BorrowingService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly driveService: DriveService,
+    private readonly settingService: SettingService,
   ) {}
 
   async requestBorrow(userId: string, archiveId: string) {
+    const settings = await this.settingService.getSettings();
+
     return await this.prisma.$transaction(async (tx) => {
       const archive = await tx.archive.findUnique({
         where: { id: archiveId },
@@ -44,19 +48,25 @@ export class BorrowingService {
 
       const reqType = archive.archiveType.toUpperCase().replace(' ', '_');
 
-      if (reqType === 'SKRIPSI' && countSkripsi >= 2) {
+      if (reqType === 'SKRIPSI' && countSkripsi >= settings.maxActiveSkripsi) {
         throw new BadRequestException(
-          'Batas maksimal peminjaman (2 Skripsi) telah tercapai.',
+          `Batas maksimal peminjaman (${settings.maxActiveSkripsi} Skripsi) telah tercapai.`,
         );
       }
-      if (reqType === 'RINGKASAN_SKRIPSI' && countRingkasan >= 1) {
+      if (
+        reqType === 'RINGKASAN_SKRIPSI' &&
+        countRingkasan >= settings.maxActiveRingkasan
+      ) {
         throw new BadRequestException(
-          'Batas maksimal peminjaman (1 Ringkasan Skripsi) telah tercapai.',
+          `Batas maksimal peminjaman (${settings.maxActiveRingkasan} Ringkasan Skripsi) telah tercapai.`,
         );
       }
-      if (reqType === 'NASKAH_PUBLIKASI' && countNaskah >= 1) {
+      if (
+        reqType === 'NASKAH_PUBLIKASI' &&
+        countNaskah >= settings.maxActiveNaskah
+      ) {
         throw new BadRequestException(
-          'Batas maksimal peminjaman (1 Naskah Publikasi) telah tercapai.',
+          `Batas maksimal peminjaman (${settings.maxActiveNaskah} Naskah Publikasi) telah tercapai.`,
         );
       }
 
@@ -263,10 +273,11 @@ export class BorrowingService {
       }
 
       // 1. Ubah status jadi BORROWED
-      // 2. Set returnDate (+30 hari)
+      // 2. Set returnDate (+loanDurationDays hari)
+      const settings = await this.settingService.getSettings();
       const today = new Date();
       const returnDate = new Date();
-      returnDate.setDate(today.getDate() + 30);
+      returnDate.setDate(today.getDate() + settings.loanDurationDays);
 
       return await tx.borrowing.update({
         where: { id: borrowingId },
@@ -308,30 +319,15 @@ export class BorrowingService {
       if (kondisiKembali === 'RUSAK') newStatus = 'DAMAGED';
       if (kondisiKembali === 'HILANG') newStatus = 'LOST';
 
-      // Kalkulasi Denda (Fines) otomatis
-      let fine = 0;
-      if (borrowing.returnDate) {
-        const today = new Date();
-        if (today > borrowing.returnDate) {
-          const diffTime = Math.abs(today.getTime() - borrowing.returnDate.getTime());
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          
-          // Denda Keterlambatan: Hari 1-7 = 50k, Hari ke-8 dst = +10k/hari
-          if (diffDays >= 1) {
-            fine += 50000;
-            if (diffDays > 7) {
-              fine += (diffDays - 7) * 10000;
-            }
-          }
-        }
-      }
-
-      // Denda Kondisi Fisik
-      if (kondisiKembali === 'RUSAK') {
-        fine += 75000;
-      } else if (kondisiKembali === 'HILANG') {
-        fine += 100000;
-      }
+      // Kalkulasi Denda (Fines) otomatis berbasis hari kerja & kondisi fisik
+      const settings = await this.settingService.getSettings();
+      const fineResult = this.settingService.calculateFine({
+        returnDate: borrowing.returnDate || new Date(),
+        actualDate: new Date(),
+        kondisi: kondisiKembali,
+        settings,
+      });
+      const fine = fineResult.fineAmount;
 
       // Pengembalian stok
       if (kondisiKembali !== 'HILANG') {
