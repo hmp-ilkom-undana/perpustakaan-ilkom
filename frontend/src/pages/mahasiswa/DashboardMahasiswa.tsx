@@ -9,10 +9,11 @@ import {
   CheckCircle2,
   Search,
   Clock,
+  Receipt,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -64,6 +65,16 @@ export default function DashboardMahasiswa() {
     else if (type === "RINGKASAN_SKRIPSI") countRingkasan++;
     else if (type === "NASKAH_PUBLIKASI") countNaskah++;
   });
+
+  const totalDenda = borrowings.reduce(
+    (sum: number, b: any) => sum + (b.fineAmount || 0),
+    0,
+  );
+
+  // Daftar arsip yang memiliki tunggakan denda aktif / overdue
+  const fineBorrowings = borrowings.filter(
+    (b: any) => (b.fineAmount && b.fineAmount > 0 && !b.finePaidAt) || b.status === "OVERDUE"
+  );
 
   const firstName = session?.user?.name?.split(" ")[0] || "Mahasiswa";
 
@@ -119,73 +130,142 @@ export default function DashboardMahasiswa() {
         <p className="text-slate-500 font-semibold text-xs mt-0.5">{currentDate}</p>
       </div>
 
-      {/* 2. Zona Kuota & Kalender (Mobile First Layout) */}
+      {/* 2. Zona Top Stats (Bento Grid: Kuota Peminjaman + Rincian Denda jika ada) */}
       <div className="w-full px-5 sm:px-0">
-        <div className="flex flex-col md:grid md:grid-cols-5 gap-6">
+        <div className={`grid grid-cols-1 ${totalDenda > 0 ? "lg:grid-cols-2" : "grid-cols-1"} gap-6`}>
           
-          {/* Kolom Kiri: Kalender & Kuota (Desktop) / Atas (Mobile) */}
-          <div className="md:col-span-2 flex flex-col gap-6">
-            {/* Metrik: Kuota Peminjaman */}
-            <Card className="flex flex-col justify-between">
-              <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <BookOpen className="w-4 h-4 text-orange-500" />
-                    <p className="text-xs font-black text-blue-950 uppercase tracking-wider">
-                      Kuota Peminjaman
-                    </p>
-                  </div>
-                  <div className="text-3xl sm:text-4xl font-black text-orange-500 leading-none mb-1">
-                    {terpakai}{" "}
-                    <span className="text-xl sm:text-2xl text-slate-400 font-bold">
-                      / {maksimal}
-                    </span>
-                  </div>
+          {/* CARD METRIK: Kuota Peminjaman */}
+          <Card className="flex flex-col justify-between">
+            <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <BookOpen className="w-4 h-4 text-orange-500" />
+                  <p className="text-xs font-black text-blue-950 uppercase tracking-wider">
+                    Kuota Peminjaman Aktif
+                  </p>
+                </div>
+                <div className="text-3xl sm:text-4xl font-black text-orange-500 leading-none mb-1">
+                  {terpakai}{" "}
+                  <span className="text-xl sm:text-2xl text-slate-400 font-bold">
+                    / {maksimal}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {/* Progress Bar Segments */}
+                <div className="flex h-3 w-full gap-1 bg-slate-100 rounded-md p-0.5 border border-blue-900/30 overflow-hidden">
+                  {countSkripsi > 0 && (
+                    <div
+                      className="bg-orange-500 h-full rounded-sm transition-all duration-500"
+                      style={{ width: `${(countSkripsi / maksimal) * 100}%` }}
+                    />
+                  )}
+                  {countRingkasan > 0 && (
+                    <div
+                      className="bg-sky-400 h-full rounded-sm transition-all duration-500"
+                      style={{ width: `${(countRingkasan / maksimal) * 100}%` }}
+                    />
+                  )}
+                  {countNaskah > 0 && (
+                    <div
+                      className="bg-blue-900 h-full rounded-sm transition-all duration-500"
+                      style={{ width: `${(countNaskah / maksimal) * 100}%` }}
+                    />
+                  )}
                 </div>
 
-                <div className="space-y-3">
-                  {/* Progress Bar Segments */}
-                  <div className="flex h-3 w-full gap-1 bg-slate-100 rounded-md p-0.5 border border-blue-900/30 overflow-hidden">
-                    {countSkripsi > 0 && (
-                      <div
-                        className="bg-orange-500 h-full rounded-sm transition-all duration-500"
-                        style={{ width: `${(countSkripsi / maksimal) * 100}%` }}
-                      />
-                    )}
-                    {countRingkasan > 0 && (
-                      <div
-                        className="bg-sky-400 h-full rounded-sm transition-all duration-500"
-                        style={{ width: `${(countRingkasan / maksimal) * 100}%` }}
-                      />
-                    )}
-                    {countNaskah > 0 && (
-                      <div
-                        className="bg-blue-900 h-full rounded-sm transition-all duration-500"
-                        style={{ width: `${(countNaskah / maksimal) * 100}%` }}
-                      />
-                    )}
+                {/* Quota Indicators */}
+                <div className="flex flex-row justify-between items-center text-[10px] lg:text-[11px] font-semibold w-full gap-1 pt-1">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 bg-orange-500 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
+                    <span className="text-slate-700">Skripsi <b className="text-blue-950 font-black">{countSkripsi}/{maxSkripsi}</b></span>
                   </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 bg-sky-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
+                    <span className="text-slate-700">Ringkasan <b className="text-blue-950 font-black">{countRingkasan}/{maxRingkasan}</b></span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 bg-blue-900 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
+                    <span className="text-slate-700">Publikasi <b className="text-blue-950 font-black">{countNaskah}/{maxNaskah}</b></span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                  {/* Quota Indicators */}
-                  <div className="flex flex-row justify-between items-center text-[10px] lg:text-[11px] font-semibold w-full gap-1 pt-1">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 bg-orange-500 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
-                      <span className="text-slate-700">Skripsi <b className="text-blue-950 font-black">{countSkripsi}/{maxSkripsi}</b></span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 bg-sky-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
-                      <span className="text-slate-700">Ringkasan <b className="text-blue-950 font-black">{countRingkasan}/{maxRingkasan}</b></span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 bg-blue-900 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
-                      <span className="text-slate-700">Publikasi <b className="text-blue-950 font-black">{countNaskah}/{maxNaskah}</b></span>
-                    </div>
-                  </div>
+          {/* CARD RINCIAN DENDA (Hanya muncul jika terdapat tunggakan) */}
+          {totalDenda > 0 && (
+            <Card className="border-2 border-red-600 shadow-[4px_4px_0px_#DC2626] bg-white flex flex-col justify-between overflow-hidden">
+              <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-red-600 bg-red-50/80 flex flex-row items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-600" />
+                  <CardTitle className="text-xs sm:text-sm font-black text-red-950 uppercase tracking-wider">
+                    Tunggakan Denda ({fineBorrowings.length} Arsip)
+                  </CardTitle>
+                </div>
+                <Badge variant="rose">
+                  Total: Rp {totalDenda.toLocaleString("id-ID")}
+                </Badge>
+              </CardHeader>
+
+              <CardContent className="p-4 sm:p-5 flex flex-col justify-between flex-grow space-y-3">
+                {/* List Singkat Arsip yang Terkena Denda */}
+                <div className="space-y-2 max-h-[140px] overflow-y-auto pr-1">
+                  {fineBorrowings.map((fb: any) => {
+                    const isOverdue = fb.status === "OVERDUE";
+                    const isDamaged = fb.status === "DAMAGED";
+                    const isLost = fb.status === "LOST";
+
+                    return (
+                      <div
+                        key={fb.id}
+                        className="flex items-center justify-between p-2.5 bg-red-50/50 border border-red-200 rounded-md gap-3"
+                      >
+                        <div className="space-y-0.5 flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <Badge variant={isOverdue || isLost ? "rose" : "amber"} className="text-[9px] px-1.5 py-0">
+                              {isOverdue ? "TERLAMBAT" : isDamaged ? "RUSAK" : isLost ? "HILANG" : "DENDA"}
+                            </Badge>
+                            <span className="text-[10px] font-mono font-bold text-slate-500">
+                              {fb.pickupCode || `REQ-${fb.id.substring(0, 6).toUpperCase()}`}
+                            </span>
+                          </div>
+                          <h4 className="text-xs font-black text-blue-950 truncate">
+                            {fb.archive?.title}
+                          </h4>
+                        </div>
+
+                        <span className="text-xs font-black text-red-600 shrink-0">
+                          Rp {(fb.fineAmount || 0).toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Footer Action: Link ke Peminjaman */}
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+                  <Link to="/mahasiswa/peminjaman">
+                    <Button variant="outline" size="sm" className="text-xs font-black text-blue-950 hover:bg-slate-100 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]">
+                      Buka Detail Peminjaman
+                      <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
+          )}
 
-            {/* Kalender Card */}
+        </div>
+      </div>
+
+      {/* 3. Zona Kalender & Aktivitas */}
+      <div className="w-full px-5 sm:px-0">
+        <div className="flex flex-col md:grid md:grid-cols-5 gap-6">
+          
+          {/* Kolom Kiri: Kalender (Desktop) / Atas (Mobile) */}
+          <div className="md:col-span-2 flex flex-col gap-6">
             <Card>
               <CardContent className="p-3 sm:p-4 flex flex-col items-center">
                 <Calendar
@@ -246,9 +326,6 @@ export default function DashboardMahasiswa() {
                             <Badge variant={badgeVariant}>
                               {badgeText}
                             </Badge>
-                            <span className="text-[10px] font-mono font-bold text-slate-500">
-                              {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
-                            </span>
                           </div>
                           
                           <h3 className="text-sm font-black text-blue-950 leading-snug">
@@ -314,7 +391,7 @@ export default function DashboardMahasiswa() {
         </div>
       </div>
 
-      {/* 3. Zona Eksplorasi (Quick Action CTA) */}
+      {/* 4. Zona Eksplorasi (Quick Action CTA) */}
       <div className="pt-4 px-5 sm:px-0 flex justify-center w-full">
         <Link to="/mahasiswa/katalog" className="w-full sm:w-auto">
           <Button size="lg" className="w-full sm:w-auto text-sm font-black shadow-[4px_4px_0px_#1E3A8A]">
