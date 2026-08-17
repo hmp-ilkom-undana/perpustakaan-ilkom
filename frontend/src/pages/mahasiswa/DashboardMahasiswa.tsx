@@ -9,10 +9,13 @@ import {
   CheckCircle2,
   Phone,
   Search,
+  Receipt,
+  Clock,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -44,7 +47,7 @@ export default function DashboardMahasiswa() {
   });
 
   const activeStatuses = ["REQUESTED", "WAITING_PICKUP", "BORROWED", "OVERDUE"];
-  const activeBorrowings = borrowings.filter((b) =>
+  const activeBorrowings = borrowings.filter((b: any) =>
     activeStatuses.includes(b.status),
   );
 
@@ -58,7 +61,7 @@ export default function DashboardMahasiswa() {
   let countRingkasan = 0;
   let countNaskah = 0;
 
-  activeBorrowings.forEach((b) => {
+  activeBorrowings.forEach((b: any) => {
     const type = b.archive.archiveType.toUpperCase().replace(" ", "_");
     if (type === "SKRIPSI") countSkripsi++;
     else if (type === "RINGKASAN_SKRIPSI") countRingkasan++;
@@ -66,8 +69,13 @@ export default function DashboardMahasiswa() {
   });
 
   const totalDenda = borrowings.reduce(
-    (sum, b) => sum + (b.fineAmount || 0),
+    (sum: number, b: any) => sum + (b.fineAmount || 0),
     0,
+  );
+
+  // Daftar arsip yang terkena denda aktif / belum lunas
+  const fineBorrowings = borrowings.filter(
+    (b: any) => (b.fineAmount && b.fineAmount > 0 && !b.finePaidAt) || b.status === "OVERDUE"
   );
 
   const firstName = session?.user?.name?.split(" ")[0] || "Mahasiswa";
@@ -94,7 +102,7 @@ export default function DashboardMahasiswa() {
   };
 
   const taskDates = activeBorrowings
-    .map((b) => {
+    .map((b: any) => {
       const ds = getTaskDate(b);
       return ds ? new Date(ds) : null;
     })
@@ -115,7 +123,7 @@ export default function DashboardMahasiswa() {
     },
   };
 
-  const tasksForSelectedDate = activeBorrowings.filter((b) => {
+  const tasksForSelectedDate = activeBorrowings.filter((b: any) => {
     if (!date) return false;
     const ds = getTaskDate(b);
     if (!ds) return false;
@@ -138,9 +146,10 @@ export default function DashboardMahasiswa() {
         <p className="text-slate-500 font-semibold text-xs mt-0.5">{currentDate}</p>
       </div>
 
-      {/* 2. Alert Peringatan Denda */}
+      {/* 2. Alert Peringatan Denda & Kartu Rincian Denda */}
       {totalDenda > 0 && (
-        <div className="w-full px-5 sm:px-0">
+        <div className="w-full px-5 sm:px-0 space-y-4">
+          {/* Banner Peringatan Denda */}
           <div className="bg-red-50 border-2 border-red-600 rounded-lg p-4 sm:p-5 shadow-[4px_4px_0px_#DC2626] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
@@ -159,12 +168,97 @@ export default function DashboardMahasiswa() {
               type="button"
               variant="success"
               onClick={handleContactAdminWa}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto shrink-0 shadow-[2px_2px_0px_#1E3A8A]"
             >
               <Phone className="w-4 h-4 mr-1.5" />
               Bayar Denda via WhatsApp
             </Button>
           </div>
+
+          {/* CARD RINCIAN DENDA: Informasi Arsip yang Terkena Denda */}
+          {fineBorrowings.length > 0 && (
+            <Card className="border-2 border-red-600 shadow-[4px_4px_0px_#DC2626] bg-white overflow-hidden">
+              <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-red-600 bg-red-50/70 flex flex-row items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Receipt className="w-4 h-4 text-red-600" />
+                  <CardTitle className="text-xs sm:text-sm font-black text-red-950 uppercase tracking-wider">
+                    Rincian Tagihan Arsip ({fineBorrowings.length} Dokumen)
+                  </CardTitle>
+                </div>
+                <Badge variant="rose">
+                  Total: Rp {totalDenda.toLocaleString("id-ID")}
+                </Badge>
+              </CardHeader>
+
+              <CardContent className="p-4 sm:p-5 space-y-3">
+                {fineBorrowings.map((fb: any) => {
+                  const typeLower = (fb.archive?.archiveType || "").toLowerCase();
+                  let typeVariant: "orange" | "sky" | "navy" | "secondary" = "orange";
+                  if (typeLower.includes("ringkasan")) typeVariant = "sky";
+                  else if (typeLower.includes("naskah") || typeLower.includes("publikasi")) typeVariant = "navy";
+
+                  const isOverdue = fb.status === "OVERDUE";
+                  const isDamaged = fb.status === "DAMAGED";
+                  const isLost = fb.status === "LOST";
+
+                  let reasonLabel = "Keterlambatan Pengembalian";
+                  if (isDamaged) reasonLabel = "Denda Kerusakan Fisik";
+                  else if (isLost) reasonLabel = "Denda Penggantian Arsip Hilang";
+
+                  return (
+                    <div
+                      key={fb.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 border-2 border-blue-900/30 rounded-lg gap-3 hover:border-red-500 transition-colors"
+                    >
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge variant={typeVariant} className="text-[10px]">
+                            {fb.archive?.archiveType || "Arsip"}
+                          </Badge>
+                          <Badge variant={isOverdue || isLost ? "rose" : "amber"} className="text-[10px]">
+                            {isOverdue ? "TERLAMBAT" : isDamaged ? "RUSAK" : isLost ? "HILANG" : "DENDA"}
+                          </Badge>
+                          <span className="text-[10px] font-mono font-bold text-slate-500">
+                            {fb.pickupCode || `REQ-${fb.id.substring(0, 6).toUpperCase()}`}
+                          </span>
+                        </div>
+
+                        <h4 className="text-xs sm:text-sm font-black text-blue-950 truncate leading-snug">
+                          {fb.archive?.title}
+                        </h4>
+
+                        <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
+                          <span>{reasonLabel}</span>
+                          {fb.returnDate && (
+                            <>
+                              <span>&bull;</span>
+                              <span>
+                                Tenggat: {new Date(fb.returnDate).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200">
+                        <span className="text-[10px] uppercase font-bold text-slate-500">Subtotal Denda</span>
+                        <span className="text-sm sm:text-base font-black text-red-600">
+                          Rp {(fb.fineAmount || 0).toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                <div className="flex justify-end pt-1">
+                  <Link to="/mahasiswa/peminjaman" className="text-xs font-black text-blue-900 hover:text-orange-500 flex items-center gap-1">
+                    Buka Halaman Peminjaman
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
 
@@ -268,68 +362,95 @@ export default function DashboardMahasiswa() {
                   </p>
                 </div>
               ) : (
-                tasksForSelectedDate.map((task) => (
-                  <Card key={task.id} variant="interactive" className="overflow-hidden">
-                    <div className="flex flex-col sm:flex-row">
-                      <div className="p-4 flex-1 border-b sm:border-b-0 sm:border-r-2 border-blue-900">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge
-                            variant={
-                              task.status === "BORROWED"
-                                ? "emerald"
-                                : task.status === "WAITING_PICKUP"
-                                ? "amber"
-                                : "navy"
-                            }
-                          >
-                            {task.status === "BORROWED"
-                              ? "PENGEMBALIAN"
-                              : task.status === "WAITING_PICKUP"
-                              ? "PENGAMBILAN"
-                              : "PENGAJUAN"}
-                          </Badge>
-                          <span className="text-[10px] font-mono font-bold text-slate-500">
-                            {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
-                          </span>
-                        </div>
-                        
-                        <h3 className="text-sm font-black text-blue-950 leading-snug">
-                          {task.archive.title}
-                        </h3>
-                        <p className="text-xs text-slate-500 mt-1 font-semibold flex items-center gap-1.5">
-                          <BookOpen className="w-3.5 h-3.5 text-orange-500" /> {task.archive.archiveType}
-                        </p>
+                tasksForSelectedDate.map((task: any) => {
+                  const isOverdue = task.status === "OVERDUE";
+                  const isBorrowed = task.status === "BORROWED";
+                  const isWaitingPickup = task.status === "WAITING_PICKUP";
 
-                        <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-600 font-semibold">
-                          <MapPin className="w-3.5 h-3.5 text-orange-500" />
-                          Ruangan HMP
-                        </div>
-                      </div>
-                      
-                      {/* Aksi / Status Cepat */}
-                      {task.status === "WAITING_PICKUP" && (
-                        <div className="p-4 sm:w-40 flex flex-col justify-center items-center bg-amber-50">
-                          <p className="text-[10px] font-black text-blue-950 uppercase tracking-wider mb-1.5">
-                            Pickup Code
-                          </p>
-                          <div className="bg-white border-2 border-blue-900 rounded-md px-3 py-1.5 w-full text-center shadow-[2px_2px_0px_#1E3A8A]">
-                            <span className="text-base font-mono font-black tracking-widest text-orange-500">
+                  let badgeVariant: "emerald" | "amber" | "rose" | "navy" = "navy";
+                  let badgeText = "PENGAJUAN";
+
+                  if (isOverdue) {
+                    badgeVariant = "rose";
+                    badgeText = "TERLAMBAT";
+                  } else if (isBorrowed) {
+                    badgeVariant = "emerald";
+                    badgeText = "PENGEMBALIAN";
+                  } else if (isWaitingPickup) {
+                    badgeVariant = "amber";
+                    badgeText = "PENGAMBILAN";
+                  }
+
+                  return (
+                    <Card key={task.id} variant="interactive" className="overflow-hidden">
+                      <div className="flex flex-col sm:flex-row">
+                        <div className="p-4 flex-1 border-b sm:border-b-0 sm:border-r-2 border-blue-900">
+                          <div className="flex justify-between items-start mb-2">
+                            <Badge variant={badgeVariant}>
+                              {badgeText}
+                            </Badge>
+                            <span className="text-[10px] font-mono font-bold text-slate-500">
                               {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
                             </span>
                           </div>
-                        </div>
-                      )}
-                      {task.status === "BORROWED" && (
-                        <div className="p-4 sm:w-40 flex flex-col justify-center items-center bg-slate-50">
-                          <CheckCircle2 className="w-7 h-7 text-emerald-600 mb-1" />
-                          <p className="text-xs font-black text-blue-950 text-center">
-                            Sedang Dipinjam
+                          
+                          <h3 className="text-sm font-black text-blue-950 leading-snug">
+                            {task.archive.title}
+                          </h3>
+                          <p className="text-xs text-slate-500 mt-1 font-semibold flex items-center gap-1.5">
+                            <BookOpen className="w-3.5 h-3.5 text-orange-500" /> {task.archive.archiveType}
                           </p>
+
+                          <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-600 font-semibold">
+                            <MapPin className="w-3.5 h-3.5 text-orange-500" />
+                            Ruangan HMP
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </Card>
-                ))
+                        
+                        {/* Aksi / Status Cepat */}
+                        {isWaitingPickup && (
+                          <div className="p-4 sm:w-40 flex flex-col justify-center items-center bg-amber-50">
+                            <p className="text-[10px] font-black text-blue-950 uppercase tracking-wider mb-1.5">
+                              Pickup Code
+                            </p>
+                            <div className="bg-white border-2 border-blue-900 rounded-md px-3 py-1.5 w-full text-center shadow-[2px_2px_0px_#1E3A8A]">
+                              <span className="text-base font-mono font-black tracking-widest text-orange-500">
+                                {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        {isBorrowed && (
+                          <div className="p-4 sm:w-40 flex flex-col justify-center items-center bg-slate-50">
+                            <CheckCircle2 className="w-7 h-7 text-emerald-600 mb-1" />
+                            <p className="text-xs font-black text-blue-950 text-center">
+                              Sedang Dipinjam
+                            </p>
+                          </div>
+                        )}
+                        {isOverdue && (
+                          <div className="p-4 sm:w-44 flex flex-col justify-center items-center bg-rose-50 border-t sm:border-t-0 sm:border-l-2 border-rose-500">
+                            <AlertTriangle className="w-6 h-6 text-rose-600 mb-1" />
+                            <p className="text-xs font-black text-rose-700 text-center uppercase tracking-wider">
+                              Terlambat
+                            </p>
+                            <span className="text-[11px] font-black text-rose-600 mt-0.5">
+                              Denda: Rp {(task.fineAmount || 0).toLocaleString("id-ID")}
+                            </span>
+                          </div>
+                        )}
+                        {!isWaitingPickup && !isBorrowed && !isOverdue && (
+                          <div className="p-4 sm:w-40 flex flex-col justify-center items-center bg-slate-50">
+                            <Clock className="w-6 h-6 text-blue-900 mb-1" />
+                            <p className="text-xs font-black text-blue-950 text-center">
+                              Menunggu ACC
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })
               )}
             </div>
           </div>
