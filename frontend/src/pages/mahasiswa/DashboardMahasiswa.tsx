@@ -232,9 +232,6 @@ export default function DashboardMahasiswa() {
                             <Badge variant={isOverdue || isLost ? "rose" : "amber"} className="text-[9px] px-1.5 py-0">
                               {isOverdue ? "TERLAMBAT" : isDamaged ? "RUSAK" : isLost ? "HILANG" : "DENDA"}
                             </Badge>
-                            <span className="text-[10px] font-mono font-bold text-slate-500">
-                              {fb.pickupCode || `REQ-${fb.id.substring(0, 6).toUpperCase()}`}
-                            </span>
                           </div>
                           <h4 className="text-xs font-black text-blue-950 truncate">
                             {fb.archive?.title}

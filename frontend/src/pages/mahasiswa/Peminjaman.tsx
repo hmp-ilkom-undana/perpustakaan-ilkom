@@ -87,9 +87,10 @@ export default function Peminjaman() {
     const formattedNumber = cleanNumber.startsWith("0") ? "62" + cleanNumber.slice(1) : cleanNumber;
     const studentName = session?.user?.name || "Mahasiswa";
     const studentNim = (session?.user as any)?.nim || "-";
+    const archiveType = ticket.archiveType || "Arsip";
 
     const text = encodeURIComponent(
-      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul Arsip: ${ticket.archiveTitle}\n- Kode Pinjam: ${ticket.pickupCode}\n- Total Denda: Rp ${(ticket.fineAmount || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
+      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${ticket.archiveTitle}\n- Total Denda: Rp ${(ticket.fineAmount || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
     );
 
     window.open(`https://wa.me/${formattedNumber}?text=${text}`, "_blank");

@@ -19,6 +19,8 @@ import {
   Phone,
 } from "lucide-react";
 
+import { authClient } from "@/lib/auth-client";
+
 interface HistoryDetailDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -26,6 +28,7 @@ interface HistoryDetailDialogProps {
 }
 
 export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetailDialogProps) {
+  const { data: session } = authClient.useSession();
   const { data: setting } = useSystemSettingQuery();
   if (!item) return null;
 
@@ -50,9 +53,12 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
     const rawNumber = setting?.adminWaNumber || "082339113591";
     const cleanNumber = rawNumber.replace(/\D/g, "");
     const formattedNumber = cleanNumber.startsWith("0") ? "62" + cleanNumber.slice(1) : cleanNumber;
+    const studentName = session?.user?.name || "Mahasiswa";
+    const studentNim = (session?.user as any)?.nim || "-";
+    const archiveType = item.type || "Arsip";
 
     const text = encodeURIComponent(
-      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi penyelesaian denda:\n- Peminjaman ID: ${item.id}\n- Judul Arsip: ${item.title}\n- Total Denda: Rp ${item.fine?.toLocaleString('id-ID')}\n\nMohon petunjuk pelunasannya. Terima kasih.`
+      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${item.title}\n- Total Denda: Rp ${(item.fine || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
     );
 
     window.open(`https://wa.me/${formattedNumber}?text=${text}`, "_blank");
