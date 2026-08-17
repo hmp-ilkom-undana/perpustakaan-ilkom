@@ -57,6 +57,19 @@ export default function AdminProfil() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
+  // Check if profile inputs are modified from original session data
+  const isProfileDirty = useMemo(() => {
+    const originalName = (user?.name || "").trim();
+    const originalEmail = (user?.email || "").trim().toLowerCase();
+    const currentName = name.trim();
+    const currentEmail = email.trim().toLowerCase();
+
+    return currentName !== originalName || currentEmail !== originalEmail;
+  }, [name, email, user?.name, user?.email]);
+
+  const isProfileValid = name.trim().length > 0 && email.trim().length > 0 && email.includes("@");
+  const canSubmitProfile = isProfileDirty && isProfileValid && !isUpdatingProfile;
+
   // Calculate Password Strength
   const passwordStrength = useMemo(() => {
     if (!newPassword) return { score: 0, label: "Kosong", color: "bg-slate-200" };
@@ -72,18 +85,20 @@ export default function AdminProfil() {
     return { score: 3, label: "Sangat Kuat", color: "bg-emerald-500", text: "text-emerald-600" };
   }, [newPassword]);
 
+  // Check if password inputs are completely filled, meet requirements, match, and differ from current password
+  const canSubmitPassword = useMemo(() => {
+    const hasCurrent = currentPassword.trim().length > 0;
+    const hasValidNew = newPassword.length >= 6;
+    const isMatching = newPassword === confirmPassword;
+    const isDifferentFromCurrent = currentPassword !== newPassword;
+
+    return hasCurrent && hasValidNew && isMatching && isDifferentFromCurrent && !isChangingPassword;
+  }, [currentPassword, newPassword, confirmPassword, isChangingPassword]);
+
   // Handlers
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      toast.error("Nama lengkap tidak boleh kosong");
-      return;
-    }
-
-    if (!email.trim() || !email.includes("@")) {
-      toast.error("Alamat email tidak valid");
-      return;
-    }
+    if (!canSubmitProfile) return;
 
     try {
       setIsUpdatingProfile(true);
@@ -108,26 +123,7 @@ export default function AdminProfil() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!currentPassword) {
-      toast.error("Silakan masukkan kata sandi saat ini");
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      toast.error("Kata sandi baru minimal harus 6 karakter");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      toast.error("Konfirmasi kata sandi baru tidak cocok!");
-      return;
-    }
-
-    if (currentPassword === newPassword) {
-      toast.error("Kata sandi baru tidak boleh sama dengan kata sandi saat ini");
-      return;
-    }
+    if (!canSubmitPassword) return;
 
     try {
       setIsChangingPassword(true);
@@ -264,8 +260,12 @@ export default function AdminProfil() {
 
               <Button
                 type="submit"
-                disabled={isUpdatingProfile}
-                className="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-md transition-all mt-4"
+                disabled={!canSubmitProfile}
+                className={`w-full font-bold border-2 rounded-md transition-all mt-4 ${
+                  canSubmitProfile
+                    ? "bg-blue-900 hover:bg-blue-800 text-white border-blue-900 cursor-pointer [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
+                    : "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed [box-shadow:none]"
+                }`}
               >
                 <Save className="w-4 h-4 mr-2" />
                 {isUpdatingProfile ? "Menyimpan Perubahan..." : "Simpan Perubahan Profil"}
@@ -305,7 +305,7 @@ export default function AdminProfil() {
                   <button
                     type="button"
                     onClick={() => setShowCurrent(!showCurrent)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-900"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-900 cursor-pointer"
                   >
                     {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -337,7 +337,7 @@ export default function AdminProfil() {
                   <button
                     type="button"
                     onClick={() => setShowNew(!showNew)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-900"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-900 cursor-pointer"
                   >
                     {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -349,6 +349,11 @@ export default function AdminProfil() {
                     <div className={`h-1.5 rounded-full ${passwordStrength.score >= 2 ? passwordStrength.color : "bg-slate-200"}`} />
                     <div className={`h-1.5 rounded-full ${passwordStrength.score >= 3 ? passwordStrength.color : "bg-slate-200"}`} />
                   </div>
+                )}
+                {newPassword && currentPassword && newPassword === currentPassword && (
+                  <p className="text-[11px] text-amber-600 font-semibold flex items-center gap-1">
+                    <AlertTriangle className="w-3.5 h-3.5" /> Sandi baru tidak boleh sama dengan sandi saat ini
+                  </p>
                 )}
               </div>
 
@@ -370,7 +375,7 @@ export default function AdminProfil() {
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-900"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-900 cursor-pointer"
                   >
                     {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -392,8 +397,12 @@ export default function AdminProfil() {
 
               <Button
                 type="submit"
-                disabled={isChangingPassword}
-                className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-md transition-all mt-4"
+                disabled={!canSubmitPassword}
+                className={`w-full font-bold border-2 rounded-md transition-all mt-4 ${
+                  canSubmitPassword
+                    ? "bg-rose-600 hover:bg-rose-700 text-white border-blue-900 cursor-pointer [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
+                    : "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed [box-shadow:none]"
+                }`}
               >
                 <Lock className="w-4 h-4 mr-2" />
                 {isChangingPassword ? "Memperbarui Kata Sandi..." : "Perbarui Kata Sandi"}
