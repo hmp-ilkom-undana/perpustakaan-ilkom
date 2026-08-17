@@ -39,14 +39,14 @@ export default function AdminProfil() {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
   // Synchronize initial data if session loads asynchronously
+  const isInitialized = React.useRef(false);
   React.useEffect(() => {
-    if (user?.name && !name) {
-      setName(user.name);
+    if (user && !isInitialized.current) {
+      if (user.name) setName(user.name);
+      if (user.email) setEmail(user.email);
+      isInitialized.current = true;
     }
-    if (user?.email && !email) {
-      setEmail(user.email);
-    }
-  }, [user?.name, user?.email]);
+  }, [user]);
 
   // Password Change States
   const [currentPassword, setCurrentPassword] = useState("");

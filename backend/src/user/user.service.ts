@@ -283,17 +283,25 @@ export class UserService {
       throw new NotFoundException('Pengguna tidak ditemukan');
     }
 
+    const targetEmail = data.email?.trim().toLowerCase();
+    const isEmailChanged =
+      targetEmail !== undefined &&
+      targetEmail !== '' &&
+      targetEmail !== user.email.toLowerCase();
+
     // Validasi keunikan email jika email diubah
-    if (data.email && data.email.trim() !== user.email) {
+    if (isEmailChanged) {
       const emailInUse = await this.prisma.user.findFirst({
         where: {
-          email: data.email.trim(),
+          email: targetEmail,
           NOT: { id },
         },
       });
 
       if (emailInUse) {
-        throw new BadRequestException(`Email ${data.email} sudah digunakan oleh akun lain`);
+        throw new BadRequestException(
+          `Email ${data.email} sudah digunakan oleh akun lain`,
+        );
       }
     }
 
@@ -301,15 +309,15 @@ export class UserService {
       where: { id },
       data: {
         name: data.name?.trim() ? data.name.trim() : user.name,
-        email: data.email?.trim() ? data.email.trim() : user.email,
+        email: isEmailChanged ? targetEmail : user.email,
       },
     });
 
     // Sinkronkan identifier akun credential jika email diubah
-    if (data.email && data.email.trim() !== user.email) {
+    if (isEmailChanged) {
       await this.prisma.account.updateMany({
         where: { userId: id, providerId: 'credential' },
-        data: { accountId: data.email.trim() },
+        data: { accountId: targetEmail },
       });
     }
 
