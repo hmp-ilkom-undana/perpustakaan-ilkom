@@ -53,7 +53,7 @@ export class UserController {
   @Patch('profile/:id')
   async updateProfile(
     @Param('id') id: string,
-    @Body() body: { name?: string },
+    @Body() body: { name?: string; email?: string },
   ) {
     return this.userService.updateProfile(id, body);
   }

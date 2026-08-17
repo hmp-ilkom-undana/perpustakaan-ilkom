@@ -35,14 +35,18 @@ export default function AdminProfil() {
 
   // Profile Info States
   const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
-  // Synchronize initial name if session loads later
+  // Synchronize initial data if session loads asynchronously
   React.useEffect(() => {
     if (user?.name && !name) {
       setName(user.name);
     }
-  }, [user?.name]);
+    if (user?.email && !email) {
+      setEmail(user.email);
+    }
+  }, [user?.name, user?.email]);
 
   // Password Change States
   const [currentPassword, setCurrentPassword] = useState("");
@@ -76,14 +80,24 @@ export default function AdminProfil() {
       return;
     }
 
+    if (!email.trim() || !email.includes("@")) {
+      toast.error("Alamat email tidak valid");
+      return;
+    }
+
     try {
       setIsUpdatingProfile(true);
       if (user?.id) {
-        await userService.updateProfile(user.id, { name: name.trim() });
+        await userService.updateProfile(user.id, { 
+          name: name.trim(),
+          email: email.trim().toLowerCase()
+        });
       }
-      toast.success("Biodata profil berhasil diperbarui!");
-      // Reload session to reflect updated name in sidebar
-      window.location.reload();
+      toast.success("Biodata dan email administrator berhasil diperbarui!");
+      // Reload session to reflect updated data in sidebar
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || "Gagal memperbarui profil";
       toast.error(msg);
@@ -172,7 +186,7 @@ export default function AdminProfil() {
             </div>
             <p className="text-sm font-semibold text-slate-600 flex items-center gap-1.5">
               <Mail className="w-4 h-4 text-blue-900" />
-              {user?.email || "admin@ilkom.com"}
+              {user?.email || email || "admin@ilkom.com"}
             </p>
             <p className="text-xs text-slate-500 font-medium flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
@@ -201,7 +215,7 @@ export default function AdminProfil() {
               Informasi Biodata Profil
             </CardTitle>
             <CardDescription className="text-xs text-slate-600 font-medium">
-              Ubah nama tampilan administrator yang tertera pada laporan dan log sistem.
+              Ubah nama tampilan dan alamat email resmi administrator.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -223,29 +237,28 @@ export default function AdminProfil() {
 
               <div className="space-y-2">
                 <Label htmlFor="admin-email" className="text-xs font-bold text-blue-950 uppercase tracking-wider">
-                  Alamat Email (Akun Login)
+                  Alamat Email (Akun Login & Notifikasi) <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
                   <Input
                     id="admin-email"
                     type="email"
-                    value={user?.email || "admin@ilkom.com"}
-                    disabled
-                    className="border-2 border-slate-300 bg-slate-100 rounded-md font-semibold text-sm text-slate-600 cursor-not-allowed"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="contoh: hmp.ilkom@undana.ac.id"
+                    required
+                    className="border-2 border-blue-900 rounded-md font-semibold text-sm focus-visible:ring-blue-900"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-500 px-2 py-0.5 rounded">
-                    Terverifikasi
-                  </span>
                 </div>
                 <p className="text-[11px] text-slate-500 font-medium">
-                  Alamat email merupakan identitas login utama dan tidak dapat diubah sembarangan.
+                  Anda dapat mengganti email ini dengan email resmi HMP. Email baru akan digunakan untuk login berikutnya.
                 </p>
               </div>
 
               <div className="p-3 bg-amber-50 border-2 border-amber-200 rounded-md text-xs text-amber-900 font-medium flex items-start gap-2">
                 <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                 <span>
-                  Perubahan nama akan langsung terlihat pada header navigasi dan tabel riwayat aktivitas sirkulasi.
+                  Perubahan nama dan email akan langsung disinkronkan ke seluruh sistem dan session login Anda.
                 </span>
               </div>
 

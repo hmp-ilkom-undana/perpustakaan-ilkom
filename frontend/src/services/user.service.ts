@@ -94,7 +94,7 @@ export const userService = {
     return response.data;
   },
 
-  updateProfile: async (id: string, data: { name?: string }) => {
+  updateProfile: async (id: string, data: { name?: string; email?: string }) => {
     const response = await api.patch(`/api/users/profile/${id}`, data);
     return response.data;
   },
