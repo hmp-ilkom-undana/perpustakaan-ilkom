@@ -94,6 +94,11 @@ export const userService = {
     return response.data;
   },
 
+  updateProfile: async (id: string, data: { name?: string; email?: string }) => {
+    const response = await api.patch(`/api/users/profile/${id}`, data);
+    return response.data;
+  },
+
   toggleStatus: async (id: string, status: "Aktif" | "Non-Aktif") => {
     const response = await api.patch(`/api/users/staff/${id}`, { status });
     return response.data;

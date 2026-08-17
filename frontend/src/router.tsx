@@ -13,6 +13,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 import KelolaPengguna from "./pages/admin/KelolaPengguna";
 import KelolaPetugas from "./pages/admin/KelolaPetugas";
+import AdminProfil from "./pages/admin/AdminProfil";
 
 // Petugas Imports
 import PetugasLayout from "./layouts/PetugasLayout";
@@ -118,6 +119,12 @@ const adminPetugasRoute = createRoute({
   component: KelolaPetugas,
 });
 
+const adminProfilRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "profil",
+  component: AdminProfil,
+});
+
 // 5. Petugas Layout & Routes
 const petugasLayoutRoute = createRoute({
   getParentRoute: () => authenticatedRoute,
@@ -206,6 +213,7 @@ const routeTree = rootRoute.addChildren([
       adminDendaRoute,
       adminPenggunaRoute,
       adminPetugasRoute,
+      adminProfilRoute,
     ]),
     petugasLayoutRoute.addChildren([
       petugasIndexRoute,

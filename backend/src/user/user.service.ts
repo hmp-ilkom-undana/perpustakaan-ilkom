@@ -266,6 +266,73 @@ export class UserService {
   }
 
   /**
+   * Memperbarui profil nama dan email pengguna (Admin / Staf / Mahasiswa)
+   */
+  async updateProfile(
+    id: string,
+    data: {
+      name?: string;
+      email?: string;
+    },
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Pengguna tidak ditemukan');
+    }
+
+    const targetEmail = data.email?.trim().toLowerCase();
+    const isEmailChanged =
+      targetEmail !== undefined &&
+      targetEmail !== '' &&
+      targetEmail !== user.email.toLowerCase();
+
+    // Validasi keunikan email jika email diubah
+    if (isEmailChanged) {
+      const emailInUse = await this.prisma.user.findFirst({
+        where: {
+          email: targetEmail,
+          NOT: { id },
+        },
+      });
+
+      if (emailInUse) {
+        throw new BadRequestException(
+          `Email ${data.email} sudah digunakan oleh akun lain`,
+        );
+      }
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: {
+        name: data.name?.trim() ? data.name.trim() : user.name,
+        email: isEmailChanged ? targetEmail : user.email,
+      },
+    });
+
+    // Sinkronkan identifier akun credential jika email diubah
+    if (isEmailChanged) {
+      await this.prisma.account.updateMany({
+        where: { userId: id, providerId: 'credential' },
+        data: { accountId: targetEmail },
+      });
+    }
+
+    return {
+      message: 'Profil dan email berhasil diperbarui',
+      user: {
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        role: updated.role,
+      },
+    };
+  }
+
+  /**
    * Memperbarui data profil staf
    */
   async updateStaff(

@@ -29,6 +29,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function Login() {
   const [isRegisterOpen, setRegisterOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     register,
@@ -40,36 +41,58 @@ export default function Login() {
   });
 
   const onLogin = async (values: LoginFormValues) => {
-    const isEmail = values.email.includes("@");
+    const rawInput = values.email.trim();
+    const isEmail = rawInput.includes("@");
     let authResponse;
 
     if (isEmail) {
       authResponse = await authClient.signIn.email({
-        email: values.email,
+        email: rawInput.toLowerCase(),
         password: values.password,
       });
     } else {
+      // Non-email input (Username / NIM Mahasiswa)
       authResponse = await authClient.signIn.username({
-        username: values.email,
+        username: rawInput,
         password: values.password,
       });
+
+      // Guardrail Keamanan: Administrator dan Petugas DILARANG login via username
+      if (authResponse?.data?.user) {
+        const userRole = (authResponse.data.user as any).role;
+        if (userRole === "ADMIN" || userRole === "PETUGAS") {
+          await authClient.signOut();
+          toast.error(
+            "Akun Administrator dan Petugas wajib masuk menggunakan Alamat Email.",
+            { duration: 5000 }
+          );
+          return;
+        }
+      }
     }
 
     if (authResponse.error) {
       toast.error(
         authResponse.error.message || "Gagal masuk. Periksa kembali akun Anda.",
+        { duration: 4500 }
       );
     } else {
-      toast.success("Berhasil masuk!");
-      const role = authResponse.data?.user?.role;
+      setIsRedirecting(true);
+      const user = authResponse.data?.user;
+      const firstName = user?.name ? user.name.trim().split(" ")[0] : "Pengguna";
 
-      if (role === "ADMIN") {
-        window.location.href = "/admin";
-      } else if (role === "PETUGAS") {
-        window.location.href = "/petugas";
-      } else {
-        window.location.href = "/mahasiswa";
-      }
+      toast.success("Berhasil Masuk!", {
+        description: `Selamat datang, ${firstName}!`,
+        duration: 3500,
+      });
+
+      const role = user?.role;
+      const targetUrl = role === "ADMIN" ? "/admin" : role === "PETUGAS" ? "/petugas" : "/mahasiswa";
+
+      // Berikan jeda 2 detik agar notifikasi ucapan selamat datang terbaca dengan jelas
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 2000);
     }
   };
 
@@ -111,18 +134,18 @@ export default function Login() {
           {/* Body Form */}
           <CardContent className="pt-6 pb-8 px-6 space-y-5">
             <form onSubmit={handleSubmit(onLogin)} className="space-y-4">
-              {/* Field: Username / Email */}
+              {/* Field: Email / Username */}
               <div className="space-y-1.5">
                 <Label
                   htmlFor="email"
                   className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5"
                 >
                   <User className="w-3.5 h-3.5 text-blue-900" />
-                  Username / Email
+                  Email / Username
                 </Label>
                 <Input
                   id="email"
-                  placeholder="NIM / Username / Email..."
+                  placeholder="nama@email.com atau username..."
                   className="h-11 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
                   {...register("email")}
                 />
@@ -180,13 +203,13 @@ export default function Login() {
               {/* Tombol Masuk (Neo-Brutalist Button) */}
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isRedirecting}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-sm h-11 rounded-lg border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider mt-5"
               >
-                {isSubmitting ? (
+                {isSubmitting || isRedirecting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Memverifikasi...
+                    {isRedirecting ? "Mengalihkan..." : "Memverifikasi..."}
                   </>
                 ) : (
                   <>
