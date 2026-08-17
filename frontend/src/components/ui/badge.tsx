@@ -9,15 +9,18 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-amber-400 text-blue-900 [a]:hover:bg-amber-300",
-        secondary:
-          "bg-slate-200 text-blue-900 [a]:hover:bg-slate-300",
-        destructive:
-          "bg-red-500 text-white focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-red-600",
-        outline:
-          "bg-white text-blue-900 [a]:hover:bg-slate-50",
-        ghost:
-          "border-transparent shadow-none hover:bg-slate-100 hover:text-blue-900 dark:hover:bg-muted/50",
+        default: "bg-amber-400 text-blue-950 [a]:hover:bg-amber-300",
+        amber: "bg-amber-400 text-blue-950 [a]:hover:bg-amber-300",
+        orange: "bg-orange-500 text-white [a]:hover:bg-orange-600",
+        navy: "bg-blue-900 text-white [a]:hover:bg-blue-800",
+        sky: "bg-sky-400 text-blue-950 [a]:hover:bg-sky-300",
+        emerald: "bg-emerald-400 text-emerald-950 [a]:hover:bg-emerald-300",
+        success: "bg-emerald-400 text-emerald-950 [a]:hover:bg-emerald-300",
+        rose: "bg-rose-500 text-white [a]:hover:bg-rose-600",
+        destructive: "bg-rose-500 text-white [a]:hover:bg-rose-600",
+        secondary: "bg-slate-200 text-blue-950 [a]:hover:bg-slate-300",
+        outline: "bg-white text-blue-950 [a]:hover:bg-slate-50",
+        ghost: "border-transparent shadow-none hover:bg-slate-100 hover:text-blue-900",
         link: "border-transparent shadow-none text-blue-900 underline-offset-4 hover:underline",
       },
     },
