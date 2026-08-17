@@ -48,7 +48,7 @@ export function DendaTab({
             <CardContent className="p-6 space-y-4">
               <div>
                 <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
-                  <Receipt className="w-4 h-4 text-amber-600" />
+                  <Receipt className="w-4 h-4 text-orange-500" />
                   Skema Denda Keterlambatan (Late Return Fines)
                 </h2>
                 <p className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -116,7 +116,7 @@ export function DendaTab({
             <CardContent className="p-6 space-y-4">
               <div>
                 <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-rose-600" />
+                  <AlertTriangle className="w-4 h-4 text-orange-500" />
                   Tarif Sanksi Kondisi Fisik Arsip
                 </h2>
                 <p className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -167,7 +167,7 @@ export function DendaTab({
             <CardContent className="p-6 space-y-4">
               <div>
                 <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-emerald-600" />
+                  <Phone className="w-4 h-4 text-orange-500" />
                   Kontak WhatsApp Bantuan & Pembayaran Denda
                 </h2>
                 <p className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -202,7 +202,7 @@ export function DendaTab({
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 shrink-0"
+                        className="border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-500 hover:text-white [box-shadow:2px_2px_0px_#059669] active:translate-x-[1px] active:translate-y-[1px] shrink-0 transition-all"
                         title="Uji Hubungi WhatsApp"
                         onClick={() => {
                           const clean = adminWaNumber.replace(/\D/g, "");

@@ -52,7 +52,7 @@ export function OperasionalTab({
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-blue-600" />
+                <Calendar className="w-4 h-4 text-orange-500" />
                 Hari Kerja Operasional Perpustakaan
               </h2>
               <p className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -64,7 +64,7 @@ export function OperasionalTab({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="text-[11px] font-bold border-blue-900 h-7"
+                className="text-[11px] font-bold border-2 border-blue-900 h-7 hover:bg-orange-500 hover:text-white transition-colors"
                 onClick={() => setOperatingDays([1, 2, 3, 4, 5])}
               >
                 Sen - Jum
@@ -73,7 +73,7 @@ export function OperasionalTab({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="text-[11px] font-bold border-blue-900 h-7"
+                className="text-[11px] font-bold border-2 border-blue-900 h-7 hover:bg-orange-500 hover:text-white transition-colors"
                 onClick={() => setOperatingDays([1, 2, 3, 4, 5, 6])}
               >
                 Sen - Sab
@@ -92,8 +92,8 @@ export function OperasionalTab({
                   onClick={() => toggleDay(day.id)}
                   className={`p-3 rounded-lg border-2 font-bold text-center transition-all flex flex-col items-center justify-center gap-1 ${
                     isSelected
-                      ? "bg-blue-600 text-white border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A]"
-                      : "bg-slate-50 text-slate-500 border-slate-300 hover:border-slate-400"
+                      ? "bg-orange-500 text-white border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A]"
+                      : "bg-slate-50 text-slate-500 border-slate-300 hover:border-blue-900"
                   }`}
                 >
                   <span className="text-xs uppercase tracking-wider">{day.short}</span>
@@ -113,7 +113,7 @@ export function OperasionalTab({
         <CardContent className="p-6 space-y-5">
           <div>
             <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-blue-600" />
+              <Clock className="w-4 h-4 text-orange-500" />
               Masa Tunggu Pengambilan Arsip (Grace Period)
             </h2>
             <p className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -145,10 +145,10 @@ export function OperasionalTab({
                     key={num}
                     type="button"
                     onClick={() => setPickupDurationDays(num)}
-                    className={`px-2.5 py-1 text-[11px] font-bold rounded border ${
+                    className={`px-2.5 py-1 text-[11px] font-bold rounded border-2 transition-all ${
                       pickupDurationDays === num
-                        ? "bg-blue-100 text-blue-900 border-blue-900"
-                        : "bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-100"
+                        ? "bg-orange-500 text-white border-blue-900 [box-shadow:2px_2px_0px_#1E3A8A]"
+                        : "bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-100 hover:border-blue-900"
                     }`}
                   >
                     {num} Hari
@@ -158,7 +158,7 @@ export function OperasionalTab({
             </div>
 
             {/* Auto Cancel Switch Card */}
-            <div className="border-2 border-slate-200 rounded-lg p-4 bg-slate-50 flex items-center justify-between gap-4">
+            <div className="border-2 border-blue-900/40 rounded-lg p-4 bg-slate-50 flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-black text-slate-800">
                   Pembatalan Otomatis (Auto-Cancel)
@@ -171,7 +171,7 @@ export function OperasionalTab({
                 type="button"
                 onClick={() => setAutoCancelUnpicked(!autoCancelUnpicked)}
                 className={`w-12 h-6 rounded-full transition-colors relative border-2 border-blue-950 ${
-                  autoCancelUnpicked ? "bg-blue-600" : "bg-slate-300"
+                  autoCancelUnpicked ? "bg-orange-500" : "bg-slate-300"
                 }`}
               >
                 <span

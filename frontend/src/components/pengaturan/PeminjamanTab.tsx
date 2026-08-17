@@ -32,7 +32,7 @@ export function PeminjamanTab({
         <CardContent className="p-6 space-y-4">
           <div>
             <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-blue-600" />
+              <Clock className="w-4 h-4 text-orange-500" />
               Durasi Masa Peminjaman Standar
             </h2>
             <p className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -63,10 +63,10 @@ export function PeminjamanTab({
                   key={days}
                   type="button"
                   onClick={() => setLoanDurationDays(days)}
-                  className={`px-2.5 py-1 text-[11px] font-bold rounded border ${
+                  className={`px-2.5 py-1 text-[11px] font-bold rounded border-2 transition-all ${
                     loanDurationDays === days
-                      ? "bg-blue-100 text-blue-900 border-blue-900"
-                      : "bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-100"
+                      ? "bg-orange-500 text-white border-blue-900 [box-shadow:2px_2px_0px_#1E3A8A]"
+                      : "bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-100 hover:border-blue-900"
                   }`}
                 >
                   {days} Hari
@@ -82,7 +82,7 @@ export function PeminjamanTab({
         <CardContent className="p-6 space-y-4">
           <div>
             <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-blue-600" />
+              <BookOpen className="w-4 h-4 text-orange-500" />
               Batas Maksimal Kuota Pinjam Aktif (Per Mahasiswa)
             </h2>
             <p className="text-xs text-slate-500 font-semibold mt-0.5">
@@ -92,10 +92,12 @@ export function PeminjamanTab({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
             {/* Skripsi */}
-            <div className="p-4 border-2 border-blue-900 rounded-lg bg-blue-50/50 [box-shadow:3px_3px_0px_#1E3A8A] space-y-2">
+            <div className="p-4 border-2 border-blue-900 rounded-lg bg-orange-50/50 [box-shadow:3px_3px_0px_#1E3A8A] space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black text-blue-950">Skripsi</span>
-                <Badge className="bg-blue-900 text-white text-[10px]">SKR</Badge>
+                <Badge className="bg-orange-500 text-white border-2 border-blue-900 font-black text-[10px]">
+                  SKR
+                </Badge>
               </div>
               <Input
                 type="number"
@@ -111,10 +113,12 @@ export function PeminjamanTab({
             </div>
 
             {/* Ringkasan Skripsi */}
-            <div className="p-4 border-2 border-blue-900 rounded-lg bg-emerald-50/50 [box-shadow:3px_3px_0px_#1E3A8A] space-y-2">
+            <div className="p-4 border-2 border-blue-900 rounded-lg bg-amber-50/50 [box-shadow:3px_3px_0px_#1E3A8A] space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black text-emerald-950">Ringkasan Skripsi</span>
-                <Badge className="bg-emerald-800 text-white text-[10px]">RKS</Badge>
+                <span className="text-xs font-black text-amber-950">Ringkasan Skripsi</span>
+                <Badge className="bg-amber-400 text-blue-950 border-2 border-blue-900 font-black text-[10px]">
+                  RKS
+                </Badge>
               </div>
               <Input
                 type="number"
@@ -130,10 +134,12 @@ export function PeminjamanTab({
             </div>
 
             {/* Naskah Publikasi */}
-            <div className="p-4 border-2 border-blue-900 rounded-lg bg-purple-50/50 [box-shadow:3px_3px_0px_#1E3A8A] space-y-2">
+            <div className="p-4 border-2 border-blue-900 rounded-lg bg-blue-50/50 [box-shadow:3px_3px_0px_#1E3A8A] space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black text-purple-950">Naskah Publikasi</span>
-                <Badge className="bg-purple-800 text-white text-[10px]">NPB</Badge>
+                <span className="text-xs font-black text-blue-950">Naskah Publikasi</span>
+                <Badge className="bg-blue-900 text-white border-2 border-blue-900 font-black text-[10px]">
+                  NPB
+                </Badge>
               </div>
               <Input
                 type="number"

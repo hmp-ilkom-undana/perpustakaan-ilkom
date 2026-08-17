@@ -177,7 +177,7 @@ export default function PengaturanSistem() {
       {/* HEADER CARD */}
       <div className="bg-white border-2 border-blue-900 rounded-lg p-6 [box-shadow:6px_6px_0px_#1E3A8A] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
         <div className="flex items-center gap-4 relative z-10">
-          <div className="w-12 h-12 bg-blue-100 text-blue-950 border-2 border-blue-900 rounded-lg flex items-center justify-center shrink-0 [box-shadow:3px_3px_0px_#1E3A8A]">
+          <div className="w-12 h-12 bg-orange-500 text-white border-2 border-blue-900 rounded-lg flex items-center justify-center shrink-0 [box-shadow:3px_3px_0px_#1E3A8A]">
             <SlidersHorizontal className="w-6 h-6" />
           </div>
           <div>
@@ -185,7 +185,7 @@ export default function PengaturanSistem() {
               <h1 className="text-2xl font-black text-blue-950 tracking-tight">
                 Pengaturan Sistem
               </h1>
-              <Badge className="bg-blue-600 text-white font-bold text-[10px] tracking-wider uppercase">
+              <Badge className="bg-amber-400 text-blue-950 border-2 border-blue-900 font-black text-[10px] tracking-wider uppercase [box-shadow:2px_2px_0px_#1E3A8A]">
                 Admin Panel
               </Badge>
             </div>
@@ -202,7 +202,7 @@ export default function PengaturanSistem() {
               variant="outline"
               onClick={handleReset}
               disabled={updateMutation.isPending}
-              className="border-2 border-slate-400 font-bold text-xs hover:bg-slate-100"
+              className="border-2 border-blue-900 font-bold text-xs hover:bg-slate-100 [box-shadow:2px_2px_0px_#1E3A8A]"
             >
               <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
               Batal
@@ -212,7 +212,7 @@ export default function PengaturanSistem() {
             type="button"
             onClick={handleSave}
             disabled={!isDirty || updateMutation.isPending}
-            className="flex-1 md:flex-none bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs border-2 border-blue-950 [box-shadow:3px_3px_0px_#0F172A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:1px_1px_0px_#0F172A] transition-all disabled:opacity-50"
+            className="flex-1 md:flex-none bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] transition-all disabled:opacity-50"
           >
             <Save className="w-4 h-4 mr-2" />
             {updateMutation.isPending ? "Menyimpan..." : "Simpan Pengaturan"}
@@ -225,10 +225,10 @@ export default function PengaturanSistem() {
         <button
           type="button"
           onClick={() => setActiveTab("OPERASIONAL")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-bold text-xs transition-all border-2 ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-bold text-xs transition-all border-2 border-blue-900 ${
             activeTab === "OPERASIONAL"
-              ? "bg-blue-900 text-white border-blue-950 [box-shadow:3px_3px_0px_#1E3A8A]"
-              : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 hover:bg-slate-50"
+              ? "bg-orange-500 text-white [box-shadow:3px_3px_0px_#1E3A8A]"
+              : "bg-white text-blue-950 hover:bg-orange-50"
           }`}
         >
           <Calendar className="w-4 h-4" />
@@ -238,10 +238,10 @@ export default function PengaturanSistem() {
         <button
           type="button"
           onClick={() => setActiveTab("PEMINJAMAN")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-bold text-xs transition-all border-2 ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-bold text-xs transition-all border-2 border-blue-900 ${
             activeTab === "PEMINJAMAN"
-              ? "bg-blue-900 text-white border-blue-950 [box-shadow:3px_3px_0px_#1E3A8A]"
-              : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 hover:bg-slate-50"
+              ? "bg-orange-500 text-white [box-shadow:3px_3px_0px_#1E3A8A]"
+              : "bg-white text-blue-950 hover:bg-orange-50"
           }`}
         >
           <BookOpen className="w-4 h-4" />
@@ -251,10 +251,10 @@ export default function PengaturanSistem() {
         <button
           type="button"
           onClick={() => setActiveTab("DENDA")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-bold text-xs transition-all border-2 ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-bold text-xs transition-all border-2 border-blue-900 ${
             activeTab === "DENDA"
-              ? "bg-blue-900 text-white border-blue-950 [box-shadow:3px_3px_0px_#1E3A8A]"
-              : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 hover:bg-slate-50"
+              ? "bg-orange-500 text-white [box-shadow:3px_3px_0px_#1E3A8A]"
+              : "bg-white text-blue-950 hover:bg-orange-50"
           }`}
         >
           <Receipt className="w-4 h-4" />
