@@ -198,11 +198,16 @@ export default function DashboardMahasiswa() {
           {totalDenda > 0 && (
             <Card className="border-2 border-red-600 shadow-[4px_4px_0px_#DC2626] bg-white flex flex-col justify-between overflow-hidden">
               <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-red-600 bg-red-50/80 flex flex-row items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-red-600" />
-                  <CardTitle className="text-xs sm:text-sm font-black text-red-950 uppercase tracking-wider">
-                    Tunggakan Denda ({fineBorrowings.length} Arsip)
-                  </CardTitle>
+                <div className="flex items-center gap-2.5">
+                  <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+                  <div className="flex flex-col">
+                    <CardTitle className="text-xs sm:text-sm font-black text-red-950 uppercase tracking-wider leading-tight">
+                      Tunggakan Denda
+                    </CardTitle>
+                    <span className="text-[11px] font-bold text-red-700 mt-0.5">
+                      {fineBorrowings.length} Arsip
+                    </span>
+                  </div>
                 </div>
                 <Badge variant="rose">
                   Total: Rp {totalDenda.toLocaleString("id-ID")}
