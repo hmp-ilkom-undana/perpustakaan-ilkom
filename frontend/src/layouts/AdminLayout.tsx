@@ -29,9 +29,14 @@ export default function AdminLayout() {
   const handleLogout = async () => {
     try {
       await authClient.signOut();
-      toast.success("Berhasil keluar dari sistem");
-      window.location.href = "/login";
-    } catch (error) {
+      toast.success("Berhasil Keluar!", {
+        description: "Sesi Anda telah berhasil diakhiri.",
+        duration: 2000,
+      });
+      setTimeout(() => {
+        navigate({ to: "/login" });
+      }, 1500);
+    } catch {
       toast.error("Gagal keluar dari sistem");
     }
   };
