@@ -12,16 +12,25 @@ import {
   Info,
   Loader2,
   AlertTriangle,
+  Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BorrowingRow } from "@/components/BorrowingRow";
 import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
+import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
+import { authClient } from "@/lib/auth-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { BORROWING_QUERY_KEY } from "@/hooks/queries/useBorrowingQuery";
 
+export interface ExtendedTicketProps extends ActiveTicketProps {
+  fineAmount?: number;
+}
+
 export default function Peminjaman() {
+  const { data: session } = authClient.useSession();
+  const { data: setting } = useSystemSettingQuery();
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
   const queryClient = useQueryClient();
 
@@ -29,7 +38,7 @@ export default function Peminjaman() {
 
   const activeStatuses = ["REQUESTED", "WAITING_PICKUP", "BORROWED", "OVERDUE"];
 
-  const tickets: ActiveTicketProps[] = rawHistory
+  const tickets: ExtendedTicketProps[] = rawHistory
     .filter((item: any) => activeStatuses.includes(item.status))
     .map((item: any) => ({
       id: item.id,
@@ -37,6 +46,7 @@ export default function Peminjaman() {
       archiveTitle: item.archive.title,
       archiveType: item.archive.archiveType,
       status: item.status as "REQUESTED" | "WAITING_PICKUP" | "BORROWED" | "OVERDUE",
+      fineAmount: item.fineAmount || 0,
       requestDate: new Date(item.borrowDate).toLocaleDateString("id-ID", {
         day: "2-digit",
         month: "short",
@@ -70,6 +80,20 @@ export default function Peminjaman() {
           })()
         : undefined,
     }));
+
+  const handleContactAdminWa = (ticket: ExtendedTicketProps) => {
+    const rawNumber = setting?.adminWaNumber || "082339113591";
+    const cleanNumber = rawNumber.replace(/\D/g, "");
+    const formattedNumber = cleanNumber.startsWith("0") ? "62" + cleanNumber.slice(1) : cleanNumber;
+    const studentName = session?.user?.name || "Mahasiswa";
+    const studentNim = (session?.user as any)?.nim || "-";
+
+    const text = encodeURIComponent(
+      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul Arsip: ${ticket.archiveTitle}\n- Kode Pinjam: ${ticket.pickupCode}\n- Total Denda: Rp ${(ticket.fineAmount || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
+    );
+
+    window.open(`https://wa.me/${formattedNumber}?text=${text}`, "_blank");
+  };
 
   const handleCancel = async (id: string) => {
     if (!window.confirm("Apakah Anda yakin ingin membatalkan antrean ini?")) {
@@ -209,21 +233,36 @@ export default function Peminjaman() {
                     </div>
                   </div>
 
-                  {/* 3. BOTTOM ACTION (OVERDUE WARNING / CANCEL BUTTON) */}
-                  {ticket.status === "OVERDUE" ? (
-                    <div className="bg-rose-50 border-2 border-rose-500 rounded-lg p-4 shadow-[3px_3px_0px_#E11D48] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <AlertTriangle className="h-6 w-6 text-rose-600 shrink-0" />
-                        <div>
-                          <p className="text-sm font-black text-rose-950">Keterlambatan Pengembalian</p>
-                          <p className="text-xs text-rose-700 font-medium mt-0.5">
-                            Arsip telah melewati batas waktu peminjaman. Harap segera kembalikan ke perpustakaan.
+                  {/* 3. BOTTOM ACTION (OVERDUE WITH FINE PAYMENT / CANCEL BUTTON) */}
+                  {ticket.status === "OVERDUE" || (ticket.fineAmount && ticket.fineAmount > 0) ? (
+                    <div className="bg-rose-50 border-2 border-red-600 rounded-lg p-4 sm:p-5 shadow-[4px_4px_0px_#DC2626] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-6 w-6 text-rose-600 shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="text-sm font-black text-rose-950">
+                              Tunggakan Denda: Rp {(ticket.fineAmount || 0).toLocaleString("id-ID")}
+                            </h4>
+                            <Badge variant="rose" className="text-[10px]">
+                              TERLAMBAT
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-rose-800 font-medium leading-relaxed">
+                            Arsip telah melewati batas waktu pengembalian. Harap segera lakukan pembayaran denda dan kembalikan fisik arsip.
                           </p>
                         </div>
                       </div>
-                      <Badge variant="rose" className="shrink-0 text-xs">
-                        STATUS OVERDUE
-                      </Badge>
+
+                      <Button
+                        type="button"
+                        variant="success"
+                        size="sm"
+                        onClick={() => handleContactAdminWa(ticket)}
+                        className="w-full sm:w-auto shrink-0 shadow-[2px_2px_0px_#1E3A8A]"
+                      >
+                        <Phone className="w-4 h-4 mr-1.5" />
+                        Bayar Denda via WhatsApp
+                      </Button>
                     </div>
                   ) : ticket.status === "REQUESTED" || ticket.status === "WAITING_PICKUP" ? (
                     <div className="flex justify-end pt-2">

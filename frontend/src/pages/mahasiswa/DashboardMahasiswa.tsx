@@ -7,15 +7,12 @@ import {
   Calendar as CalendarIcon,
   Loader2,
   CheckCircle2,
-  Phone,
   Search,
-  Receipt,
   Clock,
-  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -68,31 +65,7 @@ export default function DashboardMahasiswa() {
     else if (type === "NASKAH_PUBLIKASI") countNaskah++;
   });
 
-  const totalDenda = borrowings.reduce(
-    (sum: number, b: any) => sum + (b.fineAmount || 0),
-    0,
-  );
-
-  // Daftar arsip yang terkena denda aktif / belum lunas
-  const fineBorrowings = borrowings.filter(
-    (b: any) => (b.fineAmount && b.fineAmount > 0 && !b.finePaidAt) || b.status === "OVERDUE"
-  );
-
   const firstName = session?.user?.name?.split(" ")[0] || "Mahasiswa";
-
-  const handleContactAdminWa = () => {
-    const rawNumber = setting?.adminWaNumber || "082339113591";
-    const cleanNumber = rawNumber.replace(/\D/g, "");
-    const formattedNumber = cleanNumber.startsWith("0") ? "62" + cleanNumber.slice(1) : cleanNumber;
-    const studentName = session?.user?.name || "Mahasiswa";
-    const studentNim = (session?.user as any)?.nim || "-";
-
-    const text = encodeURIComponent(
-      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pelunasan tunggakan denda perpustakaan:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Total Denda: Rp ${totalDenda.toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
-    );
-
-    window.open(`https://wa.me/${formattedNumber}?text=${text}`, "_blank");
-  };
 
   // Data Kalender
   const getTaskDate = (b: any) => {
@@ -146,123 +119,7 @@ export default function DashboardMahasiswa() {
         <p className="text-slate-500 font-semibold text-xs mt-0.5">{currentDate}</p>
       </div>
 
-      {/* 2. Alert Peringatan Denda & Kartu Rincian Denda */}
-      {totalDenda > 0 && (
-        <div className="w-full px-5 sm:px-0 space-y-4">
-          {/* Banner Peringatan Denda */}
-          <div className="bg-red-50 border-2 border-red-600 rounded-lg p-4 sm:p-5 shadow-[4px_4px_0px_#DC2626] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
-              <div>
-                <h3 className="text-red-950 font-black text-base">
-                  Tunggakan Denda: Rp {totalDenda.toLocaleString("id-ID")}
-                </h3>
-                <p className="text-red-800 text-xs font-medium mt-0.5 leading-relaxed">
-                  Harap segera lunasi untuk membuka kembali akses peminjaman Anda.
-                  Hubungi pengurus HMP untuk konfirmasi pembayaran denda.
-                </p>
-              </div>
-            </div>
-
-            <Button
-              type="button"
-              variant="success"
-              onClick={handleContactAdminWa}
-              className="w-full sm:w-auto shrink-0 shadow-[2px_2px_0px_#1E3A8A]"
-            >
-              <Phone className="w-4 h-4 mr-1.5" />
-              Bayar Denda via WhatsApp
-            </Button>
-          </div>
-
-          {/* CARD RINCIAN DENDA: Informasi Arsip yang Terkena Denda */}
-          {fineBorrowings.length > 0 && (
-            <Card className="border-2 border-red-600 shadow-[4px_4px_0px_#DC2626] bg-white overflow-hidden">
-              <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-red-600 bg-red-50/70 flex flex-row items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Receipt className="w-4 h-4 text-red-600" />
-                  <CardTitle className="text-xs sm:text-sm font-black text-red-950 uppercase tracking-wider">
-                    Rincian Tagihan Arsip ({fineBorrowings.length} Dokumen)
-                  </CardTitle>
-                </div>
-                <Badge variant="rose">
-                  Total: Rp {totalDenda.toLocaleString("id-ID")}
-                </Badge>
-              </CardHeader>
-
-              <CardContent className="p-4 sm:p-5 space-y-3">
-                {fineBorrowings.map((fb: any) => {
-                  const typeLower = (fb.archive?.archiveType || "").toLowerCase();
-                  let typeVariant: "orange" | "sky" | "navy" | "secondary" = "orange";
-                  if (typeLower.includes("ringkasan")) typeVariant = "sky";
-                  else if (typeLower.includes("naskah") || typeLower.includes("publikasi")) typeVariant = "navy";
-
-                  const isOverdue = fb.status === "OVERDUE";
-                  const isDamaged = fb.status === "DAMAGED";
-                  const isLost = fb.status === "LOST";
-
-                  let reasonLabel = "Keterlambatan Pengembalian";
-                  if (isDamaged) reasonLabel = "Denda Kerusakan Fisik";
-                  else if (isLost) reasonLabel = "Denda Penggantian Arsip Hilang";
-
-                  return (
-                    <div
-                      key={fb.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-50 border-2 border-blue-900/30 rounded-lg gap-3 hover:border-red-500 transition-colors"
-                    >
-                      <div className="space-y-1 flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge variant={typeVariant} className="text-[10px]">
-                            {fb.archive?.archiveType || "Arsip"}
-                          </Badge>
-                          <Badge variant={isOverdue || isLost ? "rose" : "amber"} className="text-[10px]">
-                            {isOverdue ? "TERLAMBAT" : isDamaged ? "RUSAK" : isLost ? "HILANG" : "DENDA"}
-                          </Badge>
-                          <span className="text-[10px] font-mono font-bold text-slate-500">
-                            {fb.pickupCode || `REQ-${fb.id.substring(0, 6).toUpperCase()}`}
-                          </span>
-                        </div>
-
-                        <h4 className="text-xs sm:text-sm font-black text-blue-950 truncate leading-snug">
-                          {fb.archive?.title}
-                        </h4>
-
-                        <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
-                          <span>{reasonLabel}</span>
-                          {fb.returnDate && (
-                            <>
-                              <span>&bull;</span>
-                              <span>
-                                Tenggat: {new Date(fb.returnDate).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200">
-                        <span className="text-[10px] uppercase font-bold text-slate-500">Subtotal Denda</span>
-                        <span className="text-sm sm:text-base font-black text-red-600">
-                          Rp {(fb.fineAmount || 0).toLocaleString("id-ID")}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                <div className="flex justify-end pt-1">
-                  <Link to="/mahasiswa/peminjaman" className="text-xs font-black text-blue-900 hover:text-orange-500 flex items-center gap-1">
-                    Buka Halaman Peminjaman
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      )}
-
-      {/* 3. Zona Kuota & Kalender (Mobile First Layout) */}
+      {/* 2. Zona Kuota & Kalender (Mobile First Layout) */}
       <div className="w-full px-5 sm:px-0">
         <div className="flex flex-col md:grid md:grid-cols-5 gap-6">
           
@@ -457,7 +314,7 @@ export default function DashboardMahasiswa() {
         </div>
       </div>
 
-      {/* 4. Zona Eksplorasi (Quick Action CTA) */}
+      {/* 3. Zona Eksplorasi (Quick Action CTA) */}
       <div className="pt-4 px-5 sm:px-0 flex justify-center w-full">
         <Link to="/mahasiswa/katalog" className="w-full sm:w-auto">
           <Button size="lg" className="w-full sm:w-auto text-sm font-black shadow-[4px_4px_0px_#1E3A8A]">
