@@ -29,6 +29,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function Login() {
   const [isRegisterOpen, setRegisterOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     register,
@@ -76,16 +77,22 @@ export default function Login() {
         { duration: 4500 }
       );
     } else {
-      toast.success("Berhasil masuk!", { duration: 3000 });
-      const role = authResponse.data?.user?.role;
+      setIsRedirecting(true);
+      const user = authResponse.data?.user;
+      const firstName = user?.name ? user.name.trim().split(" ")[0] : "Pengguna";
 
-      if (role === "ADMIN") {
-        window.location.href = "/admin";
-      } else if (role === "PETUGAS") {
-        window.location.href = "/petugas";
-      } else {
-        window.location.href = "/mahasiswa";
-      }
+      toast.success("Berhasil Masuk!", {
+        description: `Selamat datang, ${firstName}!`,
+        duration: 3500,
+      });
+
+      const role = user?.role;
+      const targetUrl = role === "ADMIN" ? "/admin" : role === "PETUGAS" ? "/petugas" : "/mahasiswa";
+
+      // Berikan jeda 2 detik agar notifikasi ucapan selamat datang terbaca dengan jelas
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 2000);
     }
   };
 
@@ -196,13 +203,13 @@ export default function Login() {
               {/* Tombol Masuk (Neo-Brutalist Button) */}
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isRedirecting}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-sm h-11 rounded-lg border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider mt-5"
               >
-                {isSubmitting ? (
+                {isSubmitting || isRedirecting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Memverifikasi...
+                    {isRedirecting ? "Mengalihkan..." : "Memverifikasi..."}
                   </>
                 ) : (
                   <>
