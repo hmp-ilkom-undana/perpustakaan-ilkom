@@ -8,32 +8,16 @@ import {
   Loader2,
   CheckCircle2,
   Phone,
+  Search,
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
-
-interface BorrowingData {
-  id: string;
-  status: string;
-  borrowDate: string;
-  returnDate: string | null;
-  accDate: string | null;
-  fineAmount: number;
-  pickupCode: string | null;
-  archive: {
-    title: string;
-    author: string;
-    archiveType: string;
-    category: string;
-  };
-}
 
 export default function DashboardMahasiswa() {
   const { data: session, isPending: isSessionLoading } =
@@ -47,7 +31,7 @@ export default function DashboardMahasiswa() {
   if (isSessionLoading || isLoading) {
     return (
       <div className="flex h-[80vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-blue-900" />
       </div>
     );
   }
@@ -69,7 +53,6 @@ export default function DashboardMahasiswa() {
   const maxNaskah = setting?.maxActiveNaskah ?? 1;
   const maksimal = maxSkripsi + maxRingkasan + maxNaskah;
   const terpakai = activeBorrowings.length;
-  const progressValue = (terpakai / maksimal) * 100;
 
   let countSkripsi = 0;
   let countRingkasan = 0;
@@ -128,7 +111,7 @@ export default function DashboardMahasiswa() {
       color: "#1e3a8a",
       border: "2px solid #1e3a8a",
       boxShadow: "2px 2px 0px #1e3a8a",
-      borderRadius: "4px"
+      borderRadius: "6px"
     },
   };
 
@@ -145,20 +128,20 @@ export default function DashboardMahasiswa() {
   });
 
   return (
-    <div className="flex flex-col space-y-6 sm:space-y-6 max-w-4xl mx-auto w-full pb-8 sm:pb-0 min-h-screen sm:min-h-0 bg-slate-50 sm:bg-transparent animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex flex-col space-y-6 max-w-4xl mx-auto w-full pb-12 min-h-screen sm:min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* 1. Zona Sambutan */}
-      <div className="flex flex-col gap-1.5 px-5 pt-8 sm:p-0 bg-white sm:bg-transparent pb-6 sm:pb-0">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 leading-tight">
-          Selamat datang kembali,
-          <br className="sm:hidden" /> <span className="text-orange-600">{firstName}</span>!
+      <div className="flex flex-col gap-1 px-5 pt-4 sm:p-0">
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-blue-950 leading-tight">
+          Selamat datang kembali,{" "}
+          <span className="text-orange-500">{firstName}</span>!
         </h1>
-        <p className="text-slate-500 font-medium text-sm mt-1">{currentDate}</p>
+        <p className="text-slate-500 font-semibold text-xs mt-0.5">{currentDate}</p>
       </div>
 
       {/* 2. Alert Peringatan Denda */}
       {totalDenda > 0 && (
         <div className="w-full px-5 sm:px-0">
-          <div className="bg-red-50 border-2 border-red-500 rounded-md p-4 sm:p-5 [box-shadow:4px_4px_0px_#DC2626] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="bg-red-50 border-2 border-red-600 rounded-lg p-4 sm:p-5 shadow-[4px_4px_0px_#DC2626] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-6 w-6 text-red-600 shrink-0 mt-0.5" />
               <div>
@@ -174,10 +157,11 @@ export default function DashboardMahasiswa() {
 
             <Button
               type="button"
+              variant="success"
               onClick={handleContactAdminWa}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs border-2 border-blue-950 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] shrink-0 flex items-center gap-2 w-full sm:w-auto justify-center"
+              className="w-full sm:w-auto"
             >
-              <Phone className="w-4 h-4" />
+              <Phone className="w-4 h-4 mr-1.5" />
               Bayar Denda via WhatsApp
             </Button>
           </div>
@@ -191,143 +175,160 @@ export default function DashboardMahasiswa() {
           {/* Kolom Kiri: Kalender & Kuota (Desktop) / Atas (Mobile) */}
           <div className="md:col-span-2 flex flex-col gap-6">
             {/* Metrik: Kuota Peminjaman */}
-            <div className="flex flex-col justify-between p-5 border-2 border-blue-900 rounded-md shadow-[4px_4px_0px_#1E3A8A] bg-white">
-              <div>
-                <div className="flex items-center gap-2 mb-2 sm:mb-4">
-                  <BookOpen className="w-4 h-4 text-orange-600 hidden sm:block" />
-                  <p className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    Peminjaman
-                  </p>
-                </div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-orange-600 leading-none mb-3">
-                  {terpakai}{" "}
-                  <span className="text-xl sm:text-2xl text-orange-200 font-bold">
-                    / {maksimal}
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-3 mt-auto">
-                <div className="flex h-2 sm:h-2.5 w-full gap-1">
-                  {countSkripsi > 0 && (
-                    <div
-                      className="bg-orange-400 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${(countSkripsi / maksimal) * 100}%` }}
-                    ></div>
-                  )}
-                  {countRingkasan > 0 && (
-                    <div
-                      className="bg-blue-500 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${(countRingkasan / maksimal) * 100}%` }}
-                    ></div>
-                  )}
-                  {countNaskah > 0 && (
-                    <div
-                      className="bg-yellow-400 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${(countNaskah / maksimal) * 100}%` }}
-                    ></div>
-                  )}
-                  {terpakai < maksimal && (
-                    <div
-                      className="bg-slate-100 h-full rounded-full transition-all duration-500"
-                      style={{ flexGrow: 1 }}
-                    ></div>
-                  )}
+            <Card className="flex flex-col justify-between">
+              <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <BookOpen className="w-4 h-4 text-orange-500" />
+                    <p className="text-xs font-black text-blue-950 uppercase tracking-wider">
+                      Kuota Peminjaman
+                    </p>
+                  </div>
+                  <div className="text-3xl sm:text-4xl font-black text-orange-500 leading-none mb-1">
+                    {terpakai}{" "}
+                    <span className="text-xl sm:text-2xl text-slate-400 font-bold">
+                      / {maksimal}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex flex-row justify-between items-center pt-1 text-[10px] lg:text-[11px] text-slate-500 font-medium w-full gap-1">
-                  <div className="flex items-center gap-1 sm:gap-1.5">
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-orange-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
-                    <span className="font-bold text-slate-700">Skripsi <span className="text-blue-900 font-black">{countSkripsi}/{maxSkripsi}</span></span>
+                <div className="space-y-3">
+                  {/* Progress Bar Segments */}
+                  <div className="flex h-3 w-full gap-1 bg-slate-100 rounded-md p-0.5 border border-blue-900/30 overflow-hidden">
+                    {countSkripsi > 0 && (
+                      <div
+                        className="bg-orange-500 h-full rounded-sm transition-all duration-500"
+                        style={{ width: `${(countSkripsi / maksimal) * 100}%` }}
+                      />
+                    )}
+                    {countRingkasan > 0 && (
+                      <div
+                        className="bg-sky-400 h-full rounded-sm transition-all duration-500"
+                        style={{ width: `${(countRingkasan / maksimal) * 100}%` }}
+                      />
+                    )}
+                    {countNaskah > 0 && (
+                      <div
+                        className="bg-blue-900 h-full rounded-sm transition-all duration-500"
+                        style={{ width: `${(countNaskah / maksimal) * 100}%` }}
+                      />
+                    )}
                   </div>
-                  <div className="flex items-center gap-1 sm:gap-1.5">
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-blue-500 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
-                    <span className="font-bold text-slate-700">Ringkasan <span className="text-blue-900 font-black">{countRingkasan}/{maxRingkasan}</span></span>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-1.5">
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0"></div>
-                    <span className="font-bold text-slate-700">Publikasi <span className="text-blue-900 font-black">{countNaskah}/{maxNaskah}</span></span>
+
+                  {/* Quota Indicators */}
+                  <div className="flex flex-row justify-between items-center text-[10px] lg:text-[11px] font-semibold w-full gap-1 pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 bg-orange-500 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
+                      <span className="text-slate-700">Skripsi <b className="text-blue-950 font-black">{countSkripsi}/{maxSkripsi}</b></span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 bg-sky-400 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
+                      <span className="text-slate-700">Ringkasan <b className="text-blue-950 font-black">{countRingkasan}/{maxRingkasan}</b></span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2.5 h-2.5 bg-blue-900 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] rounded-xs shrink-0" />
+                      <span className="text-slate-700">Publikasi <b className="text-blue-950 font-black">{countNaskah}/{maxNaskah}</b></span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            {/* Kalender */}
-            <div className="bg-white p-2 sm:p-5 border-2 border-blue-900 rounded-md shadow-[4px_4px_0px_#1E3A8A] flex flex-col items-center">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md mx-auto"
-                modifiers={modifiers}
-                modifiersStyles={modifiersStyles}
-              />
-            </div>
+            {/* Kalender Card */}
+            <Card>
+              <CardContent className="p-3 sm:p-4 flex flex-col items-center">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  className="rounded-md mx-auto"
+                  modifiers={modifiers}
+                  modifiersStyles={modifiersStyles}
+                />
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Kolom Kanan: Daftar Tugas (Desktop) / Bawah (Mobile) */}
+          {/* Kolom Kanan: Daftar Aktivitas (Desktop) / Bawah (Mobile) */}
           <div className="md:col-span-3 flex flex-col">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4 text-orange-600" />
+            <h2 className="text-xs font-black text-blue-950 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4 text-orange-500" />
               Aktivitas Tanggal {date?.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
             </h2>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {tasksForSelectedDate.length === 0 ? (
-                <div className="bg-white border-2 border-dashed border-blue-900 rounded-md shadow-[4px_4px_0px_#1E3A8A] p-10 flex flex-col items-center justify-center text-center">
-                  <div className="bg-slate-50 border-2 border-blue-900 w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-[2px_2px_0px_#1E3A8A]">
-                    <CalendarIcon className="w-8 h-8 text-blue-900" />
+                <div className="bg-white border-2 border-dashed border-blue-900 rounded-lg shadow-[4px_4px_0px_#1E3A8A] p-8 flex flex-col items-center justify-center text-center">
+                  <div className="bg-orange-100 border-2 border-blue-900 w-14 h-14 rounded-lg flex items-center justify-center mb-3 shadow-[2px_2px_0px_#1E3A8A]">
+                    <CalendarIcon className="w-7 h-7 text-blue-950" />
                   </div>
-                  <h3 className="font-bold text-slate-800">Tidak Ada Aktivitas</h3>
-                  <p className="text-slate-500 text-sm mt-1">Anda tidak memiliki tenggat pengembalian atau jadwal pengambilan pada tanggal ini.</p>
+                  <h3 className="font-black text-sm text-blue-950">Tidak Ada Aktivitas</h3>
+                  <p className="text-slate-500 text-xs font-medium mt-1 max-w-xs">
+                    Anda tidak memiliki tenggat pengembalian atau jadwal pengambilan pada tanggal ini.
+                  </p>
                 </div>
               ) : (
                 tasksForSelectedDate.map((task) => (
-                  <div key={task.id} className="bg-white border-2 border-blue-900 rounded-md shadow-[4px_4px_0px_#1E3A8A] flex flex-col sm:flex-row overflow-hidden group">
-                    <div className="p-5 flex-1 border-b sm:border-b-0 sm:border-r-2 border-blue-900">
-                      <div className="flex justify-between items-start mb-3">
-                        <Badge variant="outline">
-                          {task.status === "BORROWED" ? "PENGEMBALIAN" : task.status === "WAITING_PICKUP" ? "PENGAMBILAN" : "PENGAJUAN"}
-                        </Badge>
-                        <span className="text-[10px] font-mono text-slate-500 font-bold group-hover:text-orange-500 transition-colors">
-                          {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
-                        </span>
-                      </div>
-                      
-                      <h3 className="text-base font-bold text-slate-900 leading-snug">
-                        {task.archive.title}
-                      </h3>
-                      <p className="text-xs text-slate-500 mt-1 font-medium flex items-center gap-2">
-                        <BookOpen className="w-3 h-3" /> {task.archive.archiveType}
-                      </p>
-
-                      <div className="mt-4 flex items-center gap-2 text-xs text-slate-600 font-medium">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                        Ruangan HMP
-                      </div>
-                    </div>
-                    
-                    {/* Aksi / Status Cepat */}
-                    {task.status === "WAITING_PICKUP" && (
-                      <div className="p-5 sm:w-40 flex flex-col justify-center items-center bg-amber-50">
-                        <p className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2">
-                          Pickup Code
-                        </p>
-                        <div className="bg-white border-2 border-blue-900 rounded-md px-4 py-2 w-full text-center shadow-[2px_2px_0px_#1E3A8A]">
-                          <span className="text-lg font-mono font-bold tracking-widest text-orange-600">
+                  <Card key={task.id} variant="interactive" className="overflow-hidden">
+                    <div className="flex flex-col sm:flex-row">
+                      <div className="p-4 flex-1 border-b sm:border-b-0 sm:border-r-2 border-blue-900">
+                        <div className="flex justify-between items-start mb-2">
+                          <Badge
+                            variant={
+                              task.status === "BORROWED"
+                                ? "emerald"
+                                : task.status === "WAITING_PICKUP"
+                                ? "amber"
+                                : "navy"
+                            }
+                          >
+                            {task.status === "BORROWED"
+                              ? "PENGEMBALIAN"
+                              : task.status === "WAITING_PICKUP"
+                              ? "PENGAMBILAN"
+                              : "PENGAJUAN"}
+                          </Badge>
+                          <span className="text-[10px] font-mono font-bold text-slate-500">
                             {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
                           </span>
                         </div>
-                      </div>
-                    )}
-                    {task.status === "BORROWED" && (
-                      <div className="p-5 sm:w-40 flex flex-col justify-center items-center bg-slate-50">
-                        <CheckCircle2 className="w-8 h-8 text-emerald-500 mb-2" />
-                        <p className="text-xs font-bold text-slate-800 text-center">
-                          Sedang Dipinjam
+                        
+                        <h3 className="text-sm font-black text-blue-950 leading-snug">
+                          {task.archive.title}
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-1 font-semibold flex items-center gap-1.5">
+                          <BookOpen className="w-3.5 h-3.5 text-orange-500" /> {task.archive.archiveType}
                         </p>
+
+                        <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-600 font-semibold">
+                          <MapPin className="w-3.5 h-3.5 text-orange-500" />
+                          Ruangan HMP
+                        </div>
                       </div>
-                    )}
-                  </div>
+                      
+                      {/* Aksi / Status Cepat */}
+                      {task.status === "WAITING_PICKUP" && (
+                        <div className="p-4 sm:w-40 flex flex-col justify-center items-center bg-amber-50">
+                          <p className="text-[10px] font-black text-blue-950 uppercase tracking-wider mb-1.5">
+                            Pickup Code
+                          </p>
+                          <div className="bg-white border-2 border-blue-900 rounded-md px-3 py-1.5 w-full text-center shadow-[2px_2px_0px_#1E3A8A]">
+                            <span className="text-base font-mono font-black tracking-widest text-orange-500">
+                              {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      {task.status === "BORROWED" && (
+                        <div className="p-4 sm:w-40 flex flex-col justify-center items-center bg-slate-50">
+                          <CheckCircle2 className="w-7 h-7 text-emerald-600 mb-1" />
+                          <p className="text-xs font-black text-blue-950 text-center">
+                            Sedang Dipinjam
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
                 ))
               )}
             </div>
@@ -335,14 +336,14 @@ export default function DashboardMahasiswa() {
         </div>
       </div>
 
-      {/* 5. Zona Eksplorasi (Quick Action) */}
-      <div className="pt-6 pb-12 px-5 sm:px-0 flex justify-center w-full mt-auto">
-        <Link
-          to="/mahasiswa/katalog"
-          className="inline-flex items-center justify-center bg-orange-500 text-white font-bold border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] hover:bg-orange-400 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all h-14 sm:h-12 w-full sm:w-auto rounded-md sm:px-8"
-        >
-          Cari Arsip di Katalog
-          <ArrowRight className="w-5 h-5 ml-2" />
+      {/* 4. Zona Eksplorasi (Quick Action CTA) */}
+      <div className="pt-4 px-5 sm:px-0 flex justify-center w-full">
+        <Link to="/mahasiswa/katalog" className="w-full sm:w-auto">
+          <Button size="lg" className="w-full sm:w-auto text-sm font-black shadow-[4px_4px_0px_#1E3A8A]">
+            <Search className="w-4 h-4 mr-2" />
+            Cari Arsip di Katalog
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
         </Link>
       </div>
     </div>

@@ -1,15 +1,21 @@
 import { useState } from "react";
 import { TicketProgress, ActiveTicketProps } from "@/components/TicketProgress";
 import api from "@/lib/api";
+import { toast } from "sonner";
 
 import {
+  BookOpenCheck,
   BookOpen,
   CheckCircle2,
   AlertCircle,
   Clock,
   Info,
   Loader2,
+  AlertTriangle,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { BorrowingRow } from "@/components/BorrowingRow";
 import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 import { useQueryClient } from "@tanstack/react-query";
@@ -72,40 +78,52 @@ export default function Peminjaman() {
     
     try {
       await api.post(`/api/borrowings/${id}/cancel`);
-      alert("Antrean berhasil dibatalkan!");
+      toast.success("Antrean Berhasil Dibatalkan", {
+        description: "Status pengajuan Anda telah diubah menjadi CANCELLED.",
+      });
       queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
     } catch (error: any) {
       const errorMsg = error.response?.data?.message || "Terjadi kesalahan sistem saat membatalkan antrean.";
-      alert(`Gagal membatalkan: ${errorMsg}`);
+      toast.error("Gagal Membatalkan", {
+        description: errorMsg,
+      });
     }
   };
 
-
   return (
-    <div className="flex flex-col gap-0 sm:gap-6 pb-6 sm:p-6 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* --- HEADER HALAMAN --- */}
-      <div className="flex flex-col gap-2 p-4 sm:p-0">
-        <h1 className="flex items-center gap-2 text-3xl font-bold tracking-tight text-slate-900">
-          <BookOpen className="h-8 w-8 text-blue-600" />
-          Peminjaman Aktif
-        </h1>
-        <p className="text-slate-500">
-          Kelola antrean pengambilan dan pantau batas waktu peminjaman Anda di
-          sini.
-        </p>
+    <div className="flex flex-col gap-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-blue-900 p-4 sm:p-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange-500 text-white border-2 border-blue-900 rounded-lg flex items-center justify-center shadow-[2px_2px_0px_#1E3A8A] shrink-0">
+            <BookOpenCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-blue-950">
+              Peminjaman Aktif
+            </h1>
+            <p className="text-slate-500 text-xs font-semibold mt-0.5">
+              Pantau status verifikasi, batas penjemputan, dan tenggat pengembalian arsip Anda.
+            </p>
+          </div>
+        </div>
+
+        <Badge variant="outline" className="w-fit self-start sm:self-auto">
+          {tickets.length} Berkas Aktif
+        </Badge>
       </div>
 
-      {/* --- GRID KARTU TIKET --- */}
-      <div className="flex flex-col gap-4 min-h-[300px]">
+      {/* TICKET LIST / DETAIL AREA */}
+      <div className="flex flex-col gap-4 min-h-[300px] px-4 sm:px-0">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-            <Loader2 className="w-8 h-8 animate-spin mb-4" />
-            <p>Memuat data antrean...</p>
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-900" />
+            <p className="text-xs font-bold text-slate-500">Memuat data transaksi aktif...</p>
           </div>
         ) : tickets.length > 0 ? (
           tickets.map((ticket) => (
-            <div key={ticket.id} className="group/card flex flex-col rounded-xl border border-blue-900/30 bg-white shadow-[2px_2px_0px_#1E3A8A] overflow-hidden transition-all hover:-translate-y-[1px] hover:-translate-x-[1px] hover:shadow-[4px_4px_0px_#1E3A8A]">
-              {/* Baris List Utama */}
+            <Card key={ticket.id} className="overflow-hidden">
+              {/* Header Baris Utama */}
               <BorrowingRow
                 {...ticket}
                 onClick={() =>
@@ -115,182 +133,124 @@ export default function Peminjaman() {
                 }
               />
 
-              {/* Area Detail */}
+              {/* Area Detail yang Terbuka */}
               {selectedTicket?.id === ticket.id && (
-                <div className="border-t border-blue-900/10 bg-slate-50/50 p-4 sm:p-6 animate-in slide-in-from-top-2 fade-in duration-200">
-                  <div className="flex flex-col sm:gap-6">
-                    {/* Info Arsip Singkat */}
-                    <div className="flex flex-col gap-2 text-sm text-slate-600 bg-white/60 p-4 sm:p-3 sm:rounded-lg border-y sm:border border-slate-200/60">
-                      <div className="flex items-start gap-2">
-                        <BookOpen className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
-                        <span className="font-bold text-slate-900 leading-snug">
-                          {ticket.archiveTitle}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 pl-6">
-                        <Info className="h-4 w-4 text-blue-500 shrink-0" />
-                        <span>
-                          Tipe Arsip: <strong>{ticket.archiveType}</strong>
-                        </span>
-                      </div>
+                <div className="border-t-2 border-blue-900 bg-slate-50 p-4 sm:p-6 space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
+                  {/* Info Dokumen */}
+                  <div className="bg-white border-2 border-blue-900/30 rounded-lg p-3.5 flex flex-col gap-1.5 shadow-[2px_2px_0px_#1E3A8A]">
+                    <div className="flex items-start gap-2">
+                      <BookOpen className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                      <span className="font-black text-sm text-blue-950 leading-snug">
+                        {ticket.archiveTitle}
+                      </span>
                     </div>
-
-                    {/* 1. STATUS TRACKER & TIMELINE */}
-                    <div className="sm:rounded-lg border-b sm:border border-blue-900/30 bg-white p-4 sm:p-5 sm:shadow-[2px_2px_0px_#1E3A8A]">
-                      <TicketProgress
-                        currentStatus={ticket.status}
-                        requestDate={ticket.requestDate}
-                        dueDate={ticket.dueDate}
-                        accDate={ticket.accDate}
-                        pickupDeadline={ticket.pickupDeadline}
-                      />
+                    <div className="flex items-center gap-2 pl-6 text-xs text-slate-600 font-semibold">
+                      <Info className="h-3.5 w-3.5 text-blue-900 shrink-0" />
+                      <span>Kategori: <b>{ticket.archiveType}</b></span>
                     </div>
-
-                    {/* 2. DYNAMIC TIMELINE (HANYA DESKTOP) */}
-                    <div className="hidden sm:block rounded-lg border border-blue-900/30 bg-white p-5 shadow-[2px_2px_0px_#1E3A8A]">
-                      <h4 className="mb-5 text-xs font-bold uppercase tracking-widest text-slate-400">
-                        Garis Waktu
-                      </h4>
-                      <div className="flex flex-col gap-4">
-                        {/* Selalu Tampil: Waktu Pengajuan */}
-                        <div className="flex items-center justify-between border-b border-slate-50 pb-3">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                              <CheckCircle2 className="h-4.5 w-4.5" />
-                            </div>
-                            <span className="text-sm font-medium text-slate-700">
-                              Diajukan Pada
-                            </span>
-                          </div>
-                          <span className="text-sm font-bold text-slate-900">
-                            {ticket.requestDate}
-                          </span>
-                        </div>
-
-                        {/* Tampil jika sudah di-ACC */}
-                        {(ticket.status === "WAITING_PICKUP" ||
-                          ticket.status === "BORROWED" ||
-                          ticket.status === "OVERDUE") && (
-                          <div className="flex items-center justify-between border-b border-slate-50 pb-3">
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                                <CheckCircle2 className="h-4.5 w-4.5" />
-                              </div>
-                              <span className="text-sm font-medium text-slate-700">
-                                Di-ACC Petugas
-                              </span>
-                            </div>
-                            <span className="text-sm font-bold text-slate-900">
-                              {ticket.accDate || "Lihat Notifikasi"}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Batas Pengambilan: Hanya relevan jika WAITING_PICKUP */}
-                        {ticket.status === "WAITING_PICKUP" && (
-                          <div className="flex items-center justify-between pb-1">
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600">
-                                <AlertCircle className="h-4.5 w-4.5" />
-                              </div>
-                              <span className="text-sm font-medium text-slate-700">
-                                Batas Pengambilan (RUANGAN HMP)
-                              </span>
-                            </div>
-                            <span className="text-sm font-bold text-rose-600">
-                              {ticket.pickupDeadline || "Segera Ambil"}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Tenggat Pengembalian: Relevan jika BORROWED atau OVERDUE */}
-                        {(ticket.status === "BORROWED" ||
-                          ticket.status === "OVERDUE") && (
-                          <div className="flex items-center justify-between pb-1">
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600">
-                                <Clock className="h-4.5 w-4.5" />
-                              </div>
-                              <span className="text-sm font-medium text-slate-700">
-                                Tenggat Pengembalian
-                              </span>
-                            </div>
-                            <span className="text-sm font-bold text-amber-600">
-                              {ticket.dueDate || "Belum ditentukan"}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* 3. DYNAMIC BOTTOM ACTION / OVERDUE COUNTER CARD */}
-                    {ticket.status === "OVERDUE" ? (
-                      /* Komponen Peringatan Denda */
-                      <div className="mt-0 sm:mt-2 flex flex-col justify-between sm:rounded-xl border-b sm:border border-rose-300 shadow-none sm:shadow-[2px_2px_0px_#f43f5e] bg-rose-50 p-4 sm:flex-row sm:items-center sm:p-5">
-                        <div className="flex items-center gap-4">
-                          {/* Ikon Alert/Jam */}
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
-                            <svg
-                              className="h-6 w-6"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-sm font-bold text-rose-900">
-                              Keterlambatan Pengembalian
-                            </span>
-                            <span className="text-xs font-medium text-rose-600">
-                              Harap Segera Kembalikan!
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 flex flex-col items-start sm:mt-0 sm:items-end">
-                          <span className="text-2xl font-black tracking-tight text-rose-700">
-                            Terlambat
-                          </span>
-                          <span className="text-[10px] font-medium uppercase tracking-wider text-rose-500/80">
-                            Denda Dihitung Petugas
-                          </span>
-                        </div>
-                      </div>
-                    ) : ticket.status === "REQUESTED" ||
-                      ticket.status === "WAITING_PICKUP" ? (
-                      /* Tombol Pembatalan Biasa */
-                      <div className="mt-0 sm:mt-2 flex justify-end border-b sm:border-t border-slate-100 bg-white sm:bg-transparent p-4 sm:p-0">
-                        <button
-                          onClick={() => handleCancel(ticket.id)}
-                          className="rounded-md border border-rose-300 bg-rose-50 px-5 py-2 text-sm font-bold text-rose-600 transition-all hover:bg-rose-100 hover:text-rose-700 shadow-[2px_2px_0px_#f43f5e] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-                        >
-                          Batalkan Antrean
-                        </button>
-                      </div>
-                    ) : null}
                   </div>
+
+                  {/* 1. STATUS TRACKER & STEPPER */}
+                  <div className="rounded-lg border-2 border-blue-900 bg-white p-4 sm:p-5 shadow-[3px_3px_0px_#1E3A8A]">
+                    <TicketProgress
+                      currentStatus={ticket.status}
+                      requestDate={ticket.requestDate}
+                      dueDate={ticket.dueDate}
+                      accDate={ticket.accDate}
+                      pickupDeadline={ticket.pickupDeadline}
+                    />
+                  </div>
+
+                  {/* 2. DYNAMIC TIMELINE (DESKTOP) */}
+                  <div className="hidden sm:block rounded-lg border-2 border-blue-900 bg-white p-5 shadow-[3px_3px_0px_#1E3A8A]">
+                    <h4 className="mb-4 text-xs font-black uppercase tracking-wider text-blue-950">
+                      Rincian Garis Waktu
+                    </h4>
+                    <div className="flex flex-col gap-3 text-xs">
+                      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                        <div className="flex items-center gap-2.5">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                          <span className="font-semibold text-slate-700">Waktu Pengajuan</span>
+                        </div>
+                        <span className="font-black text-blue-950">{ticket.requestDate}</span>
+                      </div>
+
+                      {(ticket.status === "WAITING_PICKUP" ||
+                        ticket.status === "BORROWED" ||
+                        ticket.status === "OVERDUE") && (
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                          <div className="flex items-center gap-2.5">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                            <span className="font-semibold text-slate-700">Disetujui Petugas</span>
+                          </div>
+                          <span className="font-black text-blue-950">{ticket.accDate || "-"}</span>
+                        </div>
+                      )}
+
+                      {ticket.status === "WAITING_PICKUP" && (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <AlertCircle className="h-4 w-4 text-amber-600" />
+                            <span className="font-semibold text-amber-900">Batas Pengambilan di HMP</span>
+                          </div>
+                          <span className="font-black text-amber-700">{ticket.pickupDeadline || "Segera"}</span>
+                        </div>
+                      )}
+
+                      {(ticket.status === "BORROWED" || ticket.status === "OVERDUE") && (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <Clock className="h-4 w-4 text-orange-500" />
+                            <span className="font-semibold text-slate-700">Tenggat Pengembalian</span>
+                          </div>
+                          <span className="font-black text-orange-600">{ticket.dueDate || "Belum ditentukan"}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 3. BOTTOM ACTION (OVERDUE WARNING / CANCEL BUTTON) */}
+                  {ticket.status === "OVERDUE" ? (
+                    <div className="bg-rose-50 border-2 border-rose-500 rounded-lg p-4 shadow-[3px_3px_0px_#E11D48] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <AlertTriangle className="h-6 w-6 text-rose-600 shrink-0" />
+                        <div>
+                          <p className="text-sm font-black text-rose-950">Keterlambatan Pengembalian</p>
+                          <p className="text-xs text-rose-700 font-medium mt-0.5">
+                            Arsip telah melewati batas waktu peminjaman. Harap segera kembalikan ke perpustakaan.
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant="rose" className="shrink-0 text-xs">
+                        STATUS OVERDUE
+                      </Badge>
+                    </div>
+                  ) : ticket.status === "REQUESTED" || ticket.status === "WAITING_PICKUP" ? (
+                    <div className="flex justify-end pt-2">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleCancel(ticket.id)}
+                      >
+                        Batalkan Antrean
+                      </Button>
+                    </div>
+                  ) : null}
                 </div>
               )}
-            </div>
+            </Card>
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 mb-4">
-              <BookOpen className="h-8 w-8 text-slate-300" />
+          <div className="flex flex-col items-center justify-center py-16 px-4 bg-white border-2 border-blue-900 border-dashed rounded-lg shadow-[4px_4px_0px_#1E3A8A] text-center">
+            <div className="bg-orange-100 border-2 border-blue-900 w-14 h-14 rounded-lg flex items-center justify-center mb-3 shadow-[2px_2px_0px_#1E3A8A]">
+              <BookOpenCheck className="w-7 h-7 text-blue-950" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-800">
-              Tidak ada peminjaman aktif
-            </h3>
-            <p className="text-sm text-slate-500 max-w-sm mt-2">
-              Anda tidak memiliki arsip yang sedang dipinjam atau dalam proses
-              antrean.
+            <p className="text-base font-black text-blue-950">
+              Tidak Ada Peminjaman Aktif
+            </p>
+            <p className="text-xs font-semibold text-slate-500 mt-1 max-w-sm">
+              Anda tidak memiliki arsip yang sedang dipinjam atau dalam proses antrean saat ini.
             </p>
           </div>
         )}

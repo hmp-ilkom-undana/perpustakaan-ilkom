@@ -2,12 +2,10 @@ import React from "react";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { User, Calendar, Tag } from "lucide-react";
 
 interface ArchiveCardProps {
@@ -19,28 +17,10 @@ interface ArchiveCardProps {
   category: string;
   quantity: number;
   reservedQuantity: number;
-  status: string; // Add status prop
+  status: string;
   isRequestedByCurrentUser?: boolean;
-
   onClick: () => void;
 }
-
-const getArchiveTypeColor = (type: string) => {
-  // Menggunakan toLowerCase() agar pencarian kebal terhadap huruf besar/kecil (case-insensitive)
-  switch (type.toLowerCase()) {
-    case "skripsi":
-      return "bg-blue-600";
-
-    case "ringkasan skripsi":
-      return "bg-sky-400 text-blue-900";
-
-    case "naskah publikasi":
-      return "bg-orange-500";
-
-    default:
-      return "bg-slate-600";
-  }
-};
 
 export function ArchiveCard({
   title,
@@ -58,55 +38,65 @@ export function ArchiveCard({
   const availableStock = quantity - reservedQuantity;
   const isRequestedByMe = isRequestedByCurrentUser;
 
-  // 2. Tentukan Teks dan Warna Badge
+  // 2. Tentukan Teks dan Varian Badge Status
   let displayStatus = "Tersedia";
-  let badgeStyle = "bg-green-300";
+  let statusVariant: "emerald" | "amber" | "secondary" = "emerald";
 
   if (isRequestedByMe) {
-    displayStatus = "Sedang Anda Ajukan";
-    badgeStyle = "bg-amber-400";
+    displayStatus = "Sedang Diajukan";
+    statusVariant = "amber";
   } else if (availableStock <= 0 || status === "DIPINJAM") {
     displayStatus = "Sedang Dipinjam";
-    badgeStyle = "bg-slate-300";
+    statusVariant = "secondary";
+  }
+
+  // 3. Tentukan Varian Badge Tipe Arsip
+  let typeVariant: "orange" | "sky" | "navy" | "secondary" = "orange";
+  const typeLower = archiveType.toLowerCase();
+  if (typeLower.includes("ringkasan")) {
+    typeVariant = "sky";
+  } else if (typeLower.includes("naskah") || typeLower.includes("publikasi")) {
+    typeVariant = "navy";
+  } else if (typeLower.includes("skripsi")) {
+    typeVariant = "orange";
   }
 
   return (
     <Card
+      variant="interactive"
       onClick={onClick}
-      className="flex flex-col h-full bg-white border border-blue-900/30 rounded-xl shadow-[2px_2px_0px_#1E3A8A] hover:-translate-y-0.5 hover:border-orange-500 hover:shadow-[4px_4px_0px_#F97316] transition-all duration-300 overflow-hidden cursor-pointer group"
+      className="flex flex-col h-full overflow-hidden group"
     >
-      <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50">
+      <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-blue-900 bg-slate-50">
         <div className="flex justify-between items-start mb-2 gap-2">
-          <Badge
-            className={`${getArchiveTypeColor(archiveType)} border border-blue-900/30 shadow-[1px_1px_0px_#1E3A8A]`}
-          >
+          <Badge variant={typeVariant}>
             {archiveType}
           </Badge>
 
-          <Badge variant="outline" className={`${badgeStyle} border border-blue-900/30 shadow-[1px_1px_0px_#1E3A8A]`}>
+          <Badge variant={statusVariant}>
             {displayStatus}
           </Badge>
         </div>
 
-        <CardTitle className="text-lg font-bold text-blue-900 group-hover:text-orange-600 transition-colors duration-300 leading-tight line-clamp-2 mt-1">
+        <CardTitle className="text-base font-black text-blue-950 group-hover:text-orange-600 transition-colors leading-snug line-clamp-2 mt-1">
           {title}
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex-grow pt-4">
-        <div className="space-y-3 text-sm text-slate-600">
-          <div className="flex items-center gap-3">
-            <User className="w-4 h-4 text-yellow-600" />
-            <span className="font-semibold text-slate-800 line-clamp-1">
+      <CardContent className="p-4 sm:p-5 flex-grow pt-3.5">
+        <div className="space-y-2.5 text-xs font-semibold text-slate-600">
+          <div className="flex items-center gap-2.5">
+            <User className="w-4 h-4 text-orange-500 shrink-0" />
+            <span className="text-slate-800 line-clamp-1">
               {author}
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <Calendar className="w-4 h-4 text-yellow-600" />
-            <span>{year}</span>
+          <div className="flex items-center gap-2.5">
+            <Calendar className="w-4 h-4 text-orange-500 shrink-0" />
+            <span>Tahun {year}</span>
           </div>
-          <div className="flex items-center gap-3">
-            <Tag className="w-4 h-4 text-yellow-600" />
+          <div className="flex items-center gap-2.5">
+            <Tag className="w-4 h-4 text-orange-500 shrink-0" />
             <span className="truncate">{category}</span>
           </div>
         </div>

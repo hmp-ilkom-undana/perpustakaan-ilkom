@@ -7,13 +7,16 @@ import {
 } from "@/components/ui/dialog";
 import { HistoryItemProps, HistoryStatus } from "./HistoryRow";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
 import { 
   BookOpen, 
   Calendar, 
   Clock, 
   AlertCircle, 
   Receipt,
-  FileText
+  FileText,
+  Phone,
 } from "lucide-react";
 
 interface HistoryDetailDialogProps {
@@ -23,136 +26,147 @@ interface HistoryDetailDialogProps {
 }
 
 export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetailDialogProps) {
+  const { data: setting } = useSystemSettingQuery();
   if (!item) return null;
 
   const getStatusBadge = (status: HistoryStatus) => {
     switch (status) {
       case "RETURNED":
-        return <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-600/30 shadow-[1px_1px_0px_#059669] hover:bg-emerald-100 rounded-full text-xs font-bold px-3 py-1">DIKEMBALIKAN</Badge>;
+        return <Badge variant="emerald">DIKEMBALIKAN</Badge>;
       case "DAMAGED":
-        return <Badge className="bg-amber-50 text-amber-700 border border-amber-600/30 shadow-[1px_1px_0px_#d97706] hover:bg-amber-100 rounded-full text-xs font-bold px-3 py-1">RUSAK</Badge>;
+        return <Badge variant="amber">RUSAK</Badge>;
       case "LOST":
-        return <Badge className="bg-rose-50 text-rose-700 border border-rose-600/30 shadow-[1px_1px_0px_#e11d48] hover:bg-rose-100 rounded-full text-xs font-bold px-3 py-1">HILANG</Badge>;
+        return <Badge variant="rose">HILANG</Badge>;
       case "CANCELLED":
-        return <Badge className="bg-slate-100 text-slate-600 border border-slate-300 shadow-[1px_1px_0px_#94a3b8] hover:bg-slate-200 rounded-full text-xs font-bold px-3 py-1">DIBATALKAN</Badge>;
+        return <Badge variant="secondary">DIBATALKAN</Badge>;
       case "REJECTED":
-        return <Badge className="bg-rose-50 text-rose-700 border border-rose-600/30 shadow-[1px_1px_0px_#e11d48] hover:bg-rose-100 rounded-full text-xs font-bold px-3 py-1">DITOLAK</Badge>;
+        return <Badge variant="rose">DITOLAK</Badge>;
       default:
         return null;
     }
   };
 
+  const handleContactAdminWa = () => {
+    const rawNumber = setting?.adminWaNumber || "082339113591";
+    const cleanNumber = rawNumber.replace(/\D/g, "");
+    const formattedNumber = cleanNumber.startsWith("0") ? "62" + cleanNumber.slice(1) : cleanNumber;
+
+    const text = encodeURIComponent(
+      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi penyelesaian denda:\n- Peminjaman ID: ${item.id}\n- Judul Arsip: ${item.title}\n- Total Denda: Rp ${item.fine?.toLocaleString('id-ID')}\n\nMohon petunjuk pelunasannya. Terima kasih.`
+    );
+
+    window.open(`https://wa.me/${formattedNumber}?text=${text}`, "_blank");
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-white rounded-xl border border-blue-900/30 shadow-[2px_2px_0px_#1E3A8A]">
-        <DialogHeader className="p-6 pb-4 border-b border-slate-100 bg-slate-50/50">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm border border-slate-100 text-blue-600">
-            <BookOpen className="h-6 w-6" />
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <div className="flex items-center gap-2 mb-1">
+            {getStatusBadge(item.status)}
+            <Badge variant="outline">{item.type}</Badge>
+            <span className="text-xs font-mono font-black text-blue-950 ml-auto tracking-wider">
+              {item.pickupCode}
+            </span>
           </div>
-          <DialogTitle className="text-lg font-bold text-slate-900 mt-4 leading-tight pr-8">
+          <DialogTitle>
             {item.title}
           </DialogTitle>
-          <DialogDescription className="flex items-center flex-wrap gap-2 mt-2">
-            {getStatusBadge(item.status)}
-            <Badge variant="outline" className="text-slate-600 font-medium bg-white">{item.type}</Badge>
-            <span className="text-sm font-mono font-bold text-slate-500 ml-1 tracking-widest">{item.pickupCode}</span>
+          <DialogDescription>
+            Rekam jejak transaksi peminjaman arsip yang telah selesai.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-6 flex flex-col gap-5">
+        <div className="py-3 flex flex-col gap-4 text-xs font-semibold">
           {/* Timeline Section */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">Rincian Waktu</h4>
+          <div className="bg-slate-50 border-2 border-blue-900/30 rounded-lg p-3.5 space-y-2.5">
+            <h4 className="text-[10px] font-black uppercase tracking-wider text-blue-950">
+              Rincian Garis Waktu
+            </h4>
             
-            <div className="flex items-start gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 mt-0.5">
-                <Calendar className="h-4 w-4" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-slate-900">Tanggal Pengajuan</span>
-                <span className="text-xs text-slate-500">{item.borrowDate}</span>
-              </div>
+            <div className="flex items-center justify-between text-slate-600">
+              <span className="flex items-center gap-2">
+                <Calendar className="h-3.5 w-3.5 text-orange-500" />
+                Tanggal Pengajuan
+              </span>
+              <span className="font-bold text-blue-950">{item.borrowDate}</span>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 mt-0.5">
-                <Clock className="h-4 w-4" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-slate-900">
-                  {item.status === "RETURNED" ? "Tanggal Dikembalikan" : 
-                   item.status === "DAMAGED" ? "Tanggal Dikembalikan (Rusak)" :
-                   item.status === "LOST" ? "Dinyatakan Hilang" :
-                   item.status === "REJECTED" ? "Tanggal Ditolak" : "Tanggal Dibatalkan"}
-                </span>
-                <span className="text-xs text-slate-500">{item.returnDate}</span>
-              </div>
+            <div className="flex items-center justify-between text-slate-600">
+              <span className="flex items-center gap-2">
+                <Clock className="h-3.5 w-3.5 text-orange-500" />
+                {item.status === "RETURNED" ? "Tanggal Selesai" : 
+                 item.status === "DAMAGED" ? "Dikembalikan (Rusak)" :
+                 item.status === "LOST" ? "Dinyatakan Hilang" :
+                 item.status === "REJECTED" ? "Tanggal Ditolak" : "Tanggal Dibatalkan"}
+              </span>
+              <span className="font-bold text-blue-950">{item.returnDate}</span>
             </div>
           </div>
 
-          <div className="h-px bg-slate-100 my-1"></div>
-
-          {/* Additional Info Section */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400">Informasi Tambahan</h4>
-            
-            {(item.fine !== undefined && item.fine > 0) && (
-              <div className="flex flex-col gap-3 p-4 rounded-lg bg-rose-50 border border-rose-300 shadow-[1px_1px_0px_#f43f5e]">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-rose-600">
-                    <Receipt className="h-4 w-4" />
-                    <span className="text-sm font-semibold">Total Denda</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {item.paymentDate && (
-                      <Badge className="bg-emerald-500 hover:bg-emerald-600 text-[10px] px-2 py-0 h-5">✓ LUNAS</Badge>
-                    )}
-                    <span className="text-sm font-bold text-rose-600">Rp {item.fine.toLocaleString('id-ID')}</span>
-                  </div>
+          {/* Denda Section */}
+          {item.fine !== undefined && item.fine > 0 && (
+            <div className="p-4 rounded-lg bg-rose-50 border-2 border-rose-500 shadow-[3px_3px_0px_#E11D48] space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-rose-950 font-black text-sm">
+                  <Receipt className="h-4 w-4 text-rose-600" />
+                  <span>Total Tagihan Denda</span>
                 </div>
-                {item.paymentDate ? (
-                  <div className="text-[10px] font-medium text-rose-600/80 text-right">
-                    Dibayar pada: {item.paymentDate}
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-2 mt-2 pt-3 border-t border-rose-200">
-                    <p className="text-[11px] text-rose-700 font-medium">
-                      Silakan hubungi petugas via WhatsApp untuk menyelesaikan denda (transfer/tunai).
-                    </p>
-                    <a 
-                      href={`https://wa.me/6281234567890?text=Halo%20Admin%20Perpustakaan,%20saya%20ingin%20menyelesaikan%20denda%20untuk%20Peminjaman%20ID%20${item.id}%20sebesar%20Rp%20${item.fine?.toLocaleString('id-ID')}.`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-md transition-all shadow-[1px_1px_0px_#c2410c] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none w-full sm:w-auto"
-                    >
-                      <Receipt className="w-3 h-3" />
-                      Konfirmasi Pembayaran (WA)
-                    </a>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {(item.fine === 0 || item.fine === undefined) && item.status === "RETURNED" && (
-              <div className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50 border border-emerald-300 shadow-[1px_1px_0px_#059669]">
-                <FileText className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-emerald-700">Tepat Waktu</span>
-                  <span className="text-xs text-emerald-600/80 mt-0.5">Dikembalikan tepat waktu. Tidak ada denda.</span>
+                <div className="flex items-center gap-2">
+                  {item.paymentDate && (
+                    <Badge variant="emerald" className="text-[10px]">✓ LUNAS</Badge>
+                  )}
+                  <span className="text-base font-black text-rose-600">
+                    Rp {item.fine.toLocaleString('id-ID')}
+                  </span>
                 </div>
               </div>
-            )}
 
-            {item.note && item.note !== "-" && (
-              <div className="flex flex-col gap-2 mt-4">
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Catatan Petugas</span>
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 border border-slate-300 shadow-[1px_1px_0px_#94a3b8]">
-                  <AlertCircle className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
-                  <p className="text-xs text-slate-600 leading-relaxed">{item.note}</p>
+              {item.paymentDate ? (
+                <p className="text-[11px] font-bold text-emerald-800 text-right">
+                  Dilunasi pada: {item.paymentDate}
+                </p>
+              ) : (
+                <div className="pt-2 border-t border-rose-200 flex flex-col gap-2">
+                  <p className="text-[11px] text-rose-800 font-medium leading-relaxed">
+                    Silakan hubungi admin atau petugas via WhatsApp untuk verifikasi pelunasan denda.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="success"
+                    size="sm"
+                    onClick={handleContactAdminWa}
+                    className="w-full"
+                  >
+                    <Phone className="w-3.5 h-3.5 mr-1.5" />
+                    Konfirmasi Pembayaran via WhatsApp
+                  </Button>
                 </div>
+              )}
+            </div>
+          )}
+
+          {/* No fine returned */}
+          {(item.fine === 0 || item.fine === undefined) && item.status === "RETURNED" && (
+            <div className="flex items-center gap-3 p-3.5 rounded-lg bg-emerald-50 border-2 border-emerald-500 shadow-[2px_2px_0px_#059669]">
+              <FileText className="h-4 w-4 text-emerald-600 shrink-0" />
+              <div>
+                <p className="text-xs font-black text-emerald-950">Pengembalian Tepat Waktu</p>
+                <p className="text-[11px] text-emerald-800 font-medium">Arsip dikembalikan tanpa denda atau kerusakan.</p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {/* Notes */}
+          {item.note && item.note !== "-" && (
+            <div className="space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-blue-950">Catatan Petugas:</span>
+              <div className="flex items-start gap-2.5 p-3 rounded-lg bg-slate-50 border-2 border-blue-900/30">
+                <AlertCircle className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                <p className="text-xs text-slate-700 font-medium leading-relaxed">{item.note}</p>
+              </div>
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

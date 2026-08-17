@@ -2,6 +2,7 @@ import { HistoryRow, HistoryItemProps, HistoryStatus } from "@/components/Histor
 import { HistoryDetailDialog } from "@/components/HistoryDetailDialog";
 import { History, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 
 export default function Riwayat() {
@@ -28,34 +29,43 @@ export default function Riwayat() {
       note: item.catatanKondisiKembali || "-",
     }));
 
-
-
   const handleOpenDetail = (item: HistoryItemProps) => {
     setSelectedItem(item);
     setIsDialogOpen(true);
   };
 
   return (
-    <div className="flex flex-col gap-0 sm:gap-6 pb-6 sm:p-6 md:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="flex flex-col gap-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* HEADER SECTION */}
-      <div className="flex flex-col gap-2 p-4 sm:p-0">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Riwayat Peminjaman
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Lihat rekam jejak transaksi arsip yang sudah selesai atau berakhir.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-blue-900 p-4 sm:p-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-orange-500 text-white border-2 border-blue-900 rounded-lg flex items-center justify-center shadow-[2px_2px_0px_#1E3A8A] shrink-0">
+            <History className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-blue-950">
+              Riwayat Peminjaman
+            </h1>
+            <p className="text-slate-500 text-xs font-semibold mt-0.5">
+              Lihat rekam jejak transaksi arsip yang sudah selesai, dikembalikan, atau dibatalkan.
+            </p>
+          </div>
+        </div>
+
+        <Badge variant="outline" className="w-fit self-start sm:self-auto">
+          {historyData.length} Selesai
+        </Badge>
       </div>
 
       {/* CONTENT SECTION */}
-      <div className="flex flex-col min-h-[400px]">
+      <div className="flex flex-col min-h-[400px] px-4 sm:px-0">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-            <Loader2 className="w-8 h-8 animate-spin mb-4" />
-            <p>Memuat riwayat...</p>
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-900" />
+            <p className="text-xs font-bold text-slate-500">Memuat riwayat peminjaman...</p>
           </div>
         ) : historyData.length > 0 ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             {historyData.map((item) => (
               <HistoryRow 
                 key={item.id} 
@@ -65,12 +75,14 @@ export default function Riwayat() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 text-center rounded-xl border border-blue-900/30 bg-white shadow-[2px_2px_0px_#1E3A8A]">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 border border-slate-200">
-              <History className="h-6 w-6 text-slate-400" />
+          <div className="flex flex-col items-center justify-center py-16 px-4 bg-white border-2 border-blue-900 border-dashed rounded-lg shadow-[4px_4px_0px_#1E3A8A] text-center">
+            <div className="bg-orange-100 border-2 border-blue-900 w-14 h-14 rounded-lg flex items-center justify-center mb-3 shadow-[2px_2px_0px_#1E3A8A]">
+              <History className="w-7 h-7 text-blue-950" />
             </div>
-            <h3 className="mt-4 text-sm font-semibold text-slate-900">Belum Ada Riwayat Selesai</h3>
-            <p className="mt-1 text-sm text-slate-500 max-w-sm">
+            <p className="text-base font-black text-blue-950">
+              Belum Ada Riwayat Selesai
+            </p>
+            <p className="text-xs font-semibold text-slate-500 mt-1 max-w-sm">
               Anda belum memiliki rekam jejak transaksi peminjaman yang sudah selesai atau dikembalikan.
             </p>
           </div>
