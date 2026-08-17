@@ -14,7 +14,8 @@ import {
   X,
   UserCircle,
   Users,
-  ShieldCheck
+  ShieldCheck,
+  Settings
 } from "lucide-react";
 
 import { NavLogo } from "@/components/NavLogo";
@@ -109,20 +110,39 @@ export default function AdminLayout() {
         </nav>
 
         {/* User Profile & Logout */}
-        <div className="p-4 border-t border-slate-800">
-          <div className="flex items-center gap-3 px-2 mb-4">
-            <UserCircle className="w-10 h-10 text-slate-400" />
-            <div className="overflow-hidden">
-              <p className="text-sm font-bold text-white truncate">{session?.user?.name || "Administrator"}</p>
-              <p className="text-xs text-slate-400 truncate">{session?.user?.email || "admin@ilkom.com"}</p>
+        <div className="p-4 border-t border-slate-800 space-y-2">
+          <Link
+            to="/admin/profil"
+            onClick={() => setIsSidebarOpen(false)}
+            className={`flex items-center gap-3 p-2.5 rounded-lg border transition-all ${
+              location.pathname === "/admin/profil"
+                ? "bg-slate-800 border-purple-500 shadow-md shadow-purple-500/10"
+                : "border-slate-800 hover:bg-slate-800/70 hover:border-slate-700"
+            }`}
+          >
+            <div className="w-9 h-9 rounded-md bg-purple-200 text-purple-950 font-black text-xs flex items-center justify-center shrink-0 border border-purple-400">
+              {(session?.user?.name || "Admin")
+                .split(" ")
+                .map((n) => n[0])
+                .slice(0, 2)
+                .join("")
+                .toUpperCase()}
             </div>
-          </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold text-white truncate">{session?.user?.name || "Administrator"}</p>
+              <p className="text-[10px] text-purple-300 font-semibold truncate flex items-center gap-1">
+                <Settings className="w-3 h-3 text-purple-400 shrink-0" />
+                Pengaturan Profil
+              </p>
+            </div>
+          </Link>
+
           <Button
             variant="outline"
-            className="w-full justify-start text-white border-slate-700 bg-transparent hover:bg-slate-800 hover:text-blue-500 hover:border-blue-500 transition-colors"
+            className="w-full justify-start text-white border-slate-700 bg-transparent hover:bg-slate-800 hover:text-rose-400 hover:border-rose-500 transition-colors text-xs"
             onClick={handleLogout}
           >
-            <LogOut className="w-4 h-4 mr-2" />
+            <LogOut className="w-3.5 h-3.5 mr-2" />
             Keluar
           </Button>
         </div>
