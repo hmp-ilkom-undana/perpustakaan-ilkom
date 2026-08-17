@@ -266,6 +266,41 @@ export class UserService {
   }
 
   /**
+   * Memperbarui profil nama pengguna (Admin / Staf / Mahasiswa)
+   */
+  async updateProfile(
+    id: string,
+    data: {
+      name?: string;
+    },
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Pengguna tidak ditemukan');
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: {
+        name: data.name ?? user.name,
+      },
+    });
+
+    return {
+      message: 'Profil berhasil diperbarui',
+      user: {
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        role: updated.role,
+      },
+    };
+  }
+
+  /**
    * Memperbarui data profil staf
    */
   async updateStaff(

@@ -50,6 +50,14 @@ export class UserController {
     return this.userService.createBatchStaff(body.staffList);
   }
 
+  @Patch('profile/:id')
+  async updateProfile(
+    @Param('id') id: string,
+    @Body() body: { name?: string },
+  ) {
+    return this.userService.updateProfile(id, body);
+  }
+
   @Patch('staff/:id')
   async updateStaff(
     @Param('id') id: string,
