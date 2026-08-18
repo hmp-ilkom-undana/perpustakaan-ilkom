@@ -20,7 +20,7 @@ export interface CirculationItem {
 const INITIAL_DATA: CirculationItem[] = [
   // REQUESTED
   {
-    id: "REQ-8192",
+    id: "PK-8192",
     studentName: "Budi Santoso",
     studentId: "19051234001",
     archiveTitle: "Analisis Algoritma Dijkstra pada Jaringan Distribusi",
@@ -29,7 +29,7 @@ const INITIAL_DATA: CirculationItem[] = [
     requestDate: "2026-07-24T08:00:00",
   },
   {
-    id: "REQ-8201",
+    id: "PK-8201",
     studentName: "Nadia Putri",
     studentId: "20051234055",
     archiveTitle: "Rancang Bangun Sistem Pakar Diagnosa Penyakit Padi",
@@ -38,7 +38,7 @@ const INITIAL_DATA: CirculationItem[] = [
     requestDate: "2026-07-24T09:15:00",
   },
   {
-    id: "REQ-8202",
+    id: "PK-8202",
     studentName: "Fajar Nugroho",
     studentId: "21051234088",
     archiveTitle: "Pengenalan Pola Sidik Jari dengan Metode CNN",
@@ -49,7 +49,7 @@ const INITIAL_DATA: CirculationItem[] = [
 
   // WAITING_PICKUP
   {
-    id: "REQ-8193",
+    id: "PK-8193",
     studentName: "Siti Aminah",
     studentId: "20051234002",
     archiveTitle: "Sistem Informasi Manajemen Perpustakaan",
@@ -59,7 +59,7 @@ const INITIAL_DATA: CirculationItem[] = [
     approvedBy: "NIP-001 (Admin)",
   },
   {
-    id: "REQ-8198",
+    id: "PK-8198",
     studentName: "Reza Rahadian",
     studentId: "19051234099",
     archiveTitle: "Arsitektur Komputer Modern",
@@ -71,7 +71,7 @@ const INITIAL_DATA: CirculationItem[] = [
 
   // BORROWED
   {
-    id: "REQ-8194",
+    id: "PK-8194",
     studentName: "Andi Saputra",
     studentId: "21051234003",
     archiveTitle: "Dasar-Dasar Keamanan Jaringan Komputer",
@@ -84,7 +84,7 @@ const INITIAL_DATA: CirculationItem[] = [
     dueDate: "2026-07-16T14:00:00",
   },
   {
-    id: "REQ-8196",
+    id: "PK-8196",
     studentName: "Maya Indah",
     studentId: "22051234011",
     archiveTitle: "Optimasi Query Database dengan Indexing",
@@ -97,7 +97,7 @@ const INITIAL_DATA: CirculationItem[] = [
     dueDate: "2026-08-11T09:30:00",
   },
   {
-    id: "REQ-8199",
+    id: "PK-8199",
     studentName: "Kevin Sanjaya",
     studentId: "20051234044",
     archiveTitle: "Pemrograman Web Lanjut",
@@ -112,7 +112,7 @@ const INITIAL_DATA: CirculationItem[] = [
 
   // OVERDUE
   {
-    id: "REQ-8195",
+    id: "PK-8195",
     studentName: "Dina Mariana",
     studentId: "22051234004",
     archiveTitle: "Penerapan Machine Learning dalam Prediksi Cuaca",
@@ -126,7 +126,7 @@ const INITIAL_DATA: CirculationItem[] = [
     fine: 150000,
   },
   {
-    id: "REQ-8200",
+    id: "PK-8200",
     studentName: "Tono Mulyono",
     studentId: "18051234066",
     archiveTitle: "Sistem Kendali Robotik",

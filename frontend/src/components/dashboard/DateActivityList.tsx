@@ -121,7 +121,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
                         <div className="bg-amber-100 border border-amber-400 rounded px-2 py-0.5 text-center">
                           <span className="text-[9px] font-black uppercase text-amber-950 block">Kode Ambil</span>
                           <span className="text-[11px] font-mono font-black text-orange-600">
-                            {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
+                            {task.pickupCode || `PK-${task.id.substring(0, 6).toUpperCase()}`}
                           </span>
                         </div>
                       )}

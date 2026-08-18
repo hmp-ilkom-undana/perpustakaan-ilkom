@@ -30,7 +30,7 @@ export class FineService {
     return {
       id: borrowing.id,
       transactionId:
-        borrowing.pickupCode || `REQ-${borrowing.id.slice(0, 4).toUpperCase()}`,
+        borrowing.pickupCode || `PK-${borrowing.id.slice(0, 6).toUpperCase()}`,
       studentName: borrowing.user?.name || 'Mahasiswa',
       studentId: borrowing.user?.email
         ? borrowing.user.email.split('@')[0]

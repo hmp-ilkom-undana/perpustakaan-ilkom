@@ -84,11 +84,16 @@ export class BorrowingService {
         },
       });
 
+      // Standar Unified Transaction Code: PK-XXXXXX
+      const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const pickupCode = `PK-${randomCode}`;
+
       const borrowing = await tx.borrowing.create({
         data: {
           userId: userId,
           archiveId: archiveId,
           status: 'REQUESTED',
+          pickupCode: pickupCode,
         },
       });
 
@@ -204,9 +209,9 @@ export class BorrowingService {
       throw new BadRequestException('Hanya peminjaman berstatus REQUESTED yang bisa disetujui.');
     }
 
-    // Generate random pickup code (Contoh: P-A1B2C3)
+    // Gunakan pickupCode yang sudah ada sejak pengajuan, atau generate format PK- baru jika belum ada
     const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const pickupCode = `P-${randomString}`;
+    const pickupCode = borrowing.pickupCode || `PK-${randomString}`;
 
     return this.prisma.borrowing.update({
       where: { id: borrowingId },

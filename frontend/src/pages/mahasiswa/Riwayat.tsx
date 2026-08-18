@@ -17,7 +17,7 @@ export default function Riwayat() {
     .filter((item: any) => completedStatuses.includes(item.status))
     .map((item: any) => ({
       id: item.id,
-      pickupCode: item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`,
+      pickupCode: item.pickupCode || `PK-${item.id.substring(0, 6).toUpperCase()}`,
       title: item.archive.title,
       type: item.archive.archiveType,
       borrowDate: new Date(item.borrowDate).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }),
