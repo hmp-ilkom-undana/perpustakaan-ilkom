@@ -101,7 +101,7 @@ export function CatalogFilterBar({
               <SelectItem value="Semua">Semua Status</SelectItem>
               <SelectItem value="Tersedia">Tersedia</SelectItem>
               <SelectItem value="Diajukan">Diajukan</SelectItem>
-              <SelectItem value="Dipinjam">Sedang Dipinjam</SelectItem>
+              <SelectItem value="Dipinjam">Dipinjam</SelectItem>
             </SelectContent>
           </Select>
         </div>

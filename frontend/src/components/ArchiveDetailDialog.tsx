@@ -47,7 +47,7 @@ export function ArchiveDetailDialog({
     displayStatus = "Sedang Anda Pinjam";
     statusVariant = "secondary";
   } else if (!isAvailable) {
-    displayStatus = "Sedang Dipinjam";
+    displayStatus = "Dipinjam";
     statusVariant = "secondary";
   }
 
