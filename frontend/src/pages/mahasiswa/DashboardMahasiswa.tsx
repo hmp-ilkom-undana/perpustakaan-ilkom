@@ -39,29 +39,21 @@ export default function DashboardMahasiswa() {
       {/* 2. Grid Dashboard Terstruktur (Baris 1: Kuota + Denda Sejajar, Baris 2: Kalender + Aktivitas Sejajar) */}
       <div className="w-full px-5 sm:px-0 space-y-6">
         
-        {/* BARIS 1: Kuota Peminjaman & Tunggakan Denda */}
-        {denda.totalDenda > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
-            <div className="md:col-span-2 flex">
-              <BorrowingQuotaCard
-                quota={quota}
-                className="w-full h-full flex flex-col justify-between"
-              />
-            </div>
-            <div className="md:col-span-3 flex">
-              <FineSummaryCard
-                denda={denda}
-                className="w-full h-full flex flex-col justify-between"
-              />
-            </div>
+        {/* BARIS 1: Kuota Peminjaman (col-span-2) & Status Denda (col-span-3) */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
+          <div className="md:col-span-2 flex">
+            <BorrowingQuotaCard
+              quota={quota}
+              className="w-full h-full flex flex-col justify-between"
+            />
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            <div className="md:col-span-2">
-              <BorrowingQuotaCard quota={quota} className="w-full" />
-            </div>
+          <div className="md:col-span-3 flex">
+            <FineSummaryCard
+              denda={denda}
+              className="w-full h-full flex flex-col justify-between"
+            />
           </div>
-        )}
+        </div>
 
         {/* BARIS 2: Kalender & Daftar Aktivitas Tanggal Terpilih */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">

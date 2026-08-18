@@ -39,13 +39,16 @@ export function useStudentDashboard() {
     else if (type === "NASKAH_PUBLIKASI") countNaskah++;
   });
 
-  const totalDenda = borrowings.reduce(
-    (sum: number, b: any) => sum + (b.fineAmount || 0),
-    0,
+  const fineBorrowings = borrowings.filter(
+    (b: any) =>
+      b.status !== "CANCELLED" &&
+      b.status !== "REJECTED" &&
+      ((b.fineAmount && b.fineAmount > 0 && !b.finePaidAt) || b.status === "OVERDUE"),
   );
 
-  const fineBorrowings = borrowings.filter(
-    (b: any) => (b.fineAmount && b.fineAmount > 0 && !b.finePaidAt) || b.status === "OVERDUE",
+  const totalDenda = fineBorrowings.reduce(
+    (sum: number, b: any) => sum + (b.fineAmount || 0),
+    0,
   );
 
   const firstName = session?.user?.name?.split(" ")[0] || "Mahasiswa";
