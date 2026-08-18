@@ -52,6 +52,13 @@ export class ArchiveService {
         SELECT id FROM "Archive" WHERE ("quantity" - "reservedQuantity") > 0 AND "status" != 'DIPINJAM'
       `);
       where.id = { in: results.map((r) => r.id) };
+    } else if (availability === 'Diajukan') {
+      const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+        SELECT DISTINCT a.id FROM "Archive" a
+        LEFT JOIN "Borrowing" b ON b."archiveId" = a.id
+        WHERE a."reservedQuantity" > 0 OR b."status" IN ('REQUESTED', 'WAITING_PICKUP')
+      `);
+      where.id = { in: results.map((r) => r.id) };
     } else if (availability === 'Dipinjam') {
       const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
         SELECT id FROM "Archive" WHERE ("quantity" - "reservedQuantity") <= 0 OR "status" = 'DIPINJAM'
