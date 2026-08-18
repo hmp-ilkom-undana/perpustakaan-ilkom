@@ -52,6 +52,7 @@ export function CatalogGrid({
           quantity={archive.quantity}
           reservedQuantity={archive.reservedQuantity}
           status={archive.status}
+          userBorrowStatus={archive.userBorrowStatus}
           isRequestedByCurrentUser={archive.isRequestedByCurrentUser}
           onClick={() => onSelectArchive(archive)}
         />

@@ -18,6 +18,7 @@ interface ArchiveCardProps {
   quantity: number;
   reservedQuantity: number;
   status: string;
+  userBorrowStatus?: string;
   isRequestedByCurrentUser?: boolean;
   onClick: () => void;
 }
@@ -31,26 +32,32 @@ export function ArchiveCard({
   quantity,
   reservedQuantity,
   status,
-  isRequestedByCurrentUser,
+  userBorrowStatus,
   onClick,
 }: ArchiveCardProps) {
-  // 1. Kalkulasi stok aktual
   const availableStock = quantity - reservedQuantity;
-  const isRequestedByMe = isRequestedByCurrentUser;
 
-  // 2. Tentukan Teks dan Varian Badge Status
-  let displayStatus = "Tersedia";
+  // Status mapping
+  let displayStatus = "TERSEDIA";
   let statusVariant: "emerald" | "amber" | "secondary" = "emerald";
 
-  if (isRequestedByMe) {
-    displayStatus = "Sedang Diajukan";
+  if (userBorrowStatus === "REQUESTED") {
+    displayStatus = "DIAJUKAN";
     statusVariant = "amber";
-  } else if (availableStock <= 0 || status === "DIPINJAM") {
-    displayStatus = "Sedang Dipinjam";
+  } else if (userBorrowStatus === "WAITING_PICKUP") {
+    displayStatus = "SIAP AMBIL";
+    statusVariant = "amber";
+  } else if (
+    userBorrowStatus === "BORROWED" ||
+    userBorrowStatus === "OVERDUE" ||
+    availableStock <= 0 ||
+    status === "DIPINJAM"
+  ) {
+    displayStatus = "DIPINJAM";
     statusVariant = "secondary";
   }
 
-  // 3. Tentukan Varian Badge Tipe Arsip
+  // Tipe badge mapping
   let typeVariant: "orange" | "sky" | "navy" | "secondary" = "orange";
   const typeLower = archiveType.toLowerCase();
   if (typeLower.includes("ringkasan")) {
@@ -68,12 +75,15 @@ export function ArchiveCard({
       className="flex flex-col h-full overflow-hidden group"
     >
       <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-blue-900 bg-slate-50">
-        <div className="flex justify-between items-start mb-2 gap-2">
-          <Badge variant={typeVariant}>
+        <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2">
+          <Badge variant={typeVariant} className="text-[10px] px-2 py-0.5 tracking-wider">
             {archiveType}
           </Badge>
 
-          <Badge variant={statusVariant}>
+          <Badge
+            variant={statusVariant}
+            className="text-[10px] px-2 py-0.5 tracking-wider font-black shrink-0"
+          >
             {displayStatus}
           </Badge>
         </div>
@@ -87,9 +97,7 @@ export function ArchiveCard({
         <div className="space-y-2.5 text-xs font-semibold text-slate-600">
           <div className="flex items-center gap-2.5">
             <User className="w-4 h-4 text-orange-500 shrink-0" />
-            <span className="text-slate-800 line-clamp-1">
-              {author}
-            </span>
+            <span className="text-slate-800 line-clamp-1">{author}</span>
           </div>
           <div className="flex items-center gap-2.5">
             <Calendar className="w-4 h-4 text-orange-500 shrink-0" />

@@ -28,15 +28,24 @@ export function ArchiveDetailDialog({
   if (!archive) return null;
 
   const availableStock = archive.quantity - archive.reservedQuantity;
-  const isRequestedByMe = archive.isRequestedByCurrentUser;
+  const userStatus = archive.userBorrowStatus;
+  const isRequestedByMe = userStatus === "REQUESTED";
+  const isWaitingPickupByMe = userStatus === "WAITING_PICKUP";
+  const isBorrowedByMe = userStatus === "BORROWED" || userStatus === "OVERDUE";
   const isAvailable = availableStock > 0 && archive.status !== "DIPINJAM";
 
   let displayStatus = "Tersedia";
   let statusVariant: "emerald" | "amber" | "secondary" = "emerald";
 
   if (isRequestedByMe) {
-    displayStatus = "Sedang Diajukan";
+    displayStatus = "Sedang Anda Ajukan";
     statusVariant = "amber";
+  } else if (isWaitingPickupByMe) {
+    displayStatus = "Siap Diambil di HMP";
+    statusVariant = "amber";
+  } else if (isBorrowedByMe) {
+    displayStatus = "Sedang Anda Pinjam";
+    statusVariant = "secondary";
   } else if (!isAvailable) {
     displayStatus = "Sedang Dipinjam";
     statusVariant = "secondary";
@@ -129,13 +138,23 @@ export function ArchiveDetailDialog({
           <Button
             type="button"
             onClick={handleBorrow}
-            disabled={requestMutation.isPending || isRequestedByMe || !isAvailable}
+            disabled={
+              requestMutation.isPending ||
+              isRequestedByMe ||
+              isWaitingPickupByMe ||
+              isBorrowedByMe ||
+              !isAvailable
+            }
             className="w-full shadow-[2px_2px_0px_#1E3A8A]"
           >
             {requestMutation.isPending ? (
               "Memproses Pengajuan..."
             ) : isRequestedByMe ? (
               "✓ Sedang Anda Ajukan"
+            ) : isWaitingPickupByMe ? (
+              "✓ Menunggu Pengambilan di HMP"
+            ) : isBorrowedByMe ? (
+              "✓ Sedang Anda Pinjam"
             ) : isAvailable ? (
               `Ajukan Peminjaman (${availableStock} Tersedia)`
             ) : (

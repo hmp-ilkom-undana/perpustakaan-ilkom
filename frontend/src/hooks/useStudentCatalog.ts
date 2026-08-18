@@ -14,6 +14,7 @@ export interface StudentArchiveItem {
   reservedQuantity: number;
   shelfLocation?: string | null;
   status: string;
+  userBorrowStatus?: string;
   isRequestedByCurrentUser?: boolean;
 }
 
@@ -37,7 +38,6 @@ export function useStudentCatalog() {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  // Handle filter changes (auto reset page to 1)
   const handleFilterTypeChange = (type: string) => {
     setFilterType(type);
     setCurrentPage(1);
@@ -64,13 +64,16 @@ export function useStudentCatalog() {
 
   const { data: myBorrowings = [] } = useMyBorrowingHistoryQuery();
 
-  const activeRequestedIds = useMemo(() => {
+  const userBorrowMap = useMemo(() => {
     const activeStatuses = ["REQUESTED", "WAITING_PICKUP", "BORROWED", "OVERDUE"];
-    const ids = new Set<string>();
+    const map = new Map<string, string>();
     myBorrowings
       .filter((b: any) => activeStatuses.includes(b.status))
-      .forEach((b: any) => ids.add(b.archiveId || b.archive?.id));
-    return ids;
+      .forEach((b: any) => {
+        const archId = b.archiveId || b.archive?.id;
+        if (archId) map.set(archId, b.status);
+      });
+    return map;
   }, [myBorrowings]);
 
   const rawArchives = archiveResponse?.data ?? [];
@@ -84,20 +87,24 @@ export function useStudentCatalog() {
   // Map and apply client availability filter if needed
   const archives: StudentArchiveItem[] = useMemo(() => {
     return rawArchives
-      .map((item: any) => ({
-        id: item.id,
-        archiveCode: item.archiveCode || `ARC-${item.id.substring(0, 6)}`,
-        title: item.title,
-        author: item.author,
-        year: item.year,
-        archiveType: item.archiveType,
-        category: item.category,
-        quantity: item.quantity ?? 1,
-        reservedQuantity: item.reservedQuantity ?? 0,
-        shelfLocation: item.shelfLocation,
-        status: item.status || "TERSEDIA",
-        isRequestedByCurrentUser: activeRequestedIds.has(item.id),
-      }))
+      .map((item: any) => {
+        const userStatus = userBorrowMap.get(item.id);
+        return {
+          id: item.id,
+          archiveCode: item.archiveCode || `ARC-${item.id.substring(0, 6)}`,
+          title: item.title,
+          author: item.author,
+          year: item.year,
+          archiveType: item.archiveType,
+          category: item.category,
+          quantity: item.quantity ?? 1,
+          reservedQuantity: item.reservedQuantity ?? 0,
+          shelfLocation: item.shelfLocation,
+          status: item.status || "TERSEDIA",
+          userBorrowStatus: userStatus,
+          isRequestedByCurrentUser: userStatus === "REQUESTED",
+        };
+      })
       .filter((archive: StudentArchiveItem) => {
         if (filterAvailability === "Semua") return true;
         const availableStock = archive.quantity - archive.reservedQuantity;
@@ -107,7 +114,7 @@ export function useStudentCatalog() {
         if (filterAvailability === "Dipinjam") return !isAvailable;
         return true;
       });
-  }, [rawArchives, activeRequestedIds, filterAvailability]);
+  }, [rawArchives, userBorrowMap, filterAvailability]);
 
   return {
     searchInput,
