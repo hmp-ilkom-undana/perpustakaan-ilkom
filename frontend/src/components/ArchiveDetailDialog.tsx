@@ -145,7 +145,7 @@ export function ArchiveDetailDialog({
               isBorrowedByMe ||
               !isAvailable
             }
-            className="w-full shadow-[2px_2px_0px_#1E3A8A]"
+            className="w-full"
           >
             {requestMutation.isPending ? (
               "Memproses Pengajuan..."
