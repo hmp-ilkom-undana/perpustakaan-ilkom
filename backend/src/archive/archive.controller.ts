@@ -28,6 +28,7 @@ export class ArchiveController {
     @Query('type') type?: string,
     @Query('category') category?: string,
     @Query('availability') availability?: string,
+    @Query('userId') userId?: string,
   ) {
     // Validasi NaN: jika query param bukan angka valid (contoh: ?page=abc),
     // parseInt akan menghasilkan NaN. Kita paksa ke angka default agar Prisma tidak crash.
@@ -41,6 +42,7 @@ export class ArchiveController {
       type,
       category,
       availability,
+      userId,
     });
   }
 

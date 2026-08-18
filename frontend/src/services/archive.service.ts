@@ -8,6 +8,7 @@ export interface ArchiveQueryParams {
   type?: string;
   category?: string;
   availability?: string;
+  userId?: string;
 }
 
 export interface PaginatedArchiveResponse {

@@ -16,6 +16,7 @@ export class ArchiveService {
     type?: string;
     category?: string;
     availability?: string;
+    userId?: string;
   }) {
     // Lapisan pertahanan kedua: pastikan nilai page dan limit selalu angka valid (>= 1)
     const pageNum = Math.max(
@@ -26,7 +27,7 @@ export class ArchiveService {
       1,
       Number.isInteger(params.limit) ? params.limit : 10,
     );
-    const { search, type, category, availability } = params;
+    const { search, type, category, availability, userId } = params;
     const skip = (pageNum - 1) * limitNum;
     const where: any = {};
 
@@ -53,12 +54,19 @@ export class ArchiveService {
       `);
       where.id = { in: results.map((r) => r.id) };
     } else if (availability === 'Diajukan') {
-      const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
-        SELECT DISTINCT a.id FROM "Archive" a
-        LEFT JOIN "Borrowing" b ON b."archiveId" = a.id
-        WHERE a."reservedQuantity" > 0 OR b."status" IN ('REQUESTED', 'WAITING_PICKUP')
-      `);
-      where.id = { in: results.map((r) => r.id) };
+      if (userId) {
+        const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+          SELECT DISTINCT b."archiveId" as id FROM "Borrowing" b
+          WHERE b."userId" = '${userId}' AND b."status" IN ('REQUESTED', 'WAITING_PICKUP')
+        `);
+        where.id = { in: results.map((r) => r.id) };
+      } else {
+        const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+          SELECT DISTINCT b."archiveId" as id FROM "Borrowing" b
+          WHERE b."status" IN ('REQUESTED', 'WAITING_PICKUP')
+        `);
+        where.id = { in: results.map((r) => r.id) };
+      }
     } else if (availability === 'Dipinjam') {
       const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
         SELECT id FROM "Archive" WHERE ("quantity" - "reservedQuantity") <= 0 OR "status" = 'DIPINJAM'
