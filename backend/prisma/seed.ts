@@ -277,13 +277,20 @@ async function main() {
   }
   console.log('✅ Sinkronisasi akun pengguna selesai.\n');
 
-  // 3. SINKRONISASI DATA KOLEKSI ARSIP (24 KOLEKSI LENGKAP)
-  console.log('📚 [3/4] Menyiapkan dan Menyinkronkan 24 Data Arsip...');
+  // 3. SINKRONISASI DATA KOLEKSI ARSIP (24 KOLEKSI LENGKAP & UNIK)
+  console.log('📚 [3/4] Menyiapkan dan Menyinkronkan 24 Data Arsip Unik...');
+  
+  // Bersihkan data peminjaman dan arsip lama agar tidak terjadi duplikasi judul/ID
+  await prisma.borrowing.deleteMany();
+  await prisma.archive.deleteMany();
+
   const initialArchives = [
-    // --- SKRIPSI (8 Koleksi) ---
+    // =========================================================================
+    // A. 8 SKRIPSI (Koleksi Skripsi Lengkap Tugas Akhir Mahasiswa)
+    // =========================================================================
     {
       archiveCode: 'SKR-2024-001',
-      title: 'Penerapan Algoritma K-Means untuk Klasifikasi Data Akademik Mahasiswa',
+      title: 'Penerapan Algoritma K-Means untuk Klasifikasi Data Prestasi Akademik Mahasiswa',
       author: 'Budi Santoso',
       year: 2024,
       category: 'Machine Learning',
@@ -293,7 +300,7 @@ async function main() {
     },
     {
       archiveCode: 'SKR-2023-002',
-      title: 'Audit Keamanan Sistem Informasi Menggunakan Kerangka Kerja COBIT 5',
+      title: 'Audit Tata Kelola Keamanan Sistem Informasi Berdasarkan Framework COBIT 5',
       author: 'Maya Sari',
       year: 2023,
       category: 'Kriptografi',
@@ -303,69 +310,71 @@ async function main() {
     },
     {
       archiveCode: 'SKR-2022-003',
-      title: 'Sistem Pendukung Keputusan Pemilihan Karyawan Terbaik dengan Metode TOPSIS',
+      title: 'Sistem Pendukung Keputusan Pemilihan Dosen Berprestasi dengan Metode TOPSIS',
       author: 'Eko Prasetyo',
       year: 2022,
       category: 'SPK',
       archiveType: 'Skripsi',
-      quantity: 1,
+      quantity: 2,
       shelfLocation: 'Rak A-3',
     },
     {
       archiveCode: 'SKR-2024-004',
-      title: 'Implementasi Deep Learning untuk Deteksi Penyakit Daun Padi Menggunakan CNN',
+      title: 'Implementasi Convolutional Neural Network untuk Deteksi Penyakit Daun Tanaman Padi',
       author: 'Kevin Sanjaya',
       year: 2024,
       category: 'Machine Learning',
       archiveType: 'Skripsi',
-      quantity: 2,
-      shelfLocation: 'Rak A-1',
+      quantity: 3,
+      shelfLocation: 'Rak A-4',
     },
     {
       archiveCode: 'SKR-2023-005',
-      title: 'Analisis Forensik Digital pada Kasus Kebocoran Data Jaringan Nirkabel',
+      title: 'Analisis Kerentanan Jaringan Nirkabel Kampus Menggunakan Metode Penetration Testing',
       author: 'Reza Rahadian',
       year: 2023,
       category: 'Kriptografi',
       archiveType: 'Skripsi',
       quantity: 1,
-      shelfLocation: 'Rak A-2',
+      shelfLocation: 'Rak A-5',
     },
     {
       archiveCode: 'SKR-2023-006',
-      title: 'Pengembangan Sistem Informasi Manajemen Aset Laboratorium Berbasis Cloud',
+      title: 'Pengembangan Sistem Informasi Manajemen Inventaris Laboratorium Komputer Berbasis Cloud',
       author: 'Sarah Azhari',
       year: 2023,
       category: 'Sistem Informasi',
       archiveType: 'Skripsi',
       quantity: 2,
-      shelfLocation: 'Rak A-3',
+      shelfLocation: 'Rak A-6',
     },
     {
       archiveCode: 'SKR-2022-007',
-      title: 'Prediksi Harga Saham Sektor Perbankan Menggunakan Algoritma LSTM',
+      title: 'Prediksi Fluktuasi Nilai Tukar Mata Uang Menggunakan Algoritma Long Short-Term Memory',
       author: 'Hendra Wijaya',
       year: 2022,
       category: 'Machine Learning',
       archiveType: 'Skripsi',
       quantity: 1,
-      shelfLocation: 'Rak A-4',
+      shelfLocation: 'Rak A-7',
     },
     {
       archiveCode: 'SKR-2021-008',
-      title: 'Sistem Informasi Geografis Pemetaan Daerah Rawan Bencana Banjir',
+      title: 'Sistem Informasi Geografis Pemetaan Daerah Rawan Bencana Longsor di NTT',
       author: 'Anita Lestari',
       year: 2021,
       category: 'Sistem Informasi',
       archiveType: 'Skripsi',
-      quantity: 1,
-      shelfLocation: 'Rak A-3',
+      quantity: 2,
+      shelfLocation: 'Rak A-8',
     },
 
-    // --- RINGKASAN SKRIPSI (8 Koleksi) ---
+    // =========================================================================
+    // B. 8 RINGKASAN SKRIPSI (Koleksi Executive Summary & Ringkasan Bab)
+    // =========================================================================
     {
       archiveCode: 'RS-2022-001',
-      title: 'Analisis Sentimen Pengguna Twitter Terhadap Layanan E-Commerce di Indonesia',
+      title: 'Ringkasan: Analisis Sentimen Ulasan Pengguna E-Commerce Menggunakan Naive Bayes',
       author: 'Siti Aminah',
       year: 2022,
       category: 'Machine Learning',
@@ -375,79 +384,81 @@ async function main() {
     },
     {
       archiveCode: 'RS-2022-002',
-      title: 'Pengembangan Game Edukasi Sejarah Kemerdekaan Menggunakan Unity Engine',
+      title: 'Ringkasan: Perancangan Game Edukasi Pengenalan Budaya Nusa Tenggara Timur',
       author: 'Gilang Ramadhan',
       year: 2022,
       category: 'Umum',
       archiveType: 'Ringkasan Skripsi',
-      quantity: 1,
+      quantity: 2,
       shelfLocation: 'Rak B-2',
     },
     {
       archiveCode: 'RS-2024-003',
-      title: 'Optimasi Model Prediksi Churn Pelanggan Telekomunikasi Menggunakan XGBoost',
+      title: 'Ringkasan: Optimasi Algoritma Random Forest untuk Prediksi Loyalitas Pelanggan',
       author: 'Dimas Aditya',
       year: 2024,
       category: 'Machine Learning',
       archiveType: 'Ringkasan Skripsi',
       quantity: 2,
-      shelfLocation: 'Rak B-1',
+      shelfLocation: 'Rak B-3',
     },
     {
       archiveCode: 'RS-2023-004',
-      title: 'Visualisasi 3D Bangunan Bersejarah Kota Kupang Berbasis Augmented Reality',
+      title: 'Ringkasan: Penerapan Augmented Reality untuk Katalog Produk UMKM Tenun Ikat',
       author: 'Putri Ayu',
       year: 2023,
       category: 'Umum',
       archiveType: 'Ringkasan Skripsi',
       quantity: 1,
-      shelfLocation: 'Rak B-2',
+      shelfLocation: 'Rak B-4',
     },
     {
       archiveCode: 'RS-2023-005',
-      title: 'Evaluasi Kinerja Query Database PostgreSQL pada Sistem Transaksi Skala Besar',
+      title: 'Ringkasan: Evaluasi Kinerja Arsitektur Microservices pada Aplikasi E-Commerce',
       author: 'Fajar Nugraha',
       year: 2023,
       category: 'Sistem Informasi',
       archiveType: 'Ringkasan Skripsi',
       quantity: 2,
-      shelfLocation: 'Rak B-3',
+      shelfLocation: 'Rak B-5',
     },
     {
       archiveCode: 'RS-2021-006',
-      title: 'Analisis Pola Belanja Pelanggan Supermarket Menggunakan Algoritma Apriori',
+      title: 'Ringkasan: Penerapan Asosiasi Data Mining Algoritma Apriori pada Transaksi Apotek',
       author: 'Clarissa Putri',
       year: 2021,
       category: 'Machine Learning',
       archiveType: 'Ringkasan Skripsi',
       quantity: 1,
-      shelfLocation: 'Rak B-1',
+      shelfLocation: 'Rak B-6',
     },
     {
       archiveCode: 'RS-2024-007',
-      title: 'Sistem Pakar Diagnosa Penyakit Tanaman Jagung dengan Certainty Factor',
+      title: 'Ringkasan: Sistem Pakar Diagnosis Awal Hama Tanaman Jagung dengan Certainty Factor',
       author: 'Bagus Pratama',
       year: 2024,
       category: 'Sistem Pakar',
       archiveType: 'Ringkasan Skripsi',
       quantity: 2,
-      shelfLocation: 'Rak B-4',
+      shelfLocation: 'Rak B-7',
     },
     {
       archiveCode: 'RS-2020-008',
-      title: 'Simulasi Keamanan Jaringan Komputer Kampus Menggunakan Cisco Packet Tracer',
+      title: 'Ringkasan: Desain Skema Keamanan Virtual Private Network (VPN) dengan IPsec',
       author: 'Wahyu Hidayat',
       year: 2020,
       category: 'Kriptografi',
       archiveType: 'Ringkasan Skripsi',
       quantity: 1,
-      shelfLocation: 'Rak B-3',
+      shelfLocation: 'Rak B-8',
     },
 
-    // --- NASKAH PUBLIKASI (8 Koleksi) ---
+    // =========================================================================
+    // C. 8 NASKAH PUBLIKASI (Koleksi Artikel Jurnal & Publikasi Ilmiah)
+    // =========================================================================
     {
       archiveCode: 'NP-2024-001',
-      title: 'Rancang Bangun Aplikasi Perpustakaan Berbasis Web dengan Clean Architecture',
+      title: 'Publikasi: Rancang Bangun RESTful API Sistem Sirkulasi Perpustakaan Kampus',
       author: 'Rina Kumala',
       year: 2024,
       category: 'Sistem Informasi',
@@ -457,7 +468,7 @@ async function main() {
     },
     {
       archiveCode: 'NP-2024-002',
-      title: 'Sistem Pakar Penentuan Minat Bakat Siswa Menggunakan Metode Forward Chaining',
+      title: 'Publikasi: Sistem Pakar Konseling Minat Bakat Siswa SMA Metode Forward Chaining',
       author: 'Dina Novita',
       year: 2024,
       category: 'Sistem Pakar',
@@ -467,79 +478,69 @@ async function main() {
     },
     {
       archiveCode: 'NP-2024-003',
-      title: 'Sistem Pendukung Keputusan Pemilihan Mahasiswa Berprestasi dengan Metode AHP',
+      title: 'Publikasi: Penerapan Multi-Attribute Utility Theory (MAUT) untuk Seleksi Beasiswa',
       author: 'Tiara Anindya',
       year: 2024,
       category: 'SPK',
       archiveType: 'Naskah Publikasi',
-      quantity: 2,
+      quantity: 1,
       shelfLocation: 'Rak C-3',
     },
     {
       archiveCode: 'NP-2023-004',
-      title: 'Implementasi Microservices Architecture pada Platform E-Learning Kampus',
+      title: 'Publikasi: Integrasi Payment Gateway pada Portal Donasi Digital Menggunakan Webhook',
       author: 'Satria Yudha',
       year: 2023,
       category: 'Sistem Informasi',
       archiveType: 'Naskah Publikasi',
-      quantity: 1,
-      shelfLocation: 'Rak C-1',
+      quantity: 2,
+      shelfLocation: 'Rak C-4',
     },
     {
       archiveCode: 'NP-2023-005',
-      title: 'Pengembangan Web Service RESTful API Menggunakan NestJS dan Prisma ORM',
+      title: 'Publikasi: Komparasi Efisiensi State Management Redux Toolkit dan Zustand pada React',
       author: 'Nadia Safitri',
       year: 2023,
       category: 'Sistem Informasi',
       archiveType: 'Naskah Publikasi',
       quantity: 2,
-      shelfLocation: 'Rak C-2',
+      shelfLocation: 'Rak C-5',
     },
     {
       archiveCode: 'NP-2024-006',
-      title: 'Sistem Pakar Identifikasi Kerusakan Hardware Komputer Berbasis Web',
+      title: 'Publikasi: Sistem Pakar Penanganan Gangguan Jaringan LAN Berbasis Forward Reasoning',
       author: 'Daniel Christian',
       year: 2024,
       category: 'Sistem Pakar',
       archiveType: 'Naskah Publikasi',
-      quantity: 2,
-      shelfLocation: 'Rak C-3',
+      quantity: 1,
+      shelfLocation: 'Rak C-6',
     },
     {
       archiveCode: 'NP-2022-007',
-      title: 'Sistem Pendukung Keputusan Penilaian Kinerja Dosen dengan Metode Simple Additive Weighting',
+      title: 'Publikasi: Implementasi Algoritma Simple Additive Weighting pada Evaluasi Kerja Pegawai',
       author: 'Ilham Maulana',
       year: 2022,
       category: 'SPK',
       archiveType: 'Naskah Publikasi',
-      quantity: 1,
-      shelfLocation: 'Rak C-2',
+      quantity: 2,
+      shelfLocation: 'Rak C-7',
     },
     {
       archiveCode: 'NP-2021-008',
-      title: 'Penerapan Single Sign-On (SSO) Menggunakan OAuth2 dan OpenID Connect',
+      title: 'Publikasi: Analisis Keamanan Enkripsi AES-256 pada Transmisi Data Sensor IoT',
       author: 'Cindy Claudia',
       year: 2021,
       category: 'Kriptografi',
       archiveType: 'Naskah Publikasi',
-      quantity: 1,
-      shelfLocation: 'Rak C-1',
+      quantity: 2,
+      shelfLocation: 'Rak C-8',
     },
   ];
 
   for (const arc of initialArchives) {
-    await prisma.archive.upsert({
-      where: { archiveCode: arc.archiveCode },
-      update: {
-        title: arc.title,
-        author: arc.author,
-        year: arc.year,
-        category: arc.category,
-        archiveType: arc.archiveType,
-        quantity: arc.quantity,
-        shelfLocation: arc.shelfLocation,
-      },
-      create: arc,
+    await prisma.archive.create({
+      data: arc,
     });
   }
 
@@ -547,7 +548,7 @@ async function main() {
     orderBy: { createdAt: 'asc' },
   });
 
-  console.log(`ℹ️  Berhasil menyinkronkan ${existingArchives.length} koleksi arsip di database.`);
+  console.log(`ℹ️  Berhasil menyinkronkan ${existingArchives.length} koleksi arsip unik di database.`);
 
   const skripsiList = existingArchives.filter(
     (a) => a.archiveType.toLowerCase().includes('skripsi') && !a.archiveType.toLowerCase().includes('ringkasan'),
