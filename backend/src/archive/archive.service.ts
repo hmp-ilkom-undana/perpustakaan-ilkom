@@ -15,6 +15,7 @@ export class ArchiveService {
     search?: string;
     type?: string;
     category?: string;
+    availability?: string;
   }) {
     // Lapisan pertahanan kedua: pastikan nilai page dan limit selalu angka valid (>= 1)
     const pageNum = Math.max(
@@ -25,7 +26,7 @@ export class ArchiveService {
       1,
       Number.isInteger(params.limit) ? params.limit : 10,
     );
-    const { search, type, category } = params;
+    const { search, type, category, availability } = params;
     const skip = (pageNum - 1) * limitNum;
     const where: any = {};
 
@@ -38,13 +39,26 @@ export class ArchiveService {
       ];
     }
 
-    if (type && type !== 'all') {
+    if (type && type !== 'all' && type !== 'Semua') {
       where.archiveType = type;
     }
 
-    if (category && category !== 'all') {
+    if (category && category !== 'all' && category !== 'Semua') {
       where.category = category;
     }
+
+    if (availability === 'Tersedia') {
+      const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+        SELECT id FROM "Archive" WHERE ("quantity" - "reservedQuantity") > 0 AND "status" != 'DIPINJAM'
+      `);
+      where.id = { in: results.map((r) => r.id) };
+    } else if (availability === 'Dipinjam') {
+      const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+        SELECT id FROM "Archive" WHERE ("quantity" - "reservedQuantity") <= 0 OR "status" = 'DIPINJAM'
+      `);
+      where.id = { in: results.map((r) => r.id) };
+    }
+
     const [data, total] = await Promise.all([
       this.prisma.archive.findMany({
         where,
@@ -52,7 +66,7 @@ export class ArchiveService {
         take: limitNum,
         select: {
           id: true,
-          archiveCode:true,
+          archiveCode: true,
           title: true,
           author: true,
           year: true,
@@ -61,6 +75,7 @@ export class ArchiveService {
           quantity: true,
           reservedQuantity: true,
           shelfLocation: true,
+          status: true,
         },
         orderBy: { createdAt: 'desc' },
       }),

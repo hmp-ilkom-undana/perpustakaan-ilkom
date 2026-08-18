@@ -60,6 +60,7 @@ export function useStudentCatalog() {
     search: debouncedSearch || undefined,
     type: filterType !== "Semua" ? filterType : undefined,
     category: filterCategory !== "Semua" ? filterCategory : undefined,
+    availability: filterAvailability !== "Semua" ? filterAvailability : undefined,
   });
 
   const { data: myBorrowings = [] } = useMyBorrowingHistoryQuery();
@@ -84,37 +85,27 @@ export function useStudentCatalog() {
     limit,
   };
 
-  // Map and apply client availability filter if needed
+  // Map server records to StudentArchiveItem with user borrow state
   const archives: StudentArchiveItem[] = useMemo(() => {
-    return rawArchives
-      .map((item: any) => {
-        const userStatus = userBorrowMap.get(item.id);
-        return {
-          id: item.id,
-          archiveCode: item.archiveCode || `ARC-${item.id.substring(0, 6)}`,
-          title: item.title,
-          author: item.author,
-          year: item.year,
-          archiveType: item.archiveType,
-          category: item.category,
-          quantity: item.quantity ?? 1,
-          reservedQuantity: item.reservedQuantity ?? 0,
-          shelfLocation: item.shelfLocation,
-          status: item.status || "TERSEDIA",
-          userBorrowStatus: userStatus,
-          isRequestedByCurrentUser: userStatus === "REQUESTED",
-        };
-      })
-      .filter((archive: StudentArchiveItem) => {
-        if (filterAvailability === "Semua") return true;
-        const availableStock = archive.quantity - archive.reservedQuantity;
-        const isAvailable = availableStock > 0 && archive.status !== "DIPINJAM";
-
-        if (filterAvailability === "Tersedia") return isAvailable;
-        if (filterAvailability === "Dipinjam") return !isAvailable;
-        return true;
-      });
-  }, [rawArchives, userBorrowMap, filterAvailability]);
+    return rawArchives.map((item: any) => {
+      const userStatus = userBorrowMap.get(item.id);
+      return {
+        id: item.id,
+        archiveCode: item.archiveCode || `ARC-${item.id.substring(0, 6)}`,
+        title: item.title,
+        author: item.author,
+        year: item.year,
+        archiveType: item.archiveType,
+        category: item.category,
+        quantity: item.quantity ?? 1,
+        reservedQuantity: item.reservedQuantity ?? 0,
+        shelfLocation: item.shelfLocation,
+        status: item.status || "TERSEDIA",
+        userBorrowStatus: userStatus,
+        isRequestedByCurrentUser: userStatus === "REQUESTED",
+      };
+    });
+  }, [rawArchives, userBorrowMap]);
 
   return {
     searchInput,
