@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 interface HistoryDetailDialogProps {
   isOpen: boolean;
@@ -112,26 +113,53 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
 
           {/* Denda Section */}
           {item.fine !== undefined && item.fine > 0 && (
-            <div className="p-4 rounded-lg bg-rose-50 border-2 border-rose-500 shadow-[3px_3px_0px_#E11D48] space-y-3">
+            <div
+              className={cn(
+                "p-4 rounded-lg border-2 space-y-3 transition-colors",
+                item.paymentDate
+                  ? "bg-emerald-50/70 border-emerald-600 shadow-[3px_3px_0px_#059669]"
+                  : "bg-rose-50 border-rose-500 shadow-[3px_3px_0px_#E11D48]",
+              )}
+            >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-rose-950 font-black text-sm">
-                  <Receipt className="h-4 w-4 text-rose-600" />
-                  <span>Total Tagihan Denda</span>
+                <div
+                  className={cn(
+                    "flex items-center gap-2 font-black text-sm",
+                    item.paymentDate ? "text-emerald-950" : "text-rose-950",
+                  )}
+                >
+                  <Receipt
+                    className={cn(
+                      "h-4 w-4",
+                      item.paymentDate ? "text-emerald-600" : "text-rose-600",
+                    )}
+                  />
+                  <span>
+                    {item.paymentDate ? "Denda (Telah Dilunasi)" : "Total Tagihan Denda"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   {item.paymentDate && (
-                    <Badge variant="emerald" className="text-[10px]">✓ LUNAS</Badge>
+                    <Badge variant="emerald" className="text-[10px] font-black">
+                      ✓ LUNAS
+                    </Badge>
                   )}
-                  <span className="text-base font-black text-rose-600">
-                    Rp {item.fine.toLocaleString('id-ID')}
+                  <span
+                    className={cn(
+                      "text-base font-black",
+                      item.paymentDate ? "text-emerald-700" : "text-rose-600",
+                    )}
+                  >
+                    Rp {item.fine.toLocaleString("id-ID")}
                   </span>
                 </div>
               </div>
 
               {item.paymentDate ? (
-                <p className="text-[11px] font-bold text-emerald-800 text-right">
-                  Dilunasi pada: {item.paymentDate}
-                </p>
+                <div className="pt-2 border-t border-emerald-200 flex items-center justify-between text-[11px] font-semibold text-emerald-800">
+                  <span>Status Pelunasan</span>
+                  <span className="font-bold">Dilunasi pada {item.paymentDate}</span>
+                </div>
               ) : (
                 <div className="pt-2 border-t border-rose-200 flex flex-col gap-2">
                   <p className="text-[11px] text-rose-800 font-medium leading-relaxed">

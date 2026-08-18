@@ -26,6 +26,13 @@ export default function Riwayat() {
         : "-",
       status: item.status as HistoryStatus,
       fine: item.fineAmount,
+      paymentDate: item.finePaidAt
+        ? new Date(item.finePaidAt).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : undefined,
       note: item.catatanKondisiKembali || "-",
     }));
 
