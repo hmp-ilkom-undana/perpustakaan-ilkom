@@ -1,16 +1,19 @@
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface ActivityCalendarCardProps {
   date: Date | undefined;
   onSelectDate: (date: Date | undefined) => void;
   taskDates: Date[];
+  className?: string;
 }
 
 export function ActivityCalendarCard({
   date,
   onSelectDate,
   taskDates,
+  className,
 }: ActivityCalendarCardProps) {
   const modifiers = {
     hasTask: taskDates,
@@ -28,8 +31,8 @@ export function ActivityCalendarCard({
   };
 
   return (
-    <Card>
-      <CardContent className="p-3 sm:p-4 flex flex-col items-center">
+    <Card className={cn("flex flex-col justify-between", className)}>
+      <CardContent className="p-3 sm:p-4 flex flex-col items-center justify-center h-full">
         <Calendar
           mode="single"
           selected={date}

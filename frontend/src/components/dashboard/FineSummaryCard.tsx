@@ -3,6 +3,7 @@ import { AlertTriangle, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export interface FineData {
   totalDenda: number;
@@ -11,15 +12,21 @@ export interface FineData {
 
 interface FineSummaryCardProps {
   denda: FineData;
+  className?: string;
 }
 
-export function FineSummaryCard({ denda }: FineSummaryCardProps) {
+export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
   const { totalDenda, fineBorrowings } = denda;
 
   if (totalDenda <= 0) return null;
 
   return (
-    <Card className="border-2 border-red-600 shadow-[4px_4px_0px_#DC2626] bg-white flex flex-col justify-between overflow-hidden">
+    <Card
+      className={cn(
+        "border-2 border-red-600 shadow-[4px_4px_0px_#DC2626] bg-white flex flex-col justify-between overflow-hidden",
+        className,
+      )}
+    >
       <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-red-600 bg-red-50/80 flex flex-row items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />

@@ -8,13 +8,15 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface DateActivityListProps {
   date: Date | undefined;
   tasks: any[];
+  className?: string;
 }
 
-export function DateActivityList({ date, tasks }: DateActivityListProps) {
+export function DateActivityList({ date, tasks, className }: DateActivityListProps) {
   const formattedDate = date?.toLocaleDateString("id-ID", {
     day: "numeric",
     month: "short",
@@ -22,9 +24,14 @@ export function DateActivityList({ date, tasks }: DateActivityListProps) {
   });
 
   return (
-    <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white flex flex-col justify-between overflow-hidden">
+    <Card
+      className={cn(
+        "border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white flex flex-col justify-between overflow-hidden",
+        className,
+      )}
+    >
       {/* Header Kartu Aktivitas */}
-      <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-blue-900 bg-slate-50 flex flex-row items-center justify-between gap-2">
+      <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-blue-900 bg-slate-50 flex flex-row items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-orange-100 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A] text-orange-600">
             <CalendarIcon className="w-4 h-4 text-blue-950" />
@@ -40,14 +47,14 @@ export function DateActivityList({ date, tasks }: DateActivityListProps) {
         </div>
 
         <Badge variant={tasks.length > 0 ? "orange" : "secondary"}>
-          {tasks.length} {tasks.length === 1 ? "Agenda" : "Agenda"}
+          {tasks.length} Agenda
         </Badge>
       </CardHeader>
 
-      {/* Body List Scrollable */}
-      <CardContent className="p-4 sm:p-5 flex flex-col justify-between flex-grow space-y-3">
+      {/* Body List (2 Agenda tampil penuh, selebihnya di-scroll secara mulus) */}
+      <CardContent className="p-4 sm:p-5 flex flex-col flex-1 justify-center">
         {tasks.length === 0 ? (
-          <div className="py-8 px-4 flex flex-col items-center justify-center text-center">
+          <div className="py-6 px-4 flex flex-col items-center justify-center text-center">
             <div className="bg-slate-100 border border-blue-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-2.5 text-slate-400">
               <CalendarIcon className="w-6 h-6 text-slate-500" />
             </div>
@@ -59,7 +66,7 @@ export function DateActivityList({ date, tasks }: DateActivityListProps) {
             </p>
           </div>
         ) : (
-          <div className="space-y-2.5 max-h-[260px] sm:max-h-[300px] overflow-y-auto pr-1">
+          <div className="space-y-2.5 max-h-[195px] overflow-y-auto pr-1">
             {tasks.map((task: any) => {
               const isOverdue = task.status === "OVERDUE";
               const isBorrowed = task.status === "BORROWED";
@@ -82,9 +89,9 @@ export function DateActivityList({ date, tasks }: DateActivityListProps) {
               return (
                 <div
                   key={task.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-slate-50 border border-blue-900/40 rounded-md gap-3 hover:bg-slate-100/80 transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 bg-slate-50 border border-blue-900/40 rounded-md gap-2 hover:bg-slate-100/80 transition-colors"
                 >
-                  <div className="space-y-1 flex-1 min-w-0">
+                  <div className="space-y-0.5 flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge variant={badgeVariant} className="text-[9px] px-1.5 py-0">
                         {badgeText}
@@ -107,34 +114,34 @@ export function DateActivityList({ date, tasks }: DateActivityListProps) {
                   {/* Status Box / Action di Kanan */}
                   <div className="shrink-0 flex items-center sm:justify-end">
                     {isWaitingPickup && (
-                      <div className="bg-amber-100 border border-amber-400 rounded px-2.5 py-1 text-center">
-                        <span className="text-[10px] font-black uppercase text-amber-950 block">Kode Ambil</span>
-                        <span className="text-xs font-mono font-black text-orange-600">
+                      <div className="bg-amber-100 border border-amber-400 rounded px-2 py-0.5 text-center">
+                        <span className="text-[9px] font-black uppercase text-amber-950 block">Kode Ambil</span>
+                        <span className="text-[11px] font-mono font-black text-orange-600">
                           {task.pickupCode || `REQ-${task.id.substring(0, 6).toUpperCase()}`}
                         </span>
                       </div>
                     )}
                     {isBorrowed && (
-                      <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span className="text-[11px] font-black">Sedang Dipinjam</span>
+                      <div className="flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded">
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span className="text-[10px] font-black">Sedang Dipinjam</span>
                       </div>
                     )}
                     {isOverdue && (
-                      <div className="flex items-center gap-1.5 text-rose-700 bg-rose-50 border border-rose-300 px-2.5 py-1 rounded">
-                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                      <div className="flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-300 px-2 py-0.5 rounded">
+                        <AlertTriangle className="w-3 h-3 text-rose-600" />
                         <div className="flex flex-col text-right">
-                          <span className="text-[10px] font-black uppercase">Terlambat</span>
-                          <span className="text-[10px] font-bold text-rose-600">
+                          <span className="text-[9px] font-black uppercase">Terlambat</span>
+                          <span className="text-[9px] font-bold text-rose-600">
                             Rp {(task.fineAmount || 0).toLocaleString("id-ID")}
                           </span>
                         </div>
                       </div>
                     )}
                     {!isWaitingPickup && !isBorrowed && !isOverdue && (
-                      <div className="flex items-center gap-1.5 text-blue-900 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded">
-                        <Clock className="w-3.5 h-3.5 text-blue-900" />
-                        <span className="text-[11px] font-black">Menunggu ACC</span>
+                      <div className="flex items-center gap-1 text-blue-900 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
+                        <Clock className="w-3 h-3 text-blue-900" />
+                        <span className="text-[10px] font-black">Menunggu ACC</span>
                       </div>
                     )}
                   </div>

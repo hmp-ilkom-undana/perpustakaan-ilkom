@@ -1,5 +1,6 @@
 import { BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export interface QuotaData {
   terpakai: number;
@@ -14,9 +15,10 @@ export interface QuotaData {
 
 interface BorrowingQuotaCardProps {
   quota: QuotaData;
+  className?: string;
 }
 
-export function BorrowingQuotaCard({ quota }: BorrowingQuotaCardProps) {
+export function BorrowingQuotaCard({ quota, className }: BorrowingQuotaCardProps) {
   const {
     terpakai,
     maksimal,
@@ -29,8 +31,8 @@ export function BorrowingQuotaCard({ quota }: BorrowingQuotaCardProps) {
   } = quota;
 
   return (
-    <Card>
-      <CardContent className="p-5 space-y-4">
+    <Card className={cn("flex flex-col justify-between", className)}>
+      <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <BookOpen className="w-4 h-4 text-orange-500" />

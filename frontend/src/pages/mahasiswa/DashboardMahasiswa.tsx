@@ -36,30 +36,52 @@ export default function DashboardMahasiswa() {
         <p className="text-slate-500 font-semibold text-xs mt-0.5">{currentDate}</p>
       </div>
 
-      {/* 2. Grid Dashboard 2 Kolom  */}
-      <div className="w-full px-5 sm:px-0">
-        <div className="flex flex-col md:grid md:grid-cols-5 gap-6">
-          
-          {/* Kolom Kiri */}
-          <div className="md:col-span-2 flex flex-col gap-6">
-            <BorrowingQuotaCard quota={quota} />
+      {/* 2. Grid Dashboard Terstruktur (Baris 1: Kuota + Denda Sejajar, Baris 2: Kalender + Aktivitas Sejajar) */}
+      <div className="w-full px-5 sm:px-0 space-y-6">
+        
+        {/* BARIS 1: Kuota Peminjaman & Tunggakan Denda */}
+        {denda.totalDenda > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
+            <div className="md:col-span-2 flex">
+              <BorrowingQuotaCard
+                quota={quota}
+                className="w-full h-full flex flex-col justify-between"
+              />
+            </div>
+            <div className="md:col-span-3 flex">
+              <FineSummaryCard
+                denda={denda}
+                className="w-full h-full flex flex-col justify-between"
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div className="md:col-span-2">
+              <BorrowingQuotaCard quota={quota} className="w-full" />
+            </div>
+          </div>
+        )}
+
+        {/* BARIS 2: Kalender & Daftar Aktivitas Tanggal Terpilih */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
+          <div className="md:col-span-2 flex">
             <ActivityCalendarCard
               date={calendar.date}
               onSelectDate={calendar.setDate}
               taskDates={calendar.taskDates}
+              className="w-full h-full flex flex-col justify-between"
             />
           </div>
-
-          {/* Kolom Kanan */}
-          <div className="md:col-span-3 flex flex-col gap-6">
-            <FineSummaryCard denda={denda} />
+          <div className="md:col-span-3 flex">
             <DateActivityList
               date={calendar.date}
               tasks={calendar.tasksForSelectedDate}
+              className="w-full h-full flex flex-col justify-between"
             />
           </div>
-
         </div>
+
       </div>
 
       {/* 3. Quick Action CTA Katalog */}
