@@ -61,7 +61,8 @@ export function useRequestBorrowingMutation() {
     onSuccess: (data: any) => {
       toast.success("Pengajuan Berhasil!", {
         description:
-          data?.message || "Silakan cek menu Peminjaman untuk melihat tiket antrean.",
+          data?.message ||
+          "Silakan cek menu Peminjaman untuk melihat kode pengambilan dan status pengajuan.",
       });
       queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: ["archives"] });
