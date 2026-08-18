@@ -1,6 +1,3 @@
-import { useState } from "react";
-import api from "@/lib/api";
-import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -11,26 +8,14 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookOpen, User, Calendar, MapPin, Layers } from "lucide-react";
-
-interface Archive {
-  id: string;
-  title: string;
-  author: string;
-  year: number | string;
-  archiveType: string;
-  category: string;
-  status: string;
-  quantity: number;
-  shelfLocation: string | null;
-  reservedQuantity: number;
-  isRequestedByCurrentUser?: boolean;
-}
+import { User, Calendar, MapPin, Layers } from "lucide-react";
+import { useRequestBorrowingMutation } from "@/hooks/queries/useBorrowingMutation";
+import { StudentArchiveItem } from "@/hooks/useStudentCatalog";
 
 interface ArchiveDetailDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  archive: Archive | null;
+  archive: StudentArchiveItem | null;
 }
 
 export function ArchiveDetailDialog({
@@ -38,7 +23,7 @@ export function ArchiveDetailDialog({
   onClose,
   archive,
 }: ArchiveDetailDialogProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const requestMutation = useRequestBorrowingMutation();
 
   if (!archive) return null;
 
@@ -57,31 +42,20 @@ export function ArchiveDetailDialog({
     statusVariant = "secondary";
   }
 
-  const handleBorrow = async () => {
-    setIsLoading(true);
+  let typeVariant: "orange" | "sky" | "navy" | "secondary" = "orange";
+  const typeLower = archive.archiveType.toLowerCase();
+  if (typeLower.includes("ringkasan")) {
+    typeVariant = "sky";
+  } else if (typeLower.includes("naskah") || typeLower.includes("publikasi")) {
+    typeVariant = "navy";
+  } else if (typeLower.includes("skripsi")) {
+    typeVariant = "orange";
+  }
 
-    try {
-      const response = await api.post(
-        "/api/borrowings",
-        { archiveId: archive.id }
-      );
-
-      onClose();
-      toast.success("Pengajuan Berhasil!", {
-        description:
-          response.data.message || "Silakan cek menu Peminjaman untuk melihat tiket antrean.",
-      });
-    } catch (error: any) {
-      console.error("Gagal mengajukan pinjaman:", error);
-      const errorMsg =
-        error.response?.data?.message || "Terjadi kesalahan pada sistem.";
-
-      toast.error("Pengajuan Gagal", {
-        description: errorMsg,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handleBorrow = () => {
+    requestMutation.mutate(archive.id, {
+      onSuccess: () => onClose(),
+    });
   };
 
   return (
@@ -89,7 +63,7 @@ export function ArchiveDetailDialog({
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
-            <Badge variant="orange">
+            <Badge variant={typeVariant}>
               {archive.archiveType}
             </Badge>
             <Badge variant="outline">
@@ -155,10 +129,10 @@ export function ArchiveDetailDialog({
           <Button
             type="button"
             onClick={handleBorrow}
-            disabled={isLoading || isRequestedByMe || !isAvailable}
-            className="w-full"
+            disabled={requestMutation.isPending || isRequestedByMe || !isAvailable}
+            className="w-full shadow-[2px_2px_0px_#1E3A8A]"
           >
-            {isLoading ? (
+            {requestMutation.isPending ? (
               "Memproses Pengajuan..."
             ) : isRequestedByMe ? (
               "✓ Sedang Anda Ajukan"

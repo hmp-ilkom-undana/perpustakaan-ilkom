@@ -110,4 +110,9 @@ export const borrowingService = {
     });
     return response.data;
   },
+
+  create: async (archiveId: string) => {
+    const response = await api.post("/api/borrowings", { archiveId });
+    return response.data;
+  },
 };
