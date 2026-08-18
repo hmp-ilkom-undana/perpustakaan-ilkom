@@ -7,6 +7,8 @@ export interface ArchiveQueryParams {
   search?: string;
   type?: string;
   category?: string;
+  availability?: string;
+  userId?: string;
 }
 
 export interface PaginatedArchiveResponse {
@@ -49,9 +51,17 @@ export const archiveService = {
     };
   },
 
-  getPublic: async (): Promise<any[]> => {
-    const response = await api.get("/api/archives", { params: { limit: 100 } });
-    return response.data.data ?? response.data;
+  getPublic: async (params?: ArchiveQueryParams): Promise<{ data: any[]; meta: any }> => {
+    const response = await api.get("/api/archives", { params: { limit: 8, ...params } });
+    return {
+      data: response.data.data ?? response.data,
+      meta: response.data.meta ?? {
+        total: Array.isArray(response.data) ? response.data.length : 0,
+        totalPages: 1,
+        page: 1,
+        limit: params?.limit || 8,
+      },
+    };
   },
 
   create: async (payload: ArchivePayload) => {

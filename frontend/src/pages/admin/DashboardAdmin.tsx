@@ -37,10 +37,10 @@ const alerts = [
 ];
 
 const auditLogs = [
-  { id: 1, time: "14:20", user: "NIM 2201020005 (Budi)", action: "ACC Pengajuan #REQ-8192" },
-  { id: 2, time: "13:05", user: "NIM 2201020001 (Siti)", action: "Verifikasi Serah Terima + Foto S3 #REQ-8188" },
-  { id: 3, time: "10:15", user: "NIM 2201020005 (Budi)", action: "Mencatat Denda Tunai Rp 50.000 #REQ-8170" },
-  { id: 4, time: "09:30", user: "NIM 2201020010 (Andi)", action: "Verifikasi Pengembalian #REQ-8100" },
+  { id: 1, time: "14:20", user: "NIM 2201020005 (Budi)", action: "ACC Pengajuan #PK-8192" },
+  { id: 2, time: "13:05", user: "NIM 2201020001 (Siti)", action: "Verifikasi Serah Terima + Foto S3 #PK-8188" },
+  { id: 3, time: "10:15", user: "NIM 2201020005 (Budi)", action: "Mencatat Denda Tunai Rp 50.000 #PK-8170" },
+  { id: 4, time: "09:30", user: "NIM 2201020010 (Andi)", action: "Verifikasi Pengembalian #PK-8100" },
   { id: 5, time: "08:45", user: "NIM 2201020042 (Rina)", action: "Registrasi Anggota Baru HMP" },
 ];
 

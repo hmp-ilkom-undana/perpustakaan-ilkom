@@ -110,20 +110,20 @@ export default function MahasiswaLayout() {
             {/* Bagian Kanan: Profil & Logout (Desktop) */}
             <div className="hidden md:flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm font-bold text-slate-800 leading-none">
+                <p className="text-sm font-black text-blue-950 leading-none">
                   {session?.user?.name}
                 </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  {session?.user?.nim}
+                <p className="text-xs text-slate-500 font-semibold mt-1">
+                  NIM: {session?.user?.nim || "-"}
                 </p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-2 border-rose-300 shadow-[2px_2px_0px_#E11D48]"
                 onClick={handleLogout}
               >
-                <LogOut className="w-4 h-4 mr-2" />
+                <LogOut className="w-3.5 h-3.5 mr-1.5" />
                 Keluar
               </Button>
             </div>

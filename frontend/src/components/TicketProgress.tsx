@@ -1,4 +1,4 @@
-import { FileText, Package, BookOpen, CheckCircle, Clock } from "lucide-react";
+import { FileText, Package, Clock } from "lucide-react";
 
 export type BorrowingStatus =
   | "REQUESTED"
@@ -8,7 +8,7 @@ export type BorrowingStatus =
 
 export interface ActiveTicketProps {
   id: string;
-  pickupCode: string; // contoh: REQ-8192
+  pickupCode: string;
   archiveTitle: string;
   archiveType: string;
   status: BorrowingStatus;
@@ -16,7 +16,7 @@ export interface ActiveTicketProps {
   dueDate?: string;
   accDate?: string;
   pickupDeadline?: string;
-  onCancelClick?: (id: string) => void; // Fungsi yang dipanggil saat tombol Batal ditekan
+  onCancelClick?: (id: string) => void;
 }
 
 export function TicketProgress({
@@ -51,7 +51,6 @@ export function TicketProgress({
         const isLast = index === steps.length - 1;
         const Icon = step.Icon;
 
-        // Tentukan apa teks tanggal yang harus dirender (Hanya untuk Mobile)
         let dateText = null;
         if (step.id === "REQUESTED") {
           dateText = requestDate;
@@ -61,7 +60,6 @@ export function TicketProgress({
           dateText = dueDate || "Belum ditentukan";
         }
 
-        // Tentukan warning text untuk batas pengambilan (Hanya untuk Mobile)
         let warningText = null;
         if (step.id === "WAITING_PICKUP" && isActive) {
            warningText = `Batas Ambil: ${pickupDeadline || "Segera"}`;
@@ -76,7 +74,7 @@ export function TicketProgress({
             {!isLast && (
               <div
                 className={`absolute left-3.5 top-7 bottom-0 w-0.5 sm:left-[50%] sm:right-[-50%] sm:top-3.5 sm:bottom-auto sm:h-0.5 sm:w-auto sm:-translate-y-1/2 ${
-                  isPast ? "bg-blue-600" : "bg-slate-100"
+                  isPast ? "bg-blue-900" : "bg-slate-200"
                 }`}
               />
             )}
@@ -84,36 +82,36 @@ export function TicketProgress({
             {/* Titik Indikator */}
             <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center bg-white">
               {isPast ? (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 border border-blue-900 text-white shadow-[1px_1px_0px_#1E3A8A]">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-900 border-2 border-blue-950 text-white shadow-[1px_1px_0px_#1E3A8A]">
                   <Icon className="h-3.5 w-3.5" />
                 </div>
               ) : isActive ? (
                 <div
-                  className={`flex h-7 w-7 items-center justify-center rounded-full border shadow-[1px_1px_0px_#1E3A8A] ${
+                  className={`flex h-7 w-7 items-center justify-center rounded-full border-2 shadow-[2px_2px_0px_#1E3A8A] ${
                     isOverdue
-                      ? "border-rose-600 bg-rose-50 text-rose-600"
-                      : "border-blue-900 bg-blue-50 text-blue-600"
+                      ? "border-rose-600 bg-rose-500 text-white"
+                      : "border-blue-900 bg-orange-500 text-white"
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
                 </div>
               ) : (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-300">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-slate-300 bg-white text-slate-300">
                   <Icon className="h-3.5 w-3.5" />
                 </div>
               )}
             </div>
 
             {/* Konten Label & Tanggal */}
-            <div className="ml-4 sm:ml-0 sm:mt-3 flex flex-col pb-6 sm:pb-0 px-1 w-full sm:items-center">
+            <div className="ml-4 sm:ml-0 sm:mt-2.5 flex flex-col pb-6 sm:pb-0 px-1 w-full sm:items-center">
               <span
-                className={`text-sm sm:text-[10px] md:text-xs font-semibold leading-tight ${
+                className={`text-xs font-black leading-tight ${
                   isPast
-                    ? "text-blue-700"
+                    ? "text-blue-950"
                     : isActive
                       ? isOverdue
                         ? "text-rose-600"
-                        : "text-blue-700"
+                        : "text-orange-600"
                       : "text-slate-400"
                 }`}
               >
@@ -122,7 +120,7 @@ export function TicketProgress({
               </span>
               
               {/* Deskripsi (Hanya Desktop) */}
-              <span className="mt-1 hidden text-[10px] text-slate-500 sm:block">
+              <span className="mt-0.5 hidden text-[10px] font-semibold text-slate-500 sm:block">
                 {step.desc}
               </span>
 
@@ -135,7 +133,7 @@ export function TicketProgress({
 
               {/* Render warning text jika ada (Hanya Mobile) */}
               {warningText && (
-                <span className="mt-1.5 inline-flex sm:hidden w-fit items-center gap-1.5 rounded-md bg-rose-50 px-2 py-1 text-[10px] font-bold text-rose-600 border border-rose-300 shadow-[1px_1px_0px_#f43f5e]">
+                <span className="mt-1.5 inline-flex sm:hidden w-fit items-center gap-1.5 rounded-md bg-amber-400 px-2 py-0.5 text-[10px] font-black text-blue-950 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A]">
                   <Package className="h-3 w-3" />
                   {warningText}
                 </span>

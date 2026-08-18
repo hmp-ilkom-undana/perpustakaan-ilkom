@@ -11,9 +11,10 @@ export function useArchiveQuery(params: ArchiveQueryParams) {
   });
 }
 
-export function usePublicArchiveQuery() {
+export function usePublicArchiveQuery(params?: ArchiveQueryParams) {
   return useQuery({
-    queryKey: [ARCHIVE_QUERY_KEY, "public"],
-    queryFn: () => archiveService.getPublic(),
+    queryKey: [ARCHIVE_QUERY_KEY, "public", params],
+    queryFn: () => archiveService.getPublic(params),
+    placeholderData: (prev) => prev,
   });
 }

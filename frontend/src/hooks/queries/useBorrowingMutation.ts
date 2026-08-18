@@ -53,3 +53,26 @@ export function useReturnBorrowingMutation() {
     onError: () => toast.error("Gagal mencatat pengembalian"),
   });
 }
+
+export function useRequestBorrowingMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (archiveId: string) => borrowingService.create(archiveId),
+    onSuccess: (data: any) => {
+      toast.success("Pengajuan Berhasil!", {
+        description:
+          data?.message ||
+          "Silakan cek menu Peminjaman untuk melihat kode pengambilan dan status pengajuan.",
+      });
+      queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: ["archives"] });
+    },
+    onError: (error: any) => {
+      const errorMsg =
+        error.response?.data?.message || "Terjadi kesalahan pada sistem.";
+      toast.error("Pengajuan Gagal", {
+        description: errorMsg,
+      });
+    },
+  });
+}

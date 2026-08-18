@@ -124,7 +124,7 @@ export default function SirkulasiDetail() {
         </Button>
         <div className="flex-1">
           <h1 className="text-lg font-bold text-slate-900 leading-tight">Detail Transaksi</h1>
-          <p className="text-xs font-semibold text-slate-500">REQ-{item.id.substring(0, 6).toUpperCase()}</p>
+          <p className="text-xs font-semibold text-slate-500">{item.pickupCode || `PK-${item.id.substring(0, 6).toUpperCase()}`}</p>
         </div>
         <Badge variant="outline" className={`font-bold uppercase tracking-wider
           ${item.status === 'REQUESTED' && 'bg-blue-100 text-blue-700 border-blue-200'}

@@ -76,8 +76,8 @@ export default function Sirkulasi() {
     const config = getStatusConfig(item.status);
     const Icon = config.icon;
 
-    // Membuat kode pengajuan pendek dari ID asli
-    const shortCode = item.pickupCode || `REQ-${item.id.substring(0, 6).toUpperCase()}`;
+    // Unified Transaction Code: PK-XXXXXX
+    const shortCode = item.pickupCode || `PK-${item.id.substring(0, 6).toUpperCase()}`;
 
     return (
       <div
@@ -140,7 +140,7 @@ export default function Sirkulasi() {
           <input
             type="text"
             className="block w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-sm md:text-lg font-medium text-slate-900 placeholder:text-slate-400 focus:ring-4 focus:ring-orange-500/20 focus:border-orange-500 transition-all outline-none shadow-sm"
-            placeholder="Cari Kode Pengajuan (Contoh: REQ-1A2B3C)..."
+            placeholder="Cari Kode Transaksi (Contoh: PK-908C3C)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             autoFocus

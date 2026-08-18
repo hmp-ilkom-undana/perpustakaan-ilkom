@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react";
-// Sesuaikan import tipe status Anda jika perlu
-import { BorrowingStatus } from "./TicketProgress"; 
+import { Badge } from "@/components/ui/badge";
+import { BorrowingStatus } from "./TicketProgress";
 
 export interface BorrowingRowProps {
   id: string;
@@ -20,78 +20,62 @@ export function BorrowingRow({
   requestDate,
   onClick,
 }: BorrowingRowProps) {
-  
-  // Helper untuk menentukan warna Badge
-  const getBadgeStyle = (currentStatus: string) => {
-    switch (currentStatus) {
-      case "REQUESTED":
-        return "bg-slate-100 text-slate-600 border border-slate-300 shadow-[1px_1px_0px_#94a3b8]";
-      case "WAITING_PICKUP":
-        return "bg-amber-100 text-amber-700 border border-amber-500/30 shadow-[1px_1px_0px_#d97706]";
-      case "BORROWED":
-        return "bg-emerald-50 text-emerald-700 border border-emerald-600/30 shadow-[1px_1px_0px_#059669]";
-      case "OVERDUE":
-        return "bg-rose-50 text-rose-700 border border-rose-600/30 shadow-[1px_1px_0px_#e11d48]";
-      default:
-        return "bg-slate-100 text-slate-600 border border-slate-300";
-    }
-  };
+  let badgeVariant: "amber" | "emerald" | "rose" | "secondary" = "secondary";
+  let statusLabel = "Menunggu ACC";
 
-  const getStatusLabel = (currentStatus: string) => {
-    switch (currentStatus) {
-      case "REQUESTED":
-        return "Menunggu ACC";
-      case "WAITING_PICKUP":
-        return "Siap Diambil";
-      case "BORROWED":
-        return "Dipinjam";
-      case "OVERDUE":
-        return "Terlambat";
-      default:
-        return currentStatus;
-    }
-  };
+  switch (status) {
+    case "REQUESTED":
+      badgeVariant = "secondary";
+      statusLabel = "Menunggu ACC";
+      break;
+    case "WAITING_PICKUP":
+      badgeVariant = "amber";
+      statusLabel = "Siap Diambil";
+      break;
+    case "BORROWED":
+      badgeVariant = "emerald";
+      statusLabel = "Dipinjam";
+      break;
+    case "OVERDUE":
+      badgeVariant = "rose";
+      statusLabel = "Terlambat";
+      break;
+  }
 
   return (
     <div
       onClick={onClick}
-      // "group" class adalah kunci untuk micro-interactions pada elemen anak
-      className="group flex cursor-pointer items-center justify-between bg-white p-4 transition-all hover:bg-slate-50 sm:px-6"
+      className="group flex cursor-pointer items-center justify-between bg-white p-4 transition-all hover:bg-orange-50/50 sm:px-6"
     >
       {/* BAGIAN KIRI: Informasi Teks */}
       <div className="flex flex-col overflow-hidden pr-4">
-        <h4 className="truncate text-sm font-semibold text-slate-900 mb-1">
+        <h4 className="truncate text-sm font-black text-blue-950 group-hover:text-orange-600 transition-colors mb-1">
           {archiveTitle}
         </h4>
         <div className="flex items-center gap-2">
-          <span className="truncate text-xs text-slate-500">
+          <span className="truncate text-xs font-semibold text-slate-500">
             {archiveType}
           </span>
           <span className="text-[10px] text-slate-300">&bull;</span>
-          <span
-            className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getBadgeStyle(status)}`}
-          >
-            {getStatusLabel(status)}
-          </span>
+          <Badge variant={badgeVariant}>
+            {statusLabel}
+          </Badge>
         </div>
       </div>
 
       {/* BAGIAN KANAN: Tanggal, Pickup Code, & Chevron */}
       <div className="flex shrink-0 items-center gap-4 pl-4">
-        
-        {/* Meta Info: Selalu tampil di semua layar */}
         <div className="flex flex-col items-end">
-          <span className="font-mono text-[10px] sm:text-xs font-bold tracking-widest text-blue-900">
+          <span className="font-mono text-xs sm:text-sm font-black tracking-widest text-blue-950">
             {pickupCode}
           </span>
-          <span className="text-[9px] sm:text-[10px] text-slate-400">
+          <span className="text-[10px] font-semibold text-slate-500">
             {requestDate}
           </span>
         </div>
 
-        {/* Ikon Panah (Chevron): Animasi geser ke kanan saat baris di-hover */}
-        <div className="text-slate-300 transition-all duration-200 group-hover:translate-x-1 group-hover:text-orange-500">
-          <ChevronRight className="h-4 w-4" />
+        <div className="text-slate-400 transition-all duration-200 group-hover:translate-x-1 group-hover:text-orange-500">
+          <ChevronRight className="h-5 w-5" />
         </div>
       </div>
     </div>
