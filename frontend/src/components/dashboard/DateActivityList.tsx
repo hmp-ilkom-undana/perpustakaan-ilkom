@@ -29,7 +29,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
   return (
     <Card
       className={cn(
-        "border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white flex flex-col justify-between overflow-hidden",
+        "flex flex-col justify-between overflow-hidden",
         className,
       )}
     >
@@ -160,7 +160,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full sm:w-auto text-xs font-black text-blue-950 hover:bg-slate-100 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
+                  className="w-full sm:w-auto"
                 >
                   Buka Detail Peminjaman
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />

@@ -133,11 +133,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
 
         <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
           <Link to="/mahasiswa/peminjaman">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs font-black text-blue-950 hover:bg-slate-100 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
-            >
+            <Button variant="outline" size="sm">
               Buka Detail Peminjaman
               <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Button>

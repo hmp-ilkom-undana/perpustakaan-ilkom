@@ -81,7 +81,7 @@ export default function DashboardMahasiswa() {
         <Link to="/mahasiswa/katalog" className="w-full sm:w-auto">
           <Button
             size="lg"
-            className="w-full sm:w-auto text-sm font-black shadow-[4px_4px_0px_#1E3A8A]"
+            className="w-full sm:w-auto"
           >
             <Search className="w-4 h-4 mr-2" />
             Cari Arsip di Katalog
