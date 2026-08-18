@@ -67,7 +67,7 @@ export function CatalogFilterBar({
           </Select>
         </div>
 
-        {/* Filter Kategori */}
+        {/* Filter Kategori (Standard Asli: Machine Learning, Sistem Informasi, Sistem Pakar, SPK, Kriptografi, Umum) */}
         <div className="flex-1 sm:w-44">
           <Select
             value={filterCategory}
@@ -78,14 +78,12 @@ export function CatalogFilterBar({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Semua">Semua Kategori</SelectItem>
-              <SelectItem value="Kecerdasan Buatan">Kecerdasan Buatan</SelectItem>
-              <SelectItem value="Keamanan Jaringan">Keamanan Jaringan</SelectItem>
+              <SelectItem value="Machine Learning">Machine Learning</SelectItem>
               <SelectItem value="Sistem Informasi">Sistem Informasi</SelectItem>
-              <SelectItem value="Data Science">Data Science</SelectItem>
-              <SelectItem value="Multimedia">Multimedia</SelectItem>
-              <SelectItem value="Rekayasa Perangkat Lunak">RPL</SelectItem>
-              <SelectItem value="Web Development">Web Development</SelectItem>
-              <SelectItem value="HCI">HCI</SelectItem>
+              <SelectItem value="Sistem Pakar">Sistem Pakar</SelectItem>
+              <SelectItem value="SPK">SPK</SelectItem>
+              <SelectItem value="Kriptografi">Kriptografi</SelectItem>
+              <SelectItem value="Umum">Umum</SelectItem>
             </SelectContent>
           </Select>
         </div>
