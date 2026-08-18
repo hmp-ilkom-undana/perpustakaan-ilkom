@@ -65,7 +65,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
               Tidak Ada Aktivitas
             </h3>
             <p className="text-slate-500 text-[11px] font-medium mt-1 max-w-xs">
-              Anda tidak memiliki jadwal pengambilan, tenggat pengembalian, atau verifikasi pada tanggal ini.
+              Anda tidak memiliki jadwal pengambilan, tenggat pengembalian, atau aktivitas peminjaman pada tanggal ini.
             </p>
           </div>
         ) : (

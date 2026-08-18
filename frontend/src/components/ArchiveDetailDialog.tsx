@@ -83,7 +83,7 @@ export function ArchiveDetailDialog({
             {archive.title}
           </DialogTitle>
           <DialogDescription>
-            Rincian informasi dokumen dan ketersediaan stok fisik di perpustakaan.
+            Rincian informasi arsip dan ketersediaan stok fisik di perpustakaan.
           </DialogDescription>
         </DialogHeader>
 
