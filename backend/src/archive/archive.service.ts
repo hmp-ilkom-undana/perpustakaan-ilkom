@@ -49,28 +49,28 @@ export class ArchiveService {
     }
 
     if (availability === 'Tersedia') {
-      const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+      const results: { id: string }[] = await this.prisma.$queryRaw`
         SELECT id FROM "Archive" WHERE ("quantity" - "reservedQuantity") > 0 AND "status" != 'DIPINJAM'
-      `);
+      `;
       where.id = { in: results.map((r) => r.id) };
     } else if (availability === 'Diajukan') {
       if (userId) {
-        const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+        const results: { id: string }[] = await this.prisma.$queryRaw`
           SELECT DISTINCT b."archiveId" as id FROM "Borrowing" b
-          WHERE b."userId" = '${userId}' AND b."status" IN ('REQUESTED', 'WAITING_PICKUP')
-        `);
+          WHERE b."userId" = ${userId} AND b."status" IN ('REQUESTED', 'WAITING_PICKUP')
+        `;
         where.id = { in: results.map((r) => r.id) };
       } else {
-        const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+        const results: { id: string }[] = await this.prisma.$queryRaw`
           SELECT DISTINCT b."archiveId" as id FROM "Borrowing" b
           WHERE b."status" IN ('REQUESTED', 'WAITING_PICKUP')
-        `);
+        `;
         where.id = { in: results.map((r) => r.id) };
       }
     } else if (availability === 'Dipinjam') {
-      const results: { id: string }[] = await this.prisma.$queryRawUnsafe(`
+      const results: { id: string }[] = await this.prisma.$queryRaw`
         SELECT id FROM "Archive" WHERE ("quantity" - "reservedQuantity") <= 0 OR "status" = 'DIPINJAM'
-      `);
+      `;
       where.id = { in: results.map((r) => r.id) };
     }
 

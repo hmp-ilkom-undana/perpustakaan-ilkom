@@ -33,7 +33,7 @@ export function useStudentDashboard() {
   let countNaskah = 0;
 
   activeBorrowings.forEach((b: any) => {
-    const type = b.archive.archiveType.toUpperCase().replace(" ", "_");
+    const type = b.archive?.archiveType?.toUpperCase().replace(" ", "_") || "";
     if (type === "SKRIPSI") countSkripsi++;
     else if (type === "RINGKASAN_SKRIPSI") countRingkasan++;
     else if (type === "NASKAH_PUBLIKASI") countNaskah++;

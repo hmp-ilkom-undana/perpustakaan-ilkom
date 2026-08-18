@@ -43,8 +43,8 @@ export default function Peminjaman() {
     .map((item: any) => ({
       id: item.id,
       pickupCode: item.pickupCode || `PK-${item.id.substring(0, 6).toUpperCase()}`,
-      archiveTitle: item.archive.title,
-      archiveType: item.archive.archiveType,
+      archiveTitle: item.archive?.title || "Judul Tidak Tersedia",
+      archiveType: item.archive?.archiveType || "Arsip",
       status: item.status as "REQUESTED" | "WAITING_PICKUP" | "BORROWED" | "OVERDUE",
       fineAmount: item.fineAmount || 0,
       requestDate: new Date(item.borrowDate).toLocaleDateString("id-ID", {
@@ -93,7 +93,7 @@ export default function Peminjaman() {
       `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${ticket.archiveTitle}\n- Total Denda: Rp ${(ticket.fineAmount || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
     );
 
-    window.open(`https://wa.me/${formattedNumber}?text=${text}`, "_blank");
+    window.open(`https://wa.me/${formattedNumber}?text=${text}`, "_blank", "noopener,noreferrer");
   };
 
   const handleCancel = async (id: string) => {

@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { DriveService } from './drive.service';
 import { SettingService } from '../setting/setting.service';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class BorrowingService {
@@ -40,13 +41,13 @@ export class BorrowingService {
       let countNaskah = 0;
 
       for (const b of activeBorrowings) {
-        const type = b.archive.archiveType.toUpperCase().replace(' ', '_');
+        const type = b.archive?.archiveType?.toUpperCase().replace(' ', '_') || '';
         if (type === 'SKRIPSI') countSkripsi++;
         else if (type === 'RINGKASAN_SKRIPSI') countRingkasan++;
         else if (type === 'NASKAH_PUBLIKASI') countNaskah++;
       }
 
-      const reqType = archive.archiveType.toUpperCase().replace(' ', '_');
+      const reqType = archive.archiveType?.toUpperCase().replace(' ', '_') || '';
 
       if (reqType === 'SKRIPSI' && countSkripsi >= settings.maxActiveSkripsi) {
         throw new BadRequestException(
@@ -70,6 +71,38 @@ export class BorrowingService {
         );
       }
 
+      // Validasi 1 Pengguna Hanya Boleh 1 Arsip yang Sama
+      const existingActiveBorrowing = await tx.borrowing.findFirst({
+        where: {
+          userId: userId,
+          archiveId: archiveId,
+          status: {
+            in: ['REQUESTED', 'WAITING_PICKUP', 'BORROWED', 'OVERDUE'],
+          },
+        },
+      });
+
+      if (existingActiveBorrowing) {
+        throw new BadRequestException(
+          'Anda sedang mengajukan atau meminjam arsip ini. Tidak dapat meminjam 2 eksemplar yang sama secara bersamaan.',
+        );
+      }
+
+      // Validasi Pengguna Terkena Denda/Tunggakan Belum Lunas
+      const unpaidFinesCount = await tx.borrowing.count({
+        where: {
+          userId: userId,
+          fineAmount: { gt: 0 },
+          finePaidAt: null,
+        },
+      });
+
+      if (unpaidFinesCount > 0) {
+        throw new BadRequestException(
+          'Anda memiliki tagihan denda keterlambatan atau kerusakan yang belum dilunasi. Harap selesaikan administrasi denda terlebih dahulu.',
+        );
+      }
+
       const availableStock = archive.quantity - archive.reservedQuantity;
       if (availableStock <= 0) {
         throw new BadRequestException(
@@ -85,7 +118,7 @@ export class BorrowingService {
       });
 
       // Standar Unified Transaction Code: PK-XXXXXX
-      const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const randomCode = crypto.randomBytes(3).toString('hex').toUpperCase();
       const pickupCode = `PK-${randomCode}`;
 
       const borrowing = await tx.borrowing.create({
@@ -210,8 +243,8 @@ export class BorrowingService {
     }
 
     // Gunakan pickupCode yang sudah ada sejak pengajuan, atau generate format PK- baru jika belum ada
-    const randomString = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const pickupCode = borrowing.pickupCode || `PK-${randomString}`;
+    const randomCode = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const pickupCode = borrowing.pickupCode || `PK-${randomCode}`;
 
     return this.prisma.borrowing.update({
       where: { id: borrowingId },
