@@ -76,3 +76,27 @@ export function useRequestBorrowingMutation() {
     },
   });
 }
+
+export function useCancelBorrowingMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => borrowingService.cancel(id),
+    onSuccess: (data: any) => {
+      toast.success("Antrean Berhasil Dibatalkan", {
+        description:
+          data?.message || "Status pengajuan Anda telah diubah menjadi dibatalkan.",
+      });
+      queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: ["archives"] });
+    },
+    onError: (error: any) => {
+      const errorMsg =
+        error?.response?.data?.message ||
+        "Terjadi kesalahan sistem saat membatalkan antrean.";
+      toast.error("Gagal Membatalkan", {
+        description: errorMsg,
+      });
+    },
+  });
+}
+
