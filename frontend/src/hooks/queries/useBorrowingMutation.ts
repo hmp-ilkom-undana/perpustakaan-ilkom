@@ -84,7 +84,7 @@ export function useCancelBorrowingMutation() {
     onSuccess: (data: any) => {
       toast.success("Antrean Berhasil Dibatalkan", {
         description:
-          data?.message || "Status pengajuan Anda telah diubah menjadi CANCELLED.",
+          data?.message || "Status pengajuan Anda telah diubah menjadi dibatalkan.",
       });
       queryClient.invalidateQueries({ queryKey: [BORROWING_QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: ["archives"] });
