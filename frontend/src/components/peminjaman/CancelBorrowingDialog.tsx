@@ -72,7 +72,7 @@ export function CancelBorrowingDialog({
             onClick={onClose}
             disabled={isPending}
           >
-            Tutup / Batal
+            Kembali
           </Button>
           <Button
             type="button"
@@ -87,7 +87,7 @@ export function CancelBorrowingDialog({
                 Membatalkan...
               </>
             ) : (
-              "Ya, Batalkan Antrean"
+              "Batalkan Antrean"
             )}
           </Button>
         </DialogFooter>
