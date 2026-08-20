@@ -30,11 +30,14 @@ function addBusinessDays(
   daysToAdd: number,
   operatingDays: number[] = [1, 2, 3, 4, 5]
 ): Date {
-  const validDays = operatingDays.length ? operatingDays : [1, 2, 3, 4, 5];
+  const filteredDays = operatingDays?.filter((day) => day >= 0 && day <= 6) ?? [];
+  const validDays = filteredDays.length ? filteredDays : [1, 2, 3, 4, 5];
   const result = new Date(startDate);
   let added = 0;
-  while (added < daysToAdd) {
+  let safetyCounter = 0;
+  while (added < daysToAdd && safetyCounter < 100) {
     result.setDate(result.getDate() + 1);
+    safetyCounter++;
     if (validDays.includes(result.getDay())) {
       added++;
     }
@@ -118,7 +121,7 @@ export function useStudentBorrowing() {
           pickupDeadline,
         };
       });
-  }, [rawHistory]);
+  }, [rawHistory, setting]);
 
   const toggleTicket = (ticket: StudentTicketItem) => {
     setSelectedTicket((prev) => (prev?.id === ticket.id ? null : ticket));

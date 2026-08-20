@@ -29,7 +29,10 @@ export function CancelBorrowingDialog({
   if (!ticket) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => !open && !isPending && onClose()}
+    >
       <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3">
