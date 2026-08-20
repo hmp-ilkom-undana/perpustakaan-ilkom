@@ -115,4 +115,9 @@ export const borrowingService = {
     const response = await api.post("/api/borrowings", { archiveId });
     return response.data;
   },
+
+  cancel: async (id: string) => {
+    const response = await api.post(`/api/borrowings/${id}/cancel`);
+    return response.data;
+  },
 };
