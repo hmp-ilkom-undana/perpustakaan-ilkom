@@ -79,6 +79,8 @@ export function usePetugasCirculationDetail() {
   const resetPhoto = () => {
     setIsUploaded(false);
     setSelectedPhoto(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputGalleryRef.current) fileInputGalleryRef.current.value = "";
   };
 
   const handleApproveConfirm = async () => {
