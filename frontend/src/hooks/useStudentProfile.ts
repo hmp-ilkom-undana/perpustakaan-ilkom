@@ -158,7 +158,9 @@ export function useStudentProfile() {
 
   // Avatar Initials
   const initials = (user?.name || name || "Mahasiswa")
+    .trim()
     .split(" ")
+    .filter(Boolean)
     .map((n: string) => n[0])
     .slice(0, 2)
     .join("")

@@ -312,8 +312,10 @@ export class UserService {
         name: data.name?.trim() ? data.name.trim() : user.name,
         email: isEmailChanged ? targetEmail : user.email,
         wa_number:
-          data.wa_number !== undefined
+          typeof data.wa_number === 'string'
             ? data.wa_number.trim()
+            : data.wa_number === null
+            ? null
             : user.wa_number,
       },
     });
