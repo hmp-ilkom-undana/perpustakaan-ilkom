@@ -62,7 +62,7 @@ export class UserController {
   async updateProfile(
     @Param('id') id: string,
     @Req() req: Request,
-    @Body() body: { name?: string; email?: string },
+    @Body() body: { name?: string; email?: string; wa_number?: string },
   ) {
     const sessionData = await this.authService.auth.api.getSession({
       headers: req.headers as any,

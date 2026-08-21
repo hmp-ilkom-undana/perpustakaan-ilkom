@@ -30,6 +30,7 @@ import DashboardMahasiswa from "./pages/mahasiswa/DashboardMahasiswa";
 import Katalog from "./pages/mahasiswa/Katalog";
 import Peminjaman from "./pages/mahasiswa/Peminjaman";
 import Riwayat from "./pages/mahasiswa/Riwayat";
+import Profil from "./pages/mahasiswa/Profil";
 
 // Auth & Public Imports
 import Login from "./pages/Login";
@@ -203,7 +204,7 @@ const mahasiswaRiwayatRoute = createRoute({
 const mahasiswaProfilRoute = createRoute({
   getParentRoute: () => mahasiswaLayoutRoute,
   path: "profil",
-  component: () => <div>Profil & Pengaturan</div>,
+  component: Profil,
 });
 
 // 7. Assemble Route Tree

@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  UserCircle
+  UserCircle,
+  Loader2,
 } from "lucide-react";
 
 import { NavLogo } from "@/components/NavLogo";
@@ -22,9 +23,12 @@ export default function PetugasLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
+    if (isLoggingOut) return;
     try {
+      setIsLoggingOut(true);
       await authClient.signOut();
       toast.success("Berhasil Keluar!", {
         description: "Sesi Anda telah berhasil diakhiri.",
@@ -35,6 +39,7 @@ export default function PetugasLayout() {
       }, 1500);
     } catch {
       toast.error("Gagal keluar dari sistem");
+      setIsLoggingOut(false);
     }
   };
 
@@ -120,11 +125,16 @@ export default function PetugasLayout() {
           </div>
           <Button
             variant="outline"
-            className="w-full justify-start text-white border-slate-700 bg-transparent hover:bg-slate-800 hover:text-orange-500 hover:border-orange-500 transition-colors"
+            disabled={isLoggingOut}
+            className="w-full justify-start text-white border-slate-700 bg-transparent hover:bg-slate-800 hover:text-orange-500 hover:border-orange-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleLogout}
           >
-            <LogOut className="w-4 h-4 mr-2" />
-            Keluar
+            {isLoggingOut ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin text-orange-500" />
+            ) : (
+              <LogOut className="w-4 h-4 mr-2" />
+            )}
+            {isLoggingOut ? "Mengakhiri Sesi..." : "Keluar"}
           </Button>
         </div>
       </aside>
