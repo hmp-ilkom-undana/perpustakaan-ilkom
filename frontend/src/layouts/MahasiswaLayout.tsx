@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -41,11 +42,14 @@ export default function MahasiswaLayout() {
 
   // State untuk mengontrol buka-tutup menu mobile
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const scrolled = useScroll(10);
 
   const handleLogout = async () => {
+    if (isLoggingOut) return;
     try {
+      setIsLoggingOut(true);
       await authClient.signOut();
       toast.success("Berhasil Keluar!", {
         description: "Sesi Anda telah berhasil diakhiri.",
@@ -56,6 +60,7 @@ export default function MahasiswaLayout() {
       }, 1500);
     } catch {
       toast.error("Gagal keluar dari sistem");
+      setIsLoggingOut(false);
     }
   };
 
@@ -150,11 +155,16 @@ export default function MahasiswaLayout() {
                   <DropdownMenuSeparator className="my-1 border-t border-slate-200" />
 
                   <DropdownMenuItem
+                    disabled={isLoggingOut}
                     onClick={handleLogout}
-                    className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 rounded-md cursor-pointer transition-colors"
+                    className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 rounded-md cursor-pointer transition-colors data-disabled:opacity-50 data-disabled:pointer-events-none"
                   >
-                    <LogOut className="w-4 h-4 text-rose-600" />
-                    Keluar
+                    {isLoggingOut ? (
+                      <Loader2 className="w-4 h-4 text-rose-600 animate-spin" />
+                    ) : (
+                      <LogOut className="w-4 h-4 text-rose-600" />
+                    )}
+                    {isLoggingOut ? "Mengakhiri Sesi..." : "Keluar"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -234,11 +244,16 @@ export default function MahasiswaLayout() {
 
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-rose-600 border-2 border-rose-300 hover:bg-rose-50 font-bold shadow-[2px_2px_0px_#E11D48]"
+                  disabled={isLoggingOut}
+                  className="w-full justify-start text-rose-600 border-2 border-rose-300 hover:bg-rose-50 font-bold shadow-[2px_2px_0px_#E11D48] disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleLogout}
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Keluar
+                  {isLoggingOut ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <LogOut className="w-4 h-4 mr-2" />
+                  )}
+                  {isLoggingOut ? "Mengakhiri Sesi..." : "Keluar"}
                 </Button>
               </div>
             </div>

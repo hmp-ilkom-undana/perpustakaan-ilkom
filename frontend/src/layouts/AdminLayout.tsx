@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Settings,
   SlidersHorizontal,
+  Loader2,
 } from "lucide-react";
 
 import { NavLogo } from "@/components/NavLogo";
@@ -26,9 +27,12 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
+    if (isLoggingOut) return;
     try {
+      setIsLoggingOut(true);
       await authClient.signOut();
       toast.success("Berhasil Keluar!", {
         description: "Sesi Anda telah berhasil diakhiri.",
@@ -39,6 +43,7 @@ export default function AdminLayout() {
       }, 1500);
     } catch {
       toast.error("Gagal keluar dari sistem");
+      setIsLoggingOut(false);
     }
   };
 
@@ -146,11 +151,16 @@ export default function AdminLayout() {
 
           <Button
             variant="outline"
-            className="w-full justify-start text-white border-slate-700 bg-transparent hover:bg-slate-800 hover:text-rose-400 hover:border-rose-500 transition-colors text-xs"
+            disabled={isLoggingOut}
+            className="w-full justify-start text-white border-slate-700 bg-transparent hover:bg-slate-800 hover:text-rose-400 hover:border-rose-500 transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleLogout}
           >
-            <LogOut className="w-3.5 h-3.5 mr-2" />
-            Keluar
+            {isLoggingOut ? (
+              <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin text-rose-400" />
+            ) : (
+              <LogOut className="w-3.5 h-3.5 mr-2" />
+            )}
+            {isLoggingOut ? "Mengakhiri Sesi..." : "Keluar"}
           </Button>
         </div>
       </aside>
