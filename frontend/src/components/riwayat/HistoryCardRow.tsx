@@ -1,23 +1,14 @@
 import { BookOpen, Calendar, ChevronRight } from "lucide-react";
-import { Badge } from "./ui/badge";
-import { Card } from "./ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { StudentHistoryItem, HistoryStatus } from "@/hooks/useStudentHistory";
 
-export type HistoryStatus = "RETURNED" | "CANCELLED" | "REJECTED" | "DAMAGED" | "LOST";
-
-export interface HistoryItemProps {
-  id: string;
-  title: string;
-  type: string;
-  borrowDate: string;
-  returnDate: string;
-  status: HistoryStatus;
-  fine?: number;
-  paymentDate?: string;
-  note?: string;
-  pickupCode?: string;
+interface HistoryCardRowProps {
+  item: StudentHistoryItem;
+  onClick?: () => void;
 }
 
-export function HistoryRow({ item, onClick }: { item: HistoryItemProps; onClick?: () => void }) {
+export function HistoryCardRow({ item, onClick }: HistoryCardRowProps) {
   const getStatusBadge = (status: HistoryStatus) => {
     switch (status) {
       case "RETURNED":
@@ -36,7 +27,7 @@ export function HistoryRow({ item, onClick }: { item: HistoryItemProps; onClick?
   };
 
   return (
-    <Card 
+    <Card
       variant="interactive"
       onClick={onClick}
       className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
@@ -45,23 +36,25 @@ export function HistoryRow({ item, onClick }: { item: HistoryItemProps; onClick?
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A] text-blue-950 group-hover:bg-orange-500 group-hover:text-white transition-colors">
           <BookOpen className="h-5 w-5" />
         </div>
-        
+
         <div className="flex flex-col min-w-0 gap-1">
           <h4 className="text-sm font-black text-blue-950 truncate group-hover:text-orange-600 transition-colors">
             {item.title}
           </h4>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] font-bold text-slate-700 bg-slate-100 border border-blue-900/30 px-2 py-0.5 rounded-sm">
+            <span className="text-[10px] font-black uppercase text-blue-950 bg-slate-100 border border-blue-900 px-2 py-0.5 rounded-sm shadow-[1px_1px_0px_#1E3A8A]">
               {item.type}
             </span>
             <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
               <Calendar className="h-3.5 w-3.5 text-orange-500" />
-              <span>{item.borrowDate} &rarr; {item.returnDate}</span>
+              <span>
+                {item.borrowDate} &rarr; {item.returnDate}
+              </span>
             </div>
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between sm:justify-end gap-3 mt-1 sm:mt-0 pl-13 sm:pl-0">
         {getStatusBadge(item.status)}
         <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-orange-500 group-hover:translate-x-0.5 transition-all" />

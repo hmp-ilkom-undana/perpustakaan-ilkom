@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { BorrowingRow } from "@/components/BorrowingRow";
 import { StudentTicketItem } from "@/hooks/useStudentBorrowing";
 import { ActiveBorrowingDetail } from "./ActiveBorrowingDetail";
+import { cn } from "@/lib/utils";
 
 interface ActiveBorrowingCardProps {
   ticket: StudentTicketItem;
@@ -19,7 +20,13 @@ export function ActiveBorrowingCard({
   onContactAdmin,
 }: ActiveBorrowingCardProps) {
   return (
-    <Card className="overflow-hidden transition-all duration-200">
+    <Card
+      variant="interactive"
+      className={cn(
+        "overflow-hidden transition-all duration-200",
+        isExpanded && "border-orange-500 shadow-[4px_4px_0px_#F97316]"
+      )}
+    >
       {/* Baris Ringkasan Peminjaman */}
       <BorrowingRow
         id={ticket.id}
