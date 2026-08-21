@@ -273,6 +273,7 @@ export class UserService {
     data: {
       name?: string;
       email?: string;
+      wa_number?: string;
     },
   ) {
     const user = await this.prisma.user.findUnique({
@@ -310,6 +311,10 @@ export class UserService {
       data: {
         name: data.name?.trim() ? data.name.trim() : user.name,
         email: isEmailChanged ? targetEmail : user.email,
+        wa_number:
+          data.wa_number !== undefined
+            ? data.wa_number.trim()
+            : user.wa_number,
       },
     });
 
@@ -327,6 +332,7 @@ export class UserService {
         id: updated.id,
         name: updated.name,
         email: updated.email,
+        wa_number: updated.wa_number,
         role: updated.role,
       },
     };
