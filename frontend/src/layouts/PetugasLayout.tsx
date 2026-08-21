@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { 
-  LayoutDashboard, 
   ArrowRightLeft, 
   Library, 
   Receipt, 
@@ -44,7 +43,6 @@ export default function PetugasLayout() {
   };
 
   const menus = [
-    { name: "Dashboard", path: "/petugas", icon: LayoutDashboard },
     { name: "Sirkulasi", path: "/petugas/sirkulasi", icon: ArrowRightLeft },
     { name: "Katalog Data", path: "/petugas/katalog", icon: Library },
     { name: "Kelola Denda", path: "/petugas/denda", icon: Receipt },
