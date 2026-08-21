@@ -143,7 +143,7 @@ const petugasLayoutRoute = createRoute({
 const petugasIndexRoute = createRoute({
   getParentRoute: () => petugasLayoutRoute,
   path: "/",
-  component: DashboardPetugas,
+  component: () => <Navigate to="/petugas/sirkulasi" replace />,
 });
 
 const petugasSirkulasiRoute = createRoute({

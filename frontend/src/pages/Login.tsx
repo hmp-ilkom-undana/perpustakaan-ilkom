@@ -87,7 +87,7 @@ export default function Login() {
       });
 
       const role = user?.role;
-      const targetUrl = role === "ADMIN" ? "/admin" : role === "PETUGAS" ? "/petugas" : "/mahasiswa";
+      const targetUrl = role === "ADMIN" ? "/admin" : role === "PETUGAS" ? "/petugas/sirkulasi" : "/mahasiswa";
 
       // Berikan jeda 2 detik agar notifikasi ucapan selamat datang terbaca dengan jelas
       setTimeout(() => {

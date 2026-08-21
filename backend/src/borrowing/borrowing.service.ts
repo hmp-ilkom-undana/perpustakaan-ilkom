@@ -347,12 +347,20 @@ export class BorrowingService {
         throw new BadRequestException('Hanya peminjaman berstatus BORROWED atau OVERDUE yang bisa dikembalikan.');
       }
 
-      const timestamp = new Date().getTime();
-      const fileName = `SerahTerimaKembali_${borrowing.pickupCode}_${timestamp}.jpg`;
-      const fotoUrl = await this.driveService.uploadPhoto(file, fileName, 'PENGEMBALIAN');
-
       // Validasi Kondisi
       const kondisiKembali = kondisiStr === 'RUSAK' ? 'RUSAK' : (kondisiStr === 'HILANG' ? 'HILANG' : 'BAIK');
+
+      if (kondisiKembali !== 'HILANG' && !file) {
+        throw new BadRequestException('Foto bukti pengembalian fisik wajib diunggah.');
+      }
+
+      let fotoUrl: string | null = null;
+      if (file) {
+        const timestamp = new Date().getTime();
+        const fileName = `SerahTerimaKembali_${borrowing.pickupCode}_${timestamp}.jpg`;
+        fotoUrl = await this.driveService.uploadPhoto(file, fileName, 'PENGEMBALIAN');
+      }
+
       let newStatus: 'RETURNED' | 'DAMAGED' | 'LOST' = 'RETURNED';
       if (kondisiKembali === 'RUSAK') newStatus = 'DAMAGED';
       if (kondisiKembali === 'HILANG') newStatus = 'LOST';
