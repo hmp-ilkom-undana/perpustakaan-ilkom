@@ -17,7 +17,7 @@ export function CirculationHeader({ totalCount }: CirculationHeaderProps) {
             Pemantauan Sirkulasi
           </h1>
           <p className="text-slate-500 text-xs font-semibold mt-0.5">
-            Pantau pergerakan berkas fisik, konfirmasi penyerahan, dan catat pengembalian arsip.
+            Pantau pergerakan arsip fisik, konfirmasi penyerahan, dan catat pengembalian arsip.
           </p>
         </div>
       </div>

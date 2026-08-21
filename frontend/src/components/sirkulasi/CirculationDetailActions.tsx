@@ -6,9 +6,15 @@ import {
   UploadCloud,
   RefreshCw,
   AlertTriangle,
-  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { CircStatus } from "@/services/borrowing.service";
 import type { ReturnCondition } from "@/hooks/usePetugasCirculationDetail";
 
@@ -165,21 +171,26 @@ export function CirculationDetailActions({
             <label className="text-xs font-black uppercase tracking-wider text-blue-950 block">
               Kondisi Fisik Arsip saat Dikembalikan
             </label>
-            <select
+            <Select
               value={returnCondition}
-              onChange={(e) => {
-                onReturnConditionChange(e.target.value as ReturnCondition);
-                // Reset photo if switching to HILANG
-                if (e.target.value === "HILANG") {
-                  onResetPhoto();
+              onValueChange={(val) => {
+                if (val) {
+                  onReturnConditionChange(val as ReturnCondition);
+                  if (val === "HILANG") {
+                    onResetPhoto();
+                  }
                 }
               }}
-              className="w-full border-2 border-blue-900 rounded-lg p-3 text-xs md:text-sm font-bold text-blue-950 bg-white shadow-[2px_2px_0px_#1E3A8A] focus:shadow-[4px_4px_0px_#F97316] focus:border-orange-500 outline-none"
             >
-              <option value="BAIK">Bagus / Baik (Lengkap Tanpa Cacat)</option>
-              <option value="RUSAK">Rusak (Halaman Robek / Cacat Fisik)</option>
-              <option value="HILANG">Hilang (Tidak Ditemukan / Hilang)</option>
-            </select>
+              <SelectTrigger className="w-full h-11 text-xs md:text-sm font-bold text-blue-950 bg-white border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] rounded-lg">
+                <SelectValue placeholder="Pilih Kondisi Arsip" />
+              </SelectTrigger>
+              <SelectContent className="w-[var(--anchor-width)] max-w-[calc(100vw-48px)]">
+                <SelectItem value="BAIK">Bagus / Baik (Lengkap)</SelectItem>
+                <SelectItem value="RUSAK">Rusak (Cacat Fisik)</SelectItem>
+                <SelectItem value="HILANG">Hilang (Tidak Ditemukan)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* KONDISI 1: HILANG (Physical Book is Lost) */}
