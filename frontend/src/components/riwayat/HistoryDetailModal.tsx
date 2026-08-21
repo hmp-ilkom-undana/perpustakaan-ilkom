@@ -46,7 +46,12 @@ export function HistoryDetailModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader className="pr-8">
           <div className="flex items-center justify-between gap-2 mb-1">

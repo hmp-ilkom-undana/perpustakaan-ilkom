@@ -51,26 +51,22 @@ export function useStudentHistory() {
         const status = item.status as HistoryStatus;
         const fine = item.fineAmount;
 
-        const borrowDate = new Date(item.borrowDate).toLocaleDateString("id-ID", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        });
+        const formatDate = (dateStr: any) => {
+          if (!dateStr) return "-";
+          const date = new Date(dateStr);
+          return isNaN(date.getTime())
+            ? "-"
+            : date.toLocaleDateString("id-ID", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              });
+        };
 
-        const returnDate = item.returnDate
-          ? new Date(item.returnDate).toLocaleDateString("id-ID", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
-          : "-";
-
+        const borrowDate = formatDate(item.borrowDate);
+        const returnDate = formatDate(item.returnDate);
         const paymentDate = item.finePaidAt
-          ? new Date(item.finePaidAt).toLocaleDateString("id-ID", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
+          ? formatDate(item.finePaidAt)
           : undefined;
 
         const note = item.catatanKondisiKembali || "-";
