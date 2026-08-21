@@ -63,8 +63,7 @@ export function ProfilePasswordCard({
           Keamanan & Ganti Kata Sandi
         </CardTitle>
         <CardDescription className="text-xs text-slate-600 font-medium">
-          Ganti kata sandi secara berkala untuk menjaga keamanan akun portal
-          peminjaman Anda.
+          Ganti kata sandi secara berkala untuk menjaga keamanan akun Anda.
         </CardDescription>
       </CardHeader>
 

@@ -86,10 +86,6 @@ export function ProfileBiodataCard({
               placeholder="contoh: 082339113591"
               className="border-2 border-blue-900 rounded-md font-semibold text-sm focus-visible:ring-blue-900"
             />
-            <p className="text-[11px] text-slate-500 font-medium">
-              Nomor ini digunakan petugas perpustakaan untuk konfirmasi
-              pengambilan arsip dan denda.
-            </p>
           </div>
 
           {/* 3. NIM (Read-Only) */}
@@ -145,8 +141,8 @@ export function ProfileBiodataCard({
             <div className="p-3 bg-amber-50 border-2 border-amber-300 rounded-md text-xs text-amber-900 font-medium flex items-start gap-2">
               <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
               <span>
-                Terdapat perubahan data yang belum disimpan. Klik tombol di bawah
-                untuk menyimpan.
+                Terdapat perubahan data yang belum disimpan. Klik tombol di
+                bawah untuk menyimpan.
               </span>
             </div>
           ) : (

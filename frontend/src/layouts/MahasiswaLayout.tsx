@@ -120,16 +120,6 @@ export default function MahasiswaLayout() {
             <div className="hidden md:flex items-center">
               <DropdownMenu>
                 <DropdownMenuTrigger className="group flex items-center gap-3 py-1.5 px-3 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:border-orange-500 hover:shadow-[3px_3px_0px_#F97316] hover:-translate-y-0.5 transition-all cursor-pointer text-left select-none outline-none">
-                  {/* Avatar Inisial */}
-                  <div className="w-8 h-8 rounded-md bg-orange-100 border border-blue-900 text-blue-950 font-black text-xs flex items-center justify-center shrink-0 group-hover:bg-orange-500 group-hover:text-white transition-colors">
-                    {(session?.user?.name || "M")
-                      .split(" ")
-                      .map((n) => n[0])
-                      .slice(0, 2)
-                      .join("")
-                      .toUpperCase()}
-                  </div>
-
                   <div className="flex flex-col min-w-0 pr-1">
                     <span className="text-xs font-black text-blue-950 truncate max-w-[140px] group-hover:text-orange-600 transition-colors leading-tight">
                       {session?.user?.name || "Mahasiswa"}
@@ -138,7 +128,6 @@ export default function MahasiswaLayout() {
                       NIM: {session?.user?.nim || "-"}
                     </span>
                   </div>
-
                   <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-orange-500 group-hover:translate-y-0.5 transition-all shrink-0" />
                 </DropdownMenuTrigger>
 
