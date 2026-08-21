@@ -68,13 +68,18 @@ export function HistoryDetailDialog({ isOpen, onOpenChange, item }: HistoryDetai
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <div className="flex items-center gap-2 mb-1">
-            {getStatusBadge(item.status)}
-            <Badge variant="outline">{item.type}</Badge>
-            <span className="text-xs font-mono font-black text-blue-950 ml-auto tracking-wider">
+        <DialogHeader className="pr-8">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              {getStatusBadge(item.status)}
+              <Badge variant="outline">{item.type}</Badge>
+            </div>
+            <Badge
+              variant="outline"
+              className="bg-slate-100 font-mono text-xs font-black text-blue-950 tracking-wider shadow-[1px_1px_0px_#1E3A8A] shrink-0"
+            >
               {item.pickupCode}
-            </span>
+            </Badge>
           </div>
           <DialogTitle>
             {item.title}
