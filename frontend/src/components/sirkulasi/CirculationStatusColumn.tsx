@@ -3,19 +3,19 @@ import { Badge } from "@/components/ui/badge";
 import { CirculationCard } from "./CirculationCard";
 import { CirculationEmptyState } from "./CirculationEmptyState";
 
-interface CirculationKanbanColumnProps {
+interface CirculationStatusColumnProps {
   column: StatusColumnConfig;
   isActiveOnMobile: boolean;
   onSelectCard: (id: string) => void;
   isFiltered: boolean;
 }
 
-export function CirculationKanbanColumn({
+export function CirculationStatusColumn({
   column,
   isActiveOnMobile,
   onSelectCard,
   isFiltered,
-}: CirculationKanbanColumnProps) {
+}: CirculationStatusColumnProps) {
   const Icon = column.icon;
 
   return (
