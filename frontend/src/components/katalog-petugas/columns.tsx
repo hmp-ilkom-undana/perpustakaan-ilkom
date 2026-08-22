@@ -89,7 +89,7 @@ export function getKatalogColumns({
           <div className="flex flex-col gap-1 items-center justify-center text-center">
             <Badge
               variant="outline"
-              className="text-xs font-black"
+              className="text-xs font-black h-auto py-0.5 px-2.5 whitespace-normal text-center max-w-full"
             >
               {item.type}
             </Badge>

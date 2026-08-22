@@ -128,12 +128,9 @@ export function KatalogDetailSheet({
                     Jenis Arsip
                   </span>
                 </div>
-                <Badge
-                  variant="outline"
-                  className="font-bold text-xs bg-slate-50"
-                >
+                <p className="font-bold text-slate-900 text-sm">
                   {currentItem?.archiveType || currentItem?.type || "-"}
-                </Badge>
+                </p>
               </div>
 
               {/* KATEGORI BIDANG */}

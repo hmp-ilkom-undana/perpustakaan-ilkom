@@ -23,9 +23,9 @@ export class ArchiveService {
       1,
       Number.isInteger(params.page) ? params.page : 1,
     );
-    const limitNum = Math.max(
-      1,
-      Number.isInteger(params.limit) ? params.limit : 10,
+    const limitNum = Math.min(
+      100,
+      Math.max(1, Number.isInteger(params.limit) ? params.limit : 10),
     );
     const { search, type, category, availability, userId } = params;
     const skip = (pageNum - 1) * limitNum;
