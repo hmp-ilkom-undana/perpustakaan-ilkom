@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { DataTable } from "@/components/ui/data-table";
-import { getKatalogColumns } from "@/components/katalog/columns";
+import { getKatalogColumns } from "./columns";
 import { CatalogItem } from "@/types/katalog";
 
-interface Props {
+interface KatalogTableProps {
   data: CatalogItem[];
   isLoading: boolean;
   currentPage: number;
@@ -13,7 +13,7 @@ interface Props {
   onDelete: (item: CatalogItem) => void;
 }
 
-export function KatalogDesktopTable({
+export function KatalogTable({
   data,
   isLoading,
   currentPage,
@@ -21,7 +21,7 @@ export function KatalogDesktopTable({
   onDetail,
   onEdit,
   onDelete,
-}: Props) {
+}: KatalogTableProps) {
   const columns = useMemo(
     () =>
       getKatalogColumns({
@@ -40,7 +40,7 @@ export function KatalogDesktopTable({
         columns={columns}
         data={data}
         isLoading={isLoading}
-        emptyText="Data tidak ditemukan"
+        emptyText="Tidak ada arsip yang cocok dengan pencarian."
       />
     </div>
   );

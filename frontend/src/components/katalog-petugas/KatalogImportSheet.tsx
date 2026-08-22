@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { FileUp, Loader2 } from "lucide-react";
 import { ArchiveType } from "@/types/katalog";
 
-interface Props {
+interface KatalogImportSheetProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   importType: ArchiveType;
@@ -37,12 +37,12 @@ export function KatalogImportSheet({
   isImporting,
   onImport,
   fileInputRef,
-}: Props) {
+}: KatalogImportSheetProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md overflow-y-auto z-[60] bg-white border-l-4 border-blue-900 [box-shadow:-6px_0px_0px_#1E3A8A] p-6 flex flex-col justify-between"
+        className="w-full sm:max-w-md overflow-y-auto z-[60] bg-white border-l-4 border-blue-900 shadow-[-6px_0px_0px_#1E3A8A] p-6 flex flex-col justify-between"
       >
         <div className="space-y-6">
           <SheetHeader className="p-0 border-b-2 border-blue-900 pb-4 text-left">
@@ -62,11 +62,12 @@ export function KatalogImportSheet({
               <Select
                 value={importType}
                 onValueChange={(val) => val && setImportType(val as ArchiveType)}
+                disabled={isImporting}
               >
-                <SelectTrigger className="w-full border-2 border-blue-900 bg-white font-bold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] rounded-none h-10">
+                <SelectTrigger className="w-full border-2 border-blue-900 bg-white font-bold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] rounded-lg h-11">
                   <SelectValue placeholder="Pilih Jenis" />
                 </SelectTrigger>
-                <SelectContent className="border-2 border-blue-900 bg-white [box-shadow:4px_4px_0px_#1E3A8A] rounded-none">
+                <SelectContent className="w-[var(--anchor-width)] max-w-[calc(100vw-32px)]">
                   <SelectItem value="Skripsi">Skripsi</SelectItem>
                   <SelectItem value="Ringkasan Skripsi">
                     Ringkasan Skripsi
@@ -87,7 +88,7 @@ export function KatalogImportSheet({
                 accept=".xlsx, .xls"
                 ref={fileInputRef}
                 disabled={isImporting}
-                className="border-2 border-blue-900 bg-white font-semibold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] focus-visible:ring-0 rounded-none file:mr-3 file:py-1 file:px-3 file:border-2 file:border-blue-900 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-950 cursor-pointer"
+                className="border-2 border-blue-900 bg-white font-semibold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 rounded-lg h-11 file:mr-3 file:py-1 file:px-3 file:border-2 file:border-blue-900 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-950 cursor-pointer"
               />
             </div>
           </div>
@@ -99,7 +100,7 @@ export function KatalogImportSheet({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isImporting}
-            className="w-full sm:w-1/2 border-2 border-blue-900 font-bold text-blue-900 bg-slate-100 hover:bg-slate-200 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-none transition-all cursor-pointer"
+            className="w-full sm:w-1/2 font-bold"
           >
             Batal
           </Button>
@@ -107,7 +108,8 @@ export function KatalogImportSheet({
             type="button"
             onClick={onImport}
             disabled={isImporting}
-            className="w-full sm:w-1/2 bg-emerald-500 hover:bg-emerald-600 text-blue-950 font-black border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-none transition-all cursor-pointer"
+            variant="success"
+            className="w-full sm:w-1/2 font-black"
           >
             {isImporting ? (
               <>

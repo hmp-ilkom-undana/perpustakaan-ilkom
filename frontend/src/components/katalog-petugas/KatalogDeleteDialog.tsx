@@ -7,10 +7,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import { CatalogItem } from "@/types/katalog";
 
-interface Props {
+interface KatalogDeleteDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   item: CatalogItem | null;
@@ -24,38 +25,38 @@ export function KatalogDeleteDialog({
   item,
   onConfirm,
   isDeleting = false,
-}: Props) {
+}: KatalogDeleteDialogProps) {
   if (!item) return null;
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="border-2 border-blue-900 bg-white [box-shadow:4px_4px_0px_#1E3A8A] max-w-md p-6">
+      <AlertDialogContent className="border-2 border-blue-900 bg-white shadow-[4px_4px_0px_#1E3A8A] rounded-xl max-w-md p-6">
         <AlertDialogHeader className="flex flex-col items-center sm:items-start text-center sm:text-left gap-1">
-          <div className="w-12 h-12 rounded-full bg-red-100 border-2 border-red-600 flex items-center justify-center text-red-600 mb-2">
+          <div className="w-12 h-12 rounded-xl bg-rose-100 border-2 border-rose-600 flex items-center justify-center text-rose-600 mb-2 shadow-[2px_2px_0px_#E11D48]">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <AlertDialogTitle className="text-xl font-black text-blue-950">
             Hapus Data Arsip?
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-sm text-slate-600 mt-1">
-            Tindakan ini tidak dapat dibatalkan. Data arsip berikut akan dihapus secara permanen dari database:
+          <AlertDialogDescription className="text-xs font-semibold text-slate-600 mt-1">
+            Tindakan ini tidak dapat dibatalkan. Data arsip berikut akan dihapus secara permanen dari basis data perpustakaan:
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         {/* ITEM CARD PREVIEW */}
-        <div className="bg-slate-50 border-2 border-slate-300 p-3.5 my-2 space-y-1.5 text-left">
+        <div className="bg-slate-50 border-2 border-blue-900/40 rounded-lg p-3.5 my-2 space-y-1.5 text-left shadow-[2px_2px_0px_#1E3A8A]">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-black bg-amber-300 text-blue-950 px-2 py-0.5 border border-blue-900">
+            <Badge variant="amber" className="font-mono text-xs font-black">
               {item.archiveCode}
-            </span>
+            </Badge>
             <span className="text-xs font-bold text-slate-500 uppercase">
               {item.type}
             </span>
           </div>
-          <p className="font-bold text-sm text-blue-950 line-clamp-2">
+          <p className="font-black text-sm text-blue-950 line-clamp-2">
             {item.title}
           </p>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs font-semibold text-slate-500">
             Penulis: {item.author} ({item.year})
           </p>
         </div>
@@ -65,14 +66,15 @@ export function KatalogDeleteDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isDeleting}
-            className="border-2 border-blue-900 font-bold text-blue-900"
+            className="w-full sm:w-auto font-bold"
           >
             Batal
           </Button>
           <Button
             onClick={onConfirm}
             disabled={isDeleting}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold border-2 border-red-900 [box-shadow:2px_2px_0px_#7f1d1d] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#7f1d1d]"
+            variant="destructive"
+            className="w-full sm:w-auto font-black"
           >
             {isDeleting ? (
               <>

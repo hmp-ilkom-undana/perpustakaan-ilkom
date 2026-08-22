@@ -39,6 +39,11 @@ model Archive {
   shelfLocation String?         
   borrowings    Borrowing[]
   createdAt     DateTime        @default(now())
+
+  @@index([category])
+  @@index([archiveType])
+  @@index([status])
+  @@index([createdAt])
 }
 
 
@@ -71,6 +76,10 @@ model Borrowing {
   user                  User         @relation(fields: [userId], references: [id])
   archive               Archive      @relation(fields: [archiveId], references: [id])
 
+  @@index([userId])
+  @@index([archiveId])
+  @@index([status])
+  @@index([borrowDate])
 }
 
 enum Role {

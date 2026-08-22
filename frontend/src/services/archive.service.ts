@@ -64,6 +64,11 @@ export const archiveService = {
     };
   },
 
+  getById: async (id: string) => {
+    const response = await api.get(`/api/archives/${id}`);
+    return response.data;
+  },
+
   create: async (payload: ArchivePayload) => {
     const response = await api.post("/api/archives", payload);
     return response.data;

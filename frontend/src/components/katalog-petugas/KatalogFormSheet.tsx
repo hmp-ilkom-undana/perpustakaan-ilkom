@@ -16,15 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Package, Save } from "lucide-react";
+import { Package, Save, Loader2 } from "lucide-react";
 import { CatalogItem, ArchiveCategory, ArchiveType } from "@/types/katalog";
+import type { CatalogFormData } from "@/hooks/usePetugasKatalog";
 
-interface Props {
+interface KatalogFormSheetProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   editingItem: CatalogItem | null;
-  formData: Partial<CatalogItem>;
-  setFormData: (data: Partial<CatalogItem>) => void;
+  formData: CatalogFormData;
+  setFormData: React.Dispatch<React.SetStateAction<CatalogFormData>>;
+  isSaving: boolean;
   onSave: () => void;
 }
 
@@ -34,13 +36,14 @@ export function KatalogFormSheet({
   editingItem,
   formData,
   setFormData,
+  isSaving,
   onSave,
-}: Props) {
+}: KatalogFormSheetProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-lg overflow-y-auto z-[60] bg-white border-l-4 border-blue-900 [box-shadow:-6px_0px_0px_#1E3A8A] p-6 flex flex-col justify-between"
+        className="w-full sm:max-w-lg overflow-y-auto z-[60] bg-white border-l-4 border-blue-900 shadow-[-6px_0px_0px_#1E3A8A] p-6 flex flex-col justify-between"
       >
         <div className="space-y-6">
           {/* HEADER */}
@@ -50,15 +53,15 @@ export function KatalogFormSheet({
                 {editingItem ? "Edit Data Arsip" : "Tambah Arsip Baru"}
               </SheetTitle>
               {editingItem && (
-                <span className="font-mono text-xs font-black bg-amber-300 text-blue-950 px-2.5 py-1 border-2 border-blue-900 [box-shadow:2px_2px_0px_#1E3A8A]">
+                <span className="font-mono text-xs font-black bg-amber-300 text-blue-950 px-2.5 py-1 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] rounded">
                   {editingItem.archiveCode}
                 </span>
               )}
             </div>
             <SheetDescription className="text-xs font-semibold text-slate-600 mt-1">
               {editingItem
-                ? "Perbarui rincian informasi dan metadata arsip ini."
-                : "Silakan isi formulir di bawah ini dengan data arsip baru."}
+                ? "Perbarui rincian informasi dan metadata arsip perpustakaan ini."
+                : "Silakan isi formulir di bawah ini dengan lengkap untuk menambahkan data arsip baru."}
             </SheetDescription>
           </SheetHeader>
 
@@ -70,16 +73,17 @@ export function KatalogFormSheet({
                 htmlFor="title"
                 className="font-black text-xs uppercase tracking-wider text-blue-950"
               >
-                Judul Arsip <span className="text-red-600">*</span>
+                Judul Arsip <span className="text-rose-600">*</span>
               </Label>
               <Input
                 id="title"
                 placeholder="Contoh: Sistem Pendukung Keputusan..."
-                value={formData.title || ""}
+                value={formData.title}
                 onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
+                  setFormData((prev) => ({ ...prev, title: e.target.value }))
                 }
-                className="border-2 border-blue-900 bg-white font-semibold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-none h-10 placeholder:text-slate-400"
+                disabled={isSaving}
+                className="border-2 border-blue-900 bg-white font-semibold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-lg h-11 placeholder:text-slate-400"
               />
             </div>
 
@@ -89,16 +93,17 @@ export function KatalogFormSheet({
                 htmlFor="author"
                 className="font-black text-xs uppercase tracking-wider text-blue-950"
               >
-                Penulis / Pengarang <span className="text-red-600">*</span>
+                Penulis / Pengarang <span className="text-rose-600">*</span>
               </Label>
               <Input
                 id="author"
                 placeholder="Nama Mahasiswa / Penulis"
-                value={formData.author || ""}
+                value={formData.author}
                 onChange={(e) =>
-                  setFormData({ ...formData, author: e.target.value })
+                  setFormData((prev) => ({ ...prev, author: e.target.value }))
                 }
-                className="border-2 border-blue-900 bg-white font-semibold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-none h-10 placeholder:text-slate-400"
+                disabled={isSaving}
+                className="border-2 border-blue-900 bg-white font-semibold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-lg h-11 placeholder:text-slate-400"
               />
             </div>
 
@@ -109,20 +114,21 @@ export function KatalogFormSheet({
                   htmlFor="year"
                   className="font-black text-xs uppercase tracking-wider text-blue-950"
                 >
-                  Tahun Terbit <span className="text-red-600">*</span>
+                  Tahun Terbit <span className="text-rose-600">*</span>
                 </Label>
                 <Input
                   id="year"
                   type="number"
                   placeholder="2024"
-                  value={formData.year ?? ""}
+                  value={formData.year}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      year: parseInt(e.target.value) || 0,
-                    })
+                    setFormData((prev) => ({
+                      ...prev,
+                      year: e.target.value === "" ? "" : parseInt(e.target.value, 10) || "",
+                    }))
                   }
-                  className="border-2 border-blue-900 bg-white font-semibold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-none h-10"
+                  disabled={isSaving}
+                  className="border-2 border-blue-900 bg-white font-semibold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-lg h-11"
                 />
               </div>
 
@@ -131,21 +137,22 @@ export function KatalogFormSheet({
                   htmlFor="stock"
                   className="font-black text-xs uppercase tracking-wider text-blue-950"
                 >
-                  Jumlah Stok <span className="text-red-600">*</span>
+                  Jumlah Stok <span className="text-rose-600">*</span>
                 </Label>
                 <Input
                   id="stock"
                   type="number"
                   min={0}
                   placeholder="1"
-                  value={formData.stock ?? ""}
+                  value={formData.stock}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      stock: parseInt(e.target.value) || 0,
-                    })
+                    setFormData((prev) => ({
+                      ...prev,
+                      stock: e.target.value === "" ? "" : parseInt(e.target.value, 10) || 0,
+                    }))
                   }
-                  className="border-2 border-blue-900 bg-white font-semibold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-none h-10"
+                  disabled={isSaving}
+                  className="border-2 border-blue-900 bg-white font-semibold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-lg h-11"
                 />
               </div>
             </div>
@@ -153,18 +160,20 @@ export function KatalogFormSheet({
             {/* JENIS ARSIP */}
             <div className="space-y-1.5">
               <Label className="font-black text-xs uppercase tracking-wider text-blue-950">
-                Jenis Arsip <span className="text-red-600">*</span>
+                Jenis Arsip <span className="text-rose-600">*</span>
               </Label>
               <Select
                 value={formData.type || "Skripsi"}
                 onValueChange={(val) =>
-                  val && setFormData({ ...formData, type: val as ArchiveType })
+                  val &&
+                  setFormData((prev) => ({ ...prev, type: val as ArchiveType }))
                 }
+                disabled={isSaving}
               >
-                <SelectTrigger className="w-full border-2 border-blue-900 bg-white font-bold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] rounded-none h-10">
+                <SelectTrigger className="w-full border-2 border-blue-900 bg-white font-bold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] rounded-lg h-11">
                   <SelectValue placeholder="Pilih Jenis Arsip" />
                 </SelectTrigger>
-                <SelectContent className="border-2 border-blue-900 bg-white [box-shadow:4px_4px_0px_#1E3A8A] rounded-none">
+                <SelectContent className="w-[var(--anchor-width)] max-w-[calc(100vw-32px)]">
                   <SelectItem value="Skripsi">Skripsi</SelectItem>
                   <SelectItem value="Ringkasan Skripsi">
                     Ringkasan Skripsi
@@ -179,22 +188,23 @@ export function KatalogFormSheet({
             {/* KATEGORI BIDANG */}
             <div className="space-y-1.5">
               <Label className="font-black text-xs uppercase tracking-wider text-blue-950">
-                Kategori Bidang <span className="text-red-600">*</span>
+                Kategori Bidang <span className="text-rose-600">*</span>
               </Label>
               <Select
                 value={formData.category || "Umum"}
                 onValueChange={(val) =>
                   val &&
-                  setFormData({
-                    ...formData,
+                  setFormData((prev) => ({
+                    ...prev,
                     category: val as ArchiveCategory,
-                  })
+                  }))
                 }
+                disabled={isSaving}
               >
-                <SelectTrigger className="w-full border-2 border-blue-900 bg-white font-bold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] rounded-none h-10">
+                <SelectTrigger className="w-full border-2 border-blue-900 bg-white font-bold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] rounded-lg h-11">
                   <SelectValue placeholder="Pilih Kategori Bidang" />
                 </SelectTrigger>
-                <SelectContent className="border-2 border-blue-900 bg-white [box-shadow:4px_4px_0px_#1E3A8A] rounded-none">
+                <SelectContent className="w-[var(--anchor-width)] max-w-[calc(100vw-32px)]">
                   <SelectItem value="Machine Learning">
                     Machine Learning
                   </SelectItem>
@@ -215,16 +225,17 @@ export function KatalogFormSheet({
                 htmlFor="location"
                 className="font-black text-xs uppercase tracking-wider text-blue-950"
               >
-                Lokasi Rak Fisik <span className="text-red-600">*</span>
+                Lokasi Rak Fisik <span className="text-rose-600">*</span>
               </Label>
               <Input
                 id="location"
                 placeholder="Contoh: Rak-A1 atau Lemari B"
-                value={formData.location || ""}
+                value={formData.location}
                 onChange={(e) =>
-                  setFormData({ ...formData, location: e.target.value })
+                  setFormData((prev) => ({ ...prev, location: e.target.value }))
                 }
-                className="border-2 border-blue-900 bg-white font-semibold text-blue-950 [box-shadow:2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-none h-10 placeholder:text-slate-400"
+                disabled={isSaving}
+                className="border-2 border-blue-900 bg-white font-semibold text-blue-950 shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-blue-900 rounded-lg h-11 placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -236,16 +247,24 @@ export function KatalogFormSheet({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="w-full sm:w-1/2 border-2 border-blue-900 font-bold text-blue-900 bg-slate-100 hover:bg-slate-200 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-none transition-all cursor-pointer"
+            disabled={isSaving}
+            className="w-full sm:w-1/2 font-bold"
           >
             Batal
           </Button>
           <Button
             type="button"
             onClick={onSave}
-            className="w-full sm:w-1/2 bg-orange-500 hover:bg-orange-600 text-white font-black border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-none transition-all cursor-pointer"
+            disabled={isSaving}
+            variant="default"
+            className="w-full sm:w-1/2 font-black"
           >
-            {editingItem ? (
+            {isSaving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Menyimpan...
+              </>
+            ) : editingItem ? (
               <>
                 <Save className="w-4 h-4 mr-2" />
                 Perbarui Data

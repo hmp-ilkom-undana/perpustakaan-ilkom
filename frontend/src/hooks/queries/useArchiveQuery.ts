@@ -18,3 +18,13 @@ export function usePublicArchiveQuery(params?: ArchiveQueryParams) {
     placeholderData: (prev) => prev,
   });
 }
+
+export function useArchiveDetailQuery(id: string | null) {
+  return useQuery({
+    queryKey: [ARCHIVE_QUERY_KEY, "detail", id],
+    queryFn: () => (id ? archiveService.getById(id) : null),
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
