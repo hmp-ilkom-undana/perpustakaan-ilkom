@@ -84,6 +84,7 @@ export class FineService {
         archive: true,
       },
       orderBy: [{ finePaidAt: 'desc' }, { borrowDate: 'desc' }],
+      take: 100,
     });
 
     return borrowings.map((b) => this.mapFine(b));

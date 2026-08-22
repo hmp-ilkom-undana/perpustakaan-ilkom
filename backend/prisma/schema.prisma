@@ -80,6 +80,8 @@ model Borrowing {
   @@index([archiveId])
   @@index([status])
   @@index([borrowDate])
+  @@index([finePaidAt])
+  @@index([fineAmount])
 }
 
 enum Role {
