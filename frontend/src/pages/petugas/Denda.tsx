@@ -21,6 +21,7 @@ export default function Denda() {
     handleClearSearch,
     isPaymentOpen,
     setIsPaymentOpen,
+    handleClosePayment,
     selectedFine,
     paymentMethod,
     setPaymentMethod,
@@ -64,7 +65,10 @@ export default function Denda() {
       {/* 5. Cashier Payment Modal Dialog */}
       <FinePaymentDialog
         isOpen={isPaymentOpen}
-        onOpenChange={setIsPaymentOpen}
+        onOpenChange={(open) => {
+          if (!open) handleClosePayment();
+          else setIsPaymentOpen(true);
+        }}
         selectedFine={selectedFine}
         paymentMethod={paymentMethod}
         onPaymentMethodChange={setPaymentMethod}
