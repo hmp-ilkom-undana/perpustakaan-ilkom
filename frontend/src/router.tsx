@@ -23,6 +23,7 @@ import Sirkulasi from "./pages/petugas/Sirkulasi";
 import SirkulasiDetail from "./pages/petugas/SirkulasiDetail";
 import KatalogAdmin from "./pages/petugas/KatalogAdmin";
 import Denda from "./pages/petugas/Denda";
+import ProfilPetugas from "./pages/petugas/ProfilPetugas";
 
 // Mahasiswa Imports
 import MahasiswaLayout from "./layouts/MahasiswaLayout";
@@ -170,6 +171,12 @@ const petugasDendaRoute = createRoute({
   component: Denda,
 });
 
+const petugasProfilRoute = createRoute({
+  getParentRoute: () => petugasLayoutRoute,
+  path: "profil",
+  component: ProfilPetugas,
+});
+
 // 6. Mahasiswa Layout & Routes
 const mahasiswaLayoutRoute = createRoute({
   getParentRoute: () => authenticatedRoute,
@@ -230,6 +237,7 @@ const routeTree = rootRoute.addChildren([
       petugasSirkulasiDetailRoute,
       petugasKatalogRoute,
       petugasDendaRoute,
+      petugasProfilRoute,
     ]),
     mahasiswaLayoutRoute.addChildren([
       mahasiswaIndexRoute,

@@ -1,4 +1,4 @@
-import { Mail, ShieldCheck, Calendar, Sparkles } from "lucide-react";
+import { Mail, ShieldCheck, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface PetugasProfileHeaderProps {
@@ -41,11 +41,6 @@ export function PetugasProfileHeader({
               {email || "petugas@ilkom.com"}
             </span>
           </div>
-
-          <p className="text-xs text-slate-500 font-medium flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5 text-slate-400" />
-            Akun Hak Akses Sirkulasi & Katalog Petugas
-          </p>
         </div>
       </div>
 

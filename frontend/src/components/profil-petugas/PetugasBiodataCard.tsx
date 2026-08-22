@@ -107,7 +107,7 @@ export function PetugasBiodataCard({
             <Input
               id="petugas-role"
               type="text"
-              value="PETUGAS PERPUSTAKAAN (Staff Panel)"
+              value="PETUGAS PERPUSTAKAAN"
               disabled
               readOnly
               className="border-2 border-slate-300 bg-slate-100 text-slate-600 rounded-md font-bold text-sm cursor-not-allowed"
