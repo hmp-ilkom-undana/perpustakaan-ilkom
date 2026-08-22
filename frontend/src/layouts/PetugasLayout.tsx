@@ -115,20 +115,15 @@ export default function PetugasLayout() {
 
         {/* User Profile & Logout */}
         <div className="p-4 border-t border-slate-800">
-          <Link
-            to="/petugas/profil"
-            onClick={() => setIsSidebarOpen(false)}
-            className="flex items-center gap-3 px-2 py-1.5 mb-3 rounded-lg hover:bg-slate-800 transition-colors group cursor-pointer"
-            title="Buka Pengaturan Profil Saya"
-          >
-            <UserCircle className="w-10 h-10 text-slate-400 group-hover:text-orange-500 transition-colors shrink-0" />
+          <div className="flex items-center gap-3 px-2 mb-4">
+            <UserCircle className="w-10 h-10 text-slate-400 shrink-0" />
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-white truncate group-hover:text-orange-400 transition-colors">
+              <p className="text-sm font-bold text-white truncate">
                 {session?.user?.name || "Petugas"}
               </p>
               <p className="text-xs text-slate-400 truncate">{session?.user?.email || "petugas@ilkom.com"}</p>
             </div>
-          </Link>
+          </div>
           <Button
             variant="outline"
             disabled={isLoggingOut}

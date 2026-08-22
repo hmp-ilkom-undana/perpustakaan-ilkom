@@ -17,15 +17,23 @@ export function usePetugasProfile() {
   // 1. BIODATA STATES (NAMA TAMPILAN PETUGAS)
   const [name, setName] = useState(user?.name || "");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const reloadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sinkronisasi data sesi awal setelah useSession selesai memuat
-  const isInitialized = useRef(false);
+  // Sinkronisasi data sesi nama user jika berubah
   useEffect(() => {
-    if (user && !isInitialized.current) {
-      if (user.name) setName(user.name);
-      isInitialized.current = true;
+    if (user?.name) {
+      setName(user.name);
     }
-  }, [user]);
+  }, [user?.name]);
+
+  // Cleanup timeout saat komponen di-unmount
+  useEffect(() => {
+    return () => {
+      if (reloadTimeoutRef.current) {
+        clearTimeout(reloadTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // 2. PASSWORD STATES (KEAMANAN KATA SANDI)
   const [currentPassword, setCurrentPassword] = useState("");
@@ -118,8 +126,8 @@ export function usePetugasProfile() {
         duration: 3000,
       });
 
-      // Reload singkat untuk sinkronisasi cookie session
-      setTimeout(() => {
+      // Reload singkat untuk sinkronisasi cookie session dengan proteksi ref
+      reloadTimeoutRef.current = setTimeout(() => {
         window.location.reload();
       }, 1500);
     } catch (err: any) {
