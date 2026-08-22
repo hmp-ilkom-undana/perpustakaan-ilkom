@@ -36,7 +36,7 @@ export function KatalogDetailSheet({
 }: KatalogDetailSheetProps) {
   // Use TanStack Query caching for detail fetch
   const { data: detailData, isLoading } = useArchiveDetailQuery(
-    isOpen && item?.id ? item.id : null
+    item?.id || null
   );
 
   const currentItem = detailData || item;

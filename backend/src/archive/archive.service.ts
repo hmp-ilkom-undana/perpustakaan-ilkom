@@ -19,13 +19,20 @@ export class ArchiveService {
     userId?: string;
   }) {
     // Lapisan pertahanan kedua: pastikan nilai page dan limit selalu angka valid (>= 1)
+    const parsedPage =
+      typeof params.page === 'string' ? parseInt(params.page, 10) : params.page;
+    const parsedLimit =
+      typeof params.limit === 'string'
+        ? parseInt(params.limit, 10)
+        : params.limit;
+
     const pageNum = Math.max(
       1,
-      Number.isInteger(params.page) ? params.page : 1,
+      Number.isInteger(parsedPage) ? (parsedPage as number) : 1,
     );
     const limitNum = Math.min(
       100,
-      Math.max(1, Number.isInteger(params.limit) ? params.limit : 10),
+      Math.max(1, Number.isInteger(parsedLimit) ? (parsedLimit as number) : 10),
     );
     const { search, type, category, availability, userId } = params;
     const skip = (pageNum - 1) * limitNum;

@@ -12,10 +12,10 @@ import type { CatalogItem, ArchiveType, ArchiveCategory } from "@/types/katalog"
 export interface CatalogFormData {
   title: string;
   author: string;
-  year: number;
+  year: number | "";
   category: ArchiveCategory;
   type: ArchiveType;
-  stock: number;
+  stock: number | "";
   location: string;
 }
 
@@ -93,7 +93,7 @@ export function usePetugasKatalog() {
       formData.category !== editingItem.category ||
       formData.type !== editingItem.type ||
       formData.stock !== editingItem.stock ||
-      formData.location !== editingItem.location
+      formData.location !== (editingItem.location || "")
     );
   }, [formData, editingItem]);
 
@@ -107,36 +107,40 @@ export function usePetugasKatalog() {
   const handleOpenEdit = (item: CatalogItem) => {
     setEditingItem(item);
     setFormData({
-      title: item.title,
-      author: item.author,
-      year: item.year,
-      category: item.category as ArchiveCategory,
-      type: item.type as ArchiveType,
-      stock: item.stock,
-      location: item.location,
+      title: item.title || "",
+      author: item.author || "",
+      year: item.year || new Date().getFullYear(),
+      category: (item.category as ArchiveCategory) || "Umum",
+      type: (item.type as ArchiveType) || "Skripsi",
+      stock: item.stock ?? 1,
+      location: item.location || "",
     });
     setIsSheetOpen(true);
   };
 
   const handleSave = async () => {
-    if (!formData.title.trim() || !formData.author.trim() || !formData.location.trim()) {
+    const title = (formData.title || "").trim();
+    const author = (formData.author || "").trim();
+    const location = (formData.location || "").trim();
+
+    if (!title || !author || !location || formData.year === "" || formData.stock === "") {
       toast.error("Mohon lengkapi seluruh kolom yang bertanda bintang (*)");
       return;
     }
 
-    if (formData.stock < 0) {
+    if (Number(formData.stock) < 0) {
       toast.error("Jumlah stok tidak boleh bernilai negatif");
       return;
     }
 
     const payload = {
-      title: formData.title.trim(),
-      author: formData.author.trim(),
+      title,
+      author,
       year: Number(formData.year) || new Date().getFullYear(),
       category: formData.category,
       archiveType: formData.type,
       quantity: Number(formData.stock) || 1,
-      shelfLocation: formData.location.trim(),
+      shelfLocation: location,
     };
 
     try {

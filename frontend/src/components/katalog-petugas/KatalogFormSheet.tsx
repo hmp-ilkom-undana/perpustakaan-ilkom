@@ -124,7 +124,7 @@ export function KatalogFormSheet({
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      year: parseInt(e.target.value) || 0,
+                      year: e.target.value === "" ? "" : parseInt(e.target.value, 10) || "",
                     }))
                   }
                   disabled={isSaving}
@@ -148,7 +148,7 @@ export function KatalogFormSheet({
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      stock: parseInt(e.target.value) || 0,
+                      stock: e.target.value === "" ? "" : parseInt(e.target.value, 10) || 0,
                     }))
                   }
                   disabled={isSaving}
