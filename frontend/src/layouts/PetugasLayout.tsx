@@ -46,6 +46,7 @@ export default function PetugasLayout() {
     { name: "Sirkulasi", path: "/petugas/sirkulasi", icon: ArrowRightLeft },
     { name: "Katalog Data", path: "/petugas/katalog", icon: Library },
     { name: "Kelola Denda", path: "/petugas/denda", icon: Receipt },
+    { name: "Profil Saya", path: "/petugas/profil", icon: UserCircle },
   ];
 
   return (
@@ -115,9 +116,11 @@ export default function PetugasLayout() {
         {/* User Profile & Logout */}
         <div className="p-4 border-t border-slate-800">
           <div className="flex items-center gap-3 px-2 mb-4">
-            <UserCircle className="w-10 h-10 text-slate-400" />
+            <UserCircle className="w-10 h-10 text-slate-400 shrink-0" />
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-white truncate">{session?.user?.name || "Petugas"}</p>
+              <p className="text-sm font-bold text-white truncate">
+                {session?.user?.name || "Petugas"}
+              </p>
               <p className="text-xs text-slate-400 truncate">{session?.user?.email || "petugas@ilkom.com"}</p>
             </div>
           </div>
