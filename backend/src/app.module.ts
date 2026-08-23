@@ -11,6 +11,7 @@ import { CronModule } from './cron/cron.module';
 import { FineModule } from './fine/fine.module';
 import { UserModule } from './user/user.module';
 import { SettingModule } from './setting/setting.module';
+import { ActivityLogModule } from './activity-log/activity-log.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SettingModule } from './setting/setting.module';
     FineModule,
     UserModule,
     SettingModule,
+    ActivityLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -23,6 +23,7 @@ model User {
   updatedAt       DateTime    @updatedAt @default(now())
   sessions        Session[]
   accounts        Account[]
+  activityLogs    ActivityLog[]
 }
 
 model Archive {
@@ -192,4 +193,27 @@ model SystemSetting {
   updatedBy          String?  @default("SYSTEM")
 
   @@map("system_setting")
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  userName    String
+  userRole    Role
+  userEmail   String
+  action      String
+  entity      String
+  entityId    String?
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([userRole])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@map("activity_logs")
 }
