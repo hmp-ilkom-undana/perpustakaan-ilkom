@@ -37,7 +37,6 @@ export function LogFilterBar({
     <div className="bg-white p-4 sm:p-5 rounded-xl border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] space-y-4">
       {/* GRID CONTROLS WITH TOP LABELS */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end">
-        
         {/* Kolom 1: Input Pencarian (6 Kolom = 50%) */}
         <div className="md:col-span-6 space-y-1.5">
           <label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
@@ -70,12 +69,14 @@ export function LogFilterBar({
         <div className="md:col-span-3 space-y-1.5">
           <label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
             <UserCog className="w-3.5 h-3.5 text-blue-900" />
-            Peran / Role Aktor
+            Peran / Role
           </label>
           <Select
             value={selectedRole}
             onValueChange={(v) =>
-              onRoleChange(((v as ActivityRole) || "ALL") as ActivityRole | "ALL")
+              onRoleChange(
+                ((v as ActivityRole) || "ALL") as ActivityRole | "ALL",
+              )
             }
           >
             <SelectTrigger className="w-full h-11 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] font-bold text-xs rounded-lg bg-white justify-between">
@@ -105,7 +106,7 @@ export function LogFilterBar({
         <div className="md:col-span-3 space-y-1.5">
           <label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
             <Filter className="w-3.5 h-3.5 text-blue-900" />
-            Kategori Modul
+            Jenis Aktivitas
           </label>
           <Select
             value={selectedEntity}
@@ -122,16 +123,10 @@ export function LogFilterBar({
                 Sirkulasi & Peminjaman
               </SelectItem>
               <SelectItem value="FINE" className="font-bold text-xs">
-                Kas & Pelunasan Denda
+                Pelunasan Denda
               </SelectItem>
               <SelectItem value="ARCHIVE" className="font-bold text-xs">
                 Katalog Arsip
-              </SelectItem>
-              <SelectItem value="USER" className="font-bold text-xs">
-                Manajemen Petugas / Staf
-              </SelectItem>
-              <SelectItem value="SYSTEM_SETTING" className="font-bold text-xs">
-                Pengaturan Sistem
               </SelectItem>
             </SelectContent>
           </Select>
@@ -141,7 +136,9 @@ export function LogFilterBar({
       {/* FOOTER BARIS INFORMASI & RESET FILTER */}
       <div className="flex items-center justify-between text-xs font-bold text-slate-500 pt-2 border-t border-slate-100">
         <span className="flex items-center gap-1.5">
-          Menampilkan <span className="text-blue-950 font-black">{totalResults}</span> catatan aktivitas
+          Menampilkan{" "}
+          <span className="text-blue-950 font-black">{totalResults}</span>{" "}
+          catatan aktivitas
         </span>
 
         {isFiltered && (
