@@ -1,6 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CameraCapture } from "@/components/CameraCapture";
+import { useSession } from "@/lib/auth-client";
 import { usePetugasCirculationDetail } from "@/hooks/usePetugasCirculationDetail";
 import {
   CirculationDetailHeader,
@@ -45,6 +46,9 @@ export default function SirkulasiDetail() {
     handleHandoverConfirm,
     handleReturnConfirm,
   } = usePetugasCirculationDetail();
+
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
 
   if (isLoading) {
     return (
@@ -115,11 +119,13 @@ export default function SirkulasiDetail() {
           <CirculationOverdueSection dueDate={item.dueDate} fine={item.fine} />
         )}
 
-        {/* 5. Audit Trail */}
-        <CirculationAuditSection
-          approvedBy={item.approvedBy}
-          handoverBy={item.handoverBy}
-        />
+        {/* 5. Audit Trail (Hanya tampil untuk peran Administrator) */}
+        {isAdmin && (
+          <CirculationAuditSection
+            approvedBy={item.approvedBy}
+            handoverBy={item.handoverBy}
+          />
+        )}
 
         {/* 6. Action Center */}
         <CirculationDetailActions

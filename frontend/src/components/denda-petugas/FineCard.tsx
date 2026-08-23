@@ -1,6 +1,7 @@
 import { Calendar, Wallet, UserCheck, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/auth-client";
 import type { FineItem } from "@/services/fine.service";
 import { getFineBadgeVariant } from "@/hooks/usePetugasDenda";
 
@@ -10,6 +11,8 @@ interface FineCardProps {
 }
 
 export function FineCard({ item, onPay }: FineCardProps) {
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
   const isUnpaid = item.status === "UNPAID";
 
   return (
@@ -55,8 +58,8 @@ export function FineCard({ item, onPay }: FineCardProps) {
           {item.archiveTitle}
         </p>
 
-        {/* INFO RIWAYAT BAYAR UNTUK STATUS PAID */}
-        {!isUnpaid && (
+        {/* INFO RIWAYAT BAYAR UNTUK STATUS PAID (HANYA DITAMPILKAN UNTUK ROLE ADMIN) */}
+        {!isUnpaid && isAdmin && (
           <div className="bg-emerald-50 border-2 border-emerald-600 rounded-lg p-3 text-xs text-emerald-950 font-semibold space-y-1.5 mt-2 shadow-[2px_2px_0px_#059669]">
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="flex items-center gap-1.5 font-bold">

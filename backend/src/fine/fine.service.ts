@@ -4,6 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ActivityLogService } from '../activity-log/activity-log.service';
 
 /**
  * Service untuk mengelola pencatatan denda dan transaksi kasir pelunasan.
@@ -11,7 +12,10 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class FineService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLogService: ActivityLogService,
+  ) {}
 
   private determineFineType(borrowing: any): string {
     if (
@@ -147,7 +151,7 @@ export class FineService {
 
   async payFine(
     borrowingId: string,
-    officerName: string,
+    officer: string | any,
     payload: { paymentMethod: string; notes?: string },
   ) {
     const borrowing = await this.prisma.borrowing.findUnique({
@@ -171,6 +175,14 @@ export class FineService {
       );
     }
 
+    const officerName =
+      typeof officer === 'object'
+        ? (officer?.name || (officer?.role === 'ADMIN' ? 'Administrator Perpustakaan' : 'Petugas Perpustakaan'))
+        : (typeof officer === 'string' ? officer : 'Petugas Perpustakaan');
+    const officerEmail = typeof officer === 'object' && officer?.email ? officer.email : 'petugas@perpus.ilkom';
+    const officerRole = typeof officer === 'object' && officer?.role ? officer.role : 'PETUGAS';
+    const officerId = typeof officer === 'object' && officer?.id ? officer.id : null;
+
     // Update status pelunasan denda
     const updated = await this.prisma.borrowing.update({
       where: { id: borrowingId },
@@ -184,6 +196,26 @@ export class FineService {
       include: {
         user: true,
         archive: true,
+      },
+    });
+
+    await this.activityLogService.createLog({
+      userId: officerId,
+      userName: officerName,
+      userRole: officerRole,
+      userEmail: officerEmail,
+      action: 'SETTLE_FINE',
+      entity: 'FINE',
+      entityId: borrowing.id,
+      description: `Menerima pelunasan kas denda Rp ${borrowing.fineAmount.toLocaleString('id-ID')} (${payload.paymentMethod}) dari ${borrowing.user?.name || 'Mahasiswa'} untuk arsip "${borrowing.archive?.title || '-'}"`,
+      metadata: {
+        borrowingId: borrowing.id,
+        fineAmount: borrowing.fineAmount,
+        paymentMethod: payload.paymentMethod,
+        studentName: borrowing.user?.name,
+        studentNim: borrowing.user?.nim,
+        archiveTitle: borrowing.archive?.title,
+        notes: payload.notes || null,
       },
     });
 

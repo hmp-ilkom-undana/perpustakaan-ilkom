@@ -15,6 +15,7 @@ import KelolaPengguna from "./pages/admin/KelolaPengguna";
 import KelolaPetugas from "./pages/admin/KelolaPetugas";
 import AdminProfil from "./pages/admin/AdminProfil";
 import PengaturanSistem from "./pages/admin/PengaturanSistem";
+import LogAktivitas from "./pages/admin/LogAktivitas";
 
 // Petugas Imports
 import PetugasLayout from "./layouts/PetugasLayout";
@@ -134,6 +135,12 @@ const adminPengaturanRoute = createRoute({
   component: PengaturanSistem,
 });
 
+const adminLogAktivitasRoute = createRoute({
+  getParentRoute: () => adminLayoutRoute,
+  path: "log-aktivitas",
+  component: LogAktivitas,
+});
+
 // 5. Petugas Layout & Routes
 const petugasLayoutRoute = createRoute({
   getParentRoute: () => authenticatedRoute,
@@ -230,6 +237,7 @@ const routeTree = rootRoute.addChildren([
       adminPetugasRoute,
       adminProfilRoute,
       adminPengaturanRoute,
+      adminLogAktivitasRoute,
     ]),
     petugasLayoutRoute.addChildren([
       petugasIndexRoute,

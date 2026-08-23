@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
+import { ActivityLogService } from '../activity-log/activity-log.service';
 import { Role } from '@prisma/client';
 
 @Injectable()
@@ -8,6 +9,7 @@ export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly authService: AuthService,
+    private readonly activityLogService: ActivityLogService,
   ) {}
 
   /**
@@ -169,10 +171,13 @@ export class UserService {
   /**
    * Mendaftarkan akun petugas baru (Hanya Email & Password)
    */
-  async createStaff(data: {
-    email: string;
-    password?: string;
-  }) {
+  async createStaff(
+    data: {
+      email: string;
+      password?: string;
+    },
+    adminUser?: any,
+  ) {
     const existing = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: data.email }],
@@ -215,6 +220,24 @@ export class UserService {
       },
     });
 
+    if (adminUser) {
+      await this.activityLogService.createLog({
+        userId: adminUser.id,
+        userName: adminUser.name || adminUser.email,
+        userRole: adminUser.role || Role.ADMIN,
+        userEmail: adminUser.email,
+        action: 'CREATE_PETUGAS',
+        entity: 'USER',
+        entityId: updated.id,
+        description: `Mendaftarkan akun petugas operasional baru: ${updated.name} (${updated.email})`,
+        metadata: {
+          petugasId: updated.id,
+          name: updated.name,
+          email: updated.email,
+        },
+      });
+    }
+
     return {
       message: 'Akun petugas berhasil dibuat',
       user: {
@@ -230,7 +253,10 @@ export class UserService {
   /**
    * Mendaftarkan banyak akun petugas sekaligus (Batch Add)
    */
-  async createBatchStaff(staffList: Array<{ email: string; password?: string }>) {
+  async createBatchStaff(
+    staffList: Array<{ email: string; password?: string }>,
+    adminUser?: any,
+  ) {
     if (!staffList || staffList.length === 0) {
       throw new BadRequestException('Daftar petugas tidak boleh kosong');
     }
@@ -240,10 +266,13 @@ export class UserService {
 
     for (const item of staffList) {
       try {
-        const created = await this.createStaff({
-          email: item.email,
-          password: item.password,
-        });
+        const created = await this.createStaff(
+          {
+            email: item.email,
+            password: item.password,
+          },
+          adminUser,
+        );
         results.push(created);
       } catch (err: any) {
         errors.push({ email: item.email, error: err.message || 'Gagal membuat akun' });
@@ -351,6 +380,7 @@ export class UserService {
       wa_number?: string;
       status?: string;
     },
+    adminUser?: any,
   ) {
     const user = await this.prisma.user.findUnique({
       where: { id },
@@ -368,6 +398,23 @@ export class UserService {
         wa_number: data.wa_number ?? user.wa_number,
       },
     });
+
+    if (adminUser) {
+      await this.activityLogService.createLog({
+        userId: adminUser.id,
+        userName: adminUser.name || adminUser.email,
+        userRole: adminUser.role || Role.ADMIN,
+        userEmail: adminUser.email,
+        action: 'UPDATE_PETUGAS',
+        entity: 'USER',
+        entityId: id,
+        description: `Memperbarui data akun petugas: ${updated.name} (${updated.email})`,
+        metadata: {
+          petugasId: id,
+          changes: data,
+        },
+      });
+    }
 
     return {
       message: 'Data petugas berhasil diperbarui',
@@ -398,7 +445,7 @@ export class UserService {
   /**
    * Menghapus akun petugas
    */
-  async deleteStaff(id: string) {
+  async deleteStaff(id: string, adminUser?: any) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -425,6 +472,24 @@ export class UserService {
     await this.prisma.user.delete({
       where: { id },
     });
+
+    if (adminUser) {
+      await this.activityLogService.createLog({
+        userId: adminUser.id,
+        userName: adminUser.name || adminUser.email,
+        userRole: adminUser.role || Role.ADMIN,
+        userEmail: adminUser.email,
+        action: 'DELETE_PETUGAS',
+        entity: 'USER',
+        entityId: id,
+        description: `Menghapus akun petugas: ${user.name} (${user.email})`,
+        metadata: {
+          petugasId: id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+    }
 
     return {
       message: `Akun petugas ${user.name} berhasil dihapus`,

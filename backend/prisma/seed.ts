@@ -85,30 +85,35 @@ async function main() {
   // 2. SEEDING AKUN PENGGUNA (Admin, Petugas, Mahasiswa)
   console.log('👥 [2/4] Menyiapkan Akun Pengguna (Auth & Role)...');
 
-  // 2a. Administrator
-  const adminUser = {
+  // 2a. Administrator (Hanya Email & Password)
+  const adminCredentials = {
     email: 'delanomanafe05@gmail.com',
     password: 'admin_PERPUSTAKAAN123',
-    name: 'Administrator Perpustakaan',
-    username: 'admin_perpustakaan',
-    nim: '230000001',
-    wa_number: '082339113591',
-    role: Role.ADMIN,
   };
 
+  const rawAdminUsername = adminCredentials.email.split('@')[0];
+  const formattedAdminName = 'Administrator Perpustakaan';
+
   try {
-    await auth.api.signUpEmail({ body: adminUser });
-    console.log(`[+] Akun ADMIN (${adminUser.email}) berhasil dibuat.`);
+    await auth.api.signUpEmail({
+      body: {
+        email: adminCredentials.email,
+        password: adminCredentials.password,
+        name: formattedAdminName,
+        username: rawAdminUsername,
+      },
+    });
+    console.log(`[+] Akun ADMIN (${adminCredentials.email}) berhasil dibuat.`);
   } catch {
-    console.log(`[i] Akun ADMIN (${adminUser.email}) sudah terdaftar, memperbarui data...`);
+    console.log(`[i] Akun ADMIN (${adminCredentials.email}) sudah terdaftar, memperbarui data...`);
   }
   await prisma.user.updateMany({
-    where: { email: adminUser.email },
+    where: { email: adminCredentials.email },
     data: {
-      name: adminUser.name,
-      nim: adminUser.nim,
-      wa_number: adminUser.wa_number,
-      role: adminUser.role,
+      name: formattedAdminName,
+      nim: null,
+      wa_number: null,
+      role: Role.ADMIN,
     },
   });
 

@@ -1,20 +1,19 @@
 import {
   Controller,
   Get,
-  Put,
-  Body,
+  Query,
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import { SettingService } from './setting.service';
+import { ActivityLogService } from './activity-log.service';
 import { AuthService } from '../auth/auth.service';
-import { UpdateSettingDto } from './dto/update-setting.dto';
+import { GetLogsQueryDto } from './dto/get-logs-query.dto';
 
-@Controller('api/settings')
-export class SettingController {
+@Controller('api/activity-logs')
+export class ActivityLogController {
   constructor(
-    private readonly settingService: SettingService,
+    private readonly activityLogService: ActivityLogService,
     private readonly authService: AuthService,
   ) {}
 
@@ -30,23 +29,21 @@ export class SettingController {
     }
 
     if ((sessionData.user as any).role !== 'ADMIN') {
-      throw new UnauthorizedException('Akses ditolak: Hanya untuk Admin.');
+      throw new UnauthorizedException('Akses ditolak: Hanya untuk Administrator.');
     }
 
     return sessionData.user;
   }
 
-  @Get()
-  async getSettings() {
-    return this.settingService.getSettings();
+  @Get('stats')
+  async getStats(@Req() req: Request) {
+    await this.validateAdminRole(req);
+    return this.activityLogService.getStats();
   }
 
-  @Put()
-  async updateSettings(
-    @Req() req: Request,
-    @Body() body: UpdateSettingDto,
-  ) {
-    const user = await this.validateAdminRole(req);
-    return this.settingService.updateSettings(body, user as any);
+  @Get()
+  async getLogs(@Req() req: Request, @Query() query: GetLogsQueryDto) {
+    await this.validateAdminRole(req);
+    return this.activityLogService.getLogs(query);
   }
 }

@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ActivityLogService } from '../activity-log/activity-log.service';
 import { UpdateSettingDto } from './dto/update-setting.dto';
-import { SystemSetting } from '@prisma/client';
+import { SystemSetting, Role } from '@prisma/client';
 
 @Injectable()
 export class SettingService {
@@ -10,7 +11,10 @@ export class SettingService {
   private cacheExpiry: number = 0;
   private readonly CACHE_TTL_MS = 60 * 1000; // 1 Menit In-Memory Cache
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLogService: ActivityLogService,
+  ) {}
 
   async getSettings(): Promise<SystemSetting> {
     const now = Date.now();
@@ -52,13 +56,18 @@ export class SettingService {
 
   async updateSettings(
     dto: UpdateSettingDto,
-    updatedBy?: string,
+    updatedByInput?: string | any,
   ): Promise<SystemSetting> {
+    const adminName = typeof updatedByInput === 'object' && updatedByInput?.name ? updatedByInput.name : (typeof updatedByInput === 'string' ? updatedByInput : 'Administrator Perpustakaan');
+    const adminEmail = typeof updatedByInput === 'object' && updatedByInput?.email ? updatedByInput.email : 'admin@perpus.ilkom';
+    const adminRole = typeof updatedByInput === 'object' && updatedByInput?.role ? updatedByInput.role : Role.ADMIN;
+    const adminId = typeof updatedByInput === 'object' && updatedByInput?.id ? updatedByInput.id : null;
+
     const updated = await this.prisma.systemSetting.upsert({
       where: { id: 'DEFAULT' },
       update: {
         ...dto,
-        updatedBy: updatedBy || 'ADMIN',
+        updatedBy: adminName,
       },
       create: {
         id: 'DEFAULT',
@@ -76,7 +85,7 @@ export class SettingService {
         lostFine: dto.lostFine ?? 100000,
         adminWaNumber: dto.adminWaNumber ?? '082339113591',
         adminContactName: dto.adminContactName ?? 'Admin Perpustakaan ILKOM',
-        updatedBy: updatedBy || 'ADMIN',
+        updatedBy: adminName,
       },
     });
 
@@ -84,7 +93,23 @@ export class SettingService {
     this.cachedSetting = updated;
     this.cacheExpiry = Date.now() + this.CACHE_TTL_MS;
 
-    this.logger.log(`Pengaturan sistem berhasil diperbarui oleh ${updatedBy || 'ADMIN'}`);
+    this.logger.log(`Pengaturan sistem berhasil diperbarui oleh ${adminName}`);
+
+    await this.activityLogService.createLog({
+      userId: adminId,
+      userName: adminName,
+      userRole: adminRole,
+      userEmail: adminEmail,
+      action: 'UPDATE_SETTING',
+      entity: 'SYSTEM_SETTING',
+      entityId: 'DEFAULT',
+      description: `Memperbarui konfigurasi sistem perpustakaan (Durasi pinjam: ${updated.loanDurationDays} hari, Batas ambil: ${updated.pickupDurationDays} hari)`,
+      metadata: {
+        changes: dto,
+        currentSettings: updated,
+      },
+    });
+
     return updated;
   }
 

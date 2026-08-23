@@ -108,7 +108,7 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.approveBorrowing(borrowingId);
+    return this.borrowingService.approveBorrowing(borrowingId, sessionData.user as any);
   }
 
   @Patch(':id/reject')
@@ -125,7 +125,7 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.rejectBorrowing(id, body.reason);
+    return this.borrowingService.rejectBorrowing(id, body.reason, sessionData.user as any);
   }
 
   @Patch(':id/handover')
@@ -147,7 +147,7 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.handoverBorrowing(id, file);
+    return this.borrowingService.handoverBorrowing(id, file, sessionData.user as any);
   }
 
   @Patch(':id/return')
@@ -170,6 +170,6 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.returnBorrowing(id, file, body.kondisiKembali, body.catatanKondisiKembali, body.fineAmount);
+    return this.borrowingService.returnBorrowing(id, file, body.kondisiKembali, body.catatanKondisiKembali, body.fineAmount, sessionData.user as any);
   }
 }

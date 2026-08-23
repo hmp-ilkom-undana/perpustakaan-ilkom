@@ -22,6 +22,26 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+  private async validateAdmin(req: Request) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+
+    if (!sessionData) {
+      throw new UnauthorizedException(
+        'Sesi tidak valid, Anda harus login terlebih dahulu.',
+      );
+    }
+
+    if ((sessionData.user as any).role !== 'ADMIN') {
+      throw new ForbiddenException(
+        'Akses ditolak: Hanya Administrator yang berhak mengelola akun staf/petugas.',
+      );
+    }
+
+    return sessionData.user;
+  }
+
   @Get('students')
   async getStudents(@Query('search') search?: string) {
     return this.userService.getStudents(search);
@@ -33,29 +53,34 @@ export class UserController {
   }
 
   @Get('staff')
-  async getStaff(@Query('search') search?: string) {
+  async getStaff(@Req() req: Request, @Query('search') search?: string) {
+    await this.validateAdmin(req);
     return this.userService.getStaff(search);
   }
 
   @Post('staff')
   async createStaff(
+    @Req() req: Request,
     @Body()
     body: {
       email: string;
       password?: string;
     },
   ) {
-    return this.userService.createStaff(body);
+    const user = await this.validateAdmin(req);
+    return this.userService.createStaff(body, user as any);
   }
 
   @Post('staff/batch')
   async createBatchStaff(
+    @Req() req: Request,
     @Body()
     body: {
       staffList: Array<{ email: string; password?: string }>;
     },
   ) {
-    return this.userService.createBatchStaff(body.staffList);
+    const user = await this.validateAdmin(req);
+    return this.userService.createBatchStaff(body.staffList, user as any);
   }
 
   @Patch('profile/:id')
@@ -89,6 +114,7 @@ export class UserController {
   @Patch('staff/:id')
   async updateStaff(
     @Param('id') id: string,
+    @Req() req: Request,
     @Body()
     body: {
       name?: string;
@@ -97,7 +123,8 @@ export class UserController {
       status?: string;
     },
   ) {
-    return this.userService.updateStaff(id, body);
+    const user = await this.validateAdmin(req);
+    return this.userService.updateStaff(id, body, user as any);
   }
 
   @Post('reset-password')
@@ -106,7 +133,8 @@ export class UserController {
   }
 
   @Delete('staff/:id')
-  async deleteStaff(@Param('id') id: string) {
-    return this.userService.deleteStaff(id);
+  async deleteStaff(@Param('id') id: string, @Req() req: Request) {
+    const user = await this.validateAdmin(req);
+    return this.userService.deleteStaff(id, user as any);
   }
 }
