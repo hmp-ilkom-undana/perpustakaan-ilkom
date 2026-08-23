@@ -17,9 +17,12 @@ import {
   Loader2,
   Clock,
   Edit2,
+  UserCheck,
+  ShieldCheck,
 } from "lucide-react";
 import { CatalogItem } from "@/types/katalog";
 import { useArchiveDetailQuery } from "@/hooks/queries/useArchiveQuery";
+import { useSession } from "@/lib/auth-client";
 
 interface KatalogDetailSheetProps {
   isOpen: boolean;
@@ -34,6 +37,9 @@ export function KatalogDetailSheet({
   item,
   onEdit,
 }: KatalogDetailSheetProps) {
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
+
   // Use TanStack Query caching for detail fetch
   const { data: detailData, isLoading } = useArchiveDetailQuery(
     item?.id || null
@@ -200,6 +206,37 @@ export function KatalogDetailSheet({
                 </div>
               )}
             </div>
+
+            {/* AUDIT TRAIL LOG (HANYA DITAMPILKAN UNTUK ROLE ADMIN) */}
+            {isAdmin && (
+              <div className="bg-slate-100/90 p-4 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] rounded-lg space-y-2.5">
+                <p className="text-[11px] font-black text-slate-500 uppercase tracking-wider">
+                  Riwayat Pencatatan & Modifikasi
+                </p>
+                <div className="space-y-2 text-xs font-medium">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-slate-500 flex items-center gap-1.5">
+                      <UserCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                      Ditambahkan oleh:
+                    </span>
+                    <strong className="text-blue-950 font-bold truncate max-w-[200px] text-right">
+                      {currentItem?.createdBy || "Administrator Perpustakaan"}
+                    </strong>
+                  </div>
+                  {currentItem?.updatedBy && (
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-200">
+                      <span className="text-slate-500 flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                        Terakhir diubah oleh:
+                      </span>
+                      <strong className="text-blue-950 font-bold truncate max-w-[200px] text-right">
+                        {currentItem.updatedBy}
+                      </strong>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

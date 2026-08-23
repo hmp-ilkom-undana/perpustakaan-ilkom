@@ -20,7 +20,7 @@ model User {
   createdAt       DateTime    @default(now())
   emailVerified   Boolean     @default(false)
   image           String?
-  updatedAt       DateTime    @updatedAt @default(now())
+  updatedAt       DateTime    @updatedAt
   sessions        Session[]
   accounts        Account[]
   activityLogs    ActivityLog[]
@@ -38,6 +38,9 @@ model Archive {
   quantity      Int             @default(1)
   reservedQuantity Int          @default(0)
   shelfLocation String?         
+  createdBy     String?         
+  updatedBy     String?         
+  updatedAt     DateTime        @updatedAt
   borrowings    Borrowing[]
   createdAt     DateTime        @default(now())
 

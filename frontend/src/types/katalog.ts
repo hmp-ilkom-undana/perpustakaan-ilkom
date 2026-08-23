@@ -18,4 +18,12 @@ export interface CatalogItem {
   type: ArchiveType;
   stock: number;
   location: string;
+  quantity?: number;
+  shelfLocation?: string;
+  archiveType?: string;
+  status?: string;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
