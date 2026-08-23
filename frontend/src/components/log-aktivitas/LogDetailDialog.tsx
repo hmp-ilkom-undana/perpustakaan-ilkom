@@ -109,7 +109,7 @@ export function LogDetailDialog({
     return String(value);
   };
 
-  // Daftar Key yang disembunyikan (ID internal database & URL Foto)
+  // Daftar Key yang disembunyikan (ID internal database, URL Foto, dan Judul Arsip redundan)
   const isExcludedKey = (rawKey: string): boolean => {
     const lower = rawKey.toLowerCase();
     return (
@@ -122,7 +122,10 @@ export function LogDetailDialog({
       lower === "petugasid" ||
       lower === "adminid" ||
       lower === "archiveid" ||
-      lower === "entityid"
+      lower === "entityid" ||
+      lower === "archivetitle" ||
+      lower === "title" ||
+      lower === "judul"
     );
   };
 

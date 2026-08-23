@@ -42,7 +42,7 @@ export function LogStatsHeader({ stats, isLoading }: LogStatsHeaderProps) {
     {
       title: "Aktivitas Hari Ini",
       value: stats?.todayLogs ?? 0,
-      description: "Aksi per hari ini (00:00 WIB)",
+      description: "Aksi per hari ini",
       icon: Calendar,
       color: "text-emerald-700",
       bgBadge: "bg-emerald-100",
@@ -60,7 +60,7 @@ export function LogStatsHeader({ stats, isLoading }: LogStatsHeaderProps) {
     {
       title: "Aksi Petugas",
       value: stats?.petugasLogs ?? 0,
-      description: "Operasional meja sirkulasi",
+      description: "Aksi oleh akun Petugas",
       icon: UserCheck,
       color: "text-orange-600",
       bgBadge: "bg-orange-100",
