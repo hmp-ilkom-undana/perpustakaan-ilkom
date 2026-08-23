@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Settings,
   SlidersHorizontal,
+  History,
   Loader2,
 } from "lucide-react";
 
@@ -54,6 +55,7 @@ export default function AdminLayout() {
     { name: "Kelola Denda", path: "/admin/denda", icon: Receipt },
     { name: "Kelola Pengguna", path: "/admin/pengguna", icon: Users },
     { name: "Kelola Petugas", path: "/admin/petugas", icon: ShieldCheck },
+    { name: "Log Aktivitas", path: "/admin/log-aktivitas", icon: History },
     { name: "Pengaturan Sistem", path: "/admin/pengaturan", icon: SlidersHorizontal },
   ];
 
