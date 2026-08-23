@@ -38,13 +38,19 @@ export function DendaTab({
   adminContactName,
   setAdminContactName,
 }: DendaTabProps) {
+  const handleTestWhatsApp = () => {
+    const clean = adminWaNumber.replace(/\D/g, "");
+    const formatted = clean.startsWith("0") ? "62" + clean.slice(1) : clean;
+    window.open(`https://wa.me/${formatted}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form Settings Denda (2 Kolom) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Denda Keterlambatan */}
-          <Card className="border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] bg-white">
+          <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white">
             <CardContent className="p-6 space-y-4">
               <div>
                 <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
@@ -112,7 +118,7 @@ export function DendaTab({
           </Card>
 
           {/* Denda Fisik */}
-          <Card className="border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] bg-white">
+          <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white">
             <CardContent className="p-6 space-y-4">
               <div>
                 <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
@@ -163,7 +169,7 @@ export function DendaTab({
           </Card>
 
           {/* Kontak Admin WhatsApp */}
-          <Card className="border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] bg-white">
+          <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white">
             <CardContent className="p-6 space-y-4">
               <div>
                 <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
@@ -202,15 +208,9 @@ export function DendaTab({
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-500 hover:text-white [box-shadow:2px_2px_0px_#059669] active:translate-x-[1px] active:translate-y-[1px] shrink-0 transition-all"
+                        className="border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-500 hover:text-white shadow-[2px_2px_0px_#059669] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shrink-0 transition-all cursor-pointer"
                         title="Uji Hubungi WhatsApp"
-                        onClick={() => {
-                          const clean = adminWaNumber.replace(/\D/g, "");
-                          const formatted = clean.startsWith("0")
-                            ? "62" + clean.slice(1)
-                            : clean;
-                          window.open(`https://wa.me/${formatted}`, "_blank");
-                        }}
+                        onClick={handleTestWhatsApp}
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Button>

@@ -47,7 +47,7 @@ export function OperasionalTab({
   return (
     <div className="space-y-6">
       {/* Hari Kerja Operasional */}
-      <Card className="border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] bg-white">
+      <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white">
         <CardContent className="p-6 space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -64,7 +64,7 @@ export function OperasionalTab({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="text-[11px] font-bold border-2 border-blue-900 h-7 hover:bg-orange-500 hover:text-white transition-colors"
+                className="text-[11px] font-bold border-2 border-blue-900 h-7 hover:bg-orange-500 hover:text-white transition-colors cursor-pointer"
                 onClick={() => setOperatingDays([1, 2, 3, 4, 5])}
               >
                 Sen - Jum
@@ -73,7 +73,7 @@ export function OperasionalTab({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="text-[11px] font-bold border-2 border-blue-900 h-7 hover:bg-orange-500 hover:text-white transition-colors"
+                className="text-[11px] font-bold border-2 border-blue-900 h-7 hover:bg-orange-500 hover:text-white transition-colors cursor-pointer"
                 onClick={() => setOperatingDays([1, 2, 3, 4, 5, 6])}
               >
                 Sen - Sab
@@ -90,9 +90,9 @@ export function OperasionalTab({
                   key={day.id}
                   type="button"
                   onClick={() => toggleDay(day.id)}
-                  className={`p-3 rounded-lg border-2 font-bold text-center transition-all flex flex-col items-center justify-center gap-1 ${
+                  className={`p-3 rounded-lg border-2 font-bold text-center transition-all flex flex-col items-center justify-center gap-1 cursor-pointer ${
                     isSelected
-                      ? "bg-orange-500 text-white border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A]"
+                      ? "bg-orange-500 text-white border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                       : "bg-slate-50 text-slate-500 border-slate-300 hover:border-blue-900"
                   }`}
                 >
@@ -109,7 +109,7 @@ export function OperasionalTab({
       </Card>
 
       {/* Batas Waktu Pengambilan Arsip */}
-      <Card className="border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] bg-white">
+      <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white">
         <CardContent className="p-6 space-y-5">
           <div>
             <h2 className="text-base font-black text-blue-950 flex items-center gap-2">
@@ -135,7 +135,7 @@ export function OperasionalTab({
                   onChange={(e) =>
                     setPickupDurationDays(Math.max(1, parseInt(e.target.value) || 1))
                   }
-                  className="border-2 border-blue-900 font-black text-sm [box-shadow:2px_2px_0px_#1E3A8A] max-w-[120px]"
+                  className="border-2 border-blue-900 font-black text-sm shadow-[2px_2px_0px_#1E3A8A] max-w-[120px]"
                 />
                 <span className="text-xs font-bold text-slate-600">Hari Kerja Operasional</span>
               </div>
@@ -145,9 +145,9 @@ export function OperasionalTab({
                     key={num}
                     type="button"
                     onClick={() => setPickupDurationDays(num)}
-                    className={`px-2.5 py-1 text-[11px] font-bold rounded border-2 transition-all ${
+                    className={`px-2.5 py-1 text-[11px] font-bold rounded border-2 transition-all cursor-pointer ${
                       pickupDurationDays === num
-                        ? "bg-orange-500 text-white border-blue-900 [box-shadow:2px_2px_0px_#1E3A8A]"
+                        ? "bg-orange-500 text-white border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
                         : "bg-slate-50 text-slate-600 border-slate-300 hover:bg-slate-100 hover:border-blue-900"
                     }`}
                   >
@@ -170,7 +170,7 @@ export function OperasionalTab({
               <button
                 type="button"
                 onClick={() => setAutoCancelUnpicked(!autoCancelUnpicked)}
-                className={`w-12 h-6 rounded-full transition-colors relative border-2 border-blue-950 ${
+                className={`w-12 h-6 rounded-full transition-colors relative border-2 border-blue-950 cursor-pointer ${
                   autoCancelUnpicked ? "bg-orange-500" : "bg-slate-300"
                 }`}
               >
