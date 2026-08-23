@@ -79,6 +79,18 @@ export function LogDetailDialog({
       email: "Alamat Email",
       name: "Nama Lengkap",
       role: "Peran Akun",
+      loandurationdays: "Durasi Pinjam (Hari)",
+      pickupdeadlinehours: "Batas Ambil (Jam)",
+      maxactiveskripsi: "Maks. Skripsi",
+      maxactiveringkasan: "Maks. Ringkasan",
+      maxactivenaskah: "Maks. Naskah",
+      latebasefine: "Denda Pokok Terlambat",
+      latedailyfine: "Denda Harian",
+      latethresholddays: "Tenggat Hari",
+      damagedfine: "Denda Kerusakan",
+      lostfine: "Denda Kehilangan",
+      adminwanumber: "No. WA Admin",
+      admincontactname: "Nama Kontak Admin",
     };
 
     if (dictionary[key]) {
