@@ -50,7 +50,7 @@ export function FineSimulatorCard({
   ]);
 
   return (
-    <Card className="border-2 border-blue-900 [box-shadow:4px_4px_0px_#1E3A8A] bg-gradient-to-b from-blue-900 to-slate-900 text-white sticky top-6">
+    <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-gradient-to-b from-blue-900 to-slate-900 text-white sticky top-6">
       <CardContent className="p-6 space-y-5">
         <div className="flex items-center gap-2 border-b border-blue-800 pb-3">
           <Calculator className="w-5 h-5 text-orange-400" />
@@ -90,9 +90,9 @@ export function FineSimulatorCard({
                 key={k}
                 type="button"
                 onClick={() => setSimKondisi(k)}
-                className={`py-1.5 text-[10px] font-bold rounded border transition-all ${
+                className={`py-1.5 text-[10px] font-bold rounded border transition-all cursor-pointer ${
                   simKondisi === k
-                    ? "bg-orange-500 text-white border-2 border-blue-900 [box-shadow:2px_2px_0px_#1E3A8A]"
+                    ? "bg-orange-500 text-white border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
                     : "bg-blue-950/60 text-blue-200 border border-blue-800 hover:bg-blue-800"
                 }`}
               >
