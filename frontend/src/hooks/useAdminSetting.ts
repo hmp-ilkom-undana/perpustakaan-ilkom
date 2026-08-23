@@ -134,22 +134,26 @@ export function useAdminSetting() {
       return;
     }
 
-    await updateMutation.mutateAsync({
-      operatingDays,
-      pickupDurationDays,
-      autoCancelUnpicked,
-      loanDurationDays,
-      maxActiveSkripsi,
-      maxActiveRingkasan,
-      maxActiveNaskah,
-      lateBaseFine,
-      lateThresholdDays,
-      lateDailyFine,
-      damagedFine,
-      lostFine,
-      adminWaNumber: adminWaNumber.trim(),
-      adminContactName: adminContactName.trim(),
-    });
+    try {
+      await updateMutation.mutateAsync({
+        operatingDays,
+        pickupDurationDays,
+        autoCancelUnpicked,
+        loanDurationDays,
+        maxActiveSkripsi,
+        maxActiveRingkasan,
+        maxActiveNaskah,
+        lateBaseFine,
+        lateThresholdDays,
+        lateDailyFine,
+        damagedFine,
+        lostFine,
+        adminWaNumber: adminWaNumber.trim(),
+        adminContactName: adminContactName.trim(),
+      });
+    } catch {
+      // Error telah ditangani oleh onError toast di useSettingQuery
+    }
   }, [
     operatingDays,
     pickupDurationDays,

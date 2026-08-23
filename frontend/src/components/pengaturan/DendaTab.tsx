@@ -40,6 +40,7 @@ export function DendaTab({
 }: DendaTabProps) {
   const handleTestWhatsApp = () => {
     const clean = adminWaNumber.replace(/\D/g, "");
+    if (!clean) return;
     const formatted = clean.startsWith("0") ? "62" + clean.slice(1) : clean;
     window.open(`https://wa.me/${formatted}`, "_blank", "noopener,noreferrer");
   };
