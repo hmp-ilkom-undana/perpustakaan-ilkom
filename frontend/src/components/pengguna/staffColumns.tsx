@@ -57,7 +57,7 @@ export function getStaffColumns({
         return (
           <div className="flex items-center gap-3">
             <div
-              className={`w-9 h-9 rounded-md border-2 border-blue-900 flex items-center justify-center font-black text-xs shrink-0 [box-shadow:2px_2px_0px_#1E3A8A] ${
+              className={`w-9 h-9 rounded-md border-2 border-blue-900 flex items-center justify-center font-black text-xs shrink-0 shadow-[2px_2px_0px_#1E3A8A] ${
                 isAdmin
                   ? "bg-purple-200 text-purple-950"
                   : "bg-orange-100 text-orange-950"
@@ -96,7 +96,7 @@ export function getStaffColumns({
           <div className="flex justify-center">
             <Badge
               variant="outline"
-              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] flex items-center gap-1.5 w-fit ${
+              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-1.5 w-fit ${
                 isAdmin
                   ? "bg-purple-100 text-purple-950 border-blue-900"
                   : "bg-blue-50 text-blue-900 border-blue-900"
@@ -138,7 +138,7 @@ export function getStaffColumns({
           <div className="flex justify-center items-center">
             <Badge
               variant="outline"
-              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] ${
+              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs shadow-[2px_2px_0px_#1E3A8A] ${
                 isActive
                   ? "bg-emerald-100 text-emerald-900"
                   : "bg-rose-100 text-rose-900"
@@ -170,7 +170,7 @@ export function getStaffColumns({
                     size="icon"
                     disabled={isAdmin}
                     onClick={() => onToggleStatus(staff)}
-                    className={`h-8 w-8 border-2 border-blue-900 rounded-md transition-all [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A] ${
+                    className={`h-8 w-8 border-2 border-blue-900 rounded-md transition-all shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
                       isAdmin
                         ? "opacity-40 cursor-not-allowed bg-slate-100 text-slate-400"
                         : isActive
@@ -203,7 +203,7 @@ export function getStaffColumns({
                     variant="outline"
                     size="icon"
                     onClick={() => onResetPassword(staff)}
-                    className="h-8 w-8 border-2 border-blue-900 bg-sky-100 hover:bg-sky-200 text-blue-900 rounded-md transition-all cursor-pointer [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A]"
+                    className="h-8 w-8 border-2 border-blue-900 bg-sky-100 hover:bg-sky-200 text-blue-900 rounded-md transition-all cursor-pointer shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                   />
                 }
               >
@@ -223,7 +223,7 @@ export function getStaffColumns({
                     size="icon"
                     disabled={isAdmin}
                     onClick={() => onDelete(staff)}
-                    className={`h-8 w-8 border-2 border-blue-900 rounded-md transition-all [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A] ${
+                    className={`h-8 w-8 border-2 border-blue-900 rounded-md transition-all shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
                       isAdmin
                         ? "opacity-40 cursor-not-allowed bg-slate-100 text-slate-400"
                         : "bg-rose-100 hover:bg-rose-200 text-rose-800 cursor-pointer"

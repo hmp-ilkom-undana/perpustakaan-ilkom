@@ -78,6 +78,7 @@ export const userService = {
       email?: string;
       wa_number?: string;
       status?: string;
+      password?: string;
     }
   ) => {
     const response = await api.patch(`/api/users/staff/${id}`, data);
