@@ -59,7 +59,6 @@ export class FineController {
     @Req() req: Request,
   ) {
     const user = await this.validateOfficerRole(req);
-    const officerName = user.name || 'Petugas Perpustakaan';
-    return this.fineService.payFine(id, officerName, body);
+    return this.fineService.payFine(id, user as any, body);
   }
 }

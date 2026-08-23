@@ -10,15 +10,32 @@ import {
   UploadedFile,
   BadRequestException,
   Query,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Request } from 'express';
 import { ArchiveService } from './archive.service';
+import { AuthService } from '../auth/auth.service';
 import { CreateArchiveDto } from './dto/create-archive.dto';
 import { UpdateArchiveDto } from './dto/update-archive.dto';
 
 @Controller('api/archives')
 export class ArchiveController {
-  constructor(private readonly archiveService: ArchiveService) {}
+  constructor(
+    private readonly archiveService: ArchiveService,
+    private readonly authService: AuthService,
+  ) {}
+
+  private async getSessionUser(req: Request) {
+    try {
+      const sessionData = await this.authService.auth.api.getSession({
+        headers: req.headers as any,
+      });
+      return sessionData?.user || null;
+    } catch {
+      return null;
+    }
+  }
 
   @Get()
   async getCatalog(
@@ -30,8 +47,6 @@ export class ArchiveController {
     @Query('availability') availability?: string,
     @Query('userId') userId?: string,
   ) {
-    // Validasi NaN: jika query param bukan angka valid (contoh: ?page=abc),
-    // parseInt akan menghasilkan NaN. Kita paksa ke angka default agar Prisma tidak crash.
     const parsedPage = parseInt(page ?? '', 10);
     const parsedLimit = parseInt(limit ?? '', 10);
 
@@ -54,6 +69,7 @@ export class ArchiveController {
   @Post('import')
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(
+    @Req() req: Request,
     @UploadedFile() file: Express.Multer.File,
     @Body('archiveType') archiveType: string,
   ) {
@@ -64,22 +80,35 @@ export class ArchiveController {
       throw new BadRequestException('Tipe arsip belum dipilih');
     }
 
-    return this.archiveService.importExcel(file.buffer, archiveType);
+    const user = await this.getSessionUser(req);
+    return this.archiveService.importExcel(file.buffer, archiveType, user);
   }
 
   @Post()
-  async create(@Body() createArchiveDto: CreateArchiveDto) {
-    return this.archiveService.create(createArchiveDto);
+  async create(
+    @Req() req: Request,
+    @Body() createArchiveDto: CreateArchiveDto,
+  ) {
+    const user = await this.getSessionUser(req);
+    return this.archiveService.create(createArchiveDto, user);
   }
+
   @Patch(':id')
   async update(
     @Param('id') id: string,
+    @Req() req: Request,
     @Body() updateArchiveDto: UpdateArchiveDto,
   ) {
-    return this.archiveService.update(id, updateArchiveDto);
+    const user = await this.getSessionUser(req);
+    return this.archiveService.update(id, updateArchiveDto, user);
   }
+
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.archiveService.remove(id);
+  async remove(
+    @Param('id') id: string,
+    @Req() req: Request,
+  ) {
+    const user = await this.getSessionUser(req);
+    return this.archiveService.remove(id, user);
   }
 }

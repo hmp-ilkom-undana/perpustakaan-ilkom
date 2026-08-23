@@ -39,23 +39,31 @@ export class UserController {
 
   @Post('staff')
   async createStaff(
+    @Req() req: Request,
     @Body()
     body: {
       email: string;
       password?: string;
     },
   ) {
-    return this.userService.createStaff(body);
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+    return this.userService.createStaff(body, sessionData?.user as any);
   }
 
   @Post('staff/batch')
   async createBatchStaff(
+    @Req() req: Request,
     @Body()
     body: {
       staffList: Array<{ email: string; password?: string }>;
     },
   ) {
-    return this.userService.createBatchStaff(body.staffList);
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+    return this.userService.createBatchStaff(body.staffList, sessionData?.user as any);
   }
 
   @Patch('profile/:id')
@@ -89,6 +97,7 @@ export class UserController {
   @Patch('staff/:id')
   async updateStaff(
     @Param('id') id: string,
+    @Req() req: Request,
     @Body()
     body: {
       name?: string;
@@ -97,7 +106,10 @@ export class UserController {
       status?: string;
     },
   ) {
-    return this.userService.updateStaff(id, body);
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+    return this.userService.updateStaff(id, body, sessionData?.user as any);
   }
 
   @Post('reset-password')
@@ -106,7 +118,10 @@ export class UserController {
   }
 
   @Delete('staff/:id')
-  async deleteStaff(@Param('id') id: string) {
-    return this.userService.deleteStaff(id);
+  async deleteStaff(@Param('id') id: string, @Req() req: Request) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+    return this.userService.deleteStaff(id, sessionData?.user as any);
   }
 }

@@ -1,13 +1,16 @@
-// backend/src/archive/archive.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ActivityLogService } from '../activity-log/activity-log.service';
 import { CreateArchiveDto } from './dto/create-archive.dto';
 import { UpdateArchiveDto } from './dto/update-archive.dto';
 import * as xlsx from 'xlsx';
 
 @Injectable()
 export class ArchiveService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly activityLogService: ActivityLogService,
+  ) {}
 
   async findAll(params: {
     page: number;
@@ -133,11 +136,11 @@ export class ArchiveService {
     const paddedNumber = nextNumber.toString().padStart(4, '0');
     return `${prefix}-${paddedNumber}`;
   }
-  async create(createArchiveDto: CreateArchiveDto) {
+  async create(createArchiveDto: CreateArchiveDto, user?: any) {
     const generatedCode = await this.generateArchiveCode(
       createArchiveDto.archiveType,
     );
-    return this.prisma.archive.create({
+    const created = await this.prisma.archive.create({
       data: {
         archiveCode: generatedCode,
         title: createArchiveDto.title,
@@ -149,6 +152,29 @@ export class ArchiveService {
         shelfLocation: createArchiveDto.shelfLocation,
       },
     });
+
+    if (user) {
+      await this.activityLogService.createLog({
+        userId: user.id,
+        userName: user.name || user.email,
+        userRole: user.role,
+        userEmail: user.email,
+        action: 'CREATE_ARCHIVE',
+        entity: 'ARCHIVE',
+        entityId: created.id,
+        description: `Menambahkan koleksi arsip baru "${created.title}" (${created.archiveCode})`,
+        metadata: {
+          archiveCode: created.archiveCode,
+          title: created.title,
+          category: created.category,
+          archiveType: created.archiveType,
+          quantity: created.quantity,
+          shelfLocation: created.shelfLocation,
+        },
+      });
+    }
+
+    return created;
   }
 
   async findOne(id: string) {
@@ -163,31 +189,71 @@ export class ArchiveService {
     return archive;
   }
 
-  async update(id: string, updateArchiveDto: UpdateArchiveDto) {
+  async update(id: string, updateArchiveDto: UpdateArchiveDto, user?: any) {
     const existingArchive = await this.prisma.archive.findUnique({
       where: { id },
     });
     if (!existingArchive)
       throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
 
-    return this.prisma.archive.update({
+    const updated = await this.prisma.archive.update({
       where: { id },
       data: updateArchiveDto,
     });
+
+    if (user) {
+      await this.activityLogService.createLog({
+        userId: user.id,
+        userName: user.name || user.email,
+        userRole: user.role,
+        userEmail: user.email,
+        action: 'UPDATE_ARCHIVE',
+        entity: 'ARCHIVE',
+        entityId: updated.id,
+        description: `Memperbarui data koleksi arsip "${updated.title}" (${updated.archiveCode})`,
+        metadata: {
+          archiveCode: updated.archiveCode,
+          title: updated.title,
+          changes: updateArchiveDto,
+        },
+      });
+    }
+
+    return updated;
   }
 
-  async remove(id: string) {
+  async remove(id: string, user?: any) {
     const existingArchive = await this.prisma.archive.findUnique({
       where: { id },
     });
     if (!existingArchive)
       throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
 
-    return this.prisma.archive.delete({ where: { id } });
+    const deleted = await this.prisma.archive.delete({ where: { id } });
+
+    if (user) {
+      await this.activityLogService.createLog({
+        userId: user.id,
+        userName: user.name || user.email,
+        userRole: user.role,
+        userEmail: user.email,
+        action: 'DELETE_ARCHIVE',
+        entity: 'ARCHIVE',
+        entityId: id,
+        description: `Menghapus arsip "${existingArchive.title}" (${existingArchive.archiveCode}) dari sistem`,
+        metadata: {
+          archiveCode: existingArchive.archiveCode,
+          title: existingArchive.title,
+          archiveType: existingArchive.archiveType,
+        },
+      });
+    }
+
+    return deleted;
   }
 
   // LOGIKA IMPORT EXCEL
-  async importExcel(buffer: Buffer, archiveType: string) {
+  async importExcel(buffer: Buffer, archiveType: string, user?: any) {
     // 1. Baca Buffer Excel menjadi JSON
     const workbook = xlsx.read(buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames?.[0];
@@ -404,6 +470,24 @@ export class ArchiveService {
     console.log(
       `[IMPORT] Selesai: Berhasil insert ${validDataToInsert.length} baris, Skip ${skippedCount} baris`,
     );
+
+    if (user && validDataToInsert.length > 0) {
+      await this.activityLogService.createLog({
+        userId: user.id,
+        userName: user.name || user.email,
+        userRole: user.role,
+        userEmail: user.email,
+        action: 'IMPORT_ARCHIVE',
+        entity: 'ARCHIVE',
+        description: `Mengimpor ${validDataToInsert.length} koleksi arsip jenis ${archiveType} melalui Excel`,
+        metadata: {
+          archiveType: archiveType,
+          totalRows: rows.length,
+          insertedCount: validDataToInsert.length,
+          skippedCount: skippedCount,
+        },
+      });
+    }
 
     return {
       success: validDataToInsert.length,

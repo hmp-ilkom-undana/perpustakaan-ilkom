@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { DriveService } from './drive.service';
 import { SettingService } from '../setting/setting.service';
+import { ActivityLogService } from '../activity-log/activity-log.service';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class BorrowingService {
     private readonly prisma: PrismaService,
     private readonly driveService: DriveService,
     private readonly settingService: SettingService,
+    private readonly activityLogService: ActivityLogService,
   ) {}
 
   async requestBorrow(userId: string, archiveId: string) {
@@ -229,9 +231,13 @@ export class BorrowingService {
     });
   }
 
-  async approveBorrowing(borrowingId: string) {
+  async approveBorrowing(borrowingId: string, officerUser?: any) {
     const borrowing = await this.prisma.borrowing.findUnique({
-      where: { id: borrowingId }
+      where: { id: borrowingId },
+      include: {
+        user: true,
+        archive: true,
+      },
     });
 
     if (!borrowing) {
@@ -246,20 +252,46 @@ export class BorrowingService {
     const randomCode = crypto.randomBytes(3).toString('hex').toUpperCase();
     const pickupCode = borrowing.pickupCode || `PK-${randomCode}`;
 
-    return this.prisma.borrowing.update({
+    const updated = await this.prisma.borrowing.update({
       where: { id: borrowingId },
       data: {
         status: 'WAITING_PICKUP',
         pickupCode: pickupCode,
-        accDate: new Date()
-      }
+        accDate: new Date(),
+      },
     });
+
+    if (officerUser) {
+      await this.activityLogService.createLog({
+        userId: officerUser.id,
+        userName: officerUser.name || officerUser.email,
+        userRole: officerUser.role,
+        userEmail: officerUser.email,
+        action: 'APPROVE_BORROW',
+        entity: 'BORROWING',
+        entityId: borrowing.id,
+        description: `Menyetujui pengajuan peminjaman arsip "${borrowing.archive?.title || '-'}" untuk ${borrowing.user?.name || 'Mahasiswa'} (Kode Ambil: ${pickupCode})`,
+        metadata: {
+          borrowingId: borrowing.id,
+          pickupCode: pickupCode,
+          archiveTitle: borrowing.archive?.title,
+          studentName: borrowing.user?.name,
+          studentNim: borrowing.user?.nim,
+        },
+      });
+    }
+
+    return updated;
   }
 
-  async rejectBorrowing(borrowingId: string, reason?: string) {
+  async rejectBorrowing(borrowingId: string, reason?: string, officerUser?: any) {
     return await this.prisma.$transaction(async (tx) => {
       const borrowing = await tx.borrowing.findUnique({
-        where: { id: borrowingId }
+        where: { id: borrowingId },
+        include: {
+          user: true,
+          archive: true,
+        },
       });
 
       if (!borrowing) {
@@ -277,21 +309,46 @@ export class BorrowingService {
       });
 
       // Ubah status jadi REJECTED
-      return tx.borrowing.update({
+      const updated = await tx.borrowing.update({
         where: { id: borrowingId },
         data: {
           status: 'REJECTED',
           returnDate: new Date(),
-          rejectReason: reason || null
-        }
+          rejectReason: reason || null,
+        },
       });
+
+      if (officerUser) {
+        await this.activityLogService.createLog({
+          userId: officerUser.id,
+          userName: officerUser.name || officerUser.email,
+          userRole: officerUser.role,
+          userEmail: officerUser.email,
+          action: 'REJECT_BORROW',
+          entity: 'BORROWING',
+          entityId: borrowing.id,
+          description: `Menolak pengajuan arsip "${borrowing.archive?.title || '-'}" untuk ${borrowing.user?.name || 'Mahasiswa'}${reason ? `. Alasan: ${reason}` : ''}`,
+          metadata: {
+            borrowingId: borrowing.id,
+            archiveTitle: borrowing.archive?.title,
+            studentName: borrowing.user?.name,
+            reason: reason || null,
+          },
+        });
+      }
+
+      return updated;
     });
   }
 
-  async handoverBorrowing(borrowingId: string, file?: Express.Multer.File) {
+  async handoverBorrowing(borrowingId: string, file?: Express.Multer.File, officerUser?: any) {
     return await this.prisma.$transaction(async (tx) => {
       const borrowing = await tx.borrowing.findUnique({
-        where: { id: borrowingId }
+        where: { id: borrowingId },
+        include: {
+          user: true,
+          archive: true,
+        },
       });
 
       if (!borrowing) {
@@ -317,26 +374,59 @@ export class BorrowingService {
       const returnDate = new Date();
       returnDate.setDate(today.getDate() + settings.loanDurationDays);
 
-      return await tx.borrowing.update({
+      const updated = await tx.borrowing.update({
         where: { id: borrowingId },
         data: {
           status: 'BORROWED',
           borrowDate: today,
           returnDate: returnDate,
-          fotoUrlPinjam: fotoUrl
-        }
+          fotoUrlPinjam: fotoUrl,
+        },
       });
+
+      if (officerUser) {
+        await this.activityLogService.createLog({
+          userId: officerUser.id,
+          userName: officerUser.name || officerUser.email,
+          userRole: officerUser.role,
+          userEmail: officerUser.email,
+          action: 'HANDOVER_BORROW',
+          entity: 'BORROWING',
+          entityId: borrowing.id,
+          description: `Menyerahkan fisik arsip "${borrowing.archive?.title || '-'}" kepada ${borrowing.user?.name || 'Mahasiswa'}`,
+          metadata: {
+            borrowingId: borrowing.id,
+            pickupCode: borrowing.pickupCode,
+            archiveTitle: borrowing.archive?.title,
+            studentName: borrowing.user?.name,
+            fotoUrlPinjam: fotoUrl,
+          },
+        });
+      }
+
+      return updated;
     });
   }
 
-  async returnBorrowing(borrowingId: string, file: Express.Multer.File | undefined, kondisiStr: string, catatan?: string, fineAmountStr?: string) {
+  async returnBorrowing(
+    borrowingId: string,
+    file: Express.Multer.File | undefined,
+    kondisiStr: string,
+    catatan?: string,
+    fineAmountStr?: string,
+    officerUser?: any,
+  ) {
     if (!file) {
       throw new BadRequestException('Foto serah terima pengembalian wajib disertakan.');
     }
 
     return await this.prisma.$transaction(async (tx) => {
       const borrowing = await tx.borrowing.findUnique({
-        where: { id: borrowingId }
+        where: { id: borrowingId },
+        include: {
+          user: true,
+          archive: true,
+        },
       });
 
       if (!borrowing) {
@@ -386,12 +476,12 @@ export class BorrowingService {
           where: { id: borrowing.archiveId },
           data: { 
             reservedQuantity: { decrement: 1 },
-            quantity: { decrement: 1 } // Kurangi stok asli karena hilang
+            quantity: { decrement: 1 }, // Kurangi stok asli karena hilang
           },
         });
       }
 
-      return await tx.borrowing.update({
+      const updated = await tx.borrowing.update({
         where: { id: borrowingId },
         data: {
           status: newStatus,
@@ -400,8 +490,33 @@ export class BorrowingService {
           fotoUrlKembali: fotoUrl,
           fineAmount: fine,
           returnDate: new Date(), // Menyimpan tanggal aktual dikembalikan
-        }
+        },
       });
+
+      if (officerUser) {
+        await this.activityLogService.createLog({
+          userId: officerUser.id,
+          userName: officerUser.name || officerUser.email,
+          userRole: officerUser.role,
+          userEmail: officerUser.email,
+          action: 'RETURN_BORROW',
+          entity: 'BORROWING',
+          entityId: borrowing.id,
+          description: `Memproses pengembalian arsip "${borrowing.archive?.title || '-'}" dari ${borrowing.user?.name || 'Mahasiswa'} (Kondisi: ${kondisiKembali}${fine > 0 ? `, Denda: Rp ${fine.toLocaleString('id-ID')}` : ''})`,
+          metadata: {
+            borrowingId: borrowing.id,
+            pickupCode: borrowing.pickupCode,
+            archiveTitle: borrowing.archive?.title,
+            studentName: borrowing.user?.name,
+            kondisiKembali: kondisiKembali,
+            catatan: catatan || null,
+            fineAmount: fine,
+            fotoUrlKembali: fotoUrl,
+          },
+        });
+      }
+
+      return updated;
     });
   }
 }

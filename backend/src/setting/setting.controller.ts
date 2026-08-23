@@ -47,6 +47,6 @@ export class SettingController {
     @Body() body: UpdateSettingDto,
   ) {
     const user = await this.validateAdminRole(req);
-    return this.settingService.updateSettings(body, user.name);
+    return this.settingService.updateSettings(body, user as any);
   }
 }
