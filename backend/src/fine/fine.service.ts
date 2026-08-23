@@ -175,7 +175,10 @@ export class FineService {
       );
     }
 
-    const officerName = typeof officer === 'object' && officer?.name ? officer.name : (typeof officer === 'string' ? officer : 'Petugas Perpustakaan');
+    const officerName =
+      typeof officer === 'object'
+        ? (officer?.name || (officer?.role === 'ADMIN' ? 'Administrator Perpustakaan' : 'Petugas Perpustakaan'))
+        : (typeof officer === 'string' ? officer : 'Petugas Perpustakaan');
     const officerEmail = typeof officer === 'object' && officer?.email ? officer.email : 'petugas@perpus.ilkom';
     const officerRole = typeof officer === 'object' && officer?.role ? officer.role : 'PETUGAS';
     const officerId = typeof officer === 'object' && officer?.id ? officer.id : null;
