@@ -40,6 +40,14 @@ const mapArchive = (item: any): CatalogItem => ({
   type: item.archiveType,
   stock: item.quantity,
   location: item.shelfLocation || "",
+  quantity: item.quantity,
+  shelfLocation: item.shelfLocation || "",
+  archiveType: item.archiveType,
+  status: item.status,
+  createdBy: item.createdBy,
+  updatedBy: item.updatedBy,
+  createdAt: item.createdAt,
+  updatedAt: item.updatedAt,
 });
 
 export const archiveService = {

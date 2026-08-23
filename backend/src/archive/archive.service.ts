@@ -101,6 +101,10 @@ export class ArchiveService {
           reservedQuantity: true,
           shelfLocation: true,
           status: true,
+          createdBy: true,
+          updatedBy: true,
+          createdAt: true,
+          updatedAt: true,
         },
         orderBy: { createdAt: 'desc' },
       }),
@@ -140,6 +144,12 @@ export class ArchiveService {
     const generatedCode = await this.generateArchiveCode(
       createArchiveDto.archiveType,
     );
+    const actorName =
+      user?.name ||
+      (user?.role === 'ADMIN'
+        ? 'Administrator Perpustakaan'
+        : 'Petugas Perpustakaan');
+
     const created = await this.prisma.archive.create({
       data: {
         archiveCode: generatedCode,
@@ -150,6 +160,8 @@ export class ArchiveService {
         archiveType: createArchiveDto.archiveType,
         quantity: createArchiveDto.quantity ?? 1,
         shelfLocation: createArchiveDto.shelfLocation,
+        createdBy: actorName,
+        updatedBy: actorName,
       },
     });
 
@@ -196,9 +208,18 @@ export class ArchiveService {
     if (!existingArchive)
       throw new NotFoundException(`Arsip dengan ID ${id} tidak ditemukan`);
 
+    const actorName =
+      user?.name ||
+      (user?.role === 'ADMIN'
+        ? 'Administrator Perpustakaan'
+        : 'Petugas Perpustakaan');
+
     const updated = await this.prisma.archive.update({
       where: { id },
-      data: updateArchiveDto,
+      data: {
+        ...updateArchiveDto,
+        updatedBy: actorName,
+      },
     });
 
     if (user) {
@@ -448,6 +469,12 @@ export class ArchiveService {
       const generatedCode = `${prefix}-${paddedNumber}`;
       nextSeqNumber++;
 
+      const actorName =
+        user?.name ||
+        (user?.role === 'ADMIN'
+          ? 'Administrator Perpustakaan'
+          : 'Petugas Perpustakaan');
+
       validDataToInsert.push({
         archiveCode: generatedCode,
         title: titleStr,
@@ -457,6 +484,8 @@ export class ArchiveService {
         archiveType: archiveType,
         quantity: quantity,
         shelfLocation: shelfLocation ? shelfLocation.toString().trim() : null,
+        createdBy: actorName,
+        updatedBy: actorName,
       });
     }
 
