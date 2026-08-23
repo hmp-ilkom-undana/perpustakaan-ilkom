@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
-import type { UserItem, BorrowingHistoryItem } from "@/services/user.service";
-import { userService } from "@/services/user.service";
+import type { UserItem } from "@/services/user.service";
+import { useStudentBorrowingsQuery } from "@/hooks/queries/useUserQuery";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +16,6 @@ import {
   CheckCircle2, 
   Clock, 
   AlertCircle, 
-  XCircle,
   FileText 
 } from "lucide-react";
 
@@ -32,89 +30,65 @@ export function StudentHistoryDialog({
   isOpen,
   onOpenChange,
 }: StudentHistoryDialogProps) {
-  const [history, setHistory] = useState<BorrowingHistoryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (user && isOpen) {
-      const fetchHistory = async () => {
-        try {
-          setIsLoading(true);
-          const data = await userService.getStudentBorrowings(user.id);
-          setHistory(data || []);
-        } catch {
-          // Fallback mock history if offline
-          setHistory([
-            {
-              id: "b1",
-              archiveTitle: "Sistem Informasi Manajemen Rumah Sakit",
-              archiveCode: "SKR-0012",
-              category: "SISTEM INFORMASI",
-              archiveType: "SKRIPSI",
-              borrowDate: "10 Agustus 2026",
-              returnDate: "17 Agustus 2026",
-              status: "BORROWED",
-              fineAmount: 0,
-            },
-            {
-              id: "b2",
-              archiveTitle: "Implementasi Algoritma K-Means Clustering",
-              archiveCode: "SKR-0008",
-              category: "DATA MINING",
-              archiveType: "SKRIPSI",
-              borrowDate: "01 Juli 2026",
-              returnDate: "08 Juli 2026",
-              status: "RETURNED",
-              fineAmount: 0,
-              kondisiKembali: "BAIK",
-            },
-          ]);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchHistory();
-    }
-  }, [user, isOpen]);
+  // Query hook on-demand: hanya fetch data saat dialog terbuka dan user valid
+  const { data: historyData, isLoading } = useStudentBorrowingsQuery(
+    user?.id,
+    isOpen,
+  );
 
   if (!user) return null;
 
+  const history = historyData || [];
   const totalFine = history.reduce((acc, h) => acc + (h.fineAmount || 0), 0);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "BORROWED":
         return (
-          <Badge variant="outline" className="bg-amber-100 text-amber-900 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs">
+          <Badge
+            variant="outline"
+            className="bg-amber-100 text-amber-900 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs shadow-[2px_2px_0px_#1E3A8A]"
+          >
             <Clock className="w-3 h-3 mr-1" />
             Sedang Dipinjam
           </Badge>
         );
       case "RETURNED":
         return (
-          <Badge variant="outline" className="bg-emerald-100 text-emerald-900 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs">
+          <Badge
+            variant="outline"
+            className="bg-emerald-100 text-emerald-900 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs shadow-[2px_2px_0px_#1E3A8A]"
+          >
             <CheckCircle2 className="w-3 h-3 mr-1" />
             Dikembalikan
           </Badge>
         );
       case "OVERDUE":
         return (
-          <Badge variant="outline" className="bg-rose-100 text-rose-900 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs">
+          <Badge
+            variant="outline"
+            className="bg-rose-100 text-rose-900 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs shadow-[2px_2px_0px_#1E3A8A]"
+          >
             <AlertCircle className="w-3 h-3 mr-1" />
             Terlambat
           </Badge>
         );
       case "WAITING_PICKUP":
         return (
-          <Badge variant="outline" className="bg-sky-100 text-sky-900 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs">
+          <Badge
+            variant="outline"
+            className="bg-sky-100 text-sky-900 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs shadow-[2px_2px_0px_#1E3A8A]"
+          >
             <Clock className="w-3 h-3 mr-1" />
             Menunggu Diambil
           </Badge>
         );
       default:
         return (
-          <Badge variant="outline" className="bg-slate-100 text-slate-800 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs">
+          <Badge
+            variant="outline"
+            className="bg-slate-100 text-slate-800 border-2 border-blue-900 font-bold px-2 py-0.5 text-xs shadow-[2px_2px_0px_#1E3A8A]"
+          >
             {status}
           </Badge>
         );
@@ -123,7 +97,7 @@ export function StudentHistoryDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl border-2 border-blue-900 [box-shadow:6px_6px_0px_#1E3A8A] rounded-lg p-6 max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-2xl border-2 border-blue-900 shadow-[6px_6px_0px_#1E3A8A] rounded-lg p-6 max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-black text-blue-900">
             <BookOpen className="w-5 h-5 text-blue-900" />
@@ -132,7 +106,7 @@ export function StudentHistoryDialog({
         </DialogHeader>
 
         {/* Student Summary Info Bar */}
-        <div className="p-3.5 bg-slate-50 border-2 border-blue-900 rounded-md [box-shadow:3px_3px_0px_#1E3A8A] flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-slate-800">
+        <div className="p-3.5 bg-slate-50 border-2 border-blue-900 rounded-md shadow-[3px_3px_0px_#1E3A8A] flex flex-wrap items-center justify-between gap-3 text-xs font-semibold text-slate-800">
           <div>
             <span className="text-slate-500 font-normal">Nama: </span>
             <strong className="text-blue-950 font-bold">{user.name}</strong>
@@ -149,7 +123,11 @@ export function StudentHistoryDialog({
           </div>
           <div>
             <span className="text-slate-500 font-normal">Total Denda: </span>
-            <strong className={totalFine > 0 ? "text-rose-600 font-bold" : "text-emerald-700"}>
+            <strong
+              className={
+                totalFine > 0 ? "text-rose-600 font-bold" : "text-emerald-700"
+              }
+            >
               Rp {totalFine.toLocaleString("id-ID")}
             </strong>
           </div>
@@ -165,14 +143,17 @@ export function StudentHistoryDialog({
             history.map((item) => (
               <div
                 key={item.id}
-                className="p-4 bg-white border-2 border-blue-900 rounded-md [box-shadow:3px_3px_0px_#1E3A8A] space-y-2 hover:bg-slate-50/80 transition-colors"
+                className="p-4 bg-white border-2 border-blue-900 rounded-md shadow-[3px_3px_0px_#1E3A8A] space-y-2 hover:bg-slate-50/80 transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 text-[11px] font-mono font-black text-blue-900 bg-amber-100 border border-blue-900 rounded">
                       {item.archiveCode}
                     </span>
-                    <Badge variant="outline" className="text-[10px] font-bold border-blue-900/40 text-slate-700">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] font-bold border-blue-900/40 text-slate-700"
+                    >
                       {item.category}
                     </Badge>
                   </div>
@@ -197,7 +178,9 @@ export function StudentHistoryDialog({
                   {item.fineAmount > 0 && (
                     <div className="flex items-center gap-1 text-rose-600 font-bold">
                       <Receipt className="w-3.5 h-3.5" />
-                      <span>Denda: Rp {item.fineAmount.toLocaleString("id-ID")}</span>
+                      <span>
+                        Denda: Rp {item.fineAmount.toLocaleString("id-ID")}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -220,7 +203,7 @@ export function StudentHistoryDialog({
           <Button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="w-full sm:w-auto bg-blue-900 hover:bg-blue-950 text-white font-bold border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-md"
+            className="w-full sm:w-auto bg-blue-900 hover:bg-blue-950 text-white font-bold border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none rounded-md transition-all cursor-pointer"
           >
             Tutup
           </Button>

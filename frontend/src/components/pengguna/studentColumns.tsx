@@ -37,7 +37,7 @@ export function getStudentColumns({
 
         return (
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-md bg-blue-100 text-blue-900 border-2 border-blue-900 flex items-center justify-center font-black text-xs shrink-0 [box-shadow:2px_2px_0px_#1E3A8A]">
+            <div className="w-9 h-9 rounded-md bg-blue-100 text-blue-900 border-2 border-blue-900 flex items-center justify-center font-black text-xs shrink-0 shadow-[2px_2px_0px_#1E3A8A]">
               {initials}
             </div>
             <div>
@@ -56,7 +56,7 @@ export function getStudentColumns({
       size: 150,
       cell: ({ getValue }) => (
         <div className="text-center">
-          <span className="inline-block px-2.5 py-1 text-xs font-mono font-black text-blue-900 bg-amber-100 border-2 border-blue-900 rounded [box-shadow:2px_2px_0px_#1E3A8A]">
+          <span className="inline-block px-2.5 py-1 text-xs font-mono font-black text-blue-900 bg-amber-100 border-2 border-blue-900 rounded shadow-[2px_2px_0px_#1E3A8A]">
             {getValue()}
           </span>
         </div>
@@ -72,7 +72,9 @@ export function getStudentColumns({
           <div className="space-y-1 text-xs">
             <div className="flex items-center gap-1.5 text-slate-700 font-medium">
               <Mail className="w-3.5 h-3.5 text-blue-900 shrink-0" />
-              <span className="truncate max-w-[200px]">{user.email || user.identifier}</span>
+              <span className="truncate max-w-[200px]">
+                {user.email || user.identifier}
+              </span>
             </div>
             {user.wa_number && (
               <div className="flex items-center gap-1.5 text-slate-600 font-mono">
@@ -95,7 +97,7 @@ export function getStudentColumns({
           <div className="flex justify-center items-center">
             <Badge
               variant="outline"
-              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs [box-shadow:2px_2px_0px_#1E3A8A] ${
+              className={`border-2 border-blue-900 font-bold px-2.5 py-0.5 rounded text-xs shadow-[2px_2px_0px_#1E3A8A] ${
                 isActive
                   ? "bg-emerald-100 text-emerald-900"
                   : "bg-rose-100 text-rose-900"
@@ -120,7 +122,7 @@ export function getStudentColumns({
               variant="outline"
               size="icon"
               onClick={() => onViewDetail(user)}
-              className="h-8 w-8 border-2 border-blue-900 text-blue-950 bg-amber-200 hover:bg-amber-300 [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] transition-all rounded-md cursor-pointer"
+              className="h-8 w-8 border-2 border-blue-900 text-blue-950 bg-amber-200 hover:bg-amber-300 shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-md cursor-pointer"
               title="Lihat Detail Profil Mahasiswa"
             >
               <Eye className="h-4 w-4" />

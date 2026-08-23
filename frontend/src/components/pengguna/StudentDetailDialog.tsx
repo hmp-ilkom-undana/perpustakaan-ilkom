@@ -48,7 +48,7 @@ export function StudentDetailDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg border-2 border-blue-900 [box-shadow:6px_6px_0px_#1E3A8A] rounded-lg p-6">
+      <DialogContent className="sm:max-w-lg border-2 border-blue-900 shadow-[6px_6px_0px_#1E3A8A] rounded-lg p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-black text-blue-900">
             <User className="w-5 h-5 text-blue-900" />
@@ -58,8 +58,8 @@ export function StudentDetailDialog({
 
         <div className="space-y-5 pt-2">
           {/* Avatar Header Box */}
-          <div className="flex items-center gap-4 p-4 bg-slate-50 border-2 border-blue-900 rounded-lg [box-shadow:3px_3px_0px_#1E3A8A]">
-            <div className="w-14 h-14 rounded-md bg-blue-100 border-2 border-blue-900 text-blue-900 font-black text-xl flex items-center justify-center shrink-0 [box-shadow:2px_2px_0px_#1E3A8A]">
+          <div className="flex items-center gap-4 p-4 bg-slate-50 border-2 border-blue-900 rounded-lg shadow-[3px_3px_0px_#1E3A8A]">
+            <div className="w-14 h-14 rounded-md bg-blue-100 border-2 border-blue-900 text-blue-900 font-black text-xl flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#1E3A8A]">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
@@ -84,7 +84,7 @@ export function StudentDetailDialog({
 
           {/* Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3 bg-white border-2 border-blue-900 rounded-md [box-shadow:2px_2px_0px_#1E3A8A]">
+            <div className="p-3 bg-white border-2 border-blue-900 rounded-md shadow-[2px_2px_0px_#1E3A8A]">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                 <Mail className="w-3.5 h-3.5 text-blue-900" />
                 Alamat Email
@@ -94,7 +94,7 @@ export function StudentDetailDialog({
               </p>
             </div>
 
-            <div className="p-3 bg-white border-2 border-blue-900 rounded-md [box-shadow:2px_2px_0px_#1E3A8A]">
+            <div className="p-3 bg-white border-2 border-blue-900 rounded-md shadow-[2px_2px_0px_#1E3A8A]">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                 <Phone className="w-3.5 h-3.5 text-emerald-700" />
                 Nomor WhatsApp
@@ -104,7 +104,7 @@ export function StudentDetailDialog({
               </p>
             </div>
 
-            <div className="p-3 bg-white border-2 border-blue-900 rounded-md [box-shadow:2px_2px_0px_#1E3A8A]">
+            <div className="p-3 bg-white border-2 border-blue-900 rounded-md shadow-[2px_2px_0px_#1E3A8A]">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                 <Shield className="w-3.5 h-3.5 text-amber-600" />
                 Role Akses
@@ -114,7 +114,7 @@ export function StudentDetailDialog({
               </p>
             </div>
 
-            <div className="p-3 bg-white border-2 border-blue-900 rounded-md [box-shadow:2px_2px_0px_#1E3A8A]">
+            <div className="p-3 bg-white border-2 border-blue-900 rounded-md shadow-[2px_2px_0px_#1E3A8A]">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                 <Calendar className="w-3.5 h-3.5 text-blue-900" />
                 Terdaftar Sejak
@@ -126,7 +126,7 @@ export function StudentDetailDialog({
           </div>
 
           {/* Activity Box */}
-          <div className="p-4 bg-amber-50/70 border-2 border-blue-900 rounded-md [box-shadow:3px_3px_0px_#1E3A8A] flex items-center justify-between">
+          <div className="p-4 bg-amber-50/70 border-2 border-blue-900 rounded-md shadow-[3px_3px_0px_#1E3A8A] flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-amber-200 border-2 border-blue-900 rounded text-blue-900">
                 <BookOpen className="w-4 h-4" />
@@ -161,7 +161,7 @@ export function StudentDetailDialog({
                 onOpenChange(false);
                 onViewHistory(user);
               }}
-              className="flex-1 sm:flex-none border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md text-xs"
+              className="flex-1 sm:flex-none border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md text-xs shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
             >
               <Clock className="w-3.5 h-3.5 mr-1.5 text-blue-900" />
               Riwayat Peminjaman
@@ -171,7 +171,7 @@ export function StudentDetailDialog({
                 type="button"
                 variant="outline"
                 onClick={() => onWhatsApp(user)}
-                className="flex-1 sm:flex-none border-2 border-emerald-800 text-emerald-800 hover:bg-emerald-50 font-bold rounded-md text-xs"
+                className="flex-1 sm:flex-none border-2 border-emerald-800 text-emerald-800 hover:bg-emerald-50 font-bold rounded-md text-xs shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
               >
                 <MessageCircle className="w-3.5 h-3.5 mr-1.5 text-emerald-700" />
                 Kirim WhatsApp
@@ -181,7 +181,7 @@ export function StudentDetailDialog({
           <Button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="w-full sm:w-auto bg-blue-900 hover:bg-blue-950 text-white font-bold border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-md"
+            className="w-full sm:w-auto bg-blue-900 hover:bg-blue-950 text-white font-bold border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none rounded-md transition-all cursor-pointer"
           >
             Tutup
           </Button>
