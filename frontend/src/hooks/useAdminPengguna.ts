@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useStudentsQuery } from "./queries/useUserQuery";
 import type { UserItem } from "@/services/user.service";
 import { toast } from "sonner";
@@ -56,31 +56,31 @@ export function useAdminPengguna() {
     return { total, active, inactive, totalBorrowings };
   }, [students]);
 
-  // 6. Action Handlers
-  const handleOpenDetail = (user: UserItem) => {
+  // 6. Action Handlers (Wrapped in useCallback to preserve referential stability)
+  const handleOpenDetail = useCallback((user: UserItem) => {
     setSelectedUser(user);
     setIsDetailOpen(true);
-  };
+  }, []);
 
-  const handleCloseDetail = () => {
+  const handleCloseDetail = useCallback(() => {
     setIsDetailOpen(false);
-  };
+  }, []);
 
-  const handleOpenHistory = (user: UserItem) => {
+  const handleOpenHistory = useCallback((user: UserItem) => {
     setSelectedUser(user);
     setIsHistoryOpen(true);
-  };
+  }, []);
 
-  const handleCloseHistory = () => {
+  const handleCloseHistory = useCallback(() => {
     setIsHistoryOpen(false);
-  };
+  }, []);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setSearch("");
     setStatusFilter("ALL");
-  };
+  }, []);
 
-  const handleWhatsApp = (user: UserItem) => {
+  const handleWhatsApp = useCallback((user: UserItem) => {
     if (!user.wa_number) {
       toast.error(`Mahasiswa ${user.name} belum mencantumkan nomor WhatsApp`);
       return;
@@ -100,9 +100,10 @@ export function useAdminPengguna() {
     window.open(
       `https://wa.me/${cleanedNumber}?text=${greetingMessage}`,
       "_blank",
+      "noopener,noreferrer",
     );
     toast.success(`Membuka WhatsApp untuk menghubungi ${user.name}`);
-  };
+  }, []);
 
   const isFiltered = Boolean(search.trim()) || statusFilter !== "ALL";
 
