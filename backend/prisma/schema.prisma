@@ -63,6 +63,8 @@ model Borrowing {
   kondisiPinjam         KondisiArsip?
   catatanKondisiPinjam  String?
   fotoUrlPinjam         String?
+  approvedBy            String?
+  handoverBy            String?
 
   kondisiKembali        KondisiArsip?
   catatanKondisiKembali String?

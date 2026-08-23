@@ -66,7 +66,9 @@ const mapCirculationItem = (item: any): CirculationItem => ({
   requestDate: item.borrowDate,
   dueDate: item.returnDate || "-",
   fine: item.fineAmount,
-  approvedBy: item.pickupCode ? "Petugas" : undefined,
+  approvedBy: item.approvedBy || undefined,
+  handoverBy: item.handoverBy || undefined,
+  pickupCode: item.pickupCode || undefined,
 });
 
 export const borrowingService = {

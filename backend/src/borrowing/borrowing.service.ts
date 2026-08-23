@@ -252,12 +252,19 @@ export class BorrowingService {
     const randomCode = crypto.randomBytes(3).toString('hex').toUpperCase();
     const pickupCode = borrowing.pickupCode || `PK-${randomCode}`;
 
+    const approverName =
+      officerUser?.name ||
+      (officerUser?.role === 'ADMIN'
+        ? 'Administrator Perpustakaan'
+        : 'Petugas Perpustakaan');
+
     const updated = await this.prisma.borrowing.update({
       where: { id: borrowingId },
       data: {
         status: 'WAITING_PICKUP',
         pickupCode: pickupCode,
         accDate: new Date(),
+        approvedBy: approverName,
       },
     });
 
@@ -374,6 +381,12 @@ export class BorrowingService {
       const returnDate = new Date();
       returnDate.setDate(today.getDate() + settings.loanDurationDays);
 
+      const handlerName =
+        officerUser?.name ||
+        (officerUser?.role === 'ADMIN'
+          ? 'Administrator Perpustakaan'
+          : 'Petugas Perpustakaan');
+
       const updated = await tx.borrowing.update({
         where: { id: borrowingId },
         data: {
@@ -381,6 +394,7 @@ export class BorrowingService {
           borrowDate: today,
           returnDate: returnDate,
           fotoUrlPinjam: fotoUrl,
+          handoverBy: handlerName,
         },
       });
 
