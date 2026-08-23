@@ -30,7 +30,7 @@ export function StaffStatusToggleDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="border-2 border-blue-900 [box-shadow:6px_6px_0px_#1E3A8A] rounded-lg">
+      <AlertDialogContent className="border-2 border-blue-900 shadow-[6px_6px_0px_#1E3A8A] rounded-lg">
         <AlertDialogHeader>
           <AlertDialogTitle className={`flex items-center gap-2 font-black text-lg ${isActive ? "text-amber-600" : "text-emerald-600"}`}>
             {isActive ? (
@@ -62,12 +62,12 @@ export function StaffStatusToggleDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-4">
-          <AlertDialogCancel className="border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md">
+          <AlertDialogCancel className="border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md cursor-pointer">
             Batal
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={() => onConfirm(staff)}
-            className={`text-white font-bold border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-md transition-all ${
+            className={`text-white font-bold border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none rounded-md transition-all cursor-pointer ${
               isActive
                 ? "bg-amber-600 hover:bg-amber-700"
                 : "bg-emerald-600 hover:bg-emerald-700"

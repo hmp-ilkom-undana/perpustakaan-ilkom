@@ -19,8 +19,8 @@ import {
   Trash2, 
   User, 
   Users, 
-  KeyRound, 
-  Info 
+  KeyRound,
+  Loader2 
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,6 +34,7 @@ interface StaffFormDialogProps {
   onOpenChange: (open: boolean) => void;
   staff: UserItem | null;
   mode: "create" | "edit";
+  isSubmitting?: boolean;
   onSubmitSingle: (staffData: Partial<UserItem> & { password?: string }) => void;
   onSubmitBatch: (staffList: Array<{ email: string }>) => void;
 }
@@ -43,6 +44,7 @@ export function StaffFormDialog({
   onOpenChange,
   staff,
   mode,
+  isSubmitting = false,
   onSubmitSingle,
   onSubmitBatch,
 }: StaffFormDialogProps) {
@@ -106,7 +108,6 @@ export function StaffFormDialog({
         status: editStatus,
         password: editPassword.trim() || undefined,
       });
-      onOpenChange(false);
       return;
     }
 
@@ -133,13 +134,11 @@ export function StaffFormDialog({
         email: r.email.trim(),
       }))
     );
-
-    onOpenChange(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg border-2 border-blue-900 [box-shadow:6px_6px_0px_#1E3A8A] rounded-lg p-6 max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-lg border-2 border-blue-900 shadow-[6px_6px_0px_#1E3A8A] rounded-lg p-6 max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-black text-blue-900">
             {isEdit ? (
@@ -166,7 +165,7 @@ export function StaffFormDialog({
           {!isEdit ? (
             <>
               {/* Default Password Info Card */}
-              <div className="p-3 bg-amber-50 border-2 border-blue-900 rounded-md [box-shadow:2px_2px_0px_#1E3A8A] flex items-start gap-2.5 text-xs text-blue-950">
+              <div className="p-3 bg-amber-50 border-2 border-blue-900 rounded-md shadow-[2px_2px_0px_#1E3A8A] flex items-start gap-2.5 text-xs text-blue-950">
                 <KeyRound className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                 <div className="space-y-0.5">
                   <p className="font-bold text-amber-950">
@@ -179,7 +178,7 @@ export function StaffFormDialog({
               </div>
 
               {/* Sticky / Fixed Control Bar on Top (No scrolling needed to add row) */}
-              <div className="flex items-center justify-between bg-slate-100 border-2 border-blue-900 rounded-md p-2 px-3 [box-shadow:2px_2px_0px_#1E3A8A] shrink-0">
+              <div className="flex items-center justify-between bg-slate-100 border-2 border-blue-900 rounded-md p-2 px-3 shadow-[2px_2px_0px_#1E3A8A] shrink-0">
                 <div className="flex items-center gap-2 text-xs font-black text-blue-900">
                   <Users className="w-4 h-4" />
                   <span>Daftar Email Petugas ({rows.length})</span>
@@ -188,8 +187,9 @@ export function StaffFormDialog({
                 <Button
                   type="button"
                   onClick={handleAddRow}
+                  disabled={isSubmitting}
                   size="sm"
-                  className="h-7 px-3 bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs border-2 border-blue-900 rounded [box-shadow:2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_0px_#1E3A8A] transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="h-7 px-3 bg-blue-900 hover:bg-blue-950 text-white font-bold text-xs border-2 border-blue-900 rounded shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Tambah Baris
@@ -201,7 +201,7 @@ export function StaffFormDialog({
                 {rows.map((row, index) => (
                   <div
                     key={row.id}
-                    className="p-3 bg-slate-50 border-2 border-blue-900 rounded-lg [box-shadow:3px_3px_0px_#1E3A8A] space-y-1.5 relative group"
+                    className="p-3 bg-slate-50 border-2 border-blue-900 rounded-lg shadow-[3px_3px_0px_#1E3A8A] space-y-1.5 relative group"
                   >
                     <div className="flex items-center justify-between">
                       <Label className="text-[11px] font-black text-blue-900 uppercase tracking-wider flex items-center gap-1">
@@ -212,8 +212,9 @@ export function StaffFormDialog({
                       {rows.length > 1 && (
                         <button
                           type="button"
+                          disabled={isSubmitting}
                           onClick={() => handleRemoveRow(row.id)}
-                          className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition-colors flex items-center gap-1 text-[11px] font-bold"
+                          className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 p-1 rounded transition-colors flex items-center gap-1 text-[11px] font-bold cursor-pointer disabled:opacity-50"
                           title="Hapus baris ini"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -226,6 +227,7 @@ export function StaffFormDialog({
                       type="email"
                       placeholder="Contoh: petugas1@ilkom.ac.id"
                       value={row.email}
+                      disabled={isSubmitting}
                       onChange={(e) =>
                         handleEmailChange(row.id, e.target.value)
                       }
@@ -248,6 +250,7 @@ export function StaffFormDialog({
                   type="text"
                   placeholder="Nama petugas"
                   value={editName}
+                  disabled={isSubmitting}
                   onChange={(e) => setEditName(e.target.value)}
                   className="h-10 border-2 border-blue-900 rounded-md font-medium"
                 />
@@ -262,6 +265,7 @@ export function StaffFormDialog({
                   type="email"
                   placeholder="petugas@ilkom.ac.id"
                   value={editEmail}
+                  disabled={isSubmitting}
                   onChange={(e) => setEditEmail(e.target.value)}
                   className="h-10 border-2 border-blue-900 rounded-md font-medium"
                   required
@@ -277,6 +281,7 @@ export function StaffFormDialog({
                   type="password"
                   placeholder="Masukkan password baru jika ingin mengubah"
                   value={editPassword}
+                  disabled={isSubmitting}
                   onChange={(e) => setEditPassword(e.target.value)}
                   className="h-10 border-2 border-blue-900 rounded-md font-medium"
                 />
@@ -289,10 +294,11 @@ export function StaffFormDialog({
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
+                    disabled={isSubmitting}
                     onClick={() => setEditStatus("Aktif")}
-                    className={`py-2 px-3 rounded-md font-bold text-xs border-2 border-blue-900 transition-all ${
+                    className={`py-2 px-3 rounded-md font-bold text-xs border-2 border-blue-900 transition-all cursor-pointer disabled:opacity-50 ${
                       editStatus === "Aktif"
-                        ? "bg-emerald-600 text-white [box-shadow:2px_2px_0px_#1E3A8A]"
+                        ? "bg-emerald-600 text-white shadow-[2px_2px_0px_#1E3A8A]"
                         : "bg-white text-slate-700 hover:bg-slate-50"
                     }`}
                   >
@@ -300,10 +306,11 @@ export function StaffFormDialog({
                   </button>
                   <button
                     type="button"
+                    disabled={isSubmitting}
                     onClick={() => setEditStatus("Non-Aktif")}
-                    className={`py-2 px-3 rounded-md font-bold text-xs border-2 border-blue-900 transition-all ${
+                    className={`py-2 px-3 rounded-md font-bold text-xs border-2 border-blue-900 transition-all cursor-pointer disabled:opacity-50 ${
                       editStatus === "Non-Aktif"
-                        ? "bg-rose-600 text-white [box-shadow:2px_2px_0px_#1E3A8A]"
+                        ? "bg-rose-600 text-white shadow-[2px_2px_0px_#1E3A8A]"
                         : "bg-white text-slate-700 hover:bg-slate-50"
                     }`}
                   >
@@ -327,20 +334,29 @@ export function StaffFormDialog({
               <Button
                 type="button"
                 variant="outline"
+                disabled={isSubmitting}
                 onClick={() => onOpenChange(false)}
-                className="flex-1 sm:flex-none border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md"
+                className="flex-1 sm:flex-none border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md cursor-pointer disabled:opacity-50"
               >
                 Batal
               </Button>
               <Button
                 type="submit"
-                className="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white font-bold border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-md transition-all"
+                disabled={isSubmitting}
+                className="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white font-bold border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none rounded-md transition-all cursor-pointer disabled:opacity-50"
               >
-                {isEdit
-                  ? "Simpan Perubahan"
-                  : rows.length > 1
-                  ? `Simpan ${rows.length} Petugas`
-                  : "Simpan Petugas"}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : isEdit ? (
+                  "Simpan Perubahan"
+                ) : rows.length > 1 ? (
+                  `Simpan ${rows.length} Petugas`
+                ) : (
+                  "Simpan Petugas"
+                )}
               </Button>
             </div>
           </DialogFooter>

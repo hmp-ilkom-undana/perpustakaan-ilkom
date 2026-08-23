@@ -28,7 +28,7 @@ export function StaffResetPasswordDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="border-2 border-blue-900 [box-shadow:6px_6px_0px_#1E3A8A] rounded-lg">
+      <AlertDialogContent className="border-2 border-blue-900 shadow-[6px_6px_0px_#1E3A8A] rounded-lg">
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2 text-red-600 font-black text-lg">
             <ShieldAlert className="w-5 h-5 text-red-600" />
@@ -52,12 +52,12 @@ export function StaffResetPasswordDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-4">
-          <AlertDialogCancel className="border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md">
+          <AlertDialogCancel className="border-2 border-blue-900 font-bold hover:bg-slate-100 rounded-md cursor-pointer">
             Batal
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={() => onConfirm(staff)}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold border-2 border-blue-900 [box-shadow:3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_0px_#1E3A8A] rounded-md transition-all"
+            className="bg-red-600 hover:bg-red-700 text-white font-bold border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none rounded-md transition-all cursor-pointer"
           >
             Ya, Reset Sandi
           </AlertDialogAction>

@@ -3,6 +3,8 @@ export * from "./StudentFilterBar";
 export * from "./StudentDetailDialog";
 export * from "./StudentHistoryDialog";
 export * from "./studentColumns";
+export * from "./StaffStatsHeader";
+export * from "./StaffFilterBar";
 export * from "./StaffFormDialog";
 export * from "./StaffResetPasswordDialog";
 export * from "./StaffStatusToggleDialog";
