@@ -86,8 +86,10 @@ export function useAdminPetugas() {
 
   const handleBatchCreateStaff = useCallback(
     async (staffListToCreate: Array<{ email: string; password?: string }>) => {
-      await createBatchMutation.mutateAsync(staffListToCreate);
-      setIsFormOpen(false);
+      const res = await createBatchMutation.mutateAsync(staffListToCreate);
+      if (res && res.totalCreated > 0) {
+        setIsFormOpen(false);
+      }
     },
     [createBatchMutation],
   );
@@ -102,6 +104,7 @@ export function useAdminPetugas() {
           email: staffData.email,
           wa_number: staffData.wa_number,
           status: staffData.status,
+          password: staffData.password,
         },
       });
       setIsFormOpen(false);

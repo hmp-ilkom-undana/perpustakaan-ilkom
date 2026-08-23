@@ -57,6 +57,7 @@ export function useUpdateStaffMutation() {
         email?: string;
         wa_number?: string;
         status?: string;
+        password?: string;
       };
     }) => userService.updateStaff(id, data),
     onSuccess: (_, variables) => {
