@@ -128,6 +128,12 @@ export function LogFilterBar({
               <SelectItem value="ARCHIVE" className="font-bold text-xs">
                 Katalog Arsip
               </SelectItem>
+              <SelectItem value="USER" className="font-bold text-xs">
+                Manajemen Petugas
+              </SelectItem>
+              <SelectItem value="SYSTEM_SETTING" className="font-bold text-xs">
+                Pengaturan Sistem
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
