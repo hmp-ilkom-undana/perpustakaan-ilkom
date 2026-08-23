@@ -1,23 +1,17 @@
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   ShieldCheck,
   UserCheck,
   Clock,
-  Code,
   Image as ImageIcon,
   ExternalLink,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 import type { ActivityLogItem } from "@/services/activity-log.service";
 
@@ -32,15 +26,13 @@ export function LogDetailDialog({
   isOpen,
   onClose,
 }: LogDetailDialogProps) {
-  const [showRawJson, setShowRawJson] = useState(false);
-
   if (!log) return null;
 
   const isAdmin = log.userRole === "ADMIN";
   const metadata = log.metadata;
   const hasMetadata = metadata && typeof metadata === "object" && Object.keys(metadata).length > 0;
 
-  // Format Tanggal
+  // Format Tanggal Indonesia
   const formattedDate = (() => {
     try {
       const d = new Date(log.createdAt);
@@ -60,6 +52,79 @@ export function LogDetailDialog({
     if (metadata.fotoUrlKembali) photoUrls.push({ label: "Foto Pengembalian", url: metadata.fotoUrlKembali });
     if (metadata.fotoUrl) photoUrls.push({ label: "Foto Bukti Fisik", url: metadata.fotoUrl });
   }
+
+  // Format Kamus Nama Key Metadata dengan spasi & Bahasa Indonesia
+  const formatMetadataLabel = (rawKey: string): string => {
+    const key = rawKey.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const dictionary: Record<string, string> = {
+      pickupcode: "Kode Ambil",
+      studentnim: "NIM Mahasiswa",
+      studentname: "Nama Mahasiswa",
+      archivetitle: "Judul Arsip",
+      archivecode: "Kode Arsip",
+      archivetype: "Jenis Arsip",
+      fineamount: "Nominal Denda",
+      paymentmethod: "Metode Bayar",
+      condition: "Kondisi Fisik",
+      rejectreason: "Alasan Penolakan",
+      notes: "Catatan Tambahan",
+      shelflocation: "Lokasi Rak",
+      quantity: "Jumlah Stok",
+      category: "Kategori Arsip",
+      author: "Penulis / Pembuat",
+      year: "Tahun Terbit",
+      totalrows: "Total Baris",
+      insertedcount: "Berhasil Diimpor",
+      skippedcount: "Dilewati (Duplikat)",
+      email: "Alamat Email",
+      name: "Nama Lengkap",
+      role: "Peran Akun",
+    };
+
+    if (dictionary[key]) {
+      return dictionary[key];
+    }
+
+    // Fallback: Pisahkan camelCase & snake_case menjadi kata dengan spasi
+    return rawKey
+      .replace(/([A-Z])/g, " $1")
+      .replace(/_/g, " ")
+      .trim()
+      .replace(/^\w/, (c) => c.toUpperCase());
+  };
+
+  // Format Nilai Metadata (Format Rupiah jika denda / nominal)
+  const formatMetadataValue = (key: string, value: any): string => {
+    if (value === null || value === undefined) return "-";
+    const lowerKey = key.toLowerCase();
+    if (
+      (lowerKey.includes("fine") || lowerKey.includes("amount") || lowerKey.includes("nominal")) &&
+      typeof value === "number"
+    ) {
+      return `Rp ${value.toLocaleString("id-ID")}`;
+    }
+    if (typeof value === "boolean") {
+      return value ? "Ya" : "Tidak";
+    }
+    return String(value);
+  };
+
+  // Daftar Key yang disembunyikan (ID internal database & URL Foto)
+  const isExcludedKey = (rawKey: string): boolean => {
+    const lower = rawKey.toLowerCase();
+    return (
+      lower.includes("fotourl") ||
+      lower === "borrowingid" ||
+      lower === "borrowing_id" ||
+      lower === "id" ||
+      lower === "transactionid" ||
+      lower === "userid" ||
+      lower === "petugasid" ||
+      lower === "adminid" ||
+      lower === "archiveid" ||
+      lower === "entityid"
+    );
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -83,10 +148,10 @@ export function LogDetailDialog({
         </DialogHeader>
 
         <div className="space-y-4 my-2">
-          {/* KARTU AKTOR / PELAKSANA */}
+          {/* KARTU DIPROSES OLEH */}
           <div className="bg-slate-50 p-4 rounded-xl border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] space-y-2">
             <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
-              Aktor Pelaksana
+              Diproses oleh
             </p>
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -107,11 +172,6 @@ export function LogDetailDialog({
                 )}
               </div>
             </div>
-            {log.userId && (
-              <p className="text-[10px] font-mono text-slate-400 pt-1 border-t border-slate-200">
-                User ID: {log.userId}
-              </p>
-            )}
           </div>
 
           {/* DESKRIPSI UTAMA */}
@@ -173,7 +233,7 @@ export function LogDetailDialog({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-white p-3 rounded-xl border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]">
                 {Object.entries(metadata).map(([key, value]) => {
                   if (typeof value === "object" && value !== null) return null;
-                  if (key.toLowerCase().includes("fotourl")) return null;
+                  if (isExcludedKey(key)) return null;
 
                   return (
                     <div
@@ -181,10 +241,10 @@ export function LogDetailDialog({
                       className="p-2 bg-slate-50 rounded-lg border border-slate-200"
                     >
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
-                        {key}
+                        {formatMetadataLabel(key)}
                       </p>
                       <p className="text-xs font-black text-blue-950 truncate mt-0.5">
-                        {String(value)}
+                        {formatMetadataValue(key, value)}
                       </p>
                     </div>
                   );
@@ -192,45 +252,7 @@ export function LogDetailDialog({
               </div>
             </div>
           )}
-
-          {/* TOGGLE RAW JSON */}
-          {hasMetadata && (
-            <div className="pt-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowRawJson(!showRawJson)}
-                className="w-full text-xs font-bold text-slate-500 hover:text-blue-950 justify-between h-8 px-2"
-              >
-                <span className="flex items-center gap-1.5">
-                  <Code className="w-3.5 h-3.5" />
-                  Inspeksi Raw JSON Payload
-                </span>
-                {showRawJson ? (
-                  <ChevronUp className="w-3.5 h-3.5" />
-                ) : (
-                  <ChevronDown className="w-3.5 h-3.5" />
-                )}
-              </Button>
-
-              {showRawJson && (
-                <div className="mt-2 p-3 bg-slate-900 text-emerald-400 font-mono text-[11px] rounded-xl border-2 border-blue-900 overflow-x-auto max-h-48 shadow-[2px_2px_0px_#1E3A8A]">
-                  <pre>{JSON.stringify(metadata, null, 2)}</pre>
-                </div>
-              )}
-            </div>
-          )}
         </div>
-
-        <DialogFooter>
-          <Button
-            variant="default"
-            onClick={onClose}
-            className="w-full sm:w-auto font-black text-xs border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-          >
-            Tutup Rincian
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

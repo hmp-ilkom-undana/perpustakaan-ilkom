@@ -129,7 +129,7 @@ export function LogTable({
             <thead>
               <tr className="bg-slate-100/80 border-b-2 border-blue-900 text-[11px] font-black text-blue-950 uppercase tracking-wider">
                 <th className="py-3 px-4">Waktu & Tanggal</th>
-                <th className="py-3 px-4">Aktor / Pelaksana</th>
+                <th className="py-3 px-4">Diproses Oleh</th>
                 <th className="py-3 px-4">Aksi</th>
                 <th className="py-3 px-4">Deskripsi Aktivitas</th>
                 <th className="py-3 px-4 text-center">Detail</th>
