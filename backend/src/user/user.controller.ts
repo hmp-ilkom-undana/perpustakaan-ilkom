@@ -22,6 +22,26 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+  private async validateAdmin(req: Request) {
+    const sessionData = await this.authService.auth.api.getSession({
+      headers: req.headers as any,
+    });
+
+    if (!sessionData) {
+      throw new UnauthorizedException(
+        'Sesi tidak valid, Anda harus login terlebih dahulu.',
+      );
+    }
+
+    if ((sessionData.user as any).role !== 'ADMIN') {
+      throw new ForbiddenException(
+        'Akses ditolak: Hanya Administrator yang berhak mengelola akun staf/petugas.',
+      );
+    }
+
+    return sessionData.user;
+  }
+
   @Get('students')
   async getStudents(@Query('search') search?: string) {
     return this.userService.getStudents(search);
@@ -33,7 +53,8 @@ export class UserController {
   }
 
   @Get('staff')
-  async getStaff(@Query('search') search?: string) {
+  async getStaff(@Req() req: Request, @Query('search') search?: string) {
+    await this.validateAdmin(req);
     return this.userService.getStaff(search);
   }
 
@@ -46,10 +67,8 @@ export class UserController {
       password?: string;
     },
   ) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-    return this.userService.createStaff(body, sessionData?.user as any);
+    const user = await this.validateAdmin(req);
+    return this.userService.createStaff(body, user as any);
   }
 
   @Post('staff/batch')
@@ -60,10 +79,8 @@ export class UserController {
       staffList: Array<{ email: string; password?: string }>;
     },
   ) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-    return this.userService.createBatchStaff(body.staffList, sessionData?.user as any);
+    const user = await this.validateAdmin(req);
+    return this.userService.createBatchStaff(body.staffList, user as any);
   }
 
   @Patch('profile/:id')
@@ -106,10 +123,8 @@ export class UserController {
       status?: string;
     },
   ) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-    return this.userService.updateStaff(id, body, sessionData?.user as any);
+    const user = await this.validateAdmin(req);
+    return this.userService.updateStaff(id, body, user as any);
   }
 
   @Post('reset-password')
@@ -119,9 +134,7 @@ export class UserController {
 
   @Delete('staff/:id')
   async deleteStaff(@Param('id') id: string, @Req() req: Request) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-    return this.userService.deleteStaff(id, sessionData?.user as any);
+    const user = await this.validateAdmin(req);
+    return this.userService.deleteStaff(id, user as any);
   }
 }

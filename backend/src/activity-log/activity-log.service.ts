@@ -50,12 +50,17 @@ export class ActivityLogService {
     if (query.startDate || query.endDate) {
       where.createdAt = {};
       if (query.startDate) {
-        where.createdAt.gte = new Date(query.startDate);
+        const start = new Date(query.startDate);
+        if (!isNaN(start.getTime())) {
+          where.createdAt.gte = start;
+        }
       }
       if (query.endDate) {
         const end = new Date(query.endDate);
-        end.setHours(23, 59, 59, 999);
-        where.createdAt.lte = end;
+        if (!isNaN(end.getTime())) {
+          end.setHours(23, 59, 59, 999);
+          where.createdAt.lte = end;
+        }
       }
     }
 
