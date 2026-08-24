@@ -41,7 +41,7 @@ export default function KelolaPengguna() {
   return (
     <div className="space-y-6 pb-12">
       {/* Page Title & Refresh CTA */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-blue-900">
         <div className="flex items-center gap-2.5">
           <div className="p-2.5 bg-blue-900 text-white rounded-md shadow-[2px_2px_0px_#1E3A8A]">
             <Users className="w-6 h-6" />
