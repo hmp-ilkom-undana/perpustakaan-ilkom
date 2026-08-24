@@ -59,8 +59,10 @@ export function DashboardKpiGrid({
         </div>
 
         <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
-          <span>{stats.koleksi.byType.skripsi} Skripsi • {stats.koleksi.byType.ringkasan} RKS</span>
-          <ArrowUpRight className="w-3.5 h-3.5 text-blue-900 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="truncate">
+            {stats.koleksi.byType.skripsi} Skripsi • {stats.koleksi.byType.ringkasan} RKS • {stats.koleksi.byType.naskah} NPB
+          </span>
+          <ArrowUpRight className="w-3.5 h-3.5 text-blue-900 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1" />
         </div>
       </div>
 
