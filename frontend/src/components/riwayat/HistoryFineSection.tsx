@@ -58,12 +58,12 @@ export function HistoryFineSection({
         </div>
 
         {isPaid ? (
-          <div className="pt-2 border-t border-emerald-200 flex items-center justify-between text-[11px] font-semibold text-emerald-800">
+          <div className="pt-2.5 border-t-2 border-emerald-900/20 flex items-center justify-between text-[11px] font-semibold text-emerald-800">
             <span>Status Pelunasan</span>
             <span className="font-bold">Dilunasi pada {item.paymentDate}</span>
           </div>
         ) : (
-          <div className="pt-2 border-t border-rose-200 flex flex-col gap-2">
+          <div className="pt-2.5 border-t-2 border-rose-900/20 flex flex-col gap-2">
             <p className="text-[11px] text-rose-800 font-medium leading-relaxed">
               Silakan hubungi admin atau petugas via WhatsApp untuk verifikasi
               pelunasan denda.

@@ -29,7 +29,7 @@ export function HistoryTimelineSection({ item }: HistoryTimelineSectionProps) {
         Rincian Garis Waktu
       </h4>
 
-      <div className="flex items-center justify-between text-xs text-slate-600 font-semibold border-b border-slate-200 pb-2">
+      <div className="flex items-center justify-between text-xs text-slate-600 font-semibold border-b-2 border-blue-900/20 pb-2.5">
         <span className="flex items-center gap-2">
           <Calendar className="h-3.5 w-3.5 text-orange-500 shrink-0" />
           Tanggal Pengajuan
