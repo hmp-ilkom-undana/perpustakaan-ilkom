@@ -1,8 +1,10 @@
 import { Loader2 } from "lucide-react";
 import { useStudentProfile } from "@/hooks/useStudentProfile";
-import { ProfileHeaderCard } from "@/components/profil/ProfileHeaderCard";
-import { ProfileBiodataCard } from "@/components/profil/ProfileBiodataCard";
-import { ProfilePasswordCard } from "@/components/profil/ProfilePasswordCard";
+import {
+  ProfileHeaderCard,
+  ProfileBiodataCard,
+  ProfilePasswordCard,
+} from "@/components/profil";
 
 export default function Profil() {
   const profile = useStudentProfile();

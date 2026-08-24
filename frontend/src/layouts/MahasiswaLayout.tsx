@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  ChevronRight,
   Loader2,
 } from "lucide-react";
 import {
@@ -124,9 +125,17 @@ export default function MahasiswaLayout() {
             {/* Bagian Kanan: User Profile Trigger with Dropdown (Desktop) */}
             <div className="hidden md:flex items-center">
               <DropdownMenu>
-                <DropdownMenuTrigger className="group flex items-center gap-3 py-1.5 px-3 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:border-orange-500 hover:shadow-[3px_3px_0px_#F97316] hover:-translate-y-0.5 transition-all cursor-pointer text-left select-none outline-none">
+                <DropdownMenuTrigger className="group flex items-center gap-2.5 py-1.5 px-3 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:border-orange-500 hover:shadow-[3px_3px_0px_#F97316] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer text-left select-none outline-none">
+                  <div className="w-7 h-7 rounded bg-orange-100 border border-blue-900 text-blue-950 font-black text-[10px] flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
+                    {(session?.user?.name || "M")
+                      .split(" ")
+                      .map((n) => n[0])
+                      .slice(0, 2)
+                      .join("")
+                      .toUpperCase()}
+                  </div>
                   <div className="flex flex-col min-w-0 pr-1">
-                    <span className="text-xs font-black text-blue-950 truncate max-w-[140px] group-hover:text-orange-600 transition-colors leading-tight">
+                    <span className="text-xs font-black text-blue-950 truncate max-w-[130px] group-hover:text-orange-600 transition-colors leading-tight">
                       {session?.user?.name || "Mahasiswa"}
                     </span>
                     <span className="text-[10px] font-mono font-bold text-slate-500">
@@ -219,10 +228,10 @@ export default function MahasiswaLayout() {
                 <Link
                   to="/mahasiswa/profil"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between p-3 rounded-lg border-2 border-blue-900 bg-orange-50/50 shadow-[2px_2px_0px_#1E3A8A] hover:bg-orange-100/70 transition-all"
+                  className="group flex items-center justify-between p-3 rounded-lg border-2 border-blue-900 bg-orange-50/70 shadow-[3px_3px_0px_#1E3A8A] hover:bg-orange-100 hover:shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-md bg-orange-100 border border-blue-900 text-blue-950 font-black text-xs flex items-center justify-center shrink-0">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="w-10 h-10 rounded-md bg-orange-100 border-2 border-blue-900 text-blue-950 font-black text-xs flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
                       {(session?.user?.name || "M")
                         .split(" ")
                         .map((n) => n[0])
@@ -230,16 +239,22 @@ export default function MahasiswaLayout() {
                         .join("")
                         .toUpperCase()}
                     </div>
-                    <div>
-                      <p className="text-sm font-black text-blue-950">
-                        {session?.user?.name}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-black text-blue-950 truncate group-hover:text-orange-600 transition-colors">
+                        {session?.user?.name || "Mahasiswa"}
                       </p>
                       <p className="text-xs font-mono font-bold text-slate-500">
                         NIM: {session?.user?.nim || "-"}
                       </p>
                     </div>
                   </div>
-                  <UserCircle className="w-5 h-5 text-blue-900" />
+
+                  {/* Badge Indikator Aksi Edit Profil */}
+                  <div className="flex items-center gap-1 px-2 py-1 rounded bg-white border border-blue-900 text-blue-950 font-black text-[11px] shadow-[1px_1px_0px_#1E3A8A] group-hover:bg-amber-400 transition-colors shrink-0 ml-2">
+                    <UserCircle className="w-3.5 h-3.5 text-blue-900" />
+                    <span>Edit Profil</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-blue-900" />
+                  </div>
                 </Link>
 
                 <Button
