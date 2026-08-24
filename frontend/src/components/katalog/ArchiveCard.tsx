@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   CardContent,
@@ -8,7 +7,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { User, Calendar, Tag } from "lucide-react";
 
-interface ArchiveCardProps {
+export interface ArchiveCardProps {
   id: string;
   title: string;
   author: string;

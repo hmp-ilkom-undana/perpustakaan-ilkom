@@ -1,5 +1,5 @@
 import { Loader2, Search } from "lucide-react";
-import { ArchiveCard } from "@/components/ArchiveCard";
+import { ArchiveCard } from "./ArchiveCard";
 import { StudentArchiveItem } from "@/hooks/useStudentCatalog";
 
 interface CatalogGridProps {
