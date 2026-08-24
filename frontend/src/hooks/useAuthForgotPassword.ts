@@ -36,7 +36,7 @@ export function useAuthForgotPassword() {
   const handleSendEmail = async (values: ForgotPasswordFormValues) => {
     const targetEmail = values.email.trim().toLowerCase();
     try {
-      const { error } = await authService.forgotPassword(targetEmail, "/reset-sandi");
+      const { error } = await authService.forgotPassword(targetEmail);
       if (error) {
         toast.error(error.message || "Gagal memproses permintaan reset kata sandi.");
       } else {
@@ -55,7 +55,7 @@ export function useAuthForgotPassword() {
   const handleResendEmail = async () => {
     if (countdown > 0 || !submittedEmail) return;
     try {
-      const { error } = await authService.forgotPassword(submittedEmail, "/reset-sandi");
+      const { error } = await authService.forgotPassword(submittedEmail);
       if (error) {
         toast.error(error.message || "Gagal mengirim ulang email reset.");
       } else {

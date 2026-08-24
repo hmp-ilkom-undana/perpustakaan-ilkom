@@ -47,10 +47,16 @@ export const authService = {
   /**
    * Mengirim permintaan tautan reset kata sandi ke alamat email pengguna.
    */
-  async forgotPassword(email: string, redirectTo: string = "/reset-sandi") {
+  async forgotPassword(email: string, redirectTo?: string) {
+    const targetRedirect =
+      redirectTo ||
+      (typeof window !== "undefined"
+        ? `${window.location.origin}/reset-sandi`
+        : "http://localhost:5173/reset-sandi");
+
     return await authClient.requestPasswordReset({
       email: email.trim().toLowerCase(),
-      redirectTo,
+      redirectTo: targetRedirect,
     });
   },
 

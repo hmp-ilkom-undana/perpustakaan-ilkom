@@ -19,8 +19,10 @@ export class AuthService {
       }),
       emailAndPassword: {
         enabled: true,
-        sendResetPassword: async ({ user, url }) => {
-          await this.mailService.sendPasswordResetEmail(user.email, url, user.name);
+        sendResetPassword: async ({ user, token }) => {
+          const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+          const directResetUrl = `${frontendUrl}/reset-sandi?token=${token}`;
+          await this.mailService.sendPasswordResetEmail(user.email, directResetUrl, user.name);
         },
       },
       baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:5000',
