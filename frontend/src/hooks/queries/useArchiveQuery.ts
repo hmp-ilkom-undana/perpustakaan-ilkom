@@ -16,6 +16,7 @@ export function usePublicArchiveQuery(params?: ArchiveQueryParams) {
     queryKey: [ARCHIVE_QUERY_KEY, "public", params],
     queryFn: () => archiveService.getPublic(params),
     placeholderData: (prev) => prev,
+    staleTime: 1000 * 60 * 3,
   });
 }
 

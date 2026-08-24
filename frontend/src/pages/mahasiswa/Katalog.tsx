@@ -1,9 +1,11 @@
 import { Library } from "lucide-react";
 import { useStudentCatalog } from "@/hooks/useStudentCatalog";
-import { CatalogFilterBar } from "@/components/katalog/CatalogFilterBar";
-import { CatalogGrid } from "@/components/katalog/CatalogGrid";
-import { CatalogPagination } from "@/components/katalog/CatalogPagination";
-import { ArchiveDetailDialog } from "@/components/ArchiveDetailDialog";
+import {
+  CatalogFilterBar,
+  CatalogGrid,
+  CatalogPagination,
+  ArchiveDetailDialog,
+} from "@/components/katalog";
 
 export default function Katalog() {
   const {

@@ -8,11 +8,11 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, Calendar, MapPin, Layers } from "lucide-react";
+import { User, Calendar, MapPin, Layers, Loader2 } from "lucide-react";
 import { useRequestBorrowingMutation } from "@/hooks/queries/useBorrowingMutation";
 import { StudentArchiveItem } from "@/hooks/useStudentCatalog";
 
-interface ArchiveDetailDialogProps {
+export interface ArchiveDetailDialogProps {
   isOpen: boolean;
   onClose: () => void;
   archive: StudentArchiveItem | null;
@@ -88,7 +88,7 @@ export function ArchiveDetailDialog({
         </DialogHeader>
 
         <div className="py-3 space-y-3">
-          <div className="bg-slate-50 border-2 border-blue-900/30 rounded-lg p-4 space-y-2.5 text-xs font-semibold">
+          <div className="bg-slate-50 border-2 border-blue-900 rounded-lg p-4 space-y-2.5 text-xs font-semibold shadow-[2px_2px_0px_#1E3A8A]">
             <div className="flex items-center justify-between">
               <span className="text-slate-500 flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-orange-500" />
@@ -125,8 +125,8 @@ export function ArchiveDetailDialog({
               </span>
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-200">
-              <span className="text-slate-500 font-bold">Status Ketersediaan</span>
+            <div className="flex items-center justify-between pt-2.5 border-t-2 border-blue-900">
+              <span className="text-slate-600 font-bold">Status Ketersediaan</span>
               <Badge variant={statusVariant}>
                 {displayStatus}
               </Badge>
@@ -145,10 +145,13 @@ export function ArchiveDetailDialog({
               isBorrowedByMe ||
               !isAvailable
             }
-            className="w-full"
+            className="w-full flex items-center justify-center gap-2"
           >
             {requestMutation.isPending ? (
-              "Memproses Pengajuan..."
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Memproses Pengajuan...</span>
+              </>
             ) : isRequestedByMe ? (
               "✓ Sedang Anda Ajukan"
             ) : isWaitingPickupByMe ? (
