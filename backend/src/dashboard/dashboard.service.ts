@@ -28,8 +28,8 @@ export class DashboardService {
         break;
       case 'semester_ini':
         startDate = new Date(now);
-        startDate.setMonth(now.getMonth() - 5);
         startDate.setDate(1);
+        startDate.setMonth(now.getMonth() - 5);
         startDate.setHours(0, 0, 0, 0);
         bucketType = 'month';
         break;
@@ -418,15 +418,19 @@ export class DashboardService {
       const dayName = days[current.getDay()];
       const label = `${dayName}, ${dNum} ${months[mNum]}`;
 
-      const dateStr = current.toISOString().slice(0, 10);
+      const year = current.getFullYear();
+      const month = current.getMonth();
+      const date = current.getDate();
 
       const pengajuan = borrowings.filter((b) => {
-        return new Date(b.borrowDate).toISOString().slice(0, 10) === dateStr;
+        const d = new Date(b.borrowDate);
+        return d.getFullYear() === year && d.getMonth() === month && d.getDate() === date;
       }).length;
 
       const pengembalian = returns.filter((r) => {
         if (!r.returnDate) return false;
-        return new Date(r.returnDate).toISOString().slice(0, 10) === dateStr;
+        const d = new Date(r.returnDate);
+        return d.getFullYear() === year && d.getMonth() === month && d.getDate() === date;
       }).length;
 
       result.push({ label, pengajuan, pengembalian });
