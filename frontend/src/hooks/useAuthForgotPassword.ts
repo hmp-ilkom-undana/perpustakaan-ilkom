@@ -22,7 +22,7 @@ export function useAuthForgotPassword() {
   });
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setInterval>;
     if (countdown > 0) {
       timer = setInterval(() => {
         setCountdown((prev) => prev - 1);
