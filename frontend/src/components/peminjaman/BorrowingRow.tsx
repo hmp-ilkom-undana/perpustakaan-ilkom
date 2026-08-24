@@ -43,9 +43,10 @@ export function BorrowingRow({
   }
 
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className="group flex cursor-pointer items-center justify-between bg-white p-4 transition-all hover:bg-orange-50/50 sm:px-6"
+      className="group flex w-full cursor-pointer items-center justify-between bg-white p-4 text-left transition-all hover:bg-orange-50/50 sm:px-6"
     >
       {/* BAGIAN KIRI: Informasi Teks */}
       <div className="flex flex-col overflow-hidden pr-4">
@@ -78,6 +79,6 @@ export function BorrowingRow({
           <ChevronRight className="h-5 w-5" />
         </div>
       </div>
-    </div>
+    </button>
   );
 }
