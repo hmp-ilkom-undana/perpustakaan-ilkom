@@ -1,5 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class MailService {
@@ -39,6 +41,41 @@ export class MailService {
       process.env.SMTP_FROM ||
       `"Perpustakaan ILKOM UNDANA" <${process.env.SMTP_USER || 'noreply@ilkom.undana.ac.id'}>`;
 
+    // Cari path asset logo ILKOM
+    const candidatePaths = [
+      path.resolve(process.cwd(), 'assets/Logo_Ilkom.png'),
+      path.resolve(process.cwd(), '../frontend/public/assets/Logo_Ilkom.png'),
+      path.resolve(__dirname, '../../assets/Logo_Ilkom.png'),
+    ];
+
+    let logoPath = '';
+    for (const p of candidatePaths) {
+      if (fs.existsSync(p)) {
+        logoPath = p;
+        break;
+      }
+    }
+
+    const attachments: any[] = [];
+    let logoHtml = '';
+
+    if (logoPath) {
+      attachments.push({
+        filename: 'Logo_Ilkom.png',
+        path: logoPath,
+        cid: 'logo_ilkom',
+      });
+      logoHtml = `
+        <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 14px auto;">
+          <tr>
+            <td align="center" style="padding: 10px; background-color: #FFFBEB; border: 2px solid #0F172A; border-radius: 12px; box-shadow: 3px 3px 0px #0F172A;">
+              <img src="cid:logo_ilkom" alt="Logo ILKOM" width="48" height="48" style="display: block; width: 48px; height: 48px; object-fit: contain;" />
+            </td>
+          </tr>
+        </table>
+      `;
+    }
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -51,7 +88,8 @@ export class MailService {
           <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; background-color: #ffffff; border: 3px solid #1E3A8A; border-radius: 12px; box-shadow: 6px 6px 0px #1E3A8A; overflow: hidden;">
             <!-- HEADER -->
             <tr>
-              <td style="padding: 24px; background-color: #1E3A8A; text-align: center; border-bottom: 3px solid #0F172A;">
+              <td style="padding: 28px 24px 22px 24px; background-color: #1E3A8A; text-align: center; border-bottom: 3px solid #0F172A;">
+                ${logoHtml}
                 <h1 style="margin: 0; color: #ffffff; font-size: 18px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
                   Perpustakaan Ilmu Komputer
                 </h1>
@@ -118,6 +156,7 @@ export class MailService {
           to,
           subject: 'Permintaan Reset Kata Sandi - Perpustakaan ILKOM',
           html: htmlContent,
+          attachments,
         });
         this.logger.log(`Email reset password berhasil dikirim ke: ${to}`);
         return true;
