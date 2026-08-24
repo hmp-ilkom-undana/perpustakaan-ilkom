@@ -31,16 +31,16 @@ export function BorrowingQuotaCard({ quota, className }: BorrowingQuotaCardProps
       )}
     >
       {/* 1. Header Card */}
-      <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-blue-900 bg-slate-50 flex flex-row items-center justify-between gap-2 shrink-0">
+      <CardHeader className="p-3.5 sm:p-5 pb-2.5 sm:pb-3 border-b-2 border-blue-900 bg-slate-50 flex flex-row items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-blue-900 bg-orange-100 text-orange-600 shadow-[1px_1px_0px_#1E3A8A]">
-            <BookOpen className="w-4 h-4" />
+          <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-md border border-blue-900 bg-orange-100 text-orange-600 shadow-[1px_1px_0px_#1E3A8A]">
+            <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div className="flex flex-col min-w-0">
             <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-wider leading-tight text-blue-950 truncate">
               Kuota Peminjaman
             </CardTitle>
-            <span className="text-[11px] font-bold text-slate-500 mt-0.5 truncate">
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 mt-0.5 truncate">
               Slot Peminjaman Arsip
             </span>
           </div>
@@ -48,14 +48,14 @@ export function BorrowingQuotaCard({ quota, className }: BorrowingQuotaCardProps
 
         <Badge
           variant={isFull ? "rose" : sisa <= 1 ? "amber" : "emerald"}
-          className="text-[10px] font-black uppercase tracking-wider shrink-0"
+          className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider shrink-0"
         >
           {isFull ? "Kuota Penuh" : `${sisa} Slot Tersedia`}
         </Badge>
       </CardHeader>
 
       {/* 2. Konten Utama: Hero Stat di Tengah */}
-      <CardContent className="p-4 sm:p-5 flex flex-col justify-between flex-grow space-y-4">
+      <CardContent className="p-3.5 sm:p-5 flex flex-col justify-between flex-grow space-y-3 sm:space-y-4">
         {/* Angka Hero Stat Center-Aligned */}
         <div className="flex flex-col items-center justify-center py-2 text-center my-auto">
           <div className="flex items-baseline justify-center gap-1.5">

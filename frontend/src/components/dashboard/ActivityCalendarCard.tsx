@@ -39,16 +39,16 @@ export function ActivityCalendarCard({
       )}
     >
       {/* 1. Header Card */}
-      <CardHeader className="p-4 sm:p-5 pb-3 border-b-2 border-blue-900 bg-slate-50 flex flex-row items-center justify-between gap-2 shrink-0">
+      <CardHeader className="p-3.5 sm:p-5 pb-2.5 sm:pb-3 border-b-2 border-blue-900 bg-slate-50 flex flex-row items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-blue-900 bg-blue-100 text-blue-900 shadow-[1px_1px_0px_#1E3A8A]">
-            <CalendarIcon className="w-4 h-4" />
+          <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-md border border-blue-900 bg-blue-100 text-blue-900 shadow-[1px_1px_0px_#1E3A8A]">
+            <CalendarIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div className="flex flex-col min-w-0">
             <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-wider leading-tight text-blue-950 truncate">
               Kalender Sirkulasi
             </CardTitle>
-            <span className="text-[11px] font-bold text-slate-500 mt-0.5 truncate">
+            <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 mt-0.5 truncate">
               Jadwal Peminjaman & Pengembalian
             </span>
           </div>
