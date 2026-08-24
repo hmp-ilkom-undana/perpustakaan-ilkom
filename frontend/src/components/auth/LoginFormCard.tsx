@@ -137,7 +137,7 @@ export function LoginFormCard({
             ) : (
               <>
                 <LogIn className="w-4 h-4 mr-2" />
-                Masuk ke Sistem
+                Masuk
               </>
             )}
           </Button>
