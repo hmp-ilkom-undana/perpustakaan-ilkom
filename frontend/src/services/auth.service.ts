@@ -45,6 +45,32 @@ export const authService = {
   },
 
   /**
+   * Mengirim permintaan tautan reset kata sandi ke alamat email pengguna.
+   */
+  async forgotPassword(email: string, redirectTo?: string) {
+    const targetRedirect =
+      redirectTo ||
+      (typeof window !== "undefined"
+        ? `${window.location.origin}/reset-sandi`
+        : "http://localhost:5173/reset-sandi");
+
+    return await authClient.requestPasswordReset({
+      email: email.trim().toLowerCase(),
+      redirectTo: targetRedirect,
+    });
+  },
+
+  /**
+   * Mengatur ulang kata sandi baru menggunakan token verifikasi email.
+   */
+  async resetPassword(newPassword: string, token: string) {
+    return await authClient.resetPassword({
+      newPassword,
+      token,
+    });
+  },
+
+  /**
    * Mengakhiri sesi pengguna aktif.
    */
   async signOutUser() {

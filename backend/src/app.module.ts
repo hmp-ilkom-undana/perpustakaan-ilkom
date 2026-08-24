@@ -13,6 +13,7 @@ import { UserModule } from './user/user.module';
 import { SettingModule } from './setting/setting.module';
 import { ActivityLogModule } from './activity-log/activity-log.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     SettingModule,
     ActivityLogModule,
     DashboardModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
