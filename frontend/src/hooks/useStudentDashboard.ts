@@ -183,7 +183,9 @@ export function useStudentDashboard() {
 
         if (b.returnDate) {
           const retDate = new Date(b.returnDate);
-          daysRemaining = Math.ceil((retDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          const target = new Date(retDate.getFullYear(), retDate.getMonth(), retDate.getDate());
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          daysRemaining = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
           if (daysRemaining <= 3 && daysRemaining >= 0) isDueSoon = true;
           if (daysRemaining < 0) isOverdue = true;
         }
