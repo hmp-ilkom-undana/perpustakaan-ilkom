@@ -1,9 +1,11 @@
 import { History, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useStudentHistory } from "@/hooks/useStudentHistory";
-import { HistoryCardRow } from "@/components/riwayat/HistoryCardRow";
-import { HistoryDetailModal } from "@/components/riwayat/HistoryDetailModal";
-import { HistoryEmptyState } from "@/components/riwayat/HistoryEmptyState";
+import {
+  HistoryCardRow,
+  HistoryDetailModal,
+  HistoryEmptyState,
+} from "@/components/riwayat";
 
 export default function Riwayat() {
   const {

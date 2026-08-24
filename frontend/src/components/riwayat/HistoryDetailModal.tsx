@@ -52,27 +52,31 @@ export function HistoryDetailModal({
         if (!open) onClose();
       }}
     >
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader className="pr-8">
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <div className="flex items-center gap-2 flex-wrap">
+      <DialogContent className="max-w-[calc(100vw-32px)] sm:max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="pr-6 sm:pr-8 text-left">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               {getStatusBadge(item.status)}
-              <Badge variant="outline">{item.type}</Badge>
+              <Badge variant="outline" className="text-[10px] font-bold">
+                {item.type}
+              </Badge>
             </div>
             <Badge
               variant="outline"
-              className="bg-slate-100 font-mono text-xs font-black text-blue-950 tracking-wider shadow-[1px_1px_0px_#1E3A8A] shrink-0"
+              className="bg-slate-100 font-mono text-[11px] font-black text-blue-950 tracking-wider shadow-[1px_1px_0px_#1E3A8A] shrink-0"
             >
               {item.pickupCode}
             </Badge>
           </div>
-          <DialogTitle>{item.title}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-base sm:text-lg font-black text-blue-950 leading-snug">
+            {item.title}
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500 font-medium">
             Rekam jejak transaksi peminjaman arsip yang telah selesai.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-2 flex flex-col gap-4 text-xs font-semibold">
+        <div className="py-2 flex flex-col gap-3 sm:gap-4 text-xs font-semibold">
           {/* 1. Rincian Garis Waktu */}
           <HistoryTimelineSection item={item} />
 
@@ -98,8 +102,14 @@ export function HistoryDetailModal({
           )}
         </div>
 
-        <DialogFooter>
-          <Button type="button" variant="outline" size="sm" onClick={onClose}>
+        <DialogFooter className="mt-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onClose}
+            className="w-full sm:w-auto font-bold"
+          >
             Tutup
           </Button>
         </DialogFooter>

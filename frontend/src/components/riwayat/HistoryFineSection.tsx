@@ -2,6 +2,7 @@ import { Receipt, FileText, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudentHistoryItem } from "@/hooks/useStudentHistory";
+import { cn } from "@/lib/utils";
 
 interface HistoryFineSectionProps {
   item: StudentHistoryItem;
@@ -21,49 +22,56 @@ export function HistoryFineSection({
 
     return (
       <div
-        className={`p-4 rounded-lg border-2 border-blue-900 space-y-3 shadow-[3px_3px_0px_#1E3A8A] ${
+        className={cn(
+          "p-3.5 sm:p-4 rounded-lg border-2 border-blue-900 space-y-2.5 sm:space-y-3 shadow-[3px_3px_0px_#1E3A8A]",
           isPaid ? "bg-emerald-50" : "bg-rose-50"
-        }`}
+        )}
       >
-        <div className="flex items-center justify-between">
+        {/* Header Denda & Status Badge */}
+        <div className="flex items-center justify-between gap-2">
           <div
-            className={`flex items-center gap-2 font-black text-sm ${
+            className={cn(
+              "flex items-center gap-2 font-black text-xs sm:text-sm",
               isPaid ? "text-emerald-950" : "text-rose-950"
-            }`}
+            )}
           >
             <Receipt
-              className={`h-4 w-4 ${
+              className={cn(
+                "h-4 w-4 shrink-0",
                 isPaid ? "text-emerald-600" : "text-rose-600"
-              }`}
+              )}
             />
-            <span>
-              {isPaid ? "Denda (Telah Dilunasi)" : "Total Tagihan Denda"}
-            </span>
+            <span>{isPaid ? "Denda (Telah Dilunasi)" : "Total Tagihan Denda"}</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            {isPaid && (
-              <Badge variant="emerald" className="text-[10px] font-black">
-                ✓ LUNAS
-              </Badge>
-            )}
-            <span
-              className={`text-base font-black ${
-                isPaid ? "text-emerald-700" : "text-rose-600"
-              }`}
-            >
-              Rp {(item.fine || 0).toLocaleString("id-ID")}
-            </span>
-          </div>
+          {isPaid && (
+            <Badge variant="emerald" className="text-[10px] font-black shrink-0 px-2 py-0.5">
+              ✓ LUNAS
+            </Badge>
+          )}
         </div>
 
+        {/* Nominal Denda */}
+        <div className="flex items-center justify-between text-xs font-semibold">
+          <span className="text-slate-600">Total Nominal Denda:</span>
+          <span
+            className={cn(
+              "text-sm sm:text-base font-black font-mono",
+              isPaid ? "text-emerald-700" : "text-rose-600"
+            )}
+          >
+            Rp {(item.fine || 0).toLocaleString("id-ID")}
+          </span>
+        </div>
+
+        {/* Status Pelunasan ATAU Tombol WhatsApp */}
         {isPaid ? (
-          <div className="pt-2 border-t border-emerald-200 flex items-center justify-between text-[11px] font-semibold text-emerald-800">
-            <span>Status Pelunasan</span>
+          <div className="pt-2 border-t-2 border-emerald-900/20 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] font-semibold text-emerald-800">
+            <span>Status Pelunasan:</span>
             <span className="font-bold">Dilunasi pada {item.paymentDate}</span>
           </div>
         ) : (
-          <div className="pt-2 border-t border-rose-200 flex flex-col gap-2">
+          <div className="pt-2 border-t-2 border-rose-900/20 flex flex-col gap-2">
             <p className="text-[11px] text-rose-800 font-medium leading-relaxed">
               Silakan hubungi admin atau petugas via WhatsApp untuk verifikasi
               pelunasan denda.
@@ -73,7 +81,7 @@ export function HistoryFineSection({
               variant="success"
               size="sm"
               onClick={onContactAdmin}
-              className="w-full font-bold"
+              className="w-full font-bold h-8 text-xs"
             >
               <Phone className="w-3.5 h-3.5 mr-1.5" />
               Konfirmasi Pembayaran via WhatsApp
