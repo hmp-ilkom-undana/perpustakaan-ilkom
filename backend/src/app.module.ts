@@ -12,6 +12,7 @@ import { FineModule } from './fine/fine.module';
 import { UserModule } from './user/user.module';
 import { SettingModule } from './setting/setting.module';
 import { ActivityLogModule } from './activity-log/activity-log.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ActivityLogModule } from './activity-log/activity-log.module';
     UserModule,
     SettingModule,
     ActivityLogModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
