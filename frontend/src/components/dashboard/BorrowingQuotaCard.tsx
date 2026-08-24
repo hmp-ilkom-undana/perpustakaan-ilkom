@@ -69,8 +69,8 @@ export function BorrowingQuotaCard({ quota, className }: BorrowingQuotaCardProps
               {maksimal}
             </span>
           </div>
-          <p className="text-[11px] font-bold text-slate-500 mt-2 uppercase tracking-wider flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-orange-500" /> Arsip Sedang Dipinjam
+          <p className="text-[11px] font-bold text-slate-500 mt-2 uppercase tracking-wider">
+            Arsip Sedang Dipinjam
           </p>
         </div>
 
