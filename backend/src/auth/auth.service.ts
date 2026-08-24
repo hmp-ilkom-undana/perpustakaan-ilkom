@@ -25,6 +25,7 @@ export class AuthService {
           await this.mailService.sendPasswordResetEmail(user.email, directResetUrl, user.name);
         },
       },
+      plugins: [username()],
       baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:5000',
       trustedOrigins: [
         process.env.FRONTEND_URL || '',
