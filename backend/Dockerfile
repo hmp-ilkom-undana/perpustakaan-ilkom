@@ -13,7 +13,7 @@ RUN npx prisma generate
 
 RUN npm run build
 
-RUN echo "=== Build complete, verifying dist/ ===" && ls -la dist/ && echo "=== dist/main.js ===" && ls -la dist/main.js
+RUN echo "=== Verifying dist/src/main.js ===" && ls -la dist/src/main.js
 
 FROM node:20-alpine AS production
 
