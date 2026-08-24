@@ -70,19 +70,19 @@ export function ArchiveDetailDialog({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[520px]">
-        <DialogHeader>
-          <div className="flex items-center gap-2 mb-1">
-            <Badge variant={typeVariant}>
+        <DialogHeader className="space-y-2">
+          <DialogTitle className="text-base sm:text-lg font-black text-blue-950 pr-8 leading-snug">
+            {archive.title}
+          </DialogTitle>
+          <div className="flex items-center gap-2 flex-wrap pt-0.5">
+            <Badge variant={typeVariant} className="text-[10px] font-black uppercase shadow-[1px_1px_0px_#1E3A8A]">
               {archive.archiveType}
             </Badge>
-            <Badge variant="outline">
+            <Badge variant="outline" className="text-[10px] font-bold border-blue-900/30 text-blue-900 bg-blue-50/50 shadow-[1px_1px_0px_#1E3A8A]">
               {archive.category}
             </Badge>
           </div>
-          <DialogTitle>
-            {archive.title}
-          </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs font-semibold text-slate-500">
             Rincian informasi arsip dan ketersediaan stok fisik di perpustakaan.
           </DialogDescription>
         </DialogHeader>
