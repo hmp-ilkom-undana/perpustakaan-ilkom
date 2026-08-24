@@ -20,16 +20,111 @@ interface CirculationTrendChartProps {
     pengajuan: number;
     pengembalian: number;
   }>;
+  className?: string;
 }
 
-export function CirculationTrendChart({ data }: CirculationTrendChartProps) {
+interface CustomTickProps {
+  x?: number;
+  y?: number;
+  payload?: {
+    value: string;
+  };
+}
+
+function CustomXAxisTick({ x = 0, y = 0, payload }: CustomTickProps) {
+  if (!payload?.value) return null;
+
+  const text = payload.value;
+  // If format is "Sab, 1 Agu"
+  if (text.includes(", ")) {
+    const [day, date] = text.split(", ");
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          x={0}
+          y={0}
+          dy={12}
+          textAnchor="middle"
+          fill="#1E293B"
+          fontSize={11}
+          fontWeight={700}
+        >
+          {date}
+        </text>
+        <text
+          x={0}
+          y={0}
+          dy={25}
+          textAnchor="middle"
+          fill="#64748B"
+          fontSize={10}
+          fontWeight={600}
+        >
+          {day}
+        </text>
+      </g>
+    );
+  }
+
+  // Single line fallback (for hours e.g. "08:00" or months e.g. "Agu 2026")
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        x={0}
+        y={0}
+        dy={14}
+        textAnchor="middle"
+        fill="#1E293B"
+        fontSize={11}
+        fontWeight={700}
+      >
+        {text}
+      </text>
+    </g>
+  );
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  label?: string;
+}
+
+function CustomChartTooltip({ active, payload, label }: CustomTooltipProps) {
+  if (!active || !payload || payload.length === 0) return null;
+
+  return (
+    <div className="bg-white border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] rounded-md p-2.5 text-xs">
+      <p className="font-black text-blue-950 border-b border-slate-200 pb-1 mb-1.5">
+        {label}
+      </p>
+      <div className="space-y-1">
+        {payload.map((entry, index) => (
+          <div key={`item-${index}`} className="flex items-center justify-between gap-4 font-bold">
+            <span className="flex items-center gap-1.5" style={{ color: entry.color }}>
+              <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: entry.color }} />
+              {entry.name}:
+            </span>
+            <span className="text-slate-900 font-extrabold">{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function CirculationTrendChart({ data, className }: CirculationTrendChartProps) {
   const [chartType, setChartType] = useState<"bar" | "area">("bar");
 
   const totalPengajuan = data.reduce((sum, item) => sum + item.pengajuan, 0);
   const totalPengembalian = data.reduce((sum, item) => sum + item.pengembalian, 0);
 
   return (
-    <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] rounded-lg bg-white overflow-hidden">
+    <Card className={`border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] rounded-lg bg-white overflow-hidden h-full flex flex-col${className ? ` ${className}` : ""}`}>
       <CardHeader className="border-b-2 border-blue-900 bg-slate-50/50 pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
@@ -42,7 +137,7 @@ export function CirculationTrendChart({ data }: CirculationTrendChartProps) {
               </CardTitle>
             </div>
             <CardDescription className="text-xs font-semibold text-slate-500 mt-1">
-              Perbandingan aktivitas pengajuan masuk vs pengembalian berkas fisik
+              Perbandingan aktivitas pengajuan masuk vs pengembalian arsip fisik
             </CardDescription>
           </div>
 
@@ -89,13 +184,13 @@ export function CirculationTrendChart({ data }: CirculationTrendChartProps) {
           </div>
           <div className="flex items-center gap-1.5 text-slate-600">
             <span className="w-3 h-3 rounded-sm bg-orange-500" />
-            <span>Total Pengembalian: {totalPengembalian} Berkas</span>
+            <span>Total Pengembalian: {totalPengembalian} Arsip</span>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="pt-6">
-        <div className="h-[280px] sm:h-[320px] w-full">
+      <CardContent className="pt-6 flex-1 flex flex-col">
+        <div className="flex-1 min-h-[280px] sm:min-h-[320px] w-full">
           {data.length === 0 ? (
             <div className="h-full flex items-center justify-center text-xs font-bold text-slate-400">
               Belum ada riwayat transaksi sirkulasi pada rentang waktu ini.
@@ -105,17 +200,17 @@ export function CirculationTrendChart({ data }: CirculationTrendChartProps) {
               {chartType === "bar" ? (
                 <BarChart
                   data={data}
-                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 8 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                   <XAxis
                     dataKey="label"
-                    stroke="#64748B"
-                    fontSize={11}
-                    fontWeight={600}
                     tickLine={false}
                     axisLine={{ stroke: "#CBD5E1" }}
-                    dy={8}
+                    tick={<CustomXAxisTick />}
+                    interval="preserveStartEnd"
+                    minTickGap={16}
+                    height={38}
                   />
                   <YAxis
                     stroke="#64748B"
@@ -125,17 +220,7 @@ export function CirculationTrendChart({ data }: CirculationTrendChartProps) {
                     axisLine={false}
                     allowDecimals={false}
                   />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#FFFFFF",
-                      border: "2px solid #1E3A8A",
-                      borderRadius: "6px",
-                      boxShadow: "3px 3px 0px #1E3A8A",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                    }}
-                    labelStyle={{ color: "#0F172A", marginBottom: "4px" }}
-                  />
+                  <Tooltip content={<CustomChartTooltip />} />
                   <Bar
                     dataKey="pengajuan"
                     name="Pengajuan Masuk"
@@ -152,7 +237,7 @@ export function CirculationTrendChart({ data }: CirculationTrendChartProps) {
               ) : (
                 <AreaChart
                   data={data}
-                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 8 }}
                 >
                   <defs>
                     <linearGradient id="colorPengajuanNeo" x1="0" y1="0" x2="0" y2="1">
@@ -167,12 +252,12 @@ export function CirculationTrendChart({ data }: CirculationTrendChartProps) {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                   <XAxis
                     dataKey="label"
-                    stroke="#64748B"
-                    fontSize={11}
-                    fontWeight={600}
                     tickLine={false}
                     axisLine={{ stroke: "#CBD5E1" }}
-                    dy={8}
+                    tick={<CustomXAxisTick />}
+                    interval="preserveStartEnd"
+                    minTickGap={16}
+                    height={38}
                   />
                   <YAxis
                     stroke="#64748B"
@@ -182,17 +267,7 @@ export function CirculationTrendChart({ data }: CirculationTrendChartProps) {
                     axisLine={false}
                     allowDecimals={false}
                   />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#FFFFFF",
-                      border: "2px solid #1E3A8A",
-                      borderRadius: "6px",
-                      boxShadow: "3px 3px 0px #1E3A8A",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                    }}
-                    labelStyle={{ color: "#0F172A", marginBottom: "4px" }}
-                  />
+                  <Tooltip content={<CustomChartTooltip />} />
                   <Area
                     type="monotone"
                     dataKey="pengajuan"
