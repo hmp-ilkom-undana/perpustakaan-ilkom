@@ -26,12 +26,18 @@ export class AuthService {
         },
       },
       plugins: [username()],
-      baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:5000',
+      baseURL: (process.env.BETTER_AUTH_URL || 'http://localhost:5000').replace(/\/+$/, ''),
       trustedOrigins: [
-        process.env.FRONTEND_URL || '',
+        (process.env.FRONTEND_URL || '').replace(/\/+$/, ''),
         'http://localhost:5173',
         'http://localhost:5000',
       ].filter(Boolean),
+      advanced: {
+        defaultCookieAttributes: {
+          sameSite: 'none',
+          secure: true,
+        },
+      },
       user: {
         additionalFields: {
           role: {
