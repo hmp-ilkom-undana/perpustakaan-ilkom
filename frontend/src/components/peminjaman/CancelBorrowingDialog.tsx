@@ -57,7 +57,7 @@ export function CancelBorrowingDialog({
               {ticket.pickupCode}
             </Badge>
           </div>
-          <div className="border-t border-slate-200 pt-2">
+          <div className="border-t-2 border-blue-900 pt-2.5">
             <p className="text-xs font-black text-blue-950 line-clamp-2">
               {ticket.archiveTitle}
             </p>

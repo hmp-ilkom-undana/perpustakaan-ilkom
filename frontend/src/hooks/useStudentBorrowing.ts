@@ -3,7 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
 import { useCancelBorrowingMutation } from "@/hooks/queries/useBorrowingMutation";
-import { BorrowingStatus } from "@/components/TicketProgress";
+import { BorrowingStatus } from "@/components/peminjaman";
 
 export interface StudentTicketItem {
   id: string;

@@ -74,7 +74,7 @@ export function TicketProgress({
             {!isLast && (
               <div
                 className={`absolute left-3.5 top-7 bottom-0 w-0.5 sm:left-[50%] sm:right-[-50%] sm:top-3.5 sm:bottom-auto sm:h-0.5 sm:w-auto sm:-translate-y-1/2 ${
-                  isPast ? "bg-blue-900" : "bg-slate-200"
+                  isPast ? "bg-blue-900" : "bg-slate-300"
                 }`}
               />
             )}
@@ -96,7 +96,7 @@ export function TicketProgress({
                   <Icon className="h-3.5 w-3.5" />
                 </div>
               ) : (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-slate-300 bg-white text-slate-300">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-slate-400 bg-slate-100 text-slate-400">
                   <Icon className="h-3.5 w-3.5" />
                 </div>
               )}
@@ -112,7 +112,7 @@ export function TicketProgress({
                       ? isOverdue
                         ? "text-rose-600"
                         : "text-orange-600"
-                      : "text-slate-400"
+                      : "text-slate-500"
                 }`}
               >
                 <span className="sm:hidden">{step.label}</span>

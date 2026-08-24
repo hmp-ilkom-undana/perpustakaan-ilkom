@@ -1,5 +1,5 @@
 import { CheckCircle2, AlertCircle, Clock } from "lucide-react";
-import { BorrowingStatus } from "@/components/TicketProgress";
+import { BorrowingStatus } from "./TicketProgress";
 
 interface BorrowingTimelineProps {
   status: BorrowingStatus;
@@ -23,7 +23,7 @@ export function BorrowingTimeline({
       </h4>
       <div className="flex flex-col gap-3 text-xs">
         {/* 1. Waktu Pengajuan */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+        <div className="flex items-center justify-between border-b-2 border-blue-900/20 pb-2.5">
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
             <span className="font-semibold text-slate-700">Waktu Pengajuan</span>
@@ -35,7 +35,7 @@ export function BorrowingTimeline({
         {(status === "WAITING_PICKUP" ||
           status === "BORROWED" ||
           status === "OVERDUE") && (
-          <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div className="flex items-center justify-between border-b-2 border-blue-900/20 pb-2.5">
             <div className="flex items-center gap-2.5">
               <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
               <span className="font-semibold text-slate-700">Disetujui Petugas</span>

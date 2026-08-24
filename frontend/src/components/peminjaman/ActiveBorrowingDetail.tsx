@@ -1,6 +1,6 @@
 import { BookOpen, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TicketProgress } from "@/components/TicketProgress";
+import { TicketProgress } from "./TicketProgress";
 import { StudentTicketItem } from "@/hooks/useStudentBorrowing";
 import { BorrowingTimeline } from "./BorrowingTimeline";
 import { OverdueFineCallout } from "./OverdueFineCallout";

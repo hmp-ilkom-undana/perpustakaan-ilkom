@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { BorrowingRow } from "@/components/BorrowingRow";
+import { BorrowingRow } from "./BorrowingRow";
 import { StudentTicketItem } from "@/hooks/useStudentBorrowing";
 import { ActiveBorrowingDetail } from "./ActiveBorrowingDetail";
 import { cn } from "@/lib/utils";
