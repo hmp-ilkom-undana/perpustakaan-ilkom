@@ -1,9 +1,11 @@
 import { BookOpenCheck, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useStudentBorrowing } from "@/hooks/useStudentBorrowing";
-import { ActiveBorrowingCard } from "@/components/peminjaman/ActiveBorrowingCard";
-import { CancelBorrowingDialog } from "@/components/peminjaman/CancelBorrowingDialog";
-import { EmptyBorrowingState } from "@/components/peminjaman/EmptyBorrowingState";
+import {
+  ActiveBorrowingCard,
+  CancelBorrowingDialog,
+  EmptyBorrowingState,
+} from "@/components/peminjaman";
 
 export default function Peminjaman() {
   const {
