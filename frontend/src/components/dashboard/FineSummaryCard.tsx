@@ -68,7 +68,10 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
           </div>
         </div>
 
-        <Badge variant={hasFine ? "rose" : "emerald"} className="shrink-0 text-[9px] sm:text-[10px] font-black">
+        <Badge
+          variant={hasFine ? "rose" : "emerald"}
+          className="shrink-0 text-[9px] sm:text-[10px] font-black h-6 px-2"
+        >
           {hasFine ? `Total: Rp ${totalDenda.toLocaleString("id-ID")}` : "Bebas Denda"}
         </Badge>
       </CardHeader>
@@ -89,27 +92,30 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
           </div>
         ) : (
           <div className="space-y-2 sm:space-y-2.5 flex-1">
-            {/* Kategori Denda Badges */}
+            {/* Kategori Denda Badges (Micro-Pill) */}
             <div className="flex items-center gap-1.5 flex-wrap">
               {countLate > 0 && (
-                <Badge variant="rose" className="text-[9px] px-2 py-0.5">
+                <span className="inline-flex items-center gap-1 bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[9px] font-black">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
                   {countLate} Keterlambatan
-                </Badge>
+                </span>
               )}
               {countDamaged > 0 && (
-                <Badge variant="amber" className="text-[9px] px-2 py-0.5">
-                  {countDamaged} Kerusakan Fisik
-                </Badge>
+                <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded text-[9px] font-black">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                  {countDamaged} Kerusakan
+                </span>
               )}
               {countLost > 0 && (
-                <Badge variant="rose" className="text-[9px] px-2 py-0.5">
-                  {countLost} Arsip Hilang
-                </Badge>
+                <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 border border-slate-300 px-2 py-0.5 rounded text-[9px] font-black">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                  {countLost} Hilang
+                </span>
               )}
             </div>
 
             {/* List Denda Scrollable */}
-            <div className="space-y-2 max-h-[140px] sm:max-h-[160px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[145px] sm:max-h-[170px] overflow-y-auto pr-1">
               {fineBorrowings.map((fb: any) => {
                 const isOverdue = fb.status === "OVERDUE";
                 const isDamaged = fb.status === "DAMAGED";
@@ -118,31 +124,32 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                 return (
                   <div
                     key={fb.id}
-                    className="flex items-center justify-between p-2 sm:p-2.5 bg-red-50/60 border border-red-200 rounded-lg gap-2 hover:bg-red-50 transition-colors"
+                    className="p-2 sm:p-2.5 bg-red-50/60 border border-red-200 rounded-lg space-y-1 hover:bg-red-50 transition-colors"
                   >
-                    <div className="space-y-0.5 flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <Badge
-                          variant={isOverdue || isLost ? "rose" : "amber"}
-                          className="text-[8px] sm:text-[9px] px-1.5 py-0 font-bold"
-                        >
-                          {isOverdue
-                            ? "TERLAMBAT"
+                    <div className="flex items-center justify-between gap-2">
+                      <span
+                        className={cn(
+                          "inline-flex items-center text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded border",
+                          isOverdue
+                            ? "bg-rose-100 text-rose-800 border-rose-300"
                             : isDamaged
-                            ? "RUSAK"
+                            ? "bg-amber-100 text-amber-900 border-amber-300"
                             : isLost
-                            ? "HILANG"
-                            : "DENDA"}
-                        </Badge>
-                      </div>
-                      <h4 className="text-[11px] sm:text-xs font-black text-blue-950 truncate">
-                        {fb.archive?.title}
-                      </h4>
+                            ? "bg-slate-800 text-white border-slate-800"
+                            : "bg-red-100 text-red-800 border-red-300",
+                        )}
+                      >
+                        {isOverdue ? "Terlambat" : isDamaged ? "Rusak" : isLost ? "Hilang" : "Denda"}
+                      </span>
+
+                      <span className="text-[11px] sm:text-xs font-black text-red-600 font-mono">
+                        Rp {(fb.fineAmount || 0).toLocaleString("id-ID")}
+                      </span>
                     </div>
 
-                    <span className="text-[11px] sm:text-xs font-black text-red-600 shrink-0 font-mono">
-                      Rp {(fb.fineAmount || 0).toLocaleString("id-ID")}
-                    </span>
+                    <h4 className="text-[11px] sm:text-xs font-bold text-blue-950 truncate">
+                      {fb.archive?.title}
+                    </h4>
                   </div>
                 );
               })}
@@ -154,7 +161,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
         <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
           <span className="text-[9px] sm:text-[10px] font-semibold text-slate-400 flex items-center gap-1 truncate">
             <Sparkles className="w-3 h-3 text-emerald-500 shrink-0" />
-            {hasFine ? "Pelunasan via meja sirkulasi" : "Riwayat sirkulasi aktif"}
+            {hasFine ? "Pelunasan di meja sirkulasi" : "Riwayat sirkulasi aktif"}
           </span>
           <Link to="/mahasiswa/peminjaman" className="shrink-0">
             <Button variant="outline" size="sm" className="text-[11px] sm:text-xs font-bold h-7 sm:h-8 px-2.5 sm:px-3">
