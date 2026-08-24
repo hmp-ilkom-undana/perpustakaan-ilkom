@@ -99,7 +99,7 @@ export async function exportDashboardToExcel(data: DashboardStatsResponse) {
   subRow.getCell(1).alignment = { vertical: "middle", horizontal: "center" };
   ws.mergeCells(`A3:D3`);
 
-  const genRow = ws.addRow([`Tanggal Generate: ${generatedAt}`]);
+  const genRow = ws.addRow([`Tanggal Dibuat: ${generatedAt}`]);
   genRow.height = 18;
   genRow.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: LIGHT_BLUE } };
   genRow.getCell(1).font = { italic: true, size: 9, color: { argb: BRAND_BLUE }, name: "Calibri" };
@@ -242,7 +242,7 @@ export async function exportDashboardToExcel(data: DashboardStatsResponse) {
   ws.addRow([]);
 
   // ── FOOTER ───────────────────────────────────────────────────
-  const footerRow = ws.addRow(["© Sistem Perpustakaan ILKOM — Dokumen ini digenerate otomatis oleh sistem. Tidak perlu tanda tangan digital."]);
+  const footerRow = ws.addRow(["© Sistem Perpustakaan ILKOM — Dokumen ini dibuat otomatis oleh sistem. Tidak perlu tanda tangan digital."]);
   footerRow.height = 18;
   footerRow.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: GRAY_200 } };
   footerRow.getCell(1).font = { italic: true, size: 8, color: { argb: "FF64748B" }, name: "Calibri" };

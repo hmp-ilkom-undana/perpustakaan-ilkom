@@ -73,12 +73,12 @@ export default function DashboardAdmin() {
       />
 
       {/* 3. Main Analytics & Visuals (70% : 30%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-        <div className="lg:col-span-7">
-          <CirculationTrendChart data={data.trendData} />
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 items-stretch">
+        <div className="lg:col-span-7 flex flex-col">
+          <CirculationTrendChart data={data.trendData} className="flex-1" />
         </div>
-        <div className="lg:col-span-3">
-          <CategoryPieSection categories={data.topCategories} />
+        <div className="lg:col-span-3 flex flex-col">
+          <CategoryPieSection categories={data.topCategories} className="flex-1" />
         </div>
       </div>
 

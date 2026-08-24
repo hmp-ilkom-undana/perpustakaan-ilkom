@@ -12,9 +12,10 @@ interface CategoryItem {
 
 interface CategoryPieSectionProps {
   categories: CategoryItem[];
+  className?: string;
 }
 
-export function CategoryPieSection({ categories }: CategoryPieSectionProps) {
+export function CategoryPieSection({ categories, className }: CategoryPieSectionProps) {
   const chartData = categories.map((cat) => ({
     name: cat.name,
     value: cat.count || 1,
@@ -23,7 +24,7 @@ export function CategoryPieSection({ categories }: CategoryPieSectionProps) {
   }));
 
   return (
-    <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] rounded-lg bg-white overflow-hidden flex flex-col justify-between">
+    <Card className={`border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] rounded-lg bg-white overflow-hidden h-full flex flex-col${className ? ` ${className}` : ""}`}>
       <CardHeader className="border-b-2 border-blue-900 bg-slate-50/50 pb-4">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-md bg-orange-500 text-white flex items-center justify-center shadow-[1px_1px_0px_#1E3A8A]">
@@ -101,7 +102,7 @@ export function CategoryPieSection({ categories }: CategoryPieSectionProps) {
                     </span>
                     <div className="flex items-center gap-1.5">
                       <span className="text-[11px] font-semibold text-slate-500">
-                        {cat.count} Berkas
+                        {cat.count} Judul
                       </span>
                       <Badge
                         className="font-black text-[10px] px-1.5 py-0 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A]"

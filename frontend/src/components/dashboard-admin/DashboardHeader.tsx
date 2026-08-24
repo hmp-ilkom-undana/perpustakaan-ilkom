@@ -39,7 +39,7 @@ export function DashboardHeader({
           Dashboard Administrator
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 font-semibold mt-1">
-          Ringkasan eksekutif sirkulasi berkas, performa kas denda, dan tren topik riset akademik.
+          Ringkasan eksekutif sirkulasi arsip, performa kas denda, dan tren topik riset akademik.
         </p>
       </div>
 
@@ -82,7 +82,7 @@ export function DashboardHeader({
           className="h-9 px-3.5 text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer"
         >
           <Download className="w-3.5 h-3.5 mr-1.5" />
-          Unduh Laporan LPJ
+          Unduh Laporan
         </Button>
       </div>
     </div>
