@@ -288,18 +288,23 @@ export class MailService {
         return true;
       } catch (err: any) {
         this.logger.error(`Gagal mengirim email via SMTP: ${err.message}`, err.stack);
+        return false;
       }
     }
 
-    // 2. Fallback Mode: Tampilkan di terminal console
-    this.logger.warn(
-      `\n==================== [DEV MODE: RESET PASSWORD LINK] ====================\n` +
-      `Email Target : ${to}\n` +
-      `Nama Akun    : ${greetingName}\n` +
-      `Tautan Reset : ${resetUrl}\n` +
-      `=========================================================================\n`,
-    );
+    // 2. Fallback Mode: Hanya jika SMTP belum dikonfigurasi dan di lingkungan non-production (Dev)
+    if (process.env.NODE_ENV !== 'production') {
+      this.logger.warn(
+        `\n==================== [DEV MODE: RESET PASSWORD LINK] ====================\n` +
+        `Email Target : ${to}\n` +
+        `Nama Akun    : ${greetingName}\n` +
+        `Tautan Reset : ${resetUrl}\n` +
+        `=========================================================================\n`,
+      );
+      return true;
+    }
 
-    return true;
+    this.logger.error('Layanan email SMTP belum dikonfigurasi di lingkungan produksi.');
+    return false;
   }
 }

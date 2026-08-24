@@ -21,7 +21,7 @@ export class AuthService {
         enabled: true,
         sendResetPassword: async ({ user, token }) => {
           const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-          const directResetUrl = `${frontendUrl}/reset-sandi?token=${token}`;
+          const directResetUrl = `${frontendUrl}/reset-sandi?token=${encodeURIComponent(token)}`;
           await this.mailService.sendPasswordResetEmail(user.email, directResetUrl, user.name);
         },
       },
