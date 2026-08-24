@@ -378,7 +378,10 @@ export class DashboardService {
     if (bucketType === 'month') {
       const result: Array<{ label: string; pengajuan: number; pengembalian: number }> = [];
       const current = new Date(startDate);
-      while (current <= endDate) {
+      current.setDate(1);
+      let iter = 0;
+      while (current <= endDate && iter < 24) {
+        iter++;
         const m = current.getMonth();
         const y = current.getFullYear();
         const label = `${months[m]} ${y !== new Date().getFullYear() ? y : ''}`.trim();
@@ -403,7 +406,9 @@ export class DashboardService {
     // Default: daily buckets
     const result: Array<{ label: string; pengajuan: number; pengembalian: number }> = [];
     const current = new Date(startDate);
-    while (current <= endDate) {
+    let iter = 0;
+    while (current <= endDate && iter < 60) {
+      iter++;
       const dNum = current.getDate();
       const mNum = current.getMonth();
       const dayName = days[current.getDay()];
