@@ -14,7 +14,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { authService } from "@/services/auth.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,9 +27,6 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-// =============================================================================
-// VALIDATION SCHEMA
-// =============================================================================
 const registerSchema = z
   .object({
     name: z.string().min(3, "Nama minimal 3 karakter"),
@@ -51,23 +48,14 @@ const registerSchema = z
     path: ["confirmPassword"],
   });
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+export type RegisterFormValues = z.infer<typeof registerSchema>;
 
-// =============================================================================
-// PROPS INTERFACE
-// =============================================================================
 interface RegisterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// =============================================================================
-// REGISTER DIALOG COMPONENT (NEO-BRUTALISM)
-// =============================================================================
-export default function RegisterDialog({
-  open,
-  onOpenChange,
-}: RegisterDialogProps) {
+export function RegisterDialog({ open, onOpenChange }: RegisterDialogProps) {
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -103,7 +91,7 @@ export default function RegisterDialog({
   const onSubmit = async (values: RegisterFormValues) => {
     setRegisterError(null);
     try {
-      const { error } = await authClient.signUp.email({
+      const { error } = await authService.signUpStudent({
         email: values.email,
         password: values.password,
         name: values.name,
@@ -114,12 +102,12 @@ export default function RegisterDialog({
 
       if (error) {
         setRegisterError(
-          error.message || "Gagal mendaftar. Email atau NIM mungkin sudah terdaftar.",
+          error.message || "Gagal mendaftar. Email atau NIM mungkin sudah terdaftar."
         );
       } else {
         handleOpenChange(false);
         toast.success(
-          "Pendaftaran akun berhasil! Silakan masuk menggunakan akun baru Anda.",
+          "Pendaftaran akun berhasil! Silakan masuk menggunakan akun baru Anda."
         );
       }
     } catch {
@@ -130,7 +118,6 @@ export default function RegisterDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-lg bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] rounded-2xl p-6 max-h-[90vh] overflow-y-auto z-[60]">
-        {/* HEADER SECTION */}
         <DialogHeader className="border-b-2 border-blue-900 pb-3 text-center sm:text-left">
           <DialogTitle className="text-lg sm:text-xl font-black text-blue-950 uppercase tracking-tight flex items-center justify-center sm:justify-start gap-2">
             <UserPlus className="w-5 h-5 text-orange-500" />
@@ -141,7 +128,6 @@ export default function RegisterDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {/* ERROR ALERT BOX */}
         {registerError && (
           <div className="p-3 bg-red-100 border-2 border-blue-900 rounded-lg text-red-900 font-bold text-xs shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-2 mt-2">
             <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
@@ -149,9 +135,7 @@ export default function RegisterDialog({
           </div>
         )}
 
-        {/* FORM BODY */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          {/* Field: Nama Lengkap */}
           <div className="space-y-1">
             <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
               <User className="w-3.5 h-3.5 text-blue-900" />
@@ -169,9 +153,7 @@ export default function RegisterDialog({
             )}
           </div>
 
-          {/* Grid 2 Kolom: NIM & Username */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {/* Field: NIM */}
             <div className="space-y-1">
               <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
                 <Hash className="w-3.5 h-3.5 text-blue-900" />
@@ -189,7 +171,6 @@ export default function RegisterDialog({
               )}
             </div>
 
-            {/* Field: Username */}
             <div className="space-y-1">
               <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
                 <User className="w-3.5 h-3.5 text-blue-900" />
@@ -208,9 +189,7 @@ export default function RegisterDialog({
             </div>
           </div>
 
-          {/* Grid 2 Kolom: Nomor WA & Email */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {/* Field: Nomor WA */}
             <div className="space-y-1">
               <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
                 <Phone className="w-3.5 h-3.5 text-blue-900" />
@@ -228,7 +207,6 @@ export default function RegisterDialog({
               )}
             </div>
 
-            {/* Field: Email */}
             <div className="space-y-1">
               <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
                 <Mail className="w-3.5 h-3.5 text-blue-900" />
@@ -248,9 +226,7 @@ export default function RegisterDialog({
             </div>
           </div>
 
-          {/* Grid 2 Kolom: Kata Sandi & Konfirmasi Sandi */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {/* Field: Password */}
             <div className="space-y-1">
               <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
                 <Lock className="w-3.5 h-3.5 text-blue-900" />
@@ -266,7 +242,8 @@ export default function RegisterDialog({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-900 hover:text-orange-500 transition-colors p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-900 hover:text-orange-500 transition-colors p-1 cursor-pointer"
+                  aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -282,7 +259,6 @@ export default function RegisterDialog({
               )}
             </div>
 
-            {/* Field: Confirm Password */}
             <div className="space-y-1">
               <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1">
                 <Lock className="w-3.5 h-3.5 text-blue-900" />
@@ -298,7 +274,8 @@ export default function RegisterDialog({
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-900 hover:text-orange-500 transition-colors p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-900 hover:text-orange-500 transition-colors p-1 cursor-pointer"
+                  aria-label={showConfirmPassword ? "Sembunyikan konfirmasi sandi" : "Tampilkan konfirmasi sandi"}
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -315,20 +292,20 @@ export default function RegisterDialog({
             </div>
           </div>
 
-          {/* ACTION BUTTONS (NEO-BRUTALISM) */}
           <div className="pt-3 border-t-2 border-blue-900/30 flex flex-col sm:flex-row items-center gap-2.5">
             <Button
               type="button"
               variant="outline"
               onClick={() => handleOpenChange(false)}
-              className="w-full sm:w-1/3 border-2 border-blue-900 font-bold text-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-11 uppercase text-xs"
+              className="w-full sm:w-1/3 border-2 border-blue-900 font-bold text-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-11 uppercase text-xs cursor-pointer"
             >
               Batal
             </Button>
             <Button
               type="submit"
+              variant="navy"
               disabled={isSubmitting}
-              className="w-full sm:w-2/3 bg-blue-900 hover:bg-blue-950 text-white font-black text-sm h-11 rounded-lg border-2 border-blue-900 shadow-[4px_4px_0px_#F97316] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider"
+              className="w-full sm:w-2/3 text-white font-black text-sm h-11 rounded-lg border-2 border-blue-900 shadow-[4px_4px_0px_#F97316] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider"
             >
               {isSubmitting ? (
                 <>
