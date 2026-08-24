@@ -305,14 +305,14 @@ export function CirculationDetailActions({
                       isSubmitting ||
                       (returnCondition === "RUSAK" && returnNote.trim() === "")
                     }
-                    className="w-full font-black text-base"
+                    className="w-full font-black text-sm sm:text-base h-11 sm:h-12 shadow-[3px_3px_0px_#1E3A8A]"
                   >
-                    <CheckSquare className="w-5 h-5 mr-2" />
+                    <CheckSquare className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 shrink-0" />
                     {isSubmitting
                       ? "Memproses..."
                       : status === "OVERDUE"
-                      ? "Catat Lunas & Terima Pengembalian"
-                      : "Konfirmasi Pengembalian Arsip"}
+                      ? "Lunaskan & Terima Arsip"
+                      : "Terima Pengembalian"}
                   </Button>
                 </div>
               )}

@@ -2,10 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, BookOpen, History, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudentDashboard } from "@/hooks/useStudentDashboard";
-import { BorrowingQuotaCard } from "@/components/dashboard/BorrowingQuotaCard";
-import { FineSummaryCard } from "@/components/dashboard/FineSummaryCard";
-import { ActivityCalendarCard } from "@/components/dashboard/ActivityCalendarCard";
-import { DateActivityList } from "@/components/dashboard/DateActivityList";
+import {
+  BorrowingQuotaCard,
+  FineSummaryCard,
+  CirculationScheduleCard,
+} from "@/components/dashboard";
 
 export default function DashboardMahasiswa() {
   const {
@@ -37,7 +38,7 @@ export default function DashboardMahasiswa() {
         <p className="text-slate-500 font-bold text-xs sm:text-sm mt-0.5">{currentDate}</p>
       </div>
 
-      {/* 2. Grid Dashboard (Baris 1: Kuota + Denda, Baris 2: Kalender + Aktivitas) */}
+      {/* 2. Grid Dashboard (Baris 1: Kuota + Denda, Baris 2: Kalender & Agenda Terpadu) */}
       <div className="w-full px-4 sm:px-0 space-y-6">
         {/* BARIS 1: Kuota Peminjaman (col-span-2) & Status Denda (col-span-3) */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
@@ -49,24 +50,14 @@ export default function DashboardMahasiswa() {
           </div>
         </div>
 
-        {/* BARIS 2: Kalender Sirkulasi (col-span-2) & Agenda Tanggal (col-span-3) */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
-          <div className="md:col-span-2 flex">
-            <ActivityCalendarCard
-              date={calendar.date}
-              onSelectDate={calendar.setDate}
-              taskDates={calendar.taskDates}
-              className="w-full h-full flex flex-col justify-between"
-            />
-          </div>
-          <div className="md:col-span-3 flex">
-            <DateActivityList
-              date={calendar.date}
-              tasks={calendar.tasksForSelectedDate}
-              className="w-full h-full flex flex-col justify-between"
-            />
-          </div>
-        </div>
+        {/* BARIS 2: Kalender & Agenda Sirkulasi Terpadu (Full Width Bento Card) */}
+        <CirculationScheduleCard
+          date={calendar.date}
+          onSelectDate={calendar.setDate}
+          taskDates={calendar.taskDates}
+          tasks={calendar.tasksForSelectedDate}
+          className="w-full"
+        />
       </div>
 
       {/* 3. Quick Action & Discovery Banner */}

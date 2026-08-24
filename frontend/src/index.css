@@ -166,3 +166,27 @@
   margin-top: 2px !important;
   font-size: 0.75rem !important;
 }
+
+/* CUSTOM VISIBLE HORIZONTAL SCROLLBAR FOR MOBILE TABS */
+.custom-scrollbar-x {
+  scrollbar-width: thin;
+  scrollbar-color: #1E3A8A #E2E8F0;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar {
+  height: 5px;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar-track {
+  background: #E2E8F0;
+  border-radius: 9999px;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar-thumb {
+  background: #1E3A8A;
+  border-radius: 9999px;
+}
+
+.custom-scrollbar-x::-webkit-scrollbar-thumb:hover {
+  background: #F97316;
+}

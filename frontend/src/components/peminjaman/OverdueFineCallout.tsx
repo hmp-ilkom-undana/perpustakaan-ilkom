@@ -25,7 +25,8 @@ export function OverdueFineCallout({
             </Badge>
           </div>
           <p className="text-xs text-rose-800 font-medium leading-relaxed">
-            Arsip telah melewati batas waktu pengembalian. Harap segera lakukan pembayaran denda dan kembalikan fisik arsip ke ruangan HMP.
+            Arsip telah melewati batas waktu pengembalian. Harap segera lakukan
+            pembayaran denda dan kembalikan fisik arsip ke ruangan HMP.
           </p>
         </div>
       </div>
@@ -38,7 +39,7 @@ export function OverdueFineCallout({
         className="w-full sm:w-auto shrink-0 font-bold"
       >
         <Phone className="w-4 h-4 mr-1.5" />
-        Bayar Denda via WhatsApp
+        Konfirmasi Pembayaran via WhatsApp
       </Button>
     </div>
   );
