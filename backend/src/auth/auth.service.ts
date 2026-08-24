@@ -3,18 +3,25 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { username } from 'better-auth/plugins';
 import { PrismaService } from '../prisma/prisma.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   public readonly auth;
 
-  constructor(private prisma: PrismaService) {
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {
     this.auth = betterAuth({
       database: prismaAdapter(this.prisma, {
         provider: 'postgresql',
       }),
       emailAndPassword: {
         enabled: true,
+        sendResetPassword: async ({ user, url }) => {
+          await this.mailService.sendPasswordResetEmail(user.email, url, user.name);
+        },
       },
       plugins: [username()],
       trustedOrigins: [process.env.FRONTEND_URL || '', 'http://localhost:5173'],
