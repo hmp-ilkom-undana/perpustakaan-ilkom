@@ -302,14 +302,18 @@ export class DashboardService {
       });
     }
 
+    // Hitung Koleksi yang Sedang Berada di Tangan Mahasiswa (BORROWED + OVERDUE)
+    const currentlyBorrowedCount = (statusMap['BORROWED'] || 0) + (statusMap['OVERDUE'] || 0);
+    const availableCount = Math.max(0, totalArchives - currentlyBorrowedCount);
+
     // Response JSON
     return {
       period,
       stats: {
         koleksi: {
           total: totalArchives,
-          tersedia: availableArchivesCount,
-          dipinjam: totalArchives - availableArchivesCount,
+          tersedia: availableCount,
+          dipinjam: currentlyBorrowedCount,
           byType: {
             skripsi: typeMap['Skripsi'] || 0,
             ringkasan: typeMap['Ringkasan Skripsi'] || 0,
