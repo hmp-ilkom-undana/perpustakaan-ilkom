@@ -92,23 +92,20 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
           </div>
         ) : (
           <div className="space-y-2 sm:space-y-2.5 flex-1">
-            {/* Kategori Denda Badges (Micro-Pill) */}
+            {/* Kategori Denda Badges */}
             <div className="flex items-center gap-1.5 flex-wrap">
               {countLate > 0 && (
-                <span className="inline-flex items-center gap-1 bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[9px] font-black">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+                <span className="inline-flex items-center bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider">
                   {countLate} Keterlambatan
                 </span>
               )}
               {countDamaged > 0 && (
-                <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded text-[9px] font-black">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                <span className="inline-flex items-center bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider">
                   {countDamaged} Kerusakan
                 </span>
               )}
               {countLost > 0 && (
-                <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 border border-slate-300 px-2 py-0.5 rounded text-[9px] font-black">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                <span className="inline-flex items-center bg-slate-100 text-slate-800 border border-slate-300 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider">
                   {countLost} Hilang
                 </span>
               )}
@@ -161,10 +158,10 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
         <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
           <span className="text-[9px] sm:text-[10px] font-semibold text-slate-400 flex items-center gap-1 truncate">
             <Sparkles className="w-3 h-3 text-emerald-500 shrink-0" />
-            {hasFine ? "Pelunasan di meja sirkulasi" : "Riwayat sirkulasi aktif"}
+            {hasFine ? "Pelunasan di ruang hmp" : "Riwayat sirkulasi aktif"}
           </span>
           <Link to="/mahasiswa/peminjaman" className="shrink-0">
-            <Button variant="outline" size="sm" className="text-[11px] sm:text-xs font-bold h-7 sm:h-8 px-2.5 sm:px-3">
+            <Button variant="outline" size="sm" className="text-[10px] sm:text-xs font-bold h-7 sm:h-8 px-2.5 sm:px-3">
               Buka Detail Peminjaman
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-1" />
             </Button>
