@@ -1,4 +1,4 @@
-import { User, Phone, Lock, Save, Info, CheckCircle2 } from "lucide-react";
+import { User, Phone, Lock, Save, Info, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -98,7 +98,7 @@ export function ProfileBiodataCard({
                 <Lock className="w-3.5 h-3.5 text-slate-400" />
                 Nomor Induk Mahasiswa (NIM)
               </Label>
-              <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-300">
+              <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-blue-900 shadow-[1px_1px_0px_#1E3A8A]">
                 Terkunci
               </span>
             </div>
@@ -122,7 +122,7 @@ export function ProfileBiodataCard({
                 <Lock className="w-3.5 h-3.5 text-slate-400" />
                 Alamat Email Akun
               </Label>
-              <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-300">
+              <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-blue-900 shadow-[1px_1px_0px_#1E3A8A]">
                 Terkunci
               </span>
             </div>
@@ -138,7 +138,7 @@ export function ProfileBiodataCard({
 
           {/* Catatan Status Perubahan */}
           {isProfileDirty ? (
-            <div className="p-3 bg-amber-50 border-2 border-amber-300 rounded-md text-xs text-amber-900 font-medium flex items-start gap-2">
+            <div className="p-3 bg-amber-50 border-2 border-blue-900 rounded-md text-xs text-amber-900 font-medium flex items-start gap-2 shadow-[2px_2px_0px_#1E3A8A]">
               <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
               <span>
                 Terdapat perubahan data yang belum disimpan. Klik tombol di
@@ -146,7 +146,7 @@ export function ProfileBiodataCard({
               </span>
             </div>
           ) : (
-            <div className="p-3 bg-slate-50 border-2 border-slate-200 rounded-md text-xs text-slate-600 font-medium flex items-start gap-2">
+            <div className="p-3 bg-slate-50 border-2 border-blue-900 rounded-md text-xs text-slate-600 font-medium flex items-start gap-2 shadow-[2px_2px_0px_#1E3A8A]">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <span>Data profil sesuai dengan rekaman akun saat ini.</span>
             </div>
@@ -156,16 +156,23 @@ export function ProfileBiodataCard({
           <Button
             type="submit"
             disabled={!canSubmitProfile}
-            className={`w-full font-bold border-2 rounded-md transition-all mt-4 ${
+            className={`w-full font-bold border-2 rounded-md transition-all mt-4 flex items-center justify-center ${
               canSubmitProfile
                 ? "bg-blue-900 hover:bg-blue-800 text-white border-blue-900 cursor-pointer shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                 : "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed shadow-none"
             }`}
           >
-            <Save className="w-4 h-4 mr-2" />
-            {isUpdatingProfile
-              ? "Menyimpan Perubahan..."
-              : "Simpan Perubahan Biodata"}
+            {isUpdatingProfile ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <span>Menyimpan Perubahan...</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                <span>Simpan Perubahan Biodata</span>
+              </>
+            )}
           </Button>
         </form>
       </CardContent>

@@ -5,6 +5,7 @@ import {
   Lock,
   CheckCircle2,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -228,16 +229,23 @@ export function ProfilePasswordCard({
           <Button
             type="submit"
             disabled={!canSubmitPassword}
-            className={`w-full font-bold border-2 rounded-md transition-all mt-4 ${
+            className={`w-full font-bold border-2 rounded-md transition-all mt-4 flex items-center justify-center ${
               canSubmitPassword
                 ? "bg-rose-600 hover:bg-rose-700 text-white border-blue-900 cursor-pointer shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
                 : "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed shadow-none"
             }`}
           >
-            <Lock className="w-4 h-4 mr-2" />
-            {isChangingPassword
-              ? "Memperbarui Kata Sandi..."
-              : "Perbarui Kata Sandi"}
+            {isChangingPassword ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <span>Memperbarui Kata Sandi...</span>
+              </>
+            ) : (
+              <>
+                <Lock className="w-4 h-4 mr-2" />
+                <span>Perbarui Kata Sandi</span>
+              </>
+            )}
           </Button>
         </form>
       </CardContent>

@@ -21,8 +21,8 @@ jobs:
         uses: the-pr-agent/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          config.model: "gemini/gemini-3.7-flash"
-          config.fallback_models: '["gemini/gemini-3.5-flash-lite"]'
+          config.model: "gemini/gemini-3.5-flash-lite"
+          config.fallback_models: '["gemini/gemini-3-flash"]'
           config.response_language: "id-ID"
           GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           github_action_config.auto_review: "true"
