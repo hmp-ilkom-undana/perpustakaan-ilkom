@@ -45,6 +45,26 @@ export const authService = {
   },
 
   /**
+   * Mengirim permintaan tautan reset kata sandi ke alamat email pengguna.
+   */
+  async forgotPassword(email: string, redirectTo: string = "/reset-sandi") {
+    return await authClient.forgetPassword({
+      email: email.trim().toLowerCase(),
+      redirectTo,
+    });
+  },
+
+  /**
+   * Mengatur ulang kata sandi baru menggunakan token verifikasi email.
+   */
+  async resetPassword(newPassword: string, token: string) {
+    return await authClient.resetPassword({
+      newPassword,
+      token,
+    });
+  },
+
+  /**
    * Mengakhiri sesi pengguna aktif.
    */
   async signOutUser() {
