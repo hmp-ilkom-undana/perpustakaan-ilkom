@@ -88,7 +88,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
             </p>
           </div>
         ) : (
-          <div className="space-y-2.5 my-auto">
+          <div className="space-y-2.5 flex-1">
             {/* Kategori Denda Badges */}
             <div className="flex items-center gap-1.5 flex-wrap">
               {countLate > 0 && (

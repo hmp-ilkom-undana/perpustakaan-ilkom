@@ -74,7 +74,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
             </p>
           </div>
         ) : (
-          <div className="space-y-2 max-h-[195px] overflow-y-auto pr-1 my-auto">
+          <div className="space-y-2 overflow-y-auto pr-1 flex-1">
             {tasks.map((task) => {
               const isOverdue = task.status === "OVERDUE" || task.isOverdue;
               const isBorrowed = task.status === "BORROWED";

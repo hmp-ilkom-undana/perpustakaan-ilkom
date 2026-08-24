@@ -82,7 +82,7 @@ export default function DashboardMahasiswa() {
               </h3>
             </div>
             <p className="text-blue-200 text-xs sm:text-sm font-medium leading-relaxed">
-              Jelajahi ribuan koleksi arsip Skripsi, Ringkasan, dan Naskah Publikasi resmi Ilmu Komputer UNDANA.
+              Jelajahi koleksi arsip Skripsi, Ringkasan, dan Naskah Publikasi resmi Ilmu Komputer UNDANA.
             </p>
           </div>
 
