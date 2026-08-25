@@ -45,26 +45,56 @@ export const MaintenanceCountdown: React.FC<MaintenanceCountdownProps> = ({
     return () => clearInterval(timer);
   }, [targetEndTime]);
 
-  if (!targetEndTime || timeLeft.isExpired) {
+  if (!targetEndTime) {
     return (
-      <div className="bg-amber-50 border-2 border-blue-900 rounded-lg p-3 sm:p-4 shadow-[3px_3px_0px_#1E3A8A] sm:shadow-[4px_4px_0px_#1E3A8A] flex flex-row items-center justify-between gap-2.5 sm:gap-3 max-w-md mx-auto">
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-400 border-2 border-blue-900 rounded-lg flex items-center justify-center text-blue-950 font-black shrink-0 shadow-[1.5px_1.5px_0px_#1E3A8A]">
-            <Clock className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" />
+      <div className="bg-slate-50 border-2 border-blue-900 rounded-lg p-3 sm:p-3.5 shadow-[3px_3px_0px_#1E3A8A] sm:shadow-[4px_4px_0px_#1E3A8A] max-w-md mx-auto">
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5 text-left min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-slate-200 border-2 border-blue-900 rounded-lg flex items-center justify-center text-slate-500 font-black shrink-0 shadow-[1.5px_1.5px_0px_#1E3A8A]">
+              <Clock className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs font-black text-blue-950 uppercase tracking-wide">
+                Estimasi Penyelesaian
+              </p>
+              <p className="text-xs sm:text-sm font-bold text-slate-500 leading-tight">
+                Belum ditentukan oleh admin
+              </p>
+            </div>
           </div>
-          <div className="text-left min-w-0">
-            <p className="text-[10px] sm:text-xs font-black text-blue-950 uppercase tracking-wide truncate">
-              Estimasi Penyelesaian
-            </p>
-            <p className="text-xs sm:text-sm font-bold text-slate-700 leading-tight">
-              Tahap Akhir & Pengujian Sistem
-            </p>
-          </div>
+
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 border-2 border-slate-400 rounded-md text-[10px] sm:text-[11px] font-black text-slate-600 shadow-[1px_1px_0px_#94a3b8] shrink-0">
+            <Clock className="w-3.5 h-3.5 text-slate-500" />
+            Menunggu
+          </span>
         </div>
-        <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-emerald-100 border-2 border-blue-900 rounded text-[10px] sm:text-[11px] font-black text-emerald-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0">
-          <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
-          Segera Selesai
-        </span>
+      </div>
+    );
+  }
+
+  if (timeLeft.isExpired) {
+    return (
+      <div className="bg-amber-50 border-2 border-blue-900 rounded-lg p-3 sm:p-3.5 shadow-[3px_3px_0px_#1E3A8A] sm:shadow-[4px_4px_0px_#1E3A8A] max-w-md mx-auto">
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2.5 text-left min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-amber-400 border-2 border-blue-900 rounded-lg flex items-center justify-center text-blue-950 font-black shrink-0 shadow-[1.5px_1.5px_0px_#1E3A8A]">
+              <Clock className="w-4 h-4 animate-pulse" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs font-black text-blue-950 uppercase tracking-wide">
+                Estimasi Selesai
+              </p>
+              <p className="text-xs sm:text-sm font-bold text-slate-700 leading-tight">
+                Memasuki Tahap Akhir
+              </p>
+            </div>
+          </div>
+
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 border-2 border-blue-900 rounded-md text-[10px] sm:text-[11px] font-black text-emerald-900 shadow-[1px_1px_0px_#1E3A8A] shrink-0">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            Segera Selesai
+          </span>
+        </div>
       </div>
     );
   }
