@@ -7,9 +7,7 @@ import {
   ExternalLink,
   Plus,
   Trash2,
-  ShieldAlert,
   Radio,
-  Tag,
   KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,8 +29,6 @@ interface PemeliharaanTabProps {
   setMaintenanceMessage: (val: string) => void;
   maintenanceTargetEnd: string;
   setMaintenanceTargetEnd: (val: string) => void;
-  maintenanceVersion: string;
-  setMaintenanceVersion: (val: string) => void;
   maintenanceChangelog: string[];
   setMaintenanceChangelog: (val: string[]) => void;
   allowAdminBypass: boolean;
@@ -50,8 +46,6 @@ export function PemeliharaanTab({
   setMaintenanceMessage,
   maintenanceTargetEnd,
   setMaintenanceTargetEnd,
-  maintenanceVersion,
-  setMaintenanceVersion,
   maintenanceChangelog,
   setMaintenanceChangelog,
   allowAdminBypass,
@@ -252,7 +246,7 @@ export function PemeliharaanTab({
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 md:col-span-2">
               <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-orange-500" />
                 Target Estimasi Selesai (Waktu Berakhir)
@@ -269,23 +263,6 @@ export function PemeliharaanTab({
                 Waktu ini digunakan untuk memutar hitung mundur (*countdown timer*).
               </p>
             </div>
-
-            {maintenanceMode === "UPDATE" && (
-              <div className="space-y-1.5">
-                <Label className="text-xs font-black text-blue-950 uppercase tracking-wider flex items-center gap-1.5">
-                  <Tag className="w-3.5 h-3.5 text-orange-500" />
-                  Tag Versi Rilis
-                </Label>
-                <Input
-                  value={maintenanceVersion}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setMaintenanceVersion(e.target.value)
-                  }
-                  placeholder="Contoh: v1.2.0"
-                  className="border-2 border-blue-900 font-bold text-xs shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0"
-                />
-              </div>
-            )}
           </div>
 
           {/* Dynamic Changelog Items (Khusus Mode Update) */}

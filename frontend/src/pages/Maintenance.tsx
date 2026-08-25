@@ -120,7 +120,7 @@ export default function Maintenance() {
               <Badge className="bg-blue-950 text-white border-2 border-blue-900 font-black text-xs px-3 py-1 uppercase tracking-widest shadow-[2px_2px_0px_#1E3A8A]">
                 {isMaintenanceMode
                   ? "Pemeliharaan & Peningkatan Server"
-                  : `Pembaruan Sistem Versi ${setting?.maintenanceVersion || "v1.1.0"}`}
+                  : "Pembaruan Fitur Sistem"}
               </Badge>
             </div>
 
@@ -148,7 +148,6 @@ export default function Maintenance() {
           {!isMaintenanceMode && (
             <div className="pt-4">
               <UpdateChangelogCard
-                version={setting?.maintenanceVersion || "v1.1.0"}
                 changelog={setting?.maintenanceChangelog}
               />
             </div>

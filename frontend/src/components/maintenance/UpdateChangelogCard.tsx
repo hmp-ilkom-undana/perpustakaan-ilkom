@@ -3,12 +3,10 @@ import { Sparkles, CheckCircle, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface UpdateChangelogCardProps {
-  version?: string;
   changelog?: string[];
 }
 
 export const UpdateChangelogCard: React.FC<UpdateChangelogCardProps> = ({
-  version = "v1.1.0",
   changelog = [],
 }) => {
   const defaultItems = [
@@ -28,17 +26,10 @@ export const UpdateChangelogCard: React.FC<UpdateChangelogCardProps> = ({
           </div>
           <div>
             <h3 className="text-sm sm:text-base font-black text-blue-950 tracking-tight">
-              Ikhtisar Pembaruan Fitur
+              Daftar Pembaruan Fitur
             </h3>
-            <p className="text-[11px] text-slate-500 font-bold">
-              Apa yang baru di rilis sistem kali ini
-            </p>
           </div>
         </div>
-
-        <Badge className="bg-orange-500 hover:bg-orange-500 text-white border-2 border-blue-900 font-black text-xs px-2.5 py-0.5 shadow-[2px_2px_0px_#1E3A8A]">
-          {version}
-        </Badge>
       </div>
 
       <div className="space-y-2.5">

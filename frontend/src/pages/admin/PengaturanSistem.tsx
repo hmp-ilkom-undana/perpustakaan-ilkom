@@ -256,8 +256,6 @@ export default function PengaturanSistem() {
           setMaintenanceMessage={setMaintenanceMessage}
           maintenanceTargetEnd={maintenanceTargetEnd}
           setMaintenanceTargetEnd={setMaintenanceTargetEnd}
-          maintenanceVersion={maintenanceVersion}
-          setMaintenanceVersion={setMaintenanceVersion}
           maintenanceChangelog={maintenanceChangelog}
           setMaintenanceChangelog={setMaintenanceChangelog}
           allowAdminBypass={allowAdminBypass}
