@@ -1,5 +1,7 @@
 import api from "@/lib/api";
 
+export type MaintenanceModeType = "MAINTENANCE" | "UPDATE";
+
 export interface SystemSetting {
   id: string;
   operatingDays: number[];
@@ -16,6 +18,17 @@ export interface SystemSetting {
   lostFine: number;
   adminWaNumber: string;
   adminContactName: string;
+  
+  // Konfigurasi Pemeliharaan & Pembaruan Sistem
+  isMaintenanceActive?: boolean;
+  maintenanceMode?: MaintenanceModeType;
+  maintenanceTitle?: string;
+  maintenanceMessage?: string;
+  maintenanceTargetEnd?: string | null;
+  maintenanceVersion?: string;
+  maintenanceChangelog?: string[];
+  allowAdminBypass?: boolean;
+
   updatedAt: string;
   updatedBy?: string | null;
 }

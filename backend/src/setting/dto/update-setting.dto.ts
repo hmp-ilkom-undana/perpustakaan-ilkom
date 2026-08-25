@@ -79,4 +79,37 @@ export class UpdateSettingDto {
   @IsOptional()
   @IsString()
   adminContactName?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isMaintenanceActive?: boolean;
+
+  @IsOptional()
+  @IsString()
+  maintenanceMode?: string;
+
+  @IsOptional()
+  @IsString()
+  maintenanceTitle?: string;
+
+  @IsOptional()
+  @IsString()
+  maintenanceMessage?: string;
+
+  @IsOptional()
+  @IsString()
+  maintenanceTargetEnd?: string | null;
+
+  @IsOptional()
+  @IsString()
+  maintenanceVersion?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  maintenanceChangelog?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  allowAdminBypass?: boolean;
 }

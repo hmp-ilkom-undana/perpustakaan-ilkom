@@ -5,7 +5,11 @@ import {
 } from "./queries/useSettingQuery";
 import { toast } from "sonner";
 
-export type SettingTabType = "OPERASIONAL" | "PEMINJAMAN" | "DENDA";
+export type SettingTabType =
+  | "OPERASIONAL"
+  | "PEMINJAMAN"
+  | "DENDA"
+  | "PEMELIHARAAN";
 
 export function useAdminSetting() {
   const {
@@ -21,7 +25,7 @@ export function useAdminSetting() {
   // Tab State
   const [activeTab, setActiveTab] = useState<SettingTabType>("OPERASIONAL");
 
-  // Form States
+  // Form States - Operasional & Kuota & Denda
   const [operatingDays, setOperatingDays] = useState<number[]>([1, 2, 3, 4, 5]);
   const [pickupDurationDays, setPickupDurationDays] = useState<number>(3);
   const [autoCancelUnpicked, setAutoCancelUnpicked] = useState<boolean>(true);
@@ -38,6 +42,26 @@ export function useAdminSetting() {
   const [adminContactName, setAdminContactName] = useState<string>(
     "Admin Perpustakaan ILKOM",
   );
+
+  // Form States - Pemeliharaan & Pembaruan Sistem
+  const [isMaintenanceActive, setIsMaintenanceActive] =
+    useState<boolean>(false);
+  const [maintenanceMode, setMaintenanceMode] = useState<
+    "MAINTENANCE" | "UPDATE"
+  >("MAINTENANCE");
+  const [maintenanceTitle, setMaintenanceTitle] = useState<string>(
+    "Sistem Sedang Dalam Pemeliharaan",
+  );
+  const [maintenanceMessage, setMaintenanceMessage] = useState<string>(
+    "Kami sedang melakukan pemeliharaan rutin dan peningkatan performa sistem perpustakaan.",
+  );
+  const [maintenanceTargetEnd, setMaintenanceTargetEnd] = useState<string>("");
+  const [maintenanceVersion, setMaintenanceVersion] = useState<string>("v1.1.0");
+  const [maintenanceChangelog, setMaintenanceChangelog] = useState<string[]>([
+    "Peningkatan kecepatan pencarian katalog skripsi",
+    "Penyempurnaan sistem notifikasi WhatsApp",
+  ]);
+  const [allowAdminBypass, setAllowAdminBypass] = useState<boolean>(true);
 
   // Sync Form State with DB data on load or refetch
   useEffect(() => {
@@ -58,6 +82,32 @@ export function useAdminSetting() {
       setAdminContactName(
         setting.adminContactName || "Admin Perpustakaan ILKOM",
       );
+
+      // Maintenance Config Sync
+      setIsMaintenanceActive(setting.isMaintenanceActive ?? false);
+      setMaintenanceMode(setting.maintenanceMode ?? "MAINTENANCE");
+      setMaintenanceTitle(
+        setting.maintenanceTitle || "Sistem Sedang Dalam Pemeliharaan",
+      );
+      setMaintenanceMessage(
+        setting.maintenanceMessage ||
+          "Kami sedang melakukan pemeliharaan rutin dan peningkatan performa sistem perpustakaan.",
+      );
+      setMaintenanceTargetEnd(
+        setting.maintenanceTargetEnd
+          ? new Date(setting.maintenanceTargetEnd).toISOString().slice(0, 16)
+          : "",
+      );
+      setMaintenanceVersion(setting.maintenanceVersion || "v1.1.0");
+      setMaintenanceChangelog(
+        setting.maintenanceChangelog && setting.maintenanceChangelog.length > 0
+          ? setting.maintenanceChangelog
+          : [
+              "Peningkatan kecepatan pencarian katalog skripsi",
+              "Penyempurnaan sistem notifikasi WhatsApp",
+            ],
+      );
+      setAllowAdminBypass(setting.allowAdminBypass ?? true);
     }
   }, [setting]);
 
@@ -68,6 +118,14 @@ export function useAdminSetting() {
     const sortedDbDays = [...(setting.operatingDays || [])].sort();
     const daysChanged =
       JSON.stringify(sortedFormDays) !== JSON.stringify(sortedDbDays);
+
+    const changelogChanged =
+      JSON.stringify(maintenanceChangelog) !==
+      JSON.stringify(setting.maintenanceChangelog || []);
+
+    const dbTargetEndFormatted = setting.maintenanceTargetEnd
+      ? new Date(setting.maintenanceTargetEnd).toISOString().slice(0, 16)
+      : "";
 
     return (
       daysChanged ||
@@ -83,7 +141,18 @@ export function useAdminSetting() {
       damagedFine !== setting.damagedFine ||
       lostFine !== setting.lostFine ||
       adminWaNumber !== setting.adminWaNumber ||
-      adminContactName !== setting.adminContactName
+      adminContactName !== setting.adminContactName ||
+      isMaintenanceActive !== (setting.isMaintenanceActive ?? false) ||
+      maintenanceMode !== (setting.maintenanceMode ?? "MAINTENANCE") ||
+      maintenanceTitle !==
+        (setting.maintenanceTitle || "Sistem Sedang Dalam Pemeliharaan") ||
+      maintenanceMessage !==
+        (setting.maintenanceMessage ||
+          "Kami sedang melakukan pemeliharaan rutin dan peningkatan performa sistem perpustakaan.") ||
+      maintenanceTargetEnd !== dbTargetEndFormatted ||
+      maintenanceVersion !== (setting.maintenanceVersion || "v1.1.0") ||
+      changelogChanged ||
+      allowAdminBypass !== (setting.allowAdminBypass ?? true)
     );
   }, [
     setting,
@@ -101,6 +170,14 @@ export function useAdminSetting() {
     lostFine,
     adminWaNumber,
     adminContactName,
+    isMaintenanceActive,
+    maintenanceMode,
+    maintenanceTitle,
+    maintenanceMessage,
+    maintenanceTargetEnd,
+    maintenanceVersion,
+    maintenanceChangelog,
+    allowAdminBypass,
   ]);
 
   // Reset Form to current Database Snapshot
@@ -120,6 +197,32 @@ export function useAdminSetting() {
     setLostFine(setting.lostFine ?? 100000);
     setAdminWaNumber(setting.adminWaNumber || "082339113591");
     setAdminContactName(setting.adminContactName || "Admin Perpustakaan ILKOM");
+
+    setIsMaintenanceActive(setting.isMaintenanceActive ?? false);
+    setMaintenanceMode(setting.maintenanceMode ?? "MAINTENANCE");
+    setMaintenanceTitle(
+      setting.maintenanceTitle || "Sistem Sedang Dalam Pemeliharaan",
+    );
+    setMaintenanceMessage(
+      setting.maintenanceMessage ||
+        "Kami sedang melakukan pemeliharaan rutin dan peningkatan performa sistem perpustakaan.",
+    );
+    setMaintenanceTargetEnd(
+      setting.maintenanceTargetEnd
+        ? new Date(setting.maintenanceTargetEnd).toISOString().slice(0, 16)
+        : "",
+    );
+    setMaintenanceVersion(setting.maintenanceVersion || "v1.1.0");
+    setMaintenanceChangelog(
+      setting.maintenanceChangelog && setting.maintenanceChangelog.length > 0
+        ? setting.maintenanceChangelog
+        : [
+            "Peningkatan kecepatan pencarian katalog skripsi",
+            "Penyempurnaan sistem notifikasi WhatsApp",
+          ],
+    );
+    setAllowAdminBypass(setting.allowAdminBypass ?? true);
+
     toast.info("Perubahan formulir dibatalkan.");
   }, [setting]);
 
@@ -150,6 +253,18 @@ export function useAdminSetting() {
         lostFine,
         adminWaNumber: adminWaNumber.trim(),
         adminContactName: adminContactName.trim(),
+        isMaintenanceActive,
+        maintenanceMode,
+        maintenanceTitle: maintenanceTitle.trim(),
+        maintenanceMessage: maintenanceMessage.trim(),
+        maintenanceTargetEnd: maintenanceTargetEnd
+          ? new Date(maintenanceTargetEnd).toISOString()
+          : null,
+        maintenanceVersion: maintenanceVersion.trim(),
+        maintenanceChangelog: maintenanceChangelog.filter((item) =>
+          Boolean(item.trim()),
+        ),
+        allowAdminBypass,
       });
     } catch {
       // Error telah ditangani oleh onError toast di useSettingQuery
@@ -169,6 +284,14 @@ export function useAdminSetting() {
     lostFine,
     adminWaNumber,
     adminContactName,
+    isMaintenanceActive,
+    maintenanceMode,
+    maintenanceTitle,
+    maintenanceMessage,
+    maintenanceTargetEnd,
+    maintenanceVersion,
+    maintenanceChangelog,
+    allowAdminBypass,
     updateMutation,
   ]);
 
@@ -215,6 +338,24 @@ export function useAdminSetting() {
     setAdminWaNumber,
     adminContactName,
     setAdminContactName,
+
+    // Maintenance Form States & Setters
+    isMaintenanceActive,
+    setIsMaintenanceActive,
+    maintenanceMode,
+    setMaintenanceMode,
+    maintenanceTitle,
+    setMaintenanceTitle,
+    maintenanceMessage,
+    setMaintenanceMessage,
+    maintenanceTargetEnd,
+    setMaintenanceTargetEnd,
+    maintenanceVersion,
+    setMaintenanceVersion,
+    maintenanceChangelog,
+    setMaintenanceChangelog,
+    allowAdminBypass,
+    setAllowAdminBypass,
 
     // Action Handlers
     handleReset,
