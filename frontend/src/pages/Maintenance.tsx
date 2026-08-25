@@ -21,14 +21,8 @@ export default function Maintenance() {
   const navigate = useNavigate();
   const { data: setting, isLoading, refetch, isFetching } = useSystemSettingQuery();
 
-  // Mode Override for manual testing/previewing
-  const [previewMode, setPreviewMode] = useState<"AUTO" | "MAINTENANCE" | "UPDATE">("AUTO");
-
-  // Determine active mode: based on preview selection or database setting
   const currentMode: "MAINTENANCE" | "UPDATE" =
-    previewMode === "AUTO"
-      ? ((setting?.maintenanceMode as "MAINTENANCE" | "UPDATE") || "MAINTENANCE")
-      : previewMode;
+    (setting?.maintenanceMode as "MAINTENANCE" | "UPDATE") || "MAINTENANCE";
 
   const isMaintenanceMode = currentMode === "MAINTENANCE";
 
@@ -183,44 +177,12 @@ export default function Maintenance() {
             </Button>
           </div>
         </div>
-
-        {/* Quick Mode Preview Bar (For Developer / Admin convenience) */}
-        <div className="flex items-center justify-center gap-2 text-xs font-bold text-slate-500">
-          <span>Pratinjau Tampilan:</span>
-          <button
-            type="button"
-            onClick={() => setPreviewMode("AUTO")}
-            className={`px-2.5 py-1 rounded border border-blue-900 text-[11px] font-bold ${
-              previewMode === "AUTO" ? "bg-blue-900 text-white" : "bg-white text-blue-950"
-            }`}
-          >
-            Database ({setting?.maintenanceMode || "MAINTENANCE"})
-          </button>
-          <button
-            type="button"
-            onClick={() => setPreviewMode("MAINTENANCE")}
-            className={`px-2.5 py-1 rounded border border-blue-900 text-[11px] font-bold ${
-              previewMode === "MAINTENANCE" ? "bg-amber-400 text-blue-950" : "bg-white text-blue-950"
-            }`}
-          >
-            Maintenance
-          </button>
-          <button
-            type="button"
-            onClick={() => setPreviewMode("UPDATE")}
-            className={`px-2.5 py-1 rounded border border-blue-900 text-[11px] font-bold ${
-              previewMode === "UPDATE" ? "bg-orange-500 text-white" : "bg-white text-blue-950"
-            }`}
-          >
-            Update
-          </button>
-        </div>
       </main>
 
       {/* Footer & Admin Bypass Gateway */}
       <footer className="relative z-10 border-t-2 border-blue-900 bg-white px-4 py-4 text-center">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-bold text-slate-600">
-          <p>© {new Date().getFullYear()} Jurusan Ilmu Komputer. Seluruh hak cipta dilindungi.</p>
+          <p>© {new Date().getFullYear()} Ilmu Komputer Undana. Seluruh hak cipta dilindungi.</p>
 
           <button
             type="button"

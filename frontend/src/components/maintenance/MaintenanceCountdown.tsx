@@ -80,7 +80,7 @@ export const MaintenanceCountdown: React.FC<MaintenanceCountdownProps> = ({
     <div className="space-y-2 max-w-lg mx-auto">
       <div className="flex items-center justify-center gap-1.5 text-xs font-black text-blue-950 uppercase tracking-wider">
         <Clock className="w-4 h-4 text-orange-600 animate-spin" style={{ animationDuration: "8s" }} />
-        <span>Perkiraan Waktu Selesai (ETA)</span>
+        <span>Perkiraan Waktu Selesai </span>
       </div>
 
       <div className="grid grid-cols-4 gap-2.5 sm:gap-4">
