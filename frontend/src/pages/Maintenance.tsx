@@ -48,27 +48,27 @@ export default function Maintenance() {
       />
 
       {/* Top Header Navbar */}
-      <header className="relative z-10 border-b-2 border-blue-900 bg-white/90 backdrop-blur-md px-4 sm:px-8 py-3.5 shadow-[0px_4px_0px_#1E3A8A]">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+      <header className="relative z-10 border-b-2 border-blue-900 bg-white/90 backdrop-blur-md px-3 sm:px-8 py-2.5 sm:py-3.5 shadow-[0px_3px_0px_#1E3A8A] sm:shadow-[0px_4px_0px_#1E3A8A]">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-2.5 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <NavLogo
-              size="md"
+              size="sm"
               variant="brutalist"
-              className="shadow-[2px_2px_0px_#1E3A8A]"
+              className="shadow-[1.5px_1.5px_0px_#1E3A8A] sm:shadow-[2px_2px_0px_#1E3A8A] shrink-0"
             />
-            <div>
-              <span className="font-black text-sm sm:text-base tracking-tight text-blue-950 uppercase block leading-none">
+            <div className="min-w-0">
+              <span className="font-black text-xs sm:text-base tracking-tight text-blue-950 uppercase block leading-none truncate">
                 Perpustakaan ILKOM
               </span>
-              <span className="text-[10px] sm:text-xs font-bold text-slate-500">
+              <span className="hidden xs:block sm:block text-[9px] sm:text-xs font-bold text-slate-500 truncate mt-0.5">
                 Sistem Informasi Arsip & Skripsi Digital
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Badge className="border-2 border-blue-900 font-black text-[10px] tracking-wider uppercase shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-1.5 bg-amber-400 text-blue-950">
-              <Radio className="w-3 h-3 animate-ping" />
+          <div className="flex items-center gap-2 shrink-0">
+            <Badge className="border-2 border-blue-900 font-black text-[9px] sm:text-[10px] tracking-wider uppercase shadow-[1.5px_1.5px_0px_#1E3A8A] sm:shadow-[2px_2px_0px_#1E3A8A] px-2 py-0.5 sm:px-2.5 sm:py-1 flex items-center gap-1.5 bg-amber-400 text-blue-950">
+              <Radio className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-ping" />
               Maintenance Mode
             </Badge>
           </div>
@@ -76,43 +76,43 @@ export default function Maintenance() {
       </header>
 
       {/* Main Content Area */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 py-8 sm:py-12 text-center my-auto w-full space-y-8">
+      <main className="relative z-10 max-w-4xl mx-auto px-3 sm:px-4 py-5 sm:py-12 text-center my-auto w-full space-y-5 sm:space-y-8">
         {/* Main Status Hero Card */}
-        <div className="bg-white border-2 sm:border-4 border-blue-900 rounded-xl p-6 sm:p-10 shadow-[8px_8px_0px_#1E3A8A] relative overflow-hidden space-y-6">
+        <div className="bg-white border-2 sm:border-4 border-blue-900 rounded-xl p-4 sm:p-10 shadow-[4px_4px_0px_#1E3A8A] sm:shadow-[8px_8px_0px_#1E3A8A] relative overflow-hidden space-y-4 sm:space-y-6">
           {/* Icon Badge */}
           <div className="flex justify-center">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-4 border-blue-900 flex items-center justify-center shadow-[4px_4px_0px_#1E3A8A] bg-amber-400 text-blue-950 transition-transform hover:scale-105">
-              <Wrench className="w-10 h-10 sm:w-12 sm:h-12 animate-pulse" />
+            <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-blue-900 flex items-center justify-center shadow-[3px_3px_0px_#1E3A8A] sm:shadow-[4px_4px_0px_#1E3A8A] bg-amber-400 text-blue-950 transition-transform hover:scale-105">
+              <Wrench className="w-8 h-8 sm:w-12 sm:h-12 animate-pulse" />
             </div>
           </div>
 
           {/* Title & Description */}
-          <div className="space-y-3 max-w-2xl mx-auto">
+          <div className="space-y-2 sm:space-y-3 max-w-2xl mx-auto">
             <div className="inline-block">
-              <Badge className="bg-blue-950 text-white border-2 border-blue-900 font-black text-xs px-3 py-1 uppercase tracking-widest shadow-[2px_2px_0px_#1E3A8A]">
+              <Badge className="bg-blue-950 text-white border-2 border-blue-900 font-black text-[10px] sm:text-xs px-2.5 py-0.5 sm:px-3 sm:py-1 uppercase tracking-widest shadow-[1.5px_1.5px_0px_#1E3A8A] sm:shadow-[2px_2px_0px_#1E3A8A]">
                 Pemeliharaan & Peningkatan Sistem
               </Badge>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-black text-blue-950 tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-4xl font-black text-blue-950 tracking-tight leading-tight">
               {setting?.maintenanceTitle || "Sistem Sedang Dalam Pemeliharaan"}
             </h1>
 
-            <p className="text-sm sm:text-base font-semibold text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-base font-semibold text-slate-600 leading-relaxed max-w-xl mx-auto">
               {setting?.maintenanceMessage ||
                 "Kami sedang melakukan pemeliharaan rutin dan peningkatan performa sistem perpustakaan."}
             </p>
           </div>
 
           {/* Countdown Timer Component (Estimasi Waktu Selesai) */}
-          <div className="pt-2">
+          <div className="pt-1 sm:pt-2">
             <MaintenanceCountdown
               targetEndTime={setting?.maintenanceTargetEnd}
             />
           </div>
 
           {/* Action Button Row (Compact Symmetric Dual Action Cards) */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3 max-w-lg mx-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 pt-2 sm:pt-3 max-w-lg mx-auto">
             {/* 1. Tombol Periksa Status */}
             <Button
               type="button"
@@ -159,8 +159,8 @@ export default function Maintenance() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t-2 border-blue-900 bg-white px-4 py-4 text-center">
-        <div className="max-w-4xl mx-auto flex items-center justify-center text-xs font-bold text-slate-600">
+      <footer className="relative z-10 border-t-2 border-blue-900 bg-white px-3 sm:px-4 py-3 sm:py-4 text-center">
+        <div className="max-w-4xl mx-auto flex items-center justify-center text-[11px] sm:text-xs font-bold text-slate-600">
           <p>
             © {new Date().getFullYear()} Ilmu Komputer Undana. Seluruh hak cipta
             dilindungi.
