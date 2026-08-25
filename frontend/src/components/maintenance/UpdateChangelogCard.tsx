@@ -21,9 +21,6 @@ export const UpdateChangelogCard: React.FC<UpdateChangelogCardProps> = ({
 
   return (
     <div className="bg-white border-2 border-blue-900 rounded-lg p-5 sm:p-6 shadow-[6px_6px_0px_#1E3A8A] max-w-xl mx-auto text-left relative overflow-hidden">
-      {/* Decorative Top Accent */}
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-400 to-blue-900" />
-
       <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b-2 border-slate-100">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded bg-orange-100 border-2 border-blue-900 flex items-center justify-center text-orange-600 shadow-[2px_2px_0px_#1E3A8A]">
@@ -64,9 +61,6 @@ export const UpdateChangelogCard: React.FC<UpdateChangelogCardProps> = ({
         <span className="flex items-center gap-1">
           <Zap className="w-3.5 h-3.5 text-amber-500" />
           Peningkatan Keamanan & Kecepatan
-        </span>
-        <span className="text-blue-900 font-black uppercase tracking-wider text-[10px]">
-          Jurusan Ilmu Komputer
         </span>
       </div>
     </div>

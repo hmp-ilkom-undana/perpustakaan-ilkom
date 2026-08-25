@@ -103,13 +103,6 @@ export default function Maintenance() {
       <main className="relative z-10 max-w-4xl mx-auto px-4 py-8 sm:py-12 text-center my-auto w-full space-y-8">
         {/* Main Status Hero Card */}
         <div className="bg-white border-2 sm:border-4 border-blue-900 rounded-xl p-6 sm:p-10 shadow-[8px_8px_0px_#1E3A8A] relative overflow-hidden space-y-6">
-          {/* Top Banner Accent */}
-          <div
-            className={`absolute top-0 left-0 right-0 h-2.5 ${
-              isMaintenanceMode ? "bg-amber-400" : "bg-orange-500"
-            }`}
-          />
-
           {/* Icon Badge */}
           <div className="flex justify-center">
             <div
