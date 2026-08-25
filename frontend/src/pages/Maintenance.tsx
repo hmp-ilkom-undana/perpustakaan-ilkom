@@ -111,49 +111,37 @@ export default function Maintenance() {
             />
           </div>
 
-          {/* Action Button Row (Compact Symmetric Dual Action Cards) */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 pt-2 sm:pt-3 max-w-lg mx-auto">
-            {/* 1. Tombol Periksa Status */}
-            <Button
-              type="button"
-              onClick={handleRefreshStatus}
-              disabled={isFetching}
-              className="w-full sm:flex-1 h-auto bg-orange-500 hover:bg-orange-600 text-white font-black px-3.5 py-2.5 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer flex items-center gap-2.5 text-left rounded-lg"
-            >
-              <div className="w-7 h-7 rounded bg-white/20 border border-white/40 flex items-center justify-center text-white shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
+          {/* Action Button Row (Compact Side-by-Side) */}
+          <div className="pt-2 max-w-md mx-auto space-y-2">
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
+              {/* 1. Tombol Periksa Status */}
+              <Button
+                type="button"
+                onClick={handleRefreshStatus}
+                disabled={isFetching}
+                className="w-full h-9 sm:h-10 bg-orange-500 hover:bg-orange-600 text-white font-black text-[11px] sm:text-xs px-2.5 py-2 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] sm:shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer flex items-center justify-center gap-1.5 rounded-lg"
+              >
                 <RotateCw
-                  className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`}
+                  className={`w-3.5 h-3.5 shrink-0 ${isFetching ? "animate-spin" : ""}`}
                 />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs font-black leading-tight text-white truncate">
-                  {isFetching ? "Memeriksa..." : "Periksa Status"}
-                </span>
-                <span className="text-[10px] font-bold text-orange-100 leading-tight truncate mt-0.5">
-                  Segarkan Status Sistem
-                </span>
-              </div>
-            </Button>
+                <span className="truncate">{isFetching ? "Memeriksa..." : "Periksa Status"}</span>
+              </Button>
 
-            {/* 2. Tombol Hubungi Admin */}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleContactWhatsApp}
-              className="w-full sm:flex-1 h-auto bg-white hover:bg-slate-50 text-blue-950 font-black px-3.5 py-2.5 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer flex items-center gap-2.5 text-left rounded-lg"
-            >
-              <div className="w-7 h-7 rounded bg-emerald-100 border border-emerald-600 flex items-center justify-center text-emerald-700 shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
-                <MessageSquare className="w-3.5 h-3.5" />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs font-black leading-tight text-blue-950 truncate">
-                  Hubungi Admin
-                </span>
-                <span className="text-[10px] font-semibold text-slate-500 leading-tight truncate mt-0.5">
-                  Bantuan & Keperluan Mendesak
-                </span>
-              </div>
-            </Button>
+              {/* 2. Tombol Hubungi Admin */}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleContactWhatsApp}
+                className="w-full h-9 sm:h-10 bg-white hover:bg-slate-50 text-blue-950 font-black text-[11px] sm:text-xs px-2.5 py-2 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] sm:shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer flex items-center justify-center gap-1.5 rounded-lg"
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span className="truncate">Hubungi Admin</span>
+              </Button>
+            </div>
+
+            <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 text-center">
+              Butuh bantuan mendesak? Hubungi admin via WhatsApp.
+            </p>
           </div>
         </div>
       </main>

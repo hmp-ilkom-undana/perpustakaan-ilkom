@@ -248,16 +248,12 @@ export default function PengaturanSistem() {
         <PemeliharaanTab
           isMaintenanceActive={isMaintenanceActive}
           setIsMaintenanceActive={setIsMaintenanceActive}
-          maintenanceMode={maintenanceMode}
-          setMaintenanceMode={setMaintenanceMode}
           maintenanceTitle={maintenanceTitle}
           setMaintenanceTitle={setMaintenanceTitle}
           maintenanceMessage={maintenanceMessage}
           setMaintenanceMessage={setMaintenanceMessage}
           maintenanceTargetEnd={maintenanceTargetEnd}
           setMaintenanceTargetEnd={setMaintenanceTargetEnd}
-          maintenanceChangelog={maintenanceChangelog}
-          setMaintenanceChangelog={setMaintenanceChangelog}
           allowAdminBypass={allowAdminBypass}
           setAllowAdminBypass={setAllowAdminBypass}
         />
