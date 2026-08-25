@@ -12,7 +12,7 @@ interface FineCardProps {
 
 export function FineCard({ item, onPay }: FineCardProps) {
   const { data: session } = useSession();
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const isAdmin = session?.user?.role === "ADMIN";
   const isUnpaid = item.status === "UNPAID";
 
   return (
