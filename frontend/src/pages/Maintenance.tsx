@@ -4,17 +4,13 @@ import {
   Sparkles,
   RotateCw,
   MessageSquare,
-  Server,
-  ShieldCheck,
-  CheckCircle2,
   Lock,
   ArrowRight,
-  Database,
   Radio,
-  BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { NavLogo } from "@/components/NavLogo";
 import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
 import { MaintenanceCountdown } from "@/components/maintenance/MaintenanceCountdown";
 import { UpdateChangelogCard } from "@/components/maintenance/UpdateChangelogCard";
@@ -73,9 +69,11 @@ export default function Maintenance() {
       <header className="relative z-10 border-b-2 border-blue-900 bg-white/90 backdrop-blur-md px-4 sm:px-8 py-3.5 shadow-[0px_4px_0px_#1E3A8A]">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-500 text-white border-2 border-blue-900 rounded-lg flex items-center justify-center font-black shadow-[2px_2px_0px_#1E3A8A]">
-              <BookOpen className="w-5 h-5" />
-            </div>
+            <NavLogo
+              size="md"
+              variant="brutalist"
+              className="shadow-[2px_2px_0px_#1E3A8A]"
+            />
             <div>
               <span className="font-black text-sm sm:text-base tracking-tight text-blue-950 uppercase block leading-none">
                 Perpustakaan ILKOM
@@ -149,47 +147,12 @@ export default function Maintenance() {
             <p className="text-sm sm:text-base font-semibold text-slate-600 leading-relaxed">
               {setting?.maintenanceMessage ||
                 (isMaintenanceMode
-                  ? "Kami sedang melakukan optimalisasi basis data arsip skripsi dan peningkatan infrastruktur server untuk kenyamanan layanan."
+                  ? "Kami sedang melakukan pemeliharaan rutin dan peningkatan performa sistem perpustakaan."
                   : "Kami sedang memasang fitur-fitur baru dan peningkatan performa sistem perpustakaan. Layanan akan segera kembali normal.")}
             </p>
           </div>
 
-          {/* Live System Diagnostics / Stepper (Neo-Brutalism Chips) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 max-w-2xl mx-auto text-left">
-            <div className="bg-slate-50 border-2 border-blue-900 rounded-lg p-3 shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-3">
-              <div className="w-8 h-8 rounded bg-emerald-100 border border-emerald-600 flex items-center justify-center text-emerald-700 shrink-0">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase">Tahap 1</p>
-                <p className="text-xs font-bold text-blue-950">Cadangan Basis Data</p>
-              </div>
-            </div>
-
-            <div className="bg-amber-50 border-2 border-blue-900 rounded-lg p-3 shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-3">
-              <div className="w-8 h-8 rounded bg-amber-400 border border-blue-900 flex items-center justify-center text-blue-950 shrink-0">
-                <Database className="w-4 h-4 animate-spin" style={{ animationDuration: "6s" }} />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-amber-900 uppercase">Tahap 2</p>
-                <p className="text-xs font-bold text-blue-950">
-                  {isMaintenanceMode ? "Optimasi Indeks" : "Penyebaran Modul"}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 border-2 border-blue-900 rounded-lg p-3 shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-3 opacity-75">
-              <div className="w-8 h-8 rounded bg-slate-200 border border-slate-400 flex items-center justify-center text-slate-600 shrink-0">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-500 uppercase">Tahap 3</p>
-                <p className="text-xs font-bold text-blue-950">Verifikasi Layanan</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Countdown Timer Component */}
+          {/* Countdown Timer Component (Estimasi Waktu Selesai) */}
           <div className="pt-2">
             <MaintenanceCountdown targetEndTime={setting?.maintenanceTargetEnd} />
           </div>
