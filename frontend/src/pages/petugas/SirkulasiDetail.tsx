@@ -48,7 +48,7 @@ export default function SirkulasiDetail() {
   } = usePetugasCirculationDetail();
 
   const { data: session } = useSession();
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const isAdmin = session?.user?.role === "ADMIN";
 
   if (isLoading) {
     return (

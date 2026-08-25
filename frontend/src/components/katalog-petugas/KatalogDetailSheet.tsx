@@ -38,7 +38,7 @@ export function KatalogDetailSheet({
   onEdit,
 }: KatalogDetailSheetProps) {
   const { data: session } = useSession();
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  const isAdmin = session?.user?.role === "ADMIN";
 
   // Use TanStack Query caching for detail fetch
   const { data: detailData, isLoading } = useArchiveDetailQuery(

@@ -194,6 +194,16 @@ model SystemSetting {
   adminWaNumber      String   @default("082339113591")
   adminContactName   String   @default("Admin Perpustakaan ILKOM")
 
+  // 6. Pemeliharaan & Pembaruan Sistem
+  isMaintenanceActive  Boolean   @default(false)
+  maintenanceMode      String    @default("MAINTENANCE")
+  maintenanceTitle     String    @default("Sistem Sedang Dalam Pemeliharaan")
+  maintenanceMessage   String    @default("Kami sedang melakukan pemeliharaan rutin dan peningkatan performa sistem perpustakaan.")
+  maintenanceTargetEnd DateTime?
+  maintenanceVersion   String?   @default("v1.1.0")
+  maintenanceChangelog String[]  @default([])
+  allowAdminBypass     Boolean   @default(true)
+
   updatedAt          DateTime @updatedAt
   updatedBy          String?  @default("SYSTEM")
 

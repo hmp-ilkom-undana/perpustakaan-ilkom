@@ -6,6 +6,7 @@ import {
   Save,
   RotateCcw,
   ShieldAlert,
+  Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import {
   OperasionalTab,
   PeminjamanTab,
   DendaTab,
+  PemeliharaanTab,
 } from "@/components/pengaturan";
 
 export default function PengaturanSistem() {
@@ -52,6 +54,22 @@ export default function PengaturanSistem() {
     setAdminWaNumber,
     adminContactName,
     setAdminContactName,
+    isMaintenanceActive,
+    setIsMaintenanceActive,
+    maintenanceMode,
+    setMaintenanceMode,
+    maintenanceTitle,
+    setMaintenanceTitle,
+    maintenanceMessage,
+    setMaintenanceMessage,
+    maintenanceTargetEnd,
+    setMaintenanceTargetEnd,
+    maintenanceVersion,
+    setMaintenanceVersion,
+    maintenanceChangelog,
+    setMaintenanceChangelog,
+    allowAdminBypass,
+    setAllowAdminBypass,
     handleReset,
     handleSave,
   } = useAdminSetting();
@@ -97,7 +115,7 @@ export default function PengaturanSistem() {
               </Badge>
             </div>
             <p className="text-xs text-slate-500 font-semibold mt-1">
-              Konfigurasi hari operasional, masa tunggu penjemputan, kuota pinjam, dan skema denda perpustakaan.
+              Konfigurasi hari operasional, kuota pinjam, skema denda, dan mode pemeliharaan sistem.
             </p>
           </div>
         </div>
@@ -167,6 +185,19 @@ export default function PengaturanSistem() {
           <Receipt className="w-4 h-4" />
           Tarif Denda & Kontak
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab("PEMELIHARAAN")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-md font-bold text-xs transition-all border-2 border-blue-900 cursor-pointer ${
+            activeTab === "PEMELIHARAAN"
+              ? "bg-orange-500 text-white shadow-[3px_3px_0px_#1E3A8A]"
+              : "bg-white text-blue-950 hover:bg-orange-50"
+          }`}
+        >
+          <Wrench className="w-4 h-4" />
+          Mode Pemeliharaan
+        </button>
       </div>
 
       {/* Tab Contents */}
@@ -212,6 +243,22 @@ export default function PengaturanSistem() {
           setAdminContactName={setAdminContactName}
         />
       )}
+
+      {activeTab === "PEMELIHARAAN" && (
+        <PemeliharaanTab
+          isMaintenanceActive={isMaintenanceActive}
+          setIsMaintenanceActive={setIsMaintenanceActive}
+          maintenanceTitle={maintenanceTitle}
+          setMaintenanceTitle={setMaintenanceTitle}
+          maintenanceMessage={maintenanceMessage}
+          setMaintenanceMessage={setMaintenanceMessage}
+          maintenanceTargetEnd={maintenanceTargetEnd}
+          setMaintenanceTargetEnd={setMaintenanceTargetEnd}
+          allowAdminBypass={allowAdminBypass}
+          setAllowAdminBypass={setAllowAdminBypass}
+        />
+      )}
     </div>
   );
 }
+

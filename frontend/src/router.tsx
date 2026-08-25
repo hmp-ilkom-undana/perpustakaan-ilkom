@@ -38,6 +38,8 @@ import Profil from "./pages/mahasiswa/Profil";
 import Login from "./pages/Login";
 import LupaSandi from "./pages/LupaSandi";
 import ResetSandi from "./pages/ResetSandi";
+import Maintenance from "./pages/Maintenance";
+import MaintenanceGuard from "./components/MaintenanceGuard";
 
 // 1. Root Route
 const rootRoute = createRootRoute({
@@ -72,6 +74,12 @@ const resetSandiRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/reset-sandi",
   component: ResetSandi,
+});
+
+const maintenanceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/maintenance",
+  component: Maintenance,
 });
 
 // 3. Authenticated Route Wrapper
@@ -195,7 +203,11 @@ const petugasProfilRoute = createRoute({
 const mahasiswaLayoutRoute = createRoute({
   getParentRoute: () => authenticatedRoute,
   path: "/mahasiswa",
-  component: MahasiswaLayout,
+  component: () => (
+    <MaintenanceGuard>
+      <MahasiswaLayout />
+    </MaintenanceGuard>
+  ),
 });
 
 const mahasiswaIndexRoute = createRoute({
@@ -234,6 +246,7 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   lupaSandiRoute,
   resetSandiRoute,
+  maintenanceRoute,
   authenticatedRoute.addChildren([
     adminLayoutRoute.addChildren([
       adminIndexRoute,
