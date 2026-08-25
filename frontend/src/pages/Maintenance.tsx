@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Wrench,
-  RotateCw,
-  MessageSquare,
-  Radio,
-} from "lucide-react";
+import { Wrench, RotateCw, MessageSquare, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NavLogo } from "@/components/NavLogo";
@@ -26,7 +21,9 @@ export default function Maintenance() {
         navigate({ to: "/login" });
       }, 1200);
     } else {
-      toast.info("Pemeliharaan masih berlangsung. Terima kasih atas kesabaran Anda.");
+      toast.info(
+        "Pemeliharaan masih berlangsung. Terima kasih atas kesabaran Anda.",
+      );
     }
   };
 
@@ -34,7 +31,7 @@ export default function Maintenance() {
     const waNumber = setting?.adminWaNumber || "082339113591";
     const cleanNumber = waNumber.replace(/^0/, "62").replace(/\D/g, "");
     const messageText = encodeURIComponent(
-      `Halo ${setting?.adminContactName || "Admin Perpustakaan"}, saya ingin menanyakan perihal status pemeliharaan sistem perpustakaan ILKOM.`
+      `Halo ${setting?.adminContactName || "Admin Perpustakaan"}, saya ingin menanyakan perihal status pemeliharaan sistem perpustakaan ILKOM.`,
     );
     window.open(`https://wa.me/${cleanNumber}?text=${messageText}`, "_blank");
   };
@@ -109,29 +106,53 @@ export default function Maintenance() {
 
           {/* Countdown Timer Component (Estimasi Waktu Selesai) */}
           <div className="pt-2">
-            <MaintenanceCountdown targetEndTime={setting?.maintenanceTargetEnd} />
+            <MaintenanceCountdown
+              targetEndTime={setting?.maintenanceTargetEnd}
+            />
           </div>
 
-          {/* Action Button Row */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4">
+          {/* Action Button Row (Compact Symmetric Dual Action Cards) */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3 max-w-lg mx-auto">
+            {/* 1. Tombol Periksa Status */}
             <Button
               type="button"
               onClick={handleRefreshStatus}
               disabled={isFetching}
-              className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-black text-xs sm:text-sm px-6 py-5 border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer"
+              className="w-full sm:flex-1 h-auto bg-orange-500 hover:bg-orange-600 text-white font-black px-3.5 py-2.5 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer flex items-center gap-2.5 text-left rounded-lg"
             >
-              <RotateCw className={`w-4 h-4 mr-2 ${isFetching ? "animate-spin" : ""}`} />
-              {isFetching ? "Memeriksa Status..." : "Periksa Status Sistem"}
+              <div className="w-7 h-7 rounded bg-white/20 border border-white/40 flex items-center justify-center text-white shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
+                <RotateCw
+                  className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`}
+                />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-black leading-tight text-white truncate">
+                  {isFetching ? "Memeriksa..." : "Periksa Status"}
+                </span>
+                <span className="text-[10px] font-bold text-orange-100 leading-tight truncate mt-0.5">
+                  Segarkan Status Sistem
+                </span>
+              </div>
             </Button>
 
+            {/* 2. Tombol Hubungi Admin */}
             <Button
               type="button"
               variant="outline"
               onClick={handleContactWhatsApp}
-              className="w-full sm:w-auto bg-white hover:bg-slate-50 text-blue-950 font-black text-xs sm:text-sm px-6 py-5 border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer"
+              className="w-full sm:flex-1 h-auto bg-white hover:bg-slate-50 text-blue-950 font-black px-3.5 py-2.5 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer flex items-center gap-2.5 text-left rounded-lg"
             >
-              <MessageSquare className="w-4 h-4 mr-2 text-emerald-600" />
-              Hubungi Bantuan Admin
+              <div className="w-7 h-7 rounded bg-emerald-100 border border-emerald-600 flex items-center justify-center text-emerald-700 shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
+                <MessageSquare className="w-3.5 h-3.5" />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-black leading-tight text-blue-950 truncate">
+                  Hubungi Admin
+                </span>
+                <span className="text-[10px] font-semibold text-slate-500 leading-tight truncate mt-0.5">
+                  Bantuan & Keperluan Mendesak
+                </span>
+              </div>
             </Button>
           </div>
         </div>
@@ -140,7 +161,10 @@ export default function Maintenance() {
       {/* Footer */}
       <footer className="relative z-10 border-t-2 border-blue-900 bg-white px-4 py-4 text-center">
         <div className="max-w-4xl mx-auto flex items-center justify-center text-xs font-bold text-slate-600">
-          <p>© {new Date().getFullYear()} Ilmu Komputer Undana. Seluruh hak cipta dilindungi.</p>
+          <p>
+            © {new Date().getFullYear()} Ilmu Komputer Undana. Seluruh hak cipta
+            dilindungi.
+          </p>
         </div>
       </footer>
     </div>
