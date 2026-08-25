@@ -24,7 +24,7 @@ export function useUpdateSystemSettingMutation() {
       settingService.updateSettings(payload),
     onSuccess: (data) => {
       toast.success("Pengaturan sistem berhasil disimpan!", {
-        description: "Semua aturan operasional, kuota, dan tarif telah diperbarui.",
+        description: "Aturan operasional, kuota, tarif denda, dan mode pemeliharaan telah diperbarui.",
       });
       queryClient.setQueryData([SYSTEM_SETTING_QUERY_KEY], data);
       queryClient.invalidateQueries({ queryKey: [SYSTEM_SETTING_QUERY_KEY] });
