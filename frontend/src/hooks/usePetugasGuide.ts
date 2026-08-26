@@ -96,7 +96,7 @@ export function usePetugasGuide() {
         title: "Serah Terima & Foto",
         subtitle: "Langkah 3 • Dokumentasi Fisik",
         description:
-          "Mahasiswa menunjukkan kode pengajuan. Foto cover arsip sebagai bukti serah terima, lalu konfirmasi. Status arsip berubah menjadi DIPINJAM.",
+          "Mahasiswa menunjukkan kode pengajuan. Cek kondisi fisik bersama, foto cover arsip sebagai bukti serah terima, lalu konfirmasi. Status arsip berubah menjadi DIPINJAM.",
       },
       {
         step: 4,

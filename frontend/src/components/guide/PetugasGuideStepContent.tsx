@@ -171,18 +171,19 @@ function Step3Content() {
   return (
     <div className="space-y-3">
       {/* Alur Serah Terima */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {[
           { icon: ClipboardCheck, label: "Minta kode REQ mahasiswa", color: "text-violet-700" },
           { icon: CheckCircle, label: "Verifikasi kode di sistem", color: "text-blue-700" },
+          { icon: ShieldCheck, label: "Cek fisik bersama mahasiswa", color: "text-teal-700" },
           { icon: Camera, label: "Foto cover arsip (Buka Kamera / Upload)", color: "text-violet-700" },
           { icon: CheckSquare, label: "Konfirmasi Serah Terima", color: "text-emerald-700" },
         ].map(({ icon: Icon, label, color }, i) => (
-          <div key={i} className="flex items-center gap-3">
+          <div key={i} className="flex items-center gap-2.5">
             <div className="w-5 h-5 rounded-full border-2 border-blue-900 bg-white flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
               <span className="text-[9px] font-black text-blue-900">{i + 1}</span>
             </div>
-            <div className="flex-1 flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white">
+            <div className="flex-1 flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white">
               <Icon className={`w-3.5 h-3.5 shrink-0 ${color}`} />
               <span className="text-[11px] font-semibold text-slate-700">{label}</span>
             </div>
