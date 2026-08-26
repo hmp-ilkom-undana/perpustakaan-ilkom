@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession, authClient } from "@/lib/auth-client";
+import { useStudentGuide } from "@/hooks/useStudentGuide";
+import { GuideFab } from "@/components/guide/GuideFab";
+import { GuideModal } from "@/components/guide/GuideModal";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -41,11 +44,11 @@ export default function MahasiswaLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // State untuk mengontrol buka-tutup menu mobile
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const scrolled = useScroll(10);
+  const guide = useStudentGuide();
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -280,6 +283,20 @@ export default function MahasiswaLayout() {
       <main className="flex-1 w-full max-w-7xl mx-auto p-0 sm:p-6 lg:p-8">
         <Outlet />
       </main>
+
+      <GuideFab onClick={guide.handleOpen} />
+      <GuideModal
+        isOpen={guide.isOpen}
+        isLoading={guide.isLoading}
+        steps={guide.steps}
+        currentStep={guide.currentStep}
+        totalSteps={guide.totalSteps}
+        isFirstStep={guide.isFirstStep}
+        isLastStep={guide.isLastStep}
+        onClose={guide.handleClose}
+        onNext={guide.handleNext}
+        onPrev={guide.handlePrev}
+      />
     </div>
   );
 }
