@@ -5,7 +5,6 @@ import {
   PackageCheck,
   CheckCircle,
   XCircle,
-  UploadCloud,
   CheckSquare,
   Clock,
   AlertTriangle,
@@ -204,18 +203,6 @@ function Step3Content() {
         <div className="flex items-center gap-1 px-2 py-1 rounded-md border border-emerald-500 bg-emerald-50">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           <span className="text-[10px] font-black text-emerald-800">DIPINJAM ✓</span>
-        </div>
-      </div>
-
-      {/* Upload method buttons */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="flex items-center gap-1.5 p-2 rounded-lg border-2 border-blue-900 bg-white shadow-[1px_1px_0px_#1E3A8A]">
-          <Camera className="w-3.5 h-3.5 text-blue-700 shrink-0" />
-          <span className="text-[10px] font-black text-blue-950">Buka Kamera</span>
-        </div>
-        <div className="flex items-center gap-1.5 p-2 rounded-lg border-2 border-blue-900 bg-white shadow-[1px_1px_0px_#1E3A8A]">
-          <UploadCloud className="w-3.5 h-3.5 text-blue-700 shrink-0" />
-          <span className="text-[10px] font-black text-blue-950">Upload File</span>
         </div>
       </div>
     </div>
