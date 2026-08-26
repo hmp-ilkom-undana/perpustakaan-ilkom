@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
+import { useSession } from "@/lib/auth-client";
 
 export interface SystemConfigValues {
   loanDuration: number;
@@ -24,11 +25,27 @@ export interface GuideStep {
   description: string;
 }
 
+const GUIDE_SEEN_PREFIX = "guide_seen_";
+
 export function useStudentGuide() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
+  const { data: session } = useSession();
   const { data: settings, isLoading } = useSystemSettingQuery();
+
+  const guideKey = session?.user?.id
+    ? `${GUIDE_SEEN_PREFIX}${session.user.id}`
+    : null;
+
+  useEffect(() => {
+    if (!guideKey) return;
+    const hasSeen = localStorage.getItem(guideKey);
+    if (!hasSeen) {
+      setCurrentStep(0);
+      setIsOpen(true);
+    }
+  }, [guideKey]);
 
   const config = useMemo<SystemConfigValues>(() => {
     const loanDuration = settings?.loanDurationDays ?? 30;
@@ -118,24 +135,27 @@ export function useStudentGuide() {
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
 
-  const handleOpen = () => {
+  const handleOpen = useCallback(() => {
     setCurrentStep(0);
     setIsOpen(true);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
+    if (guideKey) {
+      localStorage.setItem(guideKey, "true");
+    }
     setIsOpen(false);
     setTimeout(() => setCurrentStep(0), 300);
-  };
+  }, [guideKey]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!isLastStep) setCurrentStep((prev) => prev + 1);
     else handleClose();
-  };
+  }, [isLastStep, handleClose]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (!isFirstStep) setCurrentStep((prev) => prev - 1);
-  };
+  }, [isFirstStep]);
 
   return {
     isOpen,
@@ -152,4 +172,3 @@ export function useStudentGuide() {
     handlePrev,
   };
 }
-
