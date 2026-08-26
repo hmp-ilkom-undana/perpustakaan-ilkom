@@ -28,9 +28,10 @@ export function GuideFab({ onClick, className }: GuideFabProps) {
           "bg-amber-400 border-2 border-blue-900",
           "shadow-[4px_4px_0px_#1E3A8A]",
           "flex items-center justify-center shrink-0",
+          "opacity-75 hover:opacity-100 active:opacity-100",
           "hover:bg-amber-300 hover:shadow-[5px_5px_0px_#1E3A8A]",
           "active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-          "transition-all duration-150 cursor-pointer outline-none",
+          "transition-all duration-200 cursor-pointer outline-none",
           "animate-in fade-in-0 zoom-in-75 duration-300",
         )}
       >
