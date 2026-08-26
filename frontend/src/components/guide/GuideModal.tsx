@@ -1,12 +1,13 @@
 import { X, BookOpen, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { GuideStep } from "@/hooks/useStudentGuide";
+import type { GuideStep, SystemConfigValues } from "@/hooks/useStudentGuide";
 import { GuideStepContent } from "./GuideStepContent";
 
 interface GuideModalProps {
   isOpen: boolean;
   isLoading: boolean;
+  config: SystemConfigValues;
   steps: GuideStep[];
   currentStep: number;
   totalSteps: number;
@@ -20,6 +21,7 @@ interface GuideModalProps {
 export function GuideModal({
   isOpen,
   isLoading,
+  config,
   steps,
   currentStep,
   totalSteps,
@@ -103,7 +105,7 @@ export function GuideModal({
               <p className="text-sm font-bold text-slate-500">Memuat konfigurasi...</p>
             </div>
           ) : activeStep ? (
-            <GuideStepContent step={activeStep} />
+            <GuideStepContent step={activeStep} config={config} />
           ) : null}
         </div>
 

@@ -1,9 +1,18 @@
 import { useState, useMemo } from "react";
 import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
 
-export interface GuideHighlight {
-  label: string;
-  value: string;
+export interface SystemConfigValues {
+  loanDuration: number;
+  pickupDuration: number;
+  maxSkripsi: number;
+  maxRingkasan: number;
+  maxNaskah: number;
+  lateBase: number;
+  lateThreshold: number;
+  lateDaily: number;
+  damagedFine: number;
+  lostFine: number;
+  formatRupiah: (amount: number) => string;
 }
 
 export interface GuideStep {
@@ -13,7 +22,6 @@ export interface GuideStep {
   title: string;
   subtitle: string;
   description: string;
-  highlights: [GuideHighlight, GuideHighlight];
 }
 
 export function useStudentGuide() {
@@ -22,7 +30,7 @@ export function useStudentGuide() {
 
   const { data: settings, isLoading } = useSystemSettingQuery();
 
-  const steps = useMemo<GuideStep[]>(() => {
+  const config = useMemo<SystemConfigValues>(() => {
     const loanDuration = settings?.loanDurationDays ?? 30;
     const pickupDuration = settings?.pickupDurationDays ?? 3;
     const maxSkripsi = settings?.maxActiveSkripsi ?? 2;
@@ -31,8 +39,8 @@ export function useStudentGuide() {
     const lateBase = settings?.lateBaseFine ?? 50000;
     const lateThreshold = settings?.lateThresholdDays ?? 7;
     const lateDaily = settings?.lateDailyFine ?? 10000;
-    const damaged = settings?.damagedFine ?? 75000;
-    const lost = settings?.lostFine ?? 100000;
+    const damagedFine = settings?.damagedFine ?? 75000;
+    const lostFine = settings?.lostFine ?? 100000;
 
     const formatRupiah = (amount: number) =>
       new Intl.NumberFormat("id-ID", {
@@ -41,89 +49,70 @@ export function useStudentGuide() {
         minimumFractionDigits: 0,
       }).format(amount);
 
+    return {
+      loanDuration,
+      pickupDuration,
+      maxSkripsi,
+      maxRingkasan,
+      maxNaskah,
+      lateBase,
+      lateThreshold,
+      lateDaily,
+      damagedFine,
+      lostFine,
+      formatRupiah,
+    };
+  }, [settings]);
+
+  const steps = useMemo<GuideStep[]>(() => {
     return [
       {
         step: 1,
         iconName: "Search",
         colorKey: "indigo",
         title: "Cari & Pilih Arsip",
-        subtitle: "Browse the Catalog",
+        subtitle: "Langkah 1 • Penelusuran Katalog",
         description:
-          "Buka halaman Katalog, temukan arsip yang kamu butuhkan, lalu klik tombol 'Ajukan Pinjam'.",
-        highlights: [
-          {
-            label: "Maks. Skripsi / Ringkasan / Naskah",
-            value: `${maxSkripsi} / ${maxRingkasan} / ${maxNaskah} arsip`,
-          },
-          { label: "Syarat", value: "Tidak ada tanggungan aktif" },
-        ],
+          "Jelajahi koleksi arsip di halaman Katalog. Setiap mahasiswa memiliki kuota peminjaman aktif sesuai kategori dokumen.",
       },
       {
         step: 2,
         iconName: "ClipboardList",
         colorKey: "blue",
-        title: "Pengajuan Terkirim",
-        subtitle: "Request Submitted",
+        title: "Pengajuan & Kode Unik",
+        subtitle: "Langkah 2 • Bukti Pengajuan",
         description:
-          "Pengajuanmu berhasil dikirim! Kode pengajuan bisa kamu lihat di Beranda → Aktivitas atau halaman Peminjaman.",
-        highlights: [
-          { label: "Simpan Kode Ini", value: "Dibutuhkan saat pengambilan" },
-          { label: "Cek Status di", value: "Beranda / Halaman Peminjaman" },
-        ],
+          "Setelah mengajukan, sistem menerbitkan kode pengajuan unik. Simpan kode ini untuk ditunjukkan saat pengambilan fisik.",
       },
       {
         step: 3,
         iconName: "ShieldCheck",
         colorKey: "teal",
-        title: "Menunggu Verifikasi",
-        subtitle: "Pending Admin Approval",
+        title: "Verifikasi Petugas",
+        subtitle: "Langkah 3 • Validasi Dokumen",
         description:
-          "Petugas akan memeriksa ketersediaan dan kondisi arsip. Kamu akan dinotifikasi setelah pengajuan disetujui.",
-        highlights: [
-          { label: "Status Awal", value: "MENUNGGU → DISETUJUI" },
-          { label: "Jika Ditolak", value: "Cek alasan di detail pengajuan" },
-        ],
+          "Petugas memeriksa fisik dan kelayakan arsip sebelum menyetujui peminjaman dalam standar waktu operasional.",
       },
       {
         step: 4,
         iconName: "QrCode",
         colorKey: "violet",
         title: "Pengambilan di Ruang HMP",
-        subtitle: "Physical Pickup & Handover",
+        subtitle: "Langkah 4 • Serah Terima Fisik",
         description:
-          "Datang ke ruang HMP, tunjukkan kode pengajuan ke petugas. Serah terima dibuktikan dengan foto cover arsip.",
-        highlights: [
-          {
-            label: "Batas Pengambilan",
-            value: `${pickupDuration} hari kerja setelah ACC`,
-          },
-          {
-            label: "Lewat Batas",
-            value: "Pengajuan otomatis dibatalkan",
-          },
-        ],
+          "Datang ke ruang HMP tepat waktu. Serah terima didokumentasikan melalui foto cover arsip bersama petugas.",
       },
       {
         step: 5,
         iconName: "AlertTriangle",
         colorKey: "amber",
         title: "Masa Pinjam & Pengembalian",
-        subtitle: "Loan Period & Return Policy",
+        subtitle: "Langkah 5 • Tanggung Jawab & Denda",
         description:
-          "Kembalikan arsip ke ruang HMP sebelum jatuh tempo. Denda berjalan jika terlambat, rusak, atau hilang.",
-        highlights: [
-          {
-            label: "Durasi Pinjam",
-            value: `${loanDuration} hari kalender`,
-          },
-          {
-            label: "Denda Terlambat",
-            value: `${formatRupiah(lateBase)} flat ≤${lateThreshold} hari, +${formatRupiah(lateDaily)}/hari sesudahnya`,
-          },
-        ],
+          "Kembalikan arsip sebelum batas jatuh tempo untuk menghindari denda berjenjang, kerusakan, atau kehilangan.",
       },
     ];
-  }, [settings]);
+  }, []);
 
   const totalSteps = steps.length;
   const isFirstStep = currentStep === 0;
@@ -151,6 +140,7 @@ export function useStudentGuide() {
   return {
     isOpen,
     isLoading,
+    config,
     steps,
     currentStep,
     totalSteps,
@@ -162,3 +152,4 @@ export function useStudentGuide() {
     handlePrev,
   };
 }
+
