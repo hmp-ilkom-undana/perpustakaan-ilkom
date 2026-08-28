@@ -20,6 +20,9 @@ export interface FineItem {
   paymentMethod?: "Tunai" | "Transfer" | string | null;
   receivedBy?: string | null;
   notes?: string | null;
+  returnCondition?: string | null;
+  returnNote?: string | null;
+  returnDate?: string | null;
   borrowStatus?: string;
 }
 

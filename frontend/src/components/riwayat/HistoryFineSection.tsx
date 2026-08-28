@@ -66,9 +66,24 @@ export function HistoryFineSection({
 
         {/* Status Pelunasan ATAU Tombol WhatsApp */}
         {isPaid ? (
-          <div className="pt-2 border-t-2 border-emerald-900/20 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] font-semibold text-emerald-800">
-            <span>Status Pelunasan:</span>
-            <span className="font-bold">Dilunasi pada {item.paymentDate}</span>
+          <div className="pt-2 border-t-2 border-emerald-900/20 flex flex-col gap-1.5 text-[11px] font-semibold text-emerald-900">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-emerald-800">
+              <span>Status Pelunasan:</span>
+              <span className="font-bold">Dilunasi pada {item.paymentDate}</span>
+            </div>
+            {item.finePaymentMethod && (
+              <div className="flex justify-between items-center text-[10px] text-emerald-900">
+                <span className="font-bold">Metode Pembayaran:</span>
+                <span className="font-bold font-mono">
+                  {item.finePaymentMethod} {item.fineReceivedBy ? `(Kasir: ${item.fineReceivedBy})` : ""}
+                </span>
+              </div>
+            )}
+            {item.fineNotes && (
+              <div className="p-2 bg-emerald-100/80 border border-emerald-300 rounded text-[11px] text-emerald-950 italic mt-0.5">
+                Catatan Kasir: "{item.fineNotes}"
+              </div>
+            )}
           </div>
         ) : (
           <div className="pt-2 border-t-2 border-rose-900/20 flex flex-col gap-2">
@@ -84,7 +99,7 @@ export function HistoryFineSection({
               className="w-full font-bold h-8 text-xs"
             >
               <Phone className="w-3.5 h-3.5 mr-1.5" />
-              Konfirmasi Pembayaran via WhatsApp
+              Konfirmasi Pembayaran Denda
             </Button>
           </div>
         )}

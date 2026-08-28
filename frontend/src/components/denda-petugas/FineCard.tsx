@@ -1,4 +1,4 @@
-import { Calendar, Wallet, UserCheck, CheckCircle2 } from "lucide-react";
+import { Calendar, Wallet, UserCheck, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth-client";
@@ -14,6 +14,33 @@ export function FineCard({ item, onPay }: FineCardProps) {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "ADMIN";
   const isUnpaid = item.status === "UNPAID";
+
+  const eventDateStr = item.returnDate || item.createdAt;
+  const formattedEventDate = eventDateStr
+    ? new Date(eventDateStr).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "-";
+
+  const paidDateStr = item.paidAt;
+  const formattedPaidDate = paidDateStr
+    ? new Date(paidDateStr).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "-";
+
+  const getDaysWaiting = (dateString?: string | null) => {
+    if (!dateString) return null;
+    const diffMs = Date.now() - new Date(dateString).getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays <= 0) return "Hari ini";
+    if (diffDays === 1) return "1 hari yang lalu";
+    return `${diffDays} hari yang lalu`;
+  };
 
   return (
     <div className="bg-white p-5 rounded-xl border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] flex flex-col md:flex-row md:items-center justify-between gap-5 transition-all hover:shadow-[6px_6px_0px_#1E3A8A]">
@@ -49,6 +76,23 @@ export function FineCard({ item, onPay }: FineCardProps) {
               Kode Arsip: <span className="text-blue-950 font-black">{item.archiveCode}</span>
             </span>
           )}
+          <span className="text-slate-300 hidden sm:inline">•</span>
+          <span className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+            <Clock className="w-3.5 h-3.5 text-blue-900 shrink-0" />
+            <span>
+              {isUnpaid ? (
+                <>
+                  Tercatat: <strong className="text-blue-950">{formattedEventDate}</strong>{" "}
+                  <span className="text-amber-800 font-black">({getDaysWaiting(eventDateStr)})</span>
+                </>
+              ) : (
+                <>
+                  Dilunasi: <strong className="text-emerald-950">{formattedPaidDate}</strong>{" "}
+                  <span className="text-emerald-700 font-black">({getDaysWaiting(paidDateStr)})</span>
+                </>
+              )}
+            </span>
+          </span>
         </div>
 
         <p className="text-xs sm:text-sm font-semibold text-slate-700 line-clamp-2">
@@ -58,8 +102,23 @@ export function FineCard({ item, onPay }: FineCardProps) {
           {item.archiveTitle}
         </p>
 
-        {/* INFO RIWAYAT BAYAR UNTUK STATUS PAID (HANYA DITAMPILKAN UNTUK ROLE ADMIN) */}
-        {!isUnpaid && isAdmin && (
+        {/* CATATAN KONDISI / KERUSAKAN / KRONOLOGI DARI SIRKULASI */}
+        {item.returnNote && (
+          <div className="flex items-start gap-2 p-2.5 rounded-lg bg-amber-50/90 border border-amber-300 text-xs font-semibold text-amber-950 shadow-[1px_1px_0px_#D97706]">
+            <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <span className="text-[10px] font-black uppercase text-amber-800 tracking-wider block">
+                Catatan Petugas (Kerusakan / Kehilangan):
+              </span>
+              <p className="text-xs text-amber-950 font-medium leading-relaxed">
+                "{item.returnNote}"
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* INFO RIWAYAT BAYAR UNTUK STATUS PAID */}
+        {!isUnpaid && (
           <div className="bg-emerald-50 border-2 border-emerald-600 rounded-lg p-3 text-xs text-emerald-950 font-semibold space-y-1.5 mt-2 shadow-[2px_2px_0px_#059669]">
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="flex items-center gap-1.5 font-bold">
