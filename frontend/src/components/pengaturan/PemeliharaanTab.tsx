@@ -170,17 +170,17 @@ export function PemeliharaanTab({
         </CardContent>
       </Card>
 
-      {/* 3. Hak Akses Bypass Administrator */}
+      {/* 3. Hak Akses Bypass Petugas */}
       <Card className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] bg-white">
         <CardContent className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <h2 className="text-sm font-black text-blue-950 flex items-center gap-2">
                 <KeyRound className="w-4 h-4 text-orange-500" />
-                Akses Khusus Pengelola (Bypass Login)
+                Akses Khusus Petugas (Bypass Login)
               </h2>
               <p className="text-xs text-slate-600 font-semibold max-w-xl">
-                Izinkan pengguna dengan peran **Admin** dan **Petugas** untuk tetap login dan mengakses dashboard pengelolaan selama pemeliharaan berlangsung.
+                Izinkan pengguna dengan peran <strong>Petugas</strong> untuk tetap login dan mengakses dashboard pelayanan selama pemeliharaan berlangsung. (Admin memiliki akses penuh secara otomatis).
               </p>
             </div>
             <Switch
