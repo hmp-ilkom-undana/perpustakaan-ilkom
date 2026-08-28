@@ -18,13 +18,8 @@ export default function MaintenanceGuard({ children }: MaintenanceGuardProps) {
   if (setting.isMaintenanceActive) {
     const userRole = session?.user?.role;
 
-    // Admin selalu memiliki akses bypass
-    if (userRole === "ADMIN") {
-      return <>{children}</>;
-    }
-
-    // Petugas dapat bypass jika opsi akses khusus diaktifkan
-    if (userRole === "PETUGAS" && setting.allowAdminBypass) {
+    // Admin selalu bypass otomatis, Petugas bypass jika opsi diaktifkan
+    if (userRole === "ADMIN" || (userRole === "PETUGAS" && setting.allowAdminBypass)) {
       return <>{children}</>;
     }
 
