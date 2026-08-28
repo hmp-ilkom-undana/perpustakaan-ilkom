@@ -36,8 +36,8 @@ export function ProfileBiodataCard({
   onSubmit,
 }: ProfileBiodataCardProps) {
   return (
-    <Card className="border-2 border-blue-900 shadow-[5px_5px_0px_#1E3A8A] rounded-lg">
-      <CardHeader className="border-b-2 border-blue-900 bg-blue-50/50 pb-4">
+    <Card className="border-2 border-blue-900 shadow-[5px_5px_0px_#1E3A8A] rounded-lg flex flex-col h-full">
+      <CardHeader className="border-b-2 border-blue-900 bg-blue-50/50 p-4 sm:p-5 sm:min-h-[105px] flex flex-col justify-center">
         <CardTitle className="flex items-center gap-2 text-lg font-black text-blue-950">
           <User className="w-5 h-5 text-blue-900" />
           Informasi Biodata & Kontak

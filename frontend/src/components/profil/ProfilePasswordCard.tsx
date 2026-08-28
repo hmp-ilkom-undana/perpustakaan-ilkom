@@ -57,8 +57,8 @@ export function ProfilePasswordCard({
   onSubmit,
 }: ProfilePasswordCardProps) {
   return (
-    <Card className="border-2 border-blue-900 shadow-[5px_5px_0px_#1E3A8A] rounded-lg">
-      <CardHeader className="border-b-2 border-blue-900 bg-rose-50/50 pb-4">
+    <Card className="border-2 border-blue-900 shadow-[5px_5px_0px_#1E3A8A] rounded-lg flex flex-col h-full">
+      <CardHeader className="border-b-2 border-blue-900 bg-rose-50/50 p-4 sm:p-5 sm:min-h-[105px] flex flex-col justify-center">
         <CardTitle className="flex items-center gap-2 text-lg font-black text-rose-950">
           <KeyRound className="w-5 h-5 text-rose-800" />
           Keamanan & Ganti Kata Sandi

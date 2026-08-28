@@ -28,7 +28,7 @@ export default function ProfilPetugas() {
       />
 
       {/* 2. Grid Dua Kolom: Biodata & Keamanan Kata Sandi */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
         {/* Kolom Kiri: Formulir Nama & Informasi Akun */}
         <PetugasBiodataCard
           name={profile.name}
