@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
+import { BorrowStatus, KondisiArsip } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ActivityLogService } from '../activity-log/activity-log.service';
 
@@ -52,6 +53,9 @@ export class FineService {
       paymentMethod: borrowing.finePaymentMethod || null,
       receivedBy: borrowing.fineReceivedBy || null,
       notes: borrowing.fineNotes || null,
+      returnCondition: borrowing.kondisiKembali || null,
+      returnNote: borrowing.catatanKondisiKembali || null,
+      returnDate: borrowing.returnDate?.toISOString() || null,
       borrowStatus: borrowing.status,
     };
   }
@@ -59,27 +63,49 @@ export class FineService {
   async getFines(params: { status?: string; search?: string }) {
     const { status, search } = params;
 
-    const where: any = {
-      fineAmount: { gt: 0 },
-    };
+    const andConditions: any[] = [
+      {
+        OR: [
+          { fineAmount: { gt: 0 } },
+          { status: { in: [BorrowStatus.DAMAGED, BorrowStatus.LOST] } },
+          { kondisiKembali: { in: [KondisiArsip.RUSAK, KondisiArsip.HILANG] } },
+        ],
+      },
+    ];
 
     if (status === 'UNPAID') {
-      where.finePaidAt = null;
+      andConditions.push({ finePaidAt: null });
     } else if (status === 'PAID') {
-      where.finePaidAt = { not: null };
+      andConditions.push({ finePaidAt: { not: null } });
     }
 
     if (search && search.trim() !== '') {
       const q = search.trim();
-      where.OR = [
-        { id: { contains: q, mode: 'insensitive' } },
-        { pickupCode: { contains: q, mode: 'insensitive' } },
-        { user: { name: { contains: q, mode: 'insensitive' } } },
-        { user: { email: { contains: q, mode: 'insensitive' } } },
-        { archive: { title: { contains: q, mode: 'insensitive' } } },
-        { archive: { archiveCode: { contains: q, mode: 'insensitive' } } },
-      ];
+      andConditions.push({
+        OR: [
+          { id: { contains: q, mode: 'insensitive' } },
+          { pickupCode: { contains: q, mode: 'insensitive' } },
+          { user: { name: { contains: q, mode: 'insensitive' } } },
+          { user: { email: { contains: q, mode: 'insensitive' } } },
+          { archive: { title: { contains: q, mode: 'insensitive' } } },
+          { archive: { archiveCode: { contains: q, mode: 'insensitive' } } },
+        ],
+      });
     }
+
+    const where = { AND: andConditions };
+
+    const orderBy: any =
+      status === 'PAID'
+        ? [
+            { finePaidAt: { sort: 'desc', nulls: 'last' } },
+            { returnDate: { sort: 'desc', nulls: 'last' } },
+            { borrowDate: 'desc' },
+          ]
+        : [
+            { returnDate: { sort: 'desc', nulls: 'last' } },
+            { borrowDate: 'desc' },
+          ];
 
     const borrowings = await this.prisma.borrowing.findMany({
       where,
@@ -87,7 +113,7 @@ export class FineService {
         user: true,
         archive: true,
       },
-      orderBy: [{ finePaidAt: 'desc' }, { borrowDate: 'desc' }],
+      orderBy,
       take: 100,
     });
 
@@ -98,11 +124,18 @@ export class FineService {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
+    const baseFilter: any = {
+      OR: [
+        { fineAmount: { gt: 0 } },
+        { status: { in: [BorrowStatus.DAMAGED, BorrowStatus.LOST] } },
+        { kondisiKembali: { in: [KondisiArsip.RUSAK, KondisiArsip.HILANG] } },
+      ],
+    };
+
     const [unpaidBorrowings, paidBorrowings] = await Promise.all([
       this.prisma.borrowing.findMany({
         where: {
-          fineAmount: { gt: 0 },
-          finePaidAt: null,
+          AND: [baseFilter, { finePaidAt: null }],
         },
         select: {
           id: true,
@@ -112,8 +145,7 @@ export class FineService {
       }),
       this.prisma.borrowing.findMany({
         where: {
-          fineAmount: { gt: 0 },
-          finePaidAt: { gte: startOfMonth },
+          AND: [baseFilter, { finePaidAt: { gte: startOfMonth } }],
         },
         select: {
           id: true,
@@ -123,14 +155,14 @@ export class FineService {
     ]);
 
     const totalUnpaidAmount = unpaidBorrowings.reduce(
-      (sum, item) => sum + item.fineAmount,
+      (sum, item) => sum + (item.fineAmount || 0),
       0,
     );
     const unpaidCount = unpaidBorrowings.length;
 
     // Total denda terbayar (bulan ini)
     const totalPaidAmount = paidBorrowings.reduce(
-      (sum, item) => sum + item.fineAmount,
+      (sum, item) => sum + (item.fineAmount || 0),
       0,
     );
     const paidCount = paidBorrowings.length;

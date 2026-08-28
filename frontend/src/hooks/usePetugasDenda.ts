@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   useFineListQuery,
   useFineStatsQuery,
@@ -50,6 +50,24 @@ export function usePetugasDenda() {
     search: activeSearch.trim() || undefined,
   });
 
+  // Urutkan data denda secara kronologis (paling baru di paling atas)
+  const fines = useMemo(() => {
+    return [...rawFines].sort((a, b) => {
+      if (activeTab === "PAID") {
+        const timeA = a.paidAt ? new Date(a.paidAt).getTime() : 0;
+        const timeB = b.paidAt ? new Date(b.paidAt).getTime() : 0;
+        if (timeB !== timeA) return timeB - timeA;
+        const eventA = new Date(a.returnDate || a.createdAt).getTime();
+        const eventB = new Date(b.returnDate || b.createdAt).getTime();
+        return eventB - eventA;
+      } else {
+        const timeA = new Date(a.returnDate || a.createdAt).getTime();
+        const timeB = new Date(b.returnDate || b.createdAt).getTime();
+        return timeB - timeA;
+      }
+    });
+  }, [rawFines, activeTab]);
+
   const payFineMutation = usePayFineMutation();
 
   // 3. State Modal Kasir Pembayaran
@@ -98,7 +116,7 @@ export function usePetugasDenda() {
 
   return {
     // Data & Query States
-    fines: rawFines,
+    fines,
     stats: (stats as FineStats | undefined) ?? {
       totalUnpaidAmount: 0,
       unpaidCount: 0,

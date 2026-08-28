@@ -72,6 +72,16 @@ export function FinePaymentDialog({
                   {selectedFine.fineType}
                 </span>
               </div>
+              {selectedFine.returnNote && (
+                <div className="pt-2 border-t border-amber-300 text-xs">
+                  <span className="font-bold text-amber-800 uppercase text-[10px] block">
+                    Catatan Kerusakan / Kehilangan:
+                  </span>
+                  <span className="text-amber-950 font-medium italic">
+                    "{selectedFine.returnNote}"
+                  </span>
+                </div>
+              )}
               <div className="border-t-2 border-blue-900/40 pt-2 flex justify-between items-center">
                 <span className="text-xs font-black text-blue-950 uppercase tracking-wider">
                   Total Wajib Bayar
