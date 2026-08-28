@@ -39,7 +39,7 @@ export function OverdueFineCallout({
         className="w-full sm:w-auto shrink-0 font-bold"
       >
         <Phone className="w-4 h-4 mr-1.5" />
-        Konfirmasi Pembayaran via WhatsApp
+        Konfirmasi Pembayaran Denda
       </Button>
     </div>
   );

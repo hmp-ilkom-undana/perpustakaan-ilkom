@@ -20,6 +20,9 @@ export interface StudentHistoryItem {
   status: HistoryStatus;
   fine?: number;
   paymentDate?: string;
+  finePaymentMethod?: string;
+  fineReceivedBy?: string;
+  fineNotes?: string;
   note?: string;
 }
 
@@ -81,6 +84,9 @@ export function useStudentHistory() {
           status,
           fine,
           paymentDate,
+          finePaymentMethod: item.finePaymentMethod,
+          fineReceivedBy: item.fineReceivedBy,
+          fineNotes: item.fineNotes,
           note,
         };
       });
