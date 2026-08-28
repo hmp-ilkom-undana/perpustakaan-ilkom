@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   CheckCircle,
   XCircle,
@@ -43,6 +44,7 @@ export function CirculationDetailActions({
   status,
   isSubmitting,
   isUploaded,
+  selectedPhoto,
   returnCondition,
   returnNote,
   fileInputRef,
@@ -58,6 +60,11 @@ export function CirculationDetailActions({
   onConfirmHandover,
   onConfirmReturn,
 }: CirculationDetailActionsProps) {
+  const photoPreviewUrl = useMemo(() => {
+    if (!selectedPhoto) return null;
+    return URL.createObjectURL(selectedPhoto);
+  }, [selectedPhoto]);
+
   return (
     <div className="p-4 md:p-6 bg-white border-2 border-blue-900 rounded-xl shadow-[4px_4px_0px_#1E3A8A] space-y-4">
       {/* Hidden inputs for camera/gallery */}
@@ -142,11 +149,21 @@ export function CirculationDetailActions({
                   variant="ghost"
                   size="xs"
                   onClick={onResetPhoto}
-                  className="text-emerald-800 hover:text-emerald-950 font-bold"
+                  className="text-emerald-800 hover:text-emerald-950 font-bold cursor-pointer"
                 >
-                  <RefreshCw className="w-3 h-3 mr-1" /> Ganti
+                  <RefreshCw className="w-3 h-3 mr-1" /> Ganti / Ambil Ulang
                 </Button>
               </div>
+
+              {photoPreviewUrl && (
+                <div className="relative rounded-lg overflow-hidden border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] bg-slate-900 max-h-60 flex items-center justify-center">
+                  <img
+                    src={photoPreviewUrl}
+                    alt="Pratinjau Foto Serah Terima"
+                    className="w-full h-auto max-h-60 object-contain"
+                  />
+                </div>
+              )}
 
               <Button
                 type="button"
@@ -290,11 +307,21 @@ export function CirculationDetailActions({
                       variant="ghost"
                       size="xs"
                       onClick={onResetPhoto}
-                      className="text-emerald-800 hover:text-emerald-950 font-bold"
+                      className="text-emerald-800 hover:text-emerald-950 font-bold cursor-pointer"
                     >
-                      <RefreshCw className="w-3 h-3 mr-1" /> Ganti
+                      <RefreshCw className="w-3 h-3 mr-1" /> Ganti / Ambil Ulang
                     </Button>
                   </div>
+
+                  {photoPreviewUrl && (
+                    <div className="relative rounded-lg overflow-hidden border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] bg-slate-900 max-h-60 flex items-center justify-center">
+                      <img
+                        src={photoPreviewUrl}
+                        alt="Pratinjau Foto Kondisi Pengembalian"
+                        className="w-full h-auto max-h-60 object-contain"
+                      />
+                    </div>
+                  )}
 
                   <Button
                     type="button"
