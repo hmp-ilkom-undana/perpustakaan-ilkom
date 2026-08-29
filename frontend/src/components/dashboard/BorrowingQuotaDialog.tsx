@@ -1,4 +1,4 @@
-import { BookOpen, CheckCircle2, AlertCircle, Search, ArrowRight } from "lucide-react";
+import { BookOpen, Search, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import {
   Dialog,
@@ -9,8 +9,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import type { DashboardQuota } from "@/hooks/useStudentDashboard";
 
 interface BorrowingQuotaDialogProps {
@@ -27,7 +25,6 @@ export function BorrowingQuotaDialog({
   const {
     terpakai,
     maksimal,
-    sisa,
     isFull,
     countSkripsi,
     maxSkripsi,
@@ -41,22 +38,13 @@ export function BorrowingQuotaDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[calc(100vw-32px)] sm:max-w-[480px] p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-left pr-6">
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-orange-100 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] flex items-center justify-center text-orange-600">
-                <BookOpen className="w-4 h-4" />
-              </div>
-              <DialogTitle className="text-base sm:text-lg font-black text-blue-950">
-                Kuota Peminjaman
-              </DialogTitle>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-8 h-8 rounded-lg bg-orange-100 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] flex items-center justify-center text-orange-600">
+              <BookOpen className="w-4 h-4" />
             </div>
-
-            <Badge
-              variant={isFull ? "rose" : sisa <= 1 ? "amber" : "emerald"}
-              className="text-[10px] font-black uppercase tracking-wider shrink-0"
-            >
-              {isFull ? "Kuota Penuh" : `${sisa} Slot Tersedia`}
-            </Badge>
+            <DialogTitle className="text-base sm:text-lg font-black text-blue-950">
+              Kuota Peminjaman
+            </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-slate-500 font-medium">
             Alokasi batas maksimal peminjaman aktif dokumen perpustakaan.
@@ -81,7 +69,8 @@ export function BorrowingQuotaDialog({
               Total Arsip Sedang Dipinjam
             </p>
           </div>
-          {/* 3. Progress Bar & Rincian per Kategori */}
+
+          {/* 2. Progress Bar & Rincian per Kategori */}
           <div className="space-y-3 p-3.5 bg-white border-2 border-blue-900 rounded-lg shadow-[2px_2px_0px_#1E3A8A]">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
               Rincian Berdasarkan Kategori:
@@ -160,7 +149,6 @@ export function BorrowingQuotaDialog({
                 size="sm"
                 className="w-full sm:w-auto font-black text-xs uppercase tracking-wider bg-orange-500 hover:bg-orange-600"
               >
-                <Search className="w-3.5 h-3.5 mr-1.5" />
                 Cari Arsip
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
