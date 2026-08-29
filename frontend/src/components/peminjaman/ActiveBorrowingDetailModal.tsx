@@ -58,25 +58,29 @@ export function ActiveBorrowingDetailModal({
       }}
     >
       <DialogContent className="max-w-[calc(100vw-32px)] sm:max-w-[540px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-        <DialogHeader className="pr-6 sm:pr-8 text-left">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+        <DialogHeader className="pr-8 text-left">
+          {/* Header Badges: Baris 1 Status & Tipe, Baris 2 Kode Pickup */}
+          <div className="flex flex-col gap-1.5 mb-2">
             <div className="flex items-center gap-1.5 flex-wrap">
               {getStatusBadge(ticket.status)}
               <Badge variant="outline" className="text-[10px] font-bold">
                 {ticket.archiveType}
               </Badge>
             </div>
-            <Badge
-              variant="outline"
-              className="bg-slate-100 font-mono text-[11px] font-black text-blue-950 tracking-wider shadow-[1px_1px_0px_#1E3A8A] shrink-0"
-            >
-              {ticket.pickupCode}
-            </Badge>
+            <div>
+              <Badge
+                variant="outline"
+                className="w-fit bg-slate-100 font-mono text-[11px] font-black text-blue-950 tracking-wider shadow-[1px_1px_0px_#1E3A8A]"
+              >
+                {ticket.pickupCode}
+              </Badge>
+            </div>
           </div>
+
           <DialogTitle className="text-base sm:text-lg font-black text-blue-950 leading-snug">
             {ticket.archiveTitle}
           </DialogTitle>
-          <DialogDescription className="text-xs text-slate-500 font-medium">
+          <DialogDescription className="text-xs text-slate-500 font-medium mt-1">
             Pantau tahapan verifikasi, batas penjemputan, dan tenggat pengembalian berkas.
           </DialogDescription>
         </DialogHeader>
