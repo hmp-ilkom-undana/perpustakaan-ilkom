@@ -66,15 +66,22 @@ export function usePeminjamanPage() {
     return [...activeItems, ...historyItems];
   }, [activeItems, historyItems]);
 
-  // 4. Statistics
+  // 4. Completed Clean Items (Only returned and with no unpaid fines)
+  const completedCleanItems = useMemo(() => {
+    return historyItems.filter(
+      (item) => item.status === "RETURNED" && !item.hasUnpaidFine
+    );
+  }, [historyItems]);
+
+  // 5. Statistics
   const allCount = allItems.length;
   const activeCount = activeItems.length;
   const unpaidCount = useMemo(() => {
     return allItems.filter((item) => item.hasUnpaidFine).length;
   }, [allItems]);
-  const completedCount = historyItems.length;
+  const completedCount = completedCleanItems.length;
 
-  // 5. Filtered Items
+  // 6. Filtered Items
   const filteredItems = useMemo(() => {
     switch (activeFilter) {
       case "ACTIVE":
@@ -82,14 +89,14 @@ export function usePeminjamanPage() {
       case "UNPAID_FINE":
         return allItems.filter((item) => item.hasUnpaidFine);
       case "COMPLETED":
-        return historyItems;
+        return completedCleanItems;
       case "ALL":
       default:
         return allItems;
     }
-  }, [activeFilter, allItems, activeItems, historyItems]);
+  }, [activeFilter, allItems, activeItems, completedCleanItems]);
 
-  // 6. Handle Item Click (Opens appropriate modal)
+  // 7. Handle Item Click (Opens appropriate modal)
   const handleItemClick = useCallback(
     (item: UnifiedLoanItem) => {
       if (item.sourceType === "ACTIVE" && item.activeTicket) {
