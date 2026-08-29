@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { useStudentBorrowing } from "@/hooks/useStudentBorrowing";
 import {
   ActiveBorrowingCard,
+  ActiveBorrowingDetailModal,
   CancelBorrowingDialog,
   EmptyBorrowingState,
 } from "@/components/peminjaman";
@@ -13,7 +14,9 @@ export default function Peminjaman() {
     isLoading,
     isCancelling,
     selectedTicket,
-    toggleTicket,
+    isDetailOpen,
+    openDetail,
+    closeDetail,
     cancelTicketTarget,
     setCancelTicketTarget,
     confirmCancel,
@@ -48,8 +51,8 @@ export default function Peminjaman() {
         </Badge>
       </div>
 
-      {/* 2. List Transaksi Aktif / Area Detail */}
-      <div className="flex flex-col gap-4 min-h-[300px] px-4 sm:px-0">
+      {/* 2. List Transaksi Aktif */}
+      <div className="flex flex-col min-h-[300px] px-4 sm:px-0">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-blue-900" />
@@ -58,22 +61,30 @@ export default function Peminjaman() {
             </p>
           </div>
         ) : tickets.length > 0 ? (
-          tickets.map((ticket) => (
-            <ActiveBorrowingCard
-              key={ticket.id}
-              ticket={ticket}
-              isExpanded={selectedTicket?.id === ticket.id}
-              onToggle={() => toggleTicket(ticket)}
-              onCancelClick={setCancelTicketTarget}
-              onContactAdmin={handleContactAdminWa}
-            />
-          ))
+          <div className="flex flex-col gap-3">
+            {tickets.map((ticket) => (
+              <ActiveBorrowingCard
+                key={ticket.id}
+                ticket={ticket}
+                onClick={() => openDetail(ticket)}
+              />
+            ))}
+          </div>
         ) : (
           <EmptyBorrowingState />
         )}
       </div>
 
-      {/* 3. Modal Konfirmasi Pembatalan Antrean (Shadcn Base UI Dialog) */}
+      {/* 3. Modal Dialog Detail Peminjaman Pop-Up */}
+      <ActiveBorrowingDetailModal
+        isOpen={isDetailOpen}
+        onClose={closeDetail}
+        ticket={selectedTicket}
+        onCancelClick={setCancelTicketTarget}
+        onContactAdmin={handleContactAdminWa}
+      />
+
+      {/* 4. Modal Konfirmasi Pembatalan Antrean */}
       <CancelBorrowingDialog
         ticket={cancelTicketTarget}
         isOpen={cancelTicketTarget !== null}

@@ -52,6 +52,7 @@ export function useStudentBorrowing() {
   const cancelMutation = useCancelBorrowingMutation();
 
   const [selectedTicket, setSelectedTicket] = useState<StudentTicketItem | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [cancelTicketTarget, setCancelTicketTarget] = useState<StudentTicketItem | null>(null);
 
   const tickets: StudentTicketItem[] = useMemo(() => {
@@ -123,8 +124,18 @@ export function useStudentBorrowing() {
       });
   }, [rawHistory, setting]);
 
+  const openDetail = (ticket: StudentTicketItem) => {
+    setSelectedTicket(ticket);
+    setIsDetailOpen(true);
+  };
+
+  const closeDetail = () => {
+    setIsDetailOpen(false);
+  };
+
   const toggleTicket = (ticket: StudentTicketItem) => {
-    setSelectedTicket((prev) => (prev?.id === ticket.id ? null : ticket));
+    setSelectedTicket(ticket);
+    setIsDetailOpen(true);
   };
 
   const handleContactAdminWa = (ticket: StudentTicketItem) => {
@@ -154,6 +165,7 @@ export function useStudentBorrowing() {
       await cancelMutation.mutateAsync(cancelTicketTarget.id);
       if (selectedTicket?.id === cancelTicketTarget.id) {
         setSelectedTicket(null);
+        setIsDetailOpen(false);
       }
       setCancelTicketTarget(null);
     } catch {
@@ -167,6 +179,9 @@ export function useStudentBorrowing() {
     isCancelling: cancelMutation.isPending,
     selectedTicket,
     setSelectedTicket,
+    isDetailOpen,
+    openDetail,
+    closeDetail,
     toggleTicket,
     cancelTicketTarget,
     setCancelTicketTarget,

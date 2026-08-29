@@ -1,5 +1,6 @@
 export * from "./ActiveBorrowingCard";
 export * from "./ActiveBorrowingDetail";
+export * from "./ActiveBorrowingDetailModal";
 export * from "./BorrowingRow";
 export * from "./BorrowingTimeline";
 export * from "./CancelBorrowingDialog";
