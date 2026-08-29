@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { DashboardFines } from "@/hooks/useStudentDashboard";
+import type { DashboardFines, DashboardFineItem } from "@/hooks/useStudentDashboard";
 
 interface FineSummaryCardProps {
   denda: DashboardFines;
@@ -131,7 +131,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                 {/* List Item Keterlambatan */}
                 {lateBorrowings.length > 0 ? (
                   <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
-                    {lateBorrowings.map((item: any) => (
+                    {lateBorrowings.map((item: DashboardFineItem) => (
                       <Link
                         key={item.id}
                         to="/mahasiswa/peminjaman"
@@ -180,7 +180,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                 {/* List Item Kerusakan atau Hilang */}
                 {damageLossBorrowings.length > 0 ? (
                   <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
-                    {damageLossBorrowings.map((item: any) => (
+                    {damageLossBorrowings.map((item: DashboardFineItem) => (
                       <Link
                         key={item.id}
                         to="/mahasiswa/peminjaman"

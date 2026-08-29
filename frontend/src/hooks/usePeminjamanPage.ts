@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useLocation, useSearch } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 import { useStudentBorrowing, StudentTicketItem } from "./useStudentBorrowing";
 import { useStudentHistory, StudentHistoryItem, HistoryStatus } from "./useStudentHistory";
 import { BorrowingStatus } from "@/components/peminjaman";
@@ -22,7 +22,6 @@ export interface UnifiedLoanItem {
 
 export function usePeminjamanPage() {
   const [activeFilter, setActiveFilter] = useState<PeminjamanFilter>("ALL");
-  const location = useLocation();
   const search = useSearch({ strict: false }) as {
     selectedId?: string;
     filter?: PeminjamanFilter;
@@ -114,11 +113,10 @@ export function usePeminjamanPage() {
     [borrowing, history]
   );
 
-  // 8. Deep-Link Navigation Support (Reactive URL Search Params & Auto-Open)
+  // 8. Deep-Link Navigation Support (Direct useSearch Params & Auto-Open)
   useEffect(() => {
-    const rawUrlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-    const selectedIdParam = search?.selectedId || rawUrlParams?.get("selectedId");
-    const filterParam = search?.filter || (rawUrlParams?.get("filter") as PeminjamanFilter | null);
+    const selectedIdParam = search?.selectedId;
+    const filterParam = search?.filter;
 
     if (filterParam && ["ALL", "ACTIVE", "UNPAID_FINE", "COMPLETED"].includes(filterParam)) {
       setActiveFilter(filterParam);
@@ -152,7 +150,6 @@ export function usePeminjamanPage() {
   }, [
     search?.selectedId,
     search?.filter,
-    location.search,
     isLoading,
     borrowing.tickets,
     history.historyData,

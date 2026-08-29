@@ -16,12 +16,28 @@ export interface DashboardQuota {
   maxNaskah: number;
 }
 
+export interface DashboardFineItem {
+  id: string;
+  archive?: {
+    id?: string;
+    title: string;
+    archiveType?: string;
+    archiveCode?: string;
+  } | null;
+  status: string;
+  pickupCode?: string | null;
+  fineAmount?: number | null;
+  finePaidAt?: string | null;
+  borrowDate?: string;
+  returnDate?: string | null;
+}
+
 export interface DashboardFines {
   totalDenda: number;
   hasFine: boolean;
-  fineBorrowings: any[];
-  lateBorrowings: any[];
-  damageLossBorrowings: any[];
+  fineBorrowings: DashboardFineItem[];
+  lateBorrowings: DashboardFineItem[];
+  damageLossBorrowings: DashboardFineItem[];
   totalLateFine: number;
   totalDamageLossFine: number;
   countLate: number;
@@ -129,8 +145,8 @@ export function useStudentDashboard() {
     let countDamaged = 0;
     let countLost = 0;
 
-    const lateBorrowings: any[] = [];
-    const damageLossBorrowings: any[] = [];
+    const lateBorrowings: DashboardFineItem[] = [];
+    const damageLossBorrowings: DashboardFineItem[] = [];
 
     fineBorrowings.forEach((fb: any) => {
       if (fb.status === "DAMAGED") {
