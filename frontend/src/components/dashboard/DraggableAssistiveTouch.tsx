@@ -23,13 +23,12 @@ function DraggableGuideButton({
   const [side, setSide] = useState<"left" | "right">("left");
   const ref = useRef<HTMLDivElement>(null);
 
-  // Posisi awal: Default Kanan Bawah pada Mobile, Kiri Bawah pada Desktop
+  // Posisi awal: Default Kiri Bawah (tepat di atas tombol kuota)
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const isMobile = window.innerWidth < 768;
-      const initialX = isMobile ? window.innerWidth - 54 : 16;
+      const initialX = 12;
       const initialY = Math.max(100, window.innerHeight - 150);
-      setSide(isMobile ? "right" : "left");
+      setSide("left");
       controls.set({ x: initialX, y: initialY });
     }
   }, [controls]);
@@ -123,7 +122,7 @@ function DraggableGuideButton({
 }
 
 // ----------------------------------------------------
-// 2. Independent Draggable Quota Button (Posisi Default: Kanan Bawah pada Mobile)
+// 2. Independent Draggable Quota Button (Posisi Default: Kiri Bawah - Bawah)
 // ----------------------------------------------------
 function DraggableQuotaButton({
   quota,
@@ -134,16 +133,15 @@ function DraggableQuotaButton({
 }) {
   const controls = useAnimationControls();
   const [isDragging, setIsDragging] = useState(false);
-  const [side, setSide] = useState<"left" | "right">("right");
+  const [side, setSide] = useState<"left" | "right">("left");
   const ref = useRef<HTMLDivElement>(null);
 
-  // Posisi awal: Default Kanan Bawah pada Mobile, Kiri Bawah pada Desktop
+  // Posisi awal: Default Kiri Bawah (paling bawah)
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const isMobile = window.innerWidth < 768;
-      const initialX = isMobile ? window.innerWidth - 54 : 16;
+      const initialX = 12;
       const initialY = Math.max(155, window.innerHeight - 95);
-      setSide(isMobile ? "right" : "left");
+      setSide("left");
       controls.set({ x: initialX, y: initialY });
     }
   }, [controls]);
