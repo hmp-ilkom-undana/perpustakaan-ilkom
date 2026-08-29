@@ -59,8 +59,8 @@ export function ActiveBorrowingDetailModal({
     >
       <DialogContent className="max-w-[calc(100vw-32px)] sm:max-w-[540px] max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader className="pr-8 text-left">
-          {/* Header Badges: Baris 1 Status & Tipe, Baris 2 Kode Pickup */}
-          <div className="flex flex-col gap-1.5 mb-2">
+          {/* Header Badges: Mobile = 2 Baris, Desktop/Tablet (sm+) = 1 Baris Sejajar */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 mb-2">
             <div className="flex items-center gap-1.5 flex-wrap">
               {getStatusBadge(ticket.status)}
               <Badge variant="outline" className="text-[10px] font-bold">
