@@ -29,6 +29,7 @@ const GUIDE_SEEN_PREFIX = "guide_seen_";
 
 export function useStudentGuide() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isFirstTime, setIsFirstTime] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
   const { data: session } = useSession();
@@ -42,6 +43,7 @@ export function useStudentGuide() {
     if (!guideKey) return;
     const hasSeen = localStorage.getItem(guideKey);
     if (!hasSeen) {
+      setIsFirstTime(true);
       setCurrentStep(0);
       setIsOpen(true);
     }
@@ -136,6 +138,7 @@ export function useStudentGuide() {
   const isLastStep = currentStep === totalSteps - 1;
 
   const handleOpen = useCallback(() => {
+    setIsFirstTime(false);
     setCurrentStep(0);
     setIsOpen(true);
   }, []);
@@ -144,6 +147,7 @@ export function useStudentGuide() {
     if (guideKey) {
       localStorage.setItem(guideKey, "true");
     }
+    setIsFirstTime(false);
     setIsOpen(false);
     setTimeout(() => setCurrentStep(0), 300);
   }, [guideKey]);
@@ -160,6 +164,7 @@ export function useStudentGuide() {
   return {
     isOpen,
     isLoading,
+    isFirstTime,
     config,
     steps,
     currentStep,

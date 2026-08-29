@@ -288,6 +288,7 @@ export default function MahasiswaLayout() {
       <GuideModal
         isOpen={guide.isOpen}
         isLoading={guide.isLoading}
+        isFirstTime={guide.isFirstTime}
         config={guide.config}
         steps={guide.steps}
         currentStep={guide.currentStep}
