@@ -1,4 +1,4 @@
-import { Mail, Calendar, Sparkles } from "lucide-react";
+import { Mail, Sparkles } from "lucide-react";
 
 interface ProfileHeaderCardProps {
   name: string;
