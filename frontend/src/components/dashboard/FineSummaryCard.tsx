@@ -130,24 +130,24 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
 
                 {/* List Item Keterlambatan */}
                 {lateBorrowings.length > 0 ? (
-                  <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
+                  <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
                     {lateBorrowings.map((item: any) => (
                       <Link
                         key={item.id}
                         to="/mahasiswa/peminjaman"
                         search={{ selectedId: item.id, filter: "UNPAID_FINE" }}
-                        className="p-2 bg-white border border-rose-200 rounded-lg flex items-center justify-between gap-2 hover:border-rose-500 hover:shadow-[1px_1px_0px_#E11D48] transition-all group cursor-pointer block"
+                        className="p-2.5 bg-white border-2 border-rose-100 rounded-lg flex items-center justify-between gap-3 hover:border-rose-400 hover:shadow-[2px_2px_0px_#E11D48] transition-all group cursor-pointer"
                         title="Klik untuk membuka rincian transaksi"
                       >
-                        <div className="min-w-0 flex-1">
-                          <h5 className="text-[11px] font-bold text-blue-950 truncate group-hover:text-rose-600 transition-colors">
+                        <div className="min-w-0 flex-1 flex flex-col gap-1">
+                          <h5 className="text-xs font-black text-blue-950 truncate group-hover:text-rose-600 transition-colors">
                             {item.archive?.title}
                           </h5>
-                          <span className="text-[9px] font-mono text-slate-500 font-bold">
+                          <span className="text-[9px] font-mono text-slate-500 font-bold bg-slate-100 px-1.5 py-0.2 rounded w-fit border border-slate-200">
                             {item.pickupCode || `PK-${item.id.substring(0, 4).toUpperCase()}`}
                           </span>
                         </div>
-                        <span className="text-[10px] font-black font-mono text-rose-600 shrink-0">
+                        <span className="text-xs font-black font-mono text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded shadow-[1px_1px_0px_#E11D48] shrink-0">
                           Rp {(item.fineAmount || 0).toLocaleString("id-ID")}
                         </span>
                       </Link>
@@ -179,43 +179,28 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
 
                 {/* List Item Kerusakan atau Hilang */}
                 {damageLossBorrowings.length > 0 ? (
-                  <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
-                    {damageLossBorrowings.map((item: any) => {
-                      const isDamaged = item.status === "DAMAGED";
-                      return (
-                        <Link
-                          key={item.id}
-                          to="/mahasiswa/peminjaman"
-                          search={{ selectedId: item.id, filter: "UNPAID_FINE" }}
-                          className="p-2 bg-white border border-amber-200 rounded-lg flex items-center justify-between gap-2 hover:border-amber-500 hover:shadow-[1px_1px_0px_#D97706] transition-all group cursor-pointer block"
-                          title="Klik untuk membuka rincian transaksi"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1">
-                              <span
-                                className={cn(
-                                  "text-[8px] font-black uppercase px-1 py-0.2 rounded",
-                                  isDamaged
-                                    ? "bg-amber-100 text-amber-900"
-                                    : "bg-slate-800 text-white"
-                                )}
-                              >
-                                {isDamaged ? "RUSAK" : "HILANG"}
-                              </span>
-                              <h5 className="text-[11px] font-bold text-blue-950 truncate group-hover:text-amber-700 transition-colors">
-                                {item.archive?.title}
-                              </h5>
-                            </div>
-                            <span className="text-[9px] font-mono text-slate-500 font-bold">
-                              {item.pickupCode || `PK-${item.id.substring(0, 4).toUpperCase()}`}
-                            </span>
-                          </div>
-                          <span className="text-[10px] font-black font-mono text-amber-700 shrink-0">
-                            Rp {(item.fineAmount || 0).toLocaleString("id-ID")}
+                  <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                    {damageLossBorrowings.map((item: any) => (
+                      <Link
+                        key={item.id}
+                        to="/mahasiswa/peminjaman"
+                        search={{ selectedId: item.id, filter: "UNPAID_FINE" }}
+                        className="p-2.5 bg-white border-2 border-amber-100 rounded-lg flex items-center justify-between gap-3 hover:border-amber-400 hover:shadow-[2px_2px_0px_#D97706] transition-all group cursor-pointer"
+                        title="Klik untuk membuka rincian transaksi"
+                      >
+                        <div className="min-w-0 flex-1 flex flex-col gap-1">
+                          <h5 className="text-xs font-black text-blue-950 truncate group-hover:text-amber-700 transition-colors">
+                            {item.archive?.title}
+                          </h5>
+                          <span className="text-[9px] font-mono text-slate-500 font-bold bg-slate-100 px-1.5 py-0.2 rounded w-fit border border-slate-200">
+                            {item.pickupCode || `PK-${item.id.substring(0, 4).toUpperCase()}`}
                           </span>
-                        </Link>
-                      );
-                    })}
+                        </div>
+                        <span className="text-xs font-black font-mono text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded shadow-[1px_1px_0px_#D97706] shrink-0">
+                          Rp {(item.fineAmount || 0).toLocaleString("id-ID")}
+                        </span>
+                      </Link>
+                    ))}
                   </div>
                 ) : (
                   <p className="text-[11px] text-slate-500 italic py-2 text-center">
