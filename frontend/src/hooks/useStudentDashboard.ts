@@ -20,6 +20,10 @@ export interface DashboardFines {
   totalDenda: number;
   hasFine: boolean;
   fineBorrowings: any[];
+  lateBorrowings: any[];
+  damageLossBorrowings: any[];
+  totalLateFine: number;
+  totalDamageLossFine: number;
   countLate: number;
   countDamaged: number;
   countLost: number;
@@ -125,17 +129,40 @@ export function useStudentDashboard() {
     let countDamaged = 0;
     let countLost = 0;
 
+    const lateBorrowings: any[] = [];
+    const damageLossBorrowings: any[] = [];
+
     fineBorrowings.forEach((fb: any) => {
-      if (fb.status === "OVERDUE") countLate++;
-      else if (fb.status === "DAMAGED") countDamaged++;
-      else if (fb.status === "LOST") countLost++;
-      else countLate++;
+      if (fb.status === "DAMAGED") {
+        countDamaged++;
+        damageLossBorrowings.push(fb);
+      } else if (fb.status === "LOST") {
+        countLost++;
+        damageLossBorrowings.push(fb);
+      } else {
+        countLate++;
+        lateBorrowings.push(fb);
+      }
     });
+
+    const totalLateFine = lateBorrowings.reduce(
+      (sum: number, b: any) => sum + (b.fineAmount || 0),
+      0,
+    );
+
+    const totalDamageLossFine = damageLossBorrowings.reduce(
+      (sum: number, b: any) => sum + (b.fineAmount || 0),
+      0,
+    );
 
     return {
       totalDenda,
       hasFine: totalDenda > 0 && fineBorrowings.length > 0,
       fineBorrowings,
+      lateBorrowings,
+      damageLossBorrowings,
+      totalLateFine,
+      totalDamageLossFine,
       countLate,
       countDamaged,
       countLost,

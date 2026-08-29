@@ -95,9 +95,11 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
               }
 
               return (
-                <div
+                <Link
                   key={task.id}
-                  className="p-2.5 sm:p-3 bg-slate-50/90 border border-blue-900/30 rounded-lg space-y-1.5 hover:bg-slate-100/90 transition-colors"
+                  to="/mahasiswa/peminjaman"
+                  search={{ selectedId: task.id }}
+                  className="p-2.5 sm:p-3 bg-slate-50/90 border border-blue-900/30 rounded-lg space-y-1.5 hover:bg-slate-100/90 hover:border-blue-900 shadow-[1px_1px_0px_#1E3A8A] transition-all block cursor-pointer group"
                 >
                   {/* Baris Atas: Badge Status + Tipe + Sisa Hari / Kode Ambil */}
                   <div className="flex items-center justify-between gap-1.5 flex-wrap">
@@ -156,7 +158,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
                   </div>
 
                   {/* Judul Dokumen */}
-                  <h4 className="text-xs sm:text-sm font-black text-blue-950 truncate leading-snug">
+                  <h4 className="text-xs sm:text-sm font-black text-blue-950 truncate leading-snug group-hover:text-orange-600 transition-colors">
                     {task.archive.title}
                   </h4>
 
@@ -171,7 +173,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
                       </span>
                     )}
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
