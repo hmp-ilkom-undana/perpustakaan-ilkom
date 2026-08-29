@@ -67,23 +67,28 @@ export function LoanCardRow({ item, onClick }: LoanCardRowProps) {
       </div>
 
       {/* 2. Sisi Kanan: Badge Denda, Kode Pickup, Status & Chevron */}
-      <div className="flex items-center justify-between sm:justify-end gap-2.5 mt-1 sm:mt-0 pl-13 sm:pl-0">
-        {item.hasUnpaidFine && item.fineAmount && item.fineAmount > 0 && (
+      <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+        <div className="flex items-center gap-2 flex-wrap">
+          {item.hasUnpaidFine && item.fineAmount !== undefined && item.fineAmount > 0 && (
+            <Badge
+              variant="rose"
+              className="font-mono text-xs font-black shadow-[1px_1px_0px_#991B1B] animate-pulse whitespace-nowrap"
+            >
+              Rp {(item.fineAmount ?? 0).toLocaleString("id-ID")}
+            </Badge>
+          )}
           <Badge
-            variant="rose"
-            className="font-mono text-xs font-black shadow-[1px_1px_0px_#991B1B] animate-pulse"
+            variant="outline"
+            className="bg-slate-100 font-mono text-[11px] font-black text-blue-950 tracking-wider shadow-[1px_1px_0px_#1E3A8A] shrink-0"
           >
-            Rp {item.fineAmount.toLocaleString("id-ID")}
+            {item.pickupCode}
           </Badge>
-        )}
-        <Badge
-          variant="outline"
-          className="bg-slate-100 font-mono text-[11px] font-black text-blue-950 tracking-wider shadow-[1px_1px_0px_#1E3A8A] shrink-0"
-        >
-          {item.pickupCode}
-        </Badge>
-        {getStatusBadge(item.status)}
-        <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-orange-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {getStatusBadge(item.status)}
+          <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-orange-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </div>
       </div>
     </Card>
   );

@@ -81,7 +81,7 @@ export default function Peminjaman() {
   return (
     <div className="flex flex-col gap-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* 1. Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-blue-900 p-4 sm:p-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-blue-900">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-orange-500 text-white border-2 border-blue-900 rounded-lg flex items-center justify-center shadow-[2px_2px_0px_#1E3A8A] shrink-0">
             <BookOpenCheck className="w-5 h-5" />
@@ -103,20 +103,20 @@ export default function Peminjaman() {
         </Badge>
       </div>
 
-      {/* 2. Flat Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-2 px-4 sm:px-0">
+      {/* 2. Flat Filter Tabs (Mobile: 2x2 Grid Seimbang, Desktop: Flex) */}
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
         {/* Tab 1: Semua */}
         <button
           type="button"
           onClick={() => setActiveFilter("ALL")}
           className={cn(
-            "px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5",
+            "w-full sm:w-auto px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5",
             activeFilter === "ALL"
               ? "bg-blue-950 text-white border-blue-950 shadow-[2px_2px_0px_#1E3A8A]"
               : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
           )}
         >
-          <FolderOpen className="w-3.5 h-3.5" />
+          <FolderOpen className="w-3.5 h-3.5 shrink-0" />
           <span>Semua</span>
           <span
             className={cn(
@@ -133,7 +133,7 @@ export default function Peminjaman() {
           type="button"
           onClick={() => setActiveFilter("ACTIVE")}
           className={cn(
-            "px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5",
+            "w-full sm:w-auto px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5",
             activeFilter === "ACTIVE"
               ? "bg-amber-400 text-blue-950 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
               : activeCount > 0
@@ -141,7 +141,7 @@ export default function Peminjaman() {
               : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
           )}
         >
-          <Clock className="w-3.5 h-3.5 text-blue-950" />
+          <Clock className="w-3.5 h-3.5 text-blue-950 shrink-0" />
           <span>Sedang Aktif</span>
           <span
             className={cn(
@@ -162,7 +162,7 @@ export default function Peminjaman() {
           type="button"
           onClick={() => setActiveFilter("UNPAID_FINE")}
           className={cn(
-            "px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5",
+            "w-full sm:w-auto px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5",
             activeFilter === "UNPAID_FINE"
               ? "bg-rose-600 text-white border-rose-700 shadow-[2px_2px_0px_#991B1B]"
               : unpaidCount > 0
@@ -170,7 +170,7 @@ export default function Peminjaman() {
               : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
           )}
         >
-          <AlertTriangle className="w-3.5 h-3.5" />
+          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
           <span>Menunggak Denda</span>
           <span
             className={cn(
@@ -191,13 +191,13 @@ export default function Peminjaman() {
           type="button"
           onClick={() => setActiveFilter("COMPLETED")}
           className={cn(
-            "px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5",
+            "w-full sm:w-auto px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5",
             activeFilter === "COMPLETED"
               ? "bg-emerald-700 text-white border-emerald-800 shadow-[2px_2px_0px_#065F46]"
               : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
           )}
         >
-          <CheckCircle2 className="w-3.5 h-3.5" />
+          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
           <span>Selesai</span>
           <span
             className={cn(
@@ -213,7 +213,7 @@ export default function Peminjaman() {
       </div>
 
       {/* 3. Content List Section */}
-      <div className="flex flex-col min-h-[350px] px-4 sm:px-0">
+      <div className="flex flex-col min-h-[350px]">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-blue-900" />

@@ -31,7 +31,7 @@ export function ActiveBorrowingDetailModal({
   if (!ticket) return null;
 
   const isOverdueOrFined =
-    ticket.status === "OVERDUE" || (ticket.fineAmount && ticket.fineAmount > 0);
+    ticket.status === "OVERDUE" || Boolean(ticket.fineAmount && ticket.fineAmount > 0);
   const canCancel =
     ticket.status === "REQUESTED" || ticket.status === "WAITING_PICKUP";
 
