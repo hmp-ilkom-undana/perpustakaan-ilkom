@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useLocation } from "@tanstack/react-router";
 import { useStudentBorrowing, StudentTicketItem } from "./useStudentBorrowing";
 import { useStudentHistory, StudentHistoryItem, HistoryStatus } from "./useStudentHistory";
 import { BorrowingStatus } from "@/components/peminjaman";
@@ -21,6 +22,7 @@ export interface UnifiedLoanItem {
 
 export function usePeminjamanPage() {
   const [activeFilter, setActiveFilter] = useState<PeminjamanFilter>("ALL");
+  const location = useLocation();
 
   const borrowing = useStudentBorrowing();
   const history = useStudentHistory();
@@ -107,6 +109,28 @@ export function usePeminjamanPage() {
     },
     [borrowing, history]
   );
+
+  // 8. Deep-Link Navigation Support (URL Search Params)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const filterParam = params.get("filter") as PeminjamanFilter | null;
+    const selectedIdParam = params.get("selectedId");
+
+    if (filterParam && ["ALL", "ACTIVE", "UNPAID_FINE", "COMPLETED"].includes(filterParam)) {
+      setActiveFilter(filterParam);
+    }
+
+    if (selectedIdParam && !isLoading && allItems.length > 0) {
+      const target = allItems.find((item) => item.id === selectedIdParam);
+      if (target) {
+        if (target.sourceType === "ACTIVE" && target.activeTicket) {
+          borrowing.openDetail(target.activeTicket);
+        } else if (target.sourceType === "HISTORY" && target.historyItem) {
+          history.openDetail(target.historyItem);
+        }
+      }
+    }
+  }, [location.search, isLoading, allItems]);
 
   return {
     activeFilter,

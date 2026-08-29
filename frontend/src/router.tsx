@@ -221,9 +221,24 @@ const mahasiswaKatalogRoute = createRoute({
   component: Katalog,
 });
 
-const mahasiswaPeminjamanRoute = createRoute({
+export interface PeminjamanSearch {
+  selectedId?: string;
+  filter?: "ALL" | "ACTIVE" | "UNPAID_FINE" | "COMPLETED";
+}
+
+export const mahasiswaPeminjamanRoute = createRoute({
   getParentRoute: () => mahasiswaLayoutRoute,
   path: "peminjaman",
+  validateSearch: (search: Record<string, unknown>): PeminjamanSearch => ({
+    selectedId: typeof search.selectedId === "string" ? search.selectedId : undefined,
+    filter:
+      search.filter === "ALL" ||
+      search.filter === "ACTIVE" ||
+      search.filter === "UNPAID_FINE" ||
+      search.filter === "COMPLETED"
+        ? search.filter
+        : undefined,
+  }),
   component: Peminjaman,
 });
 
