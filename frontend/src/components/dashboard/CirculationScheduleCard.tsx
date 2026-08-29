@@ -77,7 +77,7 @@ export function CirculationScheduleCard({
           </div>
           <div className="flex flex-col min-w-0">
             <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-wider leading-tight text-blue-950 truncate">
-              Kalender & Agenda Sirkulasi
+              Kalender & Aktivitas Sirkulasi
             </CardTitle>
             <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 mt-0.5 truncate">
               Jadwal Peminjaman, Pengambilan & Tenggat Pengembalian
@@ -97,7 +97,7 @@ export function CirculationScheduleCard({
             variant={tasks.length > 0 ? "orange" : "secondary"}
             className="text-[10px] sm:text-xs font-black"
           >
-            {tasks.length} Agenda
+            {tasks.length} Aktivitas
           </Badge>
         </div>
       </CardHeader>
@@ -120,7 +120,7 @@ export function CirculationScheduleCard({
           {/* Legend Indikator Tanggal Berjadwal */}
           <div className="w-full pt-3 border-t border-slate-100 flex items-center justify-center gap-2 text-[10px] sm:text-[11px] font-bold text-slate-500">
             <span className="w-3 h-3 rounded-xs bg-amber-200 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A]" />
-            <span>Tanggal dengan Agenda Peminjaman</span>
+            <span>Tanggal dengan Aktivitas Peminjaman</span>
           </div>
         </div>
 
