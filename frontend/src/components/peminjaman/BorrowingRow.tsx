@@ -81,7 +81,7 @@ export function BorrowingRow({
             variant="rose"
             className="font-mono text-xs font-black shadow-[1px_1px_0px_#991B1B]"
           >
-            Denda: Rp {fineAmount.toLocaleString("id-ID")}
+            Rp {fineAmount.toLocaleString("id-ID")}
           </Badge>
         )}
         <Badge

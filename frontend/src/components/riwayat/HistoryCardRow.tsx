@@ -68,15 +68,7 @@ export function HistoryCardRow({ item, onClick }: HistoryCardRowProps) {
             variant="rose"
             className="font-mono text-xs font-black shadow-[1px_1px_0px_#991B1B]"
           >
-            Denda: Rp {item.fine?.toLocaleString("id-ID")} (Belum Lunas)
-          </Badge>
-        )}
-        {hasPaidFine && (
-          <Badge
-            variant="emerald"
-            className="font-mono text-[11px] font-bold shadow-[1px_1px_0px_#059669]"
-          >
-            Denda Lunas
+            Rp {item.fine?.toLocaleString("id-ID")}
           </Badge>
         )}
         <Badge
