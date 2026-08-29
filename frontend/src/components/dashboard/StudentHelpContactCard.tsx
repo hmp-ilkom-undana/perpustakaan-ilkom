@@ -21,7 +21,7 @@ export function StudentHelpContactCard() {
   const waUrl = `https://wa.me/${cleanNumber}?text=${textMessage}`;
 
   return (
-    <div className="bg-white border-2 border-blue-900 rounded-xl p-5 sm:p-6 shadow-[4px_4px_0px_#1E3A8A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 transition-all">
+    <div className="bg-white border-2 border-blue-900 rounded-xl p-4 sm:p-6 shadow-[4px_4px_0px_#1E3A8A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-5 transition-all">
       {/* Sisi Kiri: Ikon Neo-Brutalist & Teks Informasi */}
       <div className="space-y-2 max-w-xl">
         <div className="flex items-center gap-2.5">
@@ -62,10 +62,10 @@ export function StudentHelpContactCard() {
         >
           <Button
             type="button"
-            className="w-full sm:w-auto font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#1E3A8A] transition-all py-2.5 px-4 h-auto cursor-pointer"
+            className="w-full sm:w-auto font-black text-xs uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_#1E3A8A] transition-all py-3 px-4 min-h-[44px] flex items-center justify-center text-center cursor-pointer"
           >
-            <Phone className="w-4 h-4 mr-2 text-white" />
-            Hubungi  {adminName}
+            <Phone className="w-4 h-4 mr-2 text-white shrink-0" />
+            <span>Hubungi {adminName}</span>
           </Button>
         </a>
       </div>

@@ -70,23 +70,23 @@ export function CirculationScheduleCard({
       )}
     >
       {/* 1. Header Terpadu */}
-      <CardHeader className="p-3.5 sm:p-5 pb-3 border-b-2 border-blue-900 bg-slate-50 flex flex-row items-center justify-between gap-3 shrink-0 flex-wrap">
-        <div className="flex items-center gap-2.5 min-w-0">
+      <CardHeader className="p-3.5 sm:p-5 pb-3 border-b-2 border-blue-900 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0">
+        <div className="flex items-center gap-2.5 min-w-0 w-full sm:w-auto">
           <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-lg border-2 border-blue-900 bg-blue-100 text-blue-900 shadow-[2px_2px_0px_#1E3A8A]">
             <CalendarIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
           </div>
           <div className="flex flex-col min-w-0">
-            <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-wider leading-tight text-blue-950 truncate">
+            <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-wider leading-tight text-blue-950">
               Kalender & Aktivitas Sirkulasi
             </CardTitle>
             <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 mt-0.5 truncate">
-              Jadwal Peminjaman, Pengambilan & Tenggat Pengembalian
+              Jadwal Peminjaman, Pengambilan & Tenggat
             </span>
           </div>
         </div>
 
         {/* Badge Tanggal & Status Terpilih */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           <Badge
             variant="outline"
             className="border-blue-900/30 bg-white text-blue-950 text-[10px] sm:text-xs font-black shadow-[1px_1px_0px_#1E3A8A]"
@@ -105,8 +105,8 @@ export function CirculationScheduleCard({
       {/* 2. Split Pane Content (Kiri: Mini Kalender, Kanan: List Aktivitas) */}
       <CardContent className="p-0 grid grid-cols-1 lg:grid-cols-12 divide-y-2 lg:divide-y-0 lg:divide-x-2 divide-blue-900/15 flex-grow">
         {/* Kolom Kiri: Kalender Interaktif */}
-        <div className="lg:col-span-5 p-4 sm:p-5 flex flex-col items-center justify-between space-y-4 bg-white">
-          <div className="w-full flex justify-center">
+        <div className="lg:col-span-5 p-3.5 sm:p-5 flex flex-col items-center justify-between space-y-4 bg-white">
+          <div className="w-full flex justify-center overflow-x-auto">
             <Calendar
               mode="single"
               selected={date}
@@ -125,7 +125,7 @@ export function CirculationScheduleCard({
         </div>
 
         {/* Kolom Kanan: Detail Aktivitas Tanggal Terpilih */}
-        <div className="lg:col-span-7 p-4 sm:p-5 flex flex-col justify-between space-y-3.5 bg-slate-50/40">
+        <div className="lg:col-span-7 p-3.5 sm:p-5 flex flex-col justify-between space-y-3.5 bg-slate-50/40">
           {/* Subheader Aktivitas Tanggal */}
           <div className="flex items-center justify-between pb-2 border-b border-blue-900/10">
             <div className="flex items-center gap-1.5 text-xs sm:text-sm font-black text-blue-950">
@@ -266,11 +266,12 @@ export function CirculationScheduleCard({
             <Link
               to="/mahasiswa/peminjaman"
               search={tasks.length === 1 ? { selectedId: tasks[0].id } : undefined}
+              className="w-full sm:w-auto"
             >
               <Button
                 variant="outline"
                 size="sm"
-                className="text-[11px] sm:text-xs font-black h-8 px-3 border-2 border-blue-900/30 hover:border-blue-900 text-blue-950 shadow-[2px_2px_0px_#1E3A8A] hover:bg-slate-100 cursor-pointer"
+                className="w-full sm:w-auto text-[11px] sm:text-xs font-black h-8 px-3 border-2 border-blue-900/30 hover:border-blue-900 text-blue-950 shadow-[2px_2px_0px_#1E3A8A] hover:bg-slate-100 cursor-pointer"
               >
                 Buka Detail Peminjaman
                 <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
