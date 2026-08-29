@@ -81,28 +81,6 @@ export function BorrowingQuotaDialog({
               Total Arsip Sedang Dipinjam
             </p>
           </div>
-
-          {/* 2. Status Alert */}
-          <div
-            className={cn(
-              "border-2 border-blue-900 rounded-lg p-3 flex items-center gap-2.5 text-xs font-semibold shadow-[2px_2px_0px_#1E3A8A]",
-              isFull
-                ? "bg-rose-50 text-rose-900"
-                : "bg-emerald-50 text-emerald-900"
-            )}
-          >
-            {isFull ? (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            ) : (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            )}
-            <span className="text-xs leading-snug">
-              {isFull
-                ? "Batas kuota tercapai. Kembalikan arsip untuk mengajukan peminjaman baru."
-                : `Anda masih memiliki ${sisa} slot kuota aktif untuk meminjam arsip.`}
-            </span>
-          </div>
-
           {/* 3. Progress Bar & Rincian per Kategori */}
           <div className="space-y-3 p-3.5 bg-white border-2 border-blue-900 rounded-lg shadow-[2px_2px_0px_#1E3A8A]">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
