@@ -34,7 +34,7 @@ export default function DashboardMahasiswa() {
   }
 
   return (
-    <div className="flex flex-col space-y-6 max-w-5xl mx-auto w-full pb-12 animate-in fade-in slide-in-from-bottom-3 duration-500 relative">
+    <div className="flex flex-col space-y-6 max-w-5xl mx-auto w-full pb-20 animate-in fade-in slide-in-from-bottom-3 duration-500 relative">
       {/* 1. Dynamic Draggable AssistiveTouch (Snap-to-Edge Physics) */}
       <DraggableAssistiveTouch
         quota={quota}

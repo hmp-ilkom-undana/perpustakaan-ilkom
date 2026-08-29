@@ -43,10 +43,10 @@ export function CatalogFilterBar({
         />
       </div>
 
-      {/* Row Filter Dropdowns */}
-      <div className="flex flex-wrap sm:flex-nowrap gap-3 items-center">
+      {/* Row Filter Dropdowns (Mobile: 2 kolom atas + 1 baris penuh bawah, Desktop: sejajar) */}
+      <div className="grid grid-cols-2 sm:flex sm:flex-nowrap gap-3 items-center w-full lg:w-auto">
         {/* Filter Jenis Arsip */}
-        <div className="flex-1 sm:w-44">
+        <div className="w-full sm:w-44">
           <Select
             value={filterType}
             onValueChange={(val) => onTypeChange(val || "Semua")}
@@ -67,8 +67,8 @@ export function CatalogFilterBar({
           </Select>
         </div>
 
-        {/* Filter Kategori (Standard Asli: Machine Learning, Sistem Informasi, Sistem Pakar, SPK, Kriptografi, Umum) */}
-        <div className="flex-1 sm:w-44">
+        {/* Filter Kategori */}
+        <div className="w-full sm:w-44">
           <Select
             value={filterCategory}
             onValueChange={(val) => onCategoryChange(val || "Semua")}
@@ -88,8 +88,8 @@ export function CatalogFilterBar({
           </Select>
         </div>
 
-        {/* Filter Ketersediaan */}
-        <div className="flex-1 sm:w-40">
+        {/* Filter Ketersediaan (Lebar Penuh di Mobile) */}
+        <div className="col-span-2 sm:col-span-1 w-full sm:w-40">
           <Select
             value={filterAvailability}
             onValueChange={(val) => onAvailabilityChange(val || "Semua")}
