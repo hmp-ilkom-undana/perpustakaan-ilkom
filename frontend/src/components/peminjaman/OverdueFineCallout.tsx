@@ -1,6 +1,5 @@
 import { AlertTriangle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface OverdueFineCalloutProps {
   fineAmount: number;
@@ -21,9 +20,6 @@ export function OverdueFineCallout({
           </div>
           <span>Tunggakan Denda Keterlambatan</span>
         </div>
-        <Badge variant="rose" className="text-[10px] font-black tracking-wider shrink-0 px-2 py-0.5">
-          TERLAMBAT
-        </Badge>
       </div>
 
       {/* 2. Nominal Display Box */}
@@ -36,7 +32,7 @@ export function OverdueFineCallout({
 
       {/* 3. Deskripsi Informasi */}
       <p className="text-xs text-rose-900 font-medium leading-relaxed">
-        Arsip telah melewati batas waktu pengembalian. Harap segera lakukan pelunasan denda dan kembalikan fisik berkas ke ruang HMP.
+        Arsip telah melewati batas waktu pengembalian. Harap segera lakukan pelunasan denda dan kembalikan arsip ke ruang HMP.
       </p>
 
       {/* 4. Tombol WhatsApp Lebar Penuh */}
@@ -48,7 +44,7 @@ export function OverdueFineCallout({
         className="w-full font-bold text-xs shadow-[2px_2px_0px_#065F46] hover:shadow-[3px_3px_0px_#065F46] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all py-2"
       >
         <Phone className="w-3.5 h-3.5 mr-2" />
-        Konfirmasi Pembayaran via WhatsApp
+        Konfirmasi Pembayaran Denda
       </Button>
     </div>
   );
