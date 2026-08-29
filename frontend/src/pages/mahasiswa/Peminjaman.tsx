@@ -1,49 +1,82 @@
-import { BookOpenCheck, History, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  BookOpenCheck,
+  History,
+  Clock,
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+  FolderOpen,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { usePeminjamanPage } from "@/hooks/usePeminjamanPage";
+import { usePeminjamanPage, PeminjamanFilter } from "@/hooks/usePeminjamanPage";
 import {
-  ActiveBorrowingCard,
+  LoanCardRow,
   ActiveBorrowingDetailModal,
   CancelBorrowingDialog,
-  EmptyBorrowingState,
 } from "@/components/peminjaman";
-import {
-  HistoryCardRow,
-  HistoryDetailModal,
-  HistoryEmptyState,
-} from "@/components/riwayat";
+import { HistoryDetailModal } from "@/components/riwayat";
 
 export default function Peminjaman() {
-  const { activeTab, switchTab, borrowing, history } = usePeminjamanPage();
+  const {
+    activeFilter,
+    setActiveFilter,
+    filteredItems,
+    isLoading,
+    allCount,
+    activeCount,
+    unpaidCount,
+    completedCount,
+    handleItemClick,
+    borrowing,
+    history,
+  } = usePeminjamanPage();
 
   const {
-    tickets,
-    isLoading: isLoadingBorrowing,
-    isCancelling,
     selectedTicket,
-    isDetailOpen,
-    openDetail,
+    isDetailOpen: isBorrowingDetailOpen,
     closeDetail: closeBorrowingDetail,
     cancelTicketTarget,
     setCancelTicketTarget,
     confirmCancel,
+    isCancelling,
     handleContactAdminWa: handleBorrowingContactWa,
   } = borrowing;
 
   const {
-    filteredHistory,
-    isLoading: isLoadingHistory,
-    selectedItem,
-    isDialogOpen,
-    activeFilter,
-    setActiveFilter,
-    unpaidFinesCount,
-    paidOrCleanCount,
-    openDetail: openHistoryDetail,
+    selectedItem: selectedHistoryItem,
+    isDialogOpen: isHistoryDialogOpen,
     closeDetail: closeHistoryDetail,
     handleContactAdminWa: handleHistoryContactWa,
   } = history;
+
+  const getEmptyMessage = (filter: PeminjamanFilter) => {
+    switch (filter) {
+      case "ACTIVE":
+        return {
+          title: "Tidak Ada Peminjaman Aktif",
+          description: "Anda tidak memiliki antrean pengajuan atau buku yang sedang dipinjam saat ini.",
+        };
+      case "UNPAID_FINE":
+        return {
+          title: "Bebas Tunggakan Denda",
+          description: "Hebat! Semua kewajiban peminjaman Anda telah tertib dan bebas denda.",
+        };
+      case "COMPLETED":
+        return {
+          title: "Belum Ada Riwayat Selesai",
+          description: "Riwayat transaksi yang telah dikembalikan atau selesai akan muncul di sini.",
+        };
+      case "ALL":
+      default:
+        return {
+          title: "Belum Ada Transaksi",
+          description: "Jelajahi katalog perpustakaan untuk mulai meminjam skripsi, ringkasan, atau naskah.",
+        };
+    }
+  };
+
+  const emptyInfo = getEmptyMessage(activeFilter);
 
   return (
     <div className="flex flex-col gap-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -55,186 +88,176 @@ export default function Peminjaman() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-blue-950">
-              Peminjaman
+              Peminjaman Arsip
             </h1>
             <p className="text-slate-500 text-xs font-semibold mt-0.5">
-              {activeTab === "AKTIF"
-                ? "Pantau status verifikasi, batas penjemputan, dan tenggat pengembalian arsip Anda."
-                : "Lihat rekam jejak transaksi arsip yang sudah selesai, dikembalikan, atau dibatalkan."}
+              Pantau status verifikasi, batas penjemputan, tenggat pengembalian, dan riwayat arsip Anda.
             </p>
           </div>
         </div>
 
         <Badge variant="outline" className="w-fit self-start sm:self-auto font-black">
-          {activeTab === "AKTIF"
-            ? tickets.length === 0
-              ? "Tidak Ada Antrean"
-              : `${tickets.length} Peminjaman Aktif`
-            : history.historyData.length === 0
-            ? "Belum Ada Riwayat"
-            : `${history.historyData.length} Riwayat Selesai`}
+          {activeCount > 0
+            ? `${activeCount} Sedang Aktif • ${allCount} Total Transaksi`
+            : `${allCount} Total Transaksi`}
         </Badge>
       </div>
 
-      {/* 2. Tab Navigation */}
-      <div className="flex items-center gap-2 px-4 sm:px-0 border-b-2 border-blue-900 pb-0">
+      {/* 2. Flat Filter Tabs */}
+      <div className="flex flex-wrap items-center gap-2 px-4 sm:px-0">
+        {/* Tab 1: Semua */}
         <button
           type="button"
-          onClick={() => switchTab("AKTIF")}
+          onClick={() => setActiveFilter("ALL")}
           className={cn(
-            "flex items-center gap-2 px-4 py-2.5 text-sm font-black border-2 border-b-0 rounded-t-lg transition-all cursor-pointer -mb-0.5 relative",
-            activeTab === "AKTIF"
-              ? "bg-amber-400 text-blue-950 border-blue-900 shadow-[2px_-2px_0px_#1E3A8A]"
-              : "bg-white text-slate-500 border-transparent hover:border-blue-900 hover:text-blue-900"
+            "px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5",
+            activeFilter === "ALL"
+              ? "bg-blue-950 text-white border-blue-950 shadow-[2px_2px_0px_#1E3A8A]"
+              : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
           )}
         >
-          <BookOpenCheck className="w-4 h-4" />
-          Aktif
-          {tickets.length > 0 && (
-            <span className="bg-blue-950 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
-              {tickets.length}
-            </span>
-          )}
+          <FolderOpen className="w-3.5 h-3.5" />
+          <span>Semua</span>
+          <span
+            className={cn(
+              "px-1.5 py-0.2 rounded-full text-[10px] font-black",
+              activeFilter === "ALL" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-700"
+            )}
+          >
+            {allCount}
+          </span>
         </button>
 
+        {/* Tab 2: Sedang Aktif */}
         <button
           type="button"
-          onClick={() => switchTab("RIWAYAT")}
+          onClick={() => setActiveFilter("ACTIVE")}
           className={cn(
-            "flex items-center gap-2 px-4 py-2.5 text-sm font-black border-2 border-b-0 rounded-t-lg transition-all cursor-pointer -mb-0.5 relative",
-            activeTab === "RIWAYAT"
-              ? "bg-amber-400 text-blue-952 border-blue-900 shadow-[2px_-2px_0px_#1E3A8A]"
-              : "bg-white text-slate-500 border-transparent hover:border-blue-900 hover:text-blue-900"
+            "px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5",
+            activeFilter === "ACTIVE"
+              ? "bg-amber-400 text-blue-950 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
+              : activeCount > 0
+              ? "bg-amber-50 text-amber-900 border-amber-400 hover:bg-amber-100 shadow-[1px_1px_0px_#F59E0B]"
+              : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
           )}
         >
-          <History className="w-4 h-4" />
-          Riwayat
-          {unpaidFinesCount > 0 && (
-            <span className="bg-rose-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
-              {unpaidFinesCount}
-            </span>
+          <Clock className="w-3.5 h-3.5 text-blue-950" />
+          <span>Sedang Aktif</span>
+          <span
+            className={cn(
+              "px-1.5 py-0.2 rounded-full text-[10px] font-black",
+              activeFilter === "ACTIVE"
+                ? "bg-blue-950 text-white"
+                : activeCount > 0
+                ? "bg-amber-500 text-blue-950"
+                : "bg-slate-100 text-slate-700"
+            )}
+          >
+            {activeCount}
+          </span>
+        </button>
+
+        {/* Tab 3: Menunggak Denda */}
+        <button
+          type="button"
+          onClick={() => setActiveFilter("UNPAID_FINE")}
+          className={cn(
+            "px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5",
+            activeFilter === "UNPAID_FINE"
+              ? "bg-rose-600 text-white border-rose-700 shadow-[2px_2px_0px_#991B1B]"
+              : unpaidCount > 0
+              ? "bg-rose-50 text-rose-900 border-rose-400 hover:bg-rose-100 shadow-[1px_1px_0px_#F43F5E]"
+              : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
           )}
+        >
+          <AlertTriangle className="w-3.5 h-3.5" />
+          <span>Menunggak Denda</span>
+          <span
+            className={cn(
+              "px-1.5 py-0.2 rounded-full text-[10px] font-black",
+              activeFilter === "UNPAID_FINE"
+                ? "bg-white text-rose-700"
+                : unpaidCount > 0
+                ? "bg-rose-600 text-white"
+                : "bg-slate-100 text-slate-700"
+            )}
+          >
+            {unpaidCount}
+          </span>
+        </button>
+
+        {/* Tab 4: Selesai / Bebas Denda */}
+        <button
+          type="button"
+          onClick={() => setActiveFilter("COMPLETED")}
+          className={cn(
+            "px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5",
+            activeFilter === "COMPLETED"
+              ? "bg-emerald-700 text-white border-emerald-800 shadow-[2px_2px_0px_#065F46]"
+              : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
+          )}
+        >
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          <span>Selesai</span>
+          <span
+            className={cn(
+              "px-1.5 py-0.2 rounded-full text-[10px] font-black",
+              activeFilter === "COMPLETED"
+                ? "bg-white/20 text-white"
+                : "bg-slate-100 text-slate-700"
+            )}
+          >
+            {completedCount}
+          </span>
         </button>
       </div>
 
-      {/* 3A. Tab Aktif: Daftar Peminjaman */}
-      {activeTab === "AKTIF" && (
-        <div className="flex flex-col min-h-[300px] px-4 sm:px-0">
-          {isLoadingBorrowing ? (
-            <div className="flex flex-col items-center justify-center py-20 gap-3">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-900" />
-              <p className="text-xs font-bold text-slate-500">
-                Memuat data transaksi aktif...
+      {/* 3. Content List Section */}
+      <div className="flex flex-col min-h-[350px] px-4 sm:px-0">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-900" />
+            <p className="text-xs font-bold text-slate-500">
+              Memuat data transaksi peminjaman...
+            </p>
+          </div>
+        ) : filteredItems.length > 0 ? (
+          <div className="flex flex-col gap-3">
+            {filteredItems.map((item) => (
+              <LoanCardRow
+                key={`${item.sourceType}-${item.id}`}
+                item={item}
+                onClick={() => handleItemClick(item)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 px-4 bg-white border-2 border-blue-900 rounded-xl shadow-[4px_4px_0px_#1E3A8A] text-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-slate-100 border-2 border-blue-900 flex items-center justify-center text-slate-400">
+              <History className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-sm sm:text-base font-black text-blue-950">
+                {emptyInfo.title}
+              </h3>
+              <p className="text-xs text-slate-500 font-medium max-w-sm mt-0.5">
+                {emptyInfo.description}
               </p>
             </div>
-          ) : tickets.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              {tickets.map((ticket) => (
-                <ActiveBorrowingCard
-                  key={ticket.id}
-                  ticket={ticket}
-                  onClick={() => openDetail(ticket)}
-                />
-              ))}
-            </div>
-          ) : (
-            <EmptyBorrowingState />
-          )}
-        </div>
-      )}
-
-      {/* 3B. Tab Riwayat: Filter + Daftar Riwayat */}
-      {activeTab === "RIWAYAT" && (
-        <>
-          {/* Filter Tabs Riwayat */}
-          <div className="flex flex-wrap items-center gap-2 px-4 sm:px-0">
-            <button
-              type="button"
-              onClick={() => setActiveFilter("ALL")}
-              className={cn(
-                "px-3.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer",
-                activeFilter === "ALL"
-                  ? "bg-blue-950 text-white border-blue-950 shadow-[2px_2px_0px_#1E3A8A]"
-                  : "bg-white text-slate-700 border-slate-300 hover:border-blue-900"
-              )}
-            >
-              Semua ({history.historyData.length})
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveFilter("UNPAID_FINE")}
-              className={cn(
-                "px-3.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-                activeFilter === "UNPAID_FINE"
-                  ? "bg-rose-600 text-white border-rose-700 shadow-[2px_2px_0px_#991B1B]"
-                  : unpaidFinesCount > 0
-                  ? "bg-rose-50 text-rose-800 border-rose-400 hover:bg-rose-100"
-                  : "bg-white text-slate-700 border-slate-300 hover:border-blue-900"
-              )}
-            >
-              <span>Menunggak Denda</span>
-              <span
-                className={cn(
-                  "px-1.5 rounded-full text-[10px] font-black",
-                  activeFilter === "UNPAID_FINE"
-                    ? "bg-white text-rose-700"
-                    : "bg-rose-600 text-white"
-                )}
-              >
-                {unpaidFinesCount}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveFilter("PAID_OR_CLEAN")}
-              className={cn(
-                "px-3.5 py-1.5 rounded-lg border-2 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer",
-                activeFilter === "PAID_OR_CLEAN"
-                  ? "bg-emerald-700 text-white border-emerald-800 shadow-[2px_2px_0px_#065F46]"
-                  : "bg-white text-slate-700 border-slate-300 hover:border-blue-900"
-              )}
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Bebas Denda ({paidOrCleanCount})</span>
-            </button>
           </div>
+        )}
+      </div>
 
-          {/* Daftar Riwayat */}
-          <div className="flex flex-col min-h-[350px] px-4 sm:px-0">
-            {isLoadingHistory ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-900" />
-                <p className="text-xs font-bold text-slate-500">
-                  Memuat riwayat peminjaman...
-                </p>
-              </div>
-            ) : filteredHistory.length > 0 ? (
-              <div className="flex flex-col gap-3">
-                {filteredHistory.map((item) => (
-                  <HistoryCardRow
-                    key={item.id}
-                    item={item}
-                    onClick={() => openHistoryDetail(item)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <HistoryEmptyState />
-            )}
-          </div>
-        </>
-      )}
-
-      {/* 4. Modals Peminjaman Aktif */}
+      {/* 4. Modal Pop-Up Rincian Peminjaman Aktif */}
       <ActiveBorrowingDetailModal
-        isOpen={isDetailOpen}
+        isOpen={isBorrowingDetailOpen}
         onClose={closeBorrowingDetail}
         ticket={selectedTicket}
         onCancelClick={setCancelTicketTarget}
         onContactAdmin={handleBorrowingContactWa}
       />
+
+      {/* 5. Modal Konfirmasi Pembatalan Antrean */}
       <CancelBorrowingDialog
         ticket={cancelTicketTarget}
         isOpen={cancelTicketTarget !== null}
@@ -243,11 +266,11 @@ export default function Peminjaman() {
         isPending={isCancelling}
       />
 
-      {/* 5. Modal Detail Riwayat */}
+      {/* 6. Modal Dialog Detail Riwayat Selesai */}
       <HistoryDetailModal
-        isOpen={isDialogOpen}
+        isOpen={isHistoryDialogOpen}
         onClose={closeHistoryDetail}
-        item={selectedItem}
+        item={selectedHistoryItem}
         onContactAdmin={handleHistoryContactWa}
       />
     </div>
