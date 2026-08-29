@@ -67,7 +67,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
           <div className="flex flex-col min-w-0">
             <CardTitle
               className={cn(
-                "text-xs sm:text-sm font-black uppercase tracking-wider leading-tight truncate",
+                "text-xs sm:text-sm font-black uppercase tracking-wider leading-tight",
                 hasFine ? "text-red-950" : "text-blue-950",
               )}
             >
@@ -88,7 +88,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
 
         <Badge
           variant={hasFine ? "rose" : "emerald"}
-          className="shrink-0 text-[10px] sm:text-xs font-black font-mono h-6 sm:h-7 px-2.5 shadow-[1px_1px_0px_#1E3A8A]"
+          className="shrink-0 text-[10px] sm:text-xs font-black font-mono h-6 sm:h-7 px-2 sm:px-2.5 shadow-[1px_1px_0px_#1E3A8A] whitespace-nowrap"
         >
           {hasFine
             ? `TOTAL: Rp ${totalDenda.toLocaleString("id-ID")}`
@@ -113,7 +113,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
             {/* KOMPARTEMEN 1: Tunggakan Keterlambatan */}
-            <div className="p-3.5 bg-rose-50/70 border-2 border-rose-200 rounded-xl flex flex-col justify-between gap-2 shadow-[2px_2px_0px_#F43F5E]">
+            <div className="p-3 sm:p-3.5 bg-rose-50/70 border-2 border-rose-200 rounded-xl flex flex-col justify-between gap-2 shadow-[2px_2px_0px_#F43F5E]">
               <div className="space-y-2.5">
                 {/* Header Kompartemen 1 */}
                 <div className="flex items-center justify-between gap-2 border-b border-rose-200 pb-2">
@@ -136,7 +136,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                         key={item.id}
                         to="/mahasiswa/peminjaman"
                         search={{ selectedId: item.id, filter: "UNPAID_FINE" }}
-                        className="p-2.5 bg-white border-2 border-rose-100 rounded-lg flex items-center justify-between gap-3 hover:border-rose-400 hover:shadow-[2px_2px_0px_#E11D48] transition-all group cursor-pointer"
+                        className="p-2 sm:p-2.5 bg-white border-2 border-rose-100 rounded-lg flex items-center justify-between gap-2.5 hover:border-rose-400 hover:shadow-[2px_2px_0px_#E11D48] transition-all group cursor-pointer"
                         title="Klik untuk membuka rincian transaksi"
                       >
                         <div className="min-w-0 flex-1 flex flex-col gap-1">
@@ -147,7 +147,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                             {item.pickupCode || `PK-${item.id.substring(0, 4).toUpperCase()}`}
                           </span>
                         </div>
-                        <span className="text-xs font-black font-mono text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded shadow-[1px_1px_0px_#E11D48] shrink-0">
+                        <span className="text-[11px] sm:text-xs font-black font-mono text-rose-600 bg-rose-50 border border-rose-200 px-1.5 sm:px-2 py-1 rounded shadow-[1px_1px_0px_#E11D48] shrink-0 whitespace-nowrap">
                           Rp {(item.fineAmount || 0).toLocaleString("id-ID")}
                         </span>
                       </Link>
@@ -162,14 +162,14 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
             </div>
 
             {/* KOMPARTEMEN 2: Kerusakan atau Hilang */}
-            <div className="p-3.5 bg-amber-50/70 border-2 border-amber-200 rounded-xl flex flex-col justify-between gap-2 shadow-[2px_2px_0px_#F59E0B]">
+            <div className="p-3 sm:p-3.5 bg-amber-50/70 border-2 border-amber-200 rounded-xl flex flex-col justify-between gap-2 shadow-[2px_2px_0px_#F59E0B]">
               <div className="space-y-2.5">
                 {/* Header Kompartemen 2 */}
                 <div className="flex items-center justify-between gap-2 border-b border-amber-200 pb-2">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <ShieldAlert className="w-4 h-4 text-amber-700 shrink-0" />
                     <span className="text-xs font-black text-amber-950 uppercase tracking-wider truncate">
-                      Kerusakan atau Hilang ({countDamaged + countLost})
+                      Kerusakan / Hilang ({countDamaged + countLost})
                     </span>
                   </div>
                   <span className="text-xs font-black font-mono text-amber-800 shrink-0">

@@ -19,7 +19,7 @@ export default function Profil() {
   }
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500 p-4 sm:p-0">
+    <div className="space-y-8 max-w-5xl mx-auto pb-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* 1. Profile Header Hero */}
       <ProfileHeaderCard
         name={profile.user?.name || profile.name}

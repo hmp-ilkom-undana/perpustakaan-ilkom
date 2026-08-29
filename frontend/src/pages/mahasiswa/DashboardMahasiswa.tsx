@@ -34,7 +34,7 @@ export default function DashboardMahasiswa() {
   }
 
   return (
-    <div className="flex flex-col space-y-6 max-w-5xl mx-auto w-full pb-12 animate-in fade-in slide-in-from-bottom-3 duration-500 relative">
+    <div className="flex flex-col space-y-6 max-w-5xl mx-auto w-full pb-20 animate-in fade-in slide-in-from-bottom-3 duration-500 relative">
       {/* 1. Dynamic Draggable AssistiveTouch (Snap-to-Edge Physics) */}
       <DraggableAssistiveTouch
         quota={quota}
@@ -43,7 +43,7 @@ export default function DashboardMahasiswa() {
       />
 
       {/* 2. Header Sambutan Mahasiswa & Quick Discovery Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 px-4 sm:px-0 pt-2 pb-2 border-b-2 border-blue-900/20">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 pt-1 pb-2 border-b-2 border-blue-900/20">
         <div className="flex flex-col gap-0.5 max-w-xl">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-blue-950 leading-tight">
             Selamat datang kembali, <span className="text-orange-500">{firstName}</span>!
@@ -68,7 +68,7 @@ export default function DashboardMahasiswa() {
       </div>
 
       {/* 3. Grid Dashboard (Denda & Kalender Terpadu) */}
-      <div className="w-full px-4 sm:px-0 space-y-6">
+      <div className="w-full space-y-6">
         {/* Status Denda (2 Kompartemen Mandiri) */}
         <FineSummaryCard denda={denda} className="w-full" />
 
@@ -83,7 +83,7 @@ export default function DashboardMahasiswa() {
       </div>
 
       {/* 4. Pusat Bantuan & Kontak Petugas Resmi via WhatsApp */}
-      <div className="px-4 sm:px-0 pt-2">
+      <div className="w-full pt-1">
         <StudentHelpContactCard />
       </div>
 

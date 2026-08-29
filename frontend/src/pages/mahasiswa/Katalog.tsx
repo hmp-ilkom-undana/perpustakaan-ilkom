@@ -29,7 +29,7 @@ export default function Katalog() {
   return (
     <div className="flex flex-col gap-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* 1. Header & Filter Bar */}
-      <div className="flex flex-col gap-5 pb-6 mb-2 border-b-2 border-blue-900 px-4 sm:px-0">
+      <div className="flex flex-col gap-5 pb-6 mb-2 border-b-2 border-blue-900">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-orange-500 text-white border-2 border-blue-900 rounded-lg flex items-center justify-center shadow-[2px_2px_0px_#1E3A8A] shrink-0">
             <Library className="w-5 h-5" />

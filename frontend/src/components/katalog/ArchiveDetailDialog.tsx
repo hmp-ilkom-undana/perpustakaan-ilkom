@@ -69,8 +69,8 @@ export function ArchiveDetailDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[520px]">
-        <DialogHeader className="space-y-2">
+      <DialogContent className="max-w-[calc(100vw-32px)] sm:max-w-[520px] max-h-[90dvh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="space-y-2 pr-6">
           <DialogTitle className="text-base sm:text-lg font-black text-blue-950 pr-8 leading-snug">
             {archive.title}
           </DialogTitle>

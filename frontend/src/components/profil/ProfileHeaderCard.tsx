@@ -1,5 +1,4 @@
-import { Mail, GraduationCap, Calendar, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Mail, Sparkles } from "lucide-react";
 
 interface ProfileHeaderCardProps {
   name: string;
@@ -24,18 +23,9 @@ export function ProfileHeaderCard({
 
         {/* Informasi Mahasiswa */}
         <div className="space-y-1 sm:space-y-1.5 min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            <h1 className="text-base sm:text-2xl font-black text-blue-950 tracking-tight truncate max-w-full">
-              {name || "Mahasiswa"}
-            </h1>
-            <Badge
-              variant="outline"
-              className="bg-amber-100 text-blue-950 border-2 border-blue-900 font-black text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 shadow-[1px_1px_0px_#1E3A8A] sm:shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-1 shrink-0"
-            >
-              <GraduationCap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-900" />
-              Mahasiswa ILKOM
-            </Badge>
-          </div>
+          <h1 className="text-base sm:text-2xl font-black text-blue-950 tracking-tight truncate max-w-full">
+            {name || "Mahasiswa"}
+          </h1>
 
           <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-1 text-xs sm:text-sm font-semibold text-slate-600">
             <span className="font-mono text-[10px] sm:text-xs font-black text-blue-950 bg-slate-100 border border-blue-900 px-1.5 sm:px-2 py-0.5 rounded-sm shadow-[1px_1px_0px_#1E3A8A]">
@@ -46,11 +36,6 @@ export function ProfileHeaderCard({
               <span className="truncate">{email || "mahasiswa@ilkom.com"}</span>
             </span>
           </div>
-
-          <p className="text-[10px] sm:text-xs text-slate-500 font-medium flex items-center gap-1 truncate">
-            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 shrink-0" />
-            <span>Akun Portal Layanan Peminjaman</span>
-          </p>
         </div>
       </div>
 

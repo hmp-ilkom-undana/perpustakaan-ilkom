@@ -112,7 +112,10 @@ function MahasiswaLayoutContent() {
             {/* Bagian Tengah: Navigasi Desktop (Disembunyikan di Mobile) */}
             <nav className="hidden md:flex space-x-1">
               {menus.map((menu) => {
-                const isActive = location.pathname === menu.path;
+                const isActive =
+                  menu.path === "/mahasiswa"
+                    ? location.pathname === "/mahasiswa"
+                    : location.pathname.startsWith(menu.path);
                 const Icon = menu.icon;
                 return (
                   <Link
@@ -196,38 +199,51 @@ function MahasiswaLayoutContent() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+                aria-label={isMobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
               >
-                {/* Ikon berubah jadi 'X' jika menu terbuka, dan 'Menu' jika tertutup */}
                 {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5 text-blue-950" />
                 ) : (
-                  <Menu className="w-6 h-6 text-slate-700" />
+                  <Menu className="w-5 h-5 text-blue-950" />
                 )}
               </Button>
             </div>
           </div>
         </div>
 
+        {/* ================= BACKDROP OVERLAY (MOBILE) ================= */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 top-16 bg-slate-900/50 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
         {/* ================= MENU DROPDOWN (MOBILE) ================= */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t bg-white animate-in slide-in-from-top-2">
-            <div className="px-4 pt-2 pb-3 space-y-1">
+          <div className="md:hidden border-t-2 border-blue-900 bg-white shadow-[0px_8px_16px_rgba(30,58,138,0.15)] max-h-[calc(100dvh-4.5rem)] overflow-y-auto z-50 relative animate-in slide-in-from-top-2 duration-200">
+            <div className="px-4 pt-3 pb-4 space-y-1.5">
               {menus.map((menu) => {
-                const isActive = location.pathname === menu.path;
+                const isActive =
+                  menu.path === "/mahasiswa"
+                    ? location.pathname === "/mahasiswa"
+                    : location.pathname.startsWith(menu.path);
                 const Icon = menu.icon;
                 return (
                   <Link
                     key={menu.path}
                     to={menu.path}
-                    onClick={() => setIsMobileMenuOpen(false)} // Tutup menu saat diklik
-                    className={`flex items-center gap-3 px-3 py-3 rounded-md text-base font-bold transition-all ${
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3.5 py-3 rounded-lg text-sm font-bold transition-all ${
                       isActive
-                        ? "bg-amber-400 text-blue-900 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
-                        : "text-slate-600 hover:bg-slate-100 hover:text-blue-900 border-2 border-transparent hover:border-blue-900 hover:shadow-[2px_2px_0px_#1E3A8A]"
+                        ? "bg-amber-400 text-blue-950 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
+                        : "text-slate-700 hover:bg-slate-100 hover:text-blue-950 border-2 border-transparent hover:border-blue-900 hover:shadow-[2px_2px_0px_#1E3A8A]"
                     }`}
                   >
                     <Icon
-                      className={`w-5 h-5 ${isActive ? "text-blue-900" : ""}`}
+                      className={`w-5 h-5 ${isActive ? "text-blue-950" : "text-slate-500"}`}
                     />
                     {menu.name}
                   </Link>
@@ -235,7 +251,7 @@ function MahasiswaLayoutContent() {
               })}
 
               {/* Info Profil & Logout versi Mobile */}
-              <div className="border-t border-slate-200 mt-4 pt-4 px-3 pb-2 space-y-3">
+              <div className="border-t border-slate-200 mt-4 pt-4 px-1 pb-2 space-y-3">
                 <Link
                   to="/mahasiswa/profil"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -288,7 +304,7 @@ function MahasiswaLayoutContent() {
       </header>
 
       {/* ================= KONTEN UTAMA ================= */}
-      <main className="flex-1 w-full max-w-7xl mx-auto p-0 sm:p-6 lg:p-8">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <Outlet />
       </main>
 

@@ -51,12 +51,12 @@ export function HistoryFineSection({
           )}
         </div>
 
-        {/* Nominal Denda */}
-        <div className="flex items-center justify-between text-xs font-semibold">
-          <span className="text-slate-600">Total Nominal Denda:</span>
+        {/* Nominal Denda Card Display */}
+        <div className="flex items-center justify-between p-3 rounded-lg bg-white border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]">
+          <span className="text-xs font-bold text-slate-600">Total Nominal Denda:</span>
           <span
             className={cn(
-              "text-sm sm:text-base font-black font-mono",
+              "text-base sm:text-lg font-black font-mono",
               isPaid ? "text-emerald-700" : "text-rose-600"
             )}
           >
@@ -86,17 +86,16 @@ export function HistoryFineSection({
             )}
           </div>
         ) : (
-          <div className="pt-2 border-t-2 border-rose-900/20 flex flex-col gap-2">
-            <p className="text-[11px] text-rose-800 font-medium leading-relaxed">
+          <div className="pt-2 border-t-2 border-rose-900/20 flex flex-col gap-2.5">
+            <p className="text-xs text-rose-900 font-medium leading-relaxed">
               Silakan hubungi admin atau petugas via WhatsApp untuk verifikasi
               pelunasan denda.
             </p>
             <Button
               type="button"
               variant="success"
-              size="sm"
               onClick={onContactAdmin}
-              className="w-full font-bold h-8 text-xs"
+              className="w-full font-bold h-10 text-xs shadow-[2px_2px_0px_#065F46] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
             >
               <Phone className="w-3.5 h-3.5 mr-1.5" />
               Konfirmasi Pembayaran Denda
