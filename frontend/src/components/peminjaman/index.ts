@@ -5,5 +5,6 @@ export * from "./BorrowingRow";
 export * from "./BorrowingTimeline";
 export * from "./CancelBorrowingDialog";
 export * from "./EmptyBorrowingState";
+export * from "./LoanCardRow";
 export * from "./OverdueFineCallout";
 export * from "./TicketProgress";
