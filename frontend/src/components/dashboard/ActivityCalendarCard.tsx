@@ -71,7 +71,7 @@ export function ActivityCalendarCard({
         {/* Legend Indikator Tanggal Berjadwal */}
         <div className="w-full pt-2 border-t border-slate-100 flex items-center justify-center gap-2 text-[10px] sm:text-[11px] font-bold text-slate-500">
           <span className="w-2.5 h-2.5 rounded-xs bg-amber-200 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A]" />
-          <span>Tanggal dengan Agenda Peminjaman</span>
+          <span>Tanggal dengan Aktivitas Peminjaman</span>
         </div>
       </CardContent>
     </Card>

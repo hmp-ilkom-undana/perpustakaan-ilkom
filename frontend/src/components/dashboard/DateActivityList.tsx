@@ -55,7 +55,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
         </div>
 
         <Badge variant={tasks.length > 0 ? "orange" : "secondary"} className="shrink-0 text-[9px] sm:text-[10px] font-black">
-          {tasks.length} Agenda
+          {tasks.length} Aktivitas
         </Badge>
       </CardHeader>
 

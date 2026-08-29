@@ -102,7 +102,7 @@ export function CirculationScheduleCard({
         </div>
       </CardHeader>
 
-      {/* 2. Split Pane Content (Kiri: Mini Kalender, Kanan: List Agenda) */}
+      {/* 2. Split Pane Content (Kiri: Mini Kalender, Kanan: List Aktivitas) */}
       <CardContent className="p-0 grid grid-cols-1 lg:grid-cols-12 divide-y-2 lg:divide-y-0 lg:divide-x-2 divide-blue-900/15 flex-grow">
         {/* Kolom Kiri: Kalender Interaktif */}
         <div className="lg:col-span-5 p-4 sm:p-5 flex flex-col items-center justify-between space-y-4 bg-white">
@@ -124,17 +124,17 @@ export function CirculationScheduleCard({
           </div>
         </div>
 
-        {/* Kolom Kanan: Detail Agenda Tanggal Terpilih */}
+        {/* Kolom Kanan: Detail Aktivitas Tanggal Terpilih */}
         <div className="lg:col-span-7 p-4 sm:p-5 flex flex-col justify-between space-y-3.5 bg-slate-50/40">
-          {/* Subheader Agenda Tanggal */}
+          {/* Subheader Aktivitas Tanggal */}
           <div className="flex items-center justify-between pb-2 border-b border-blue-900/10">
             <div className="flex items-center gap-1.5 text-xs sm:text-sm font-black text-blue-950">
-              <span>Agenda:</span>
+              <span>Aktivitas:</span>
               <span className="text-orange-600 font-bold">{formattedDate}</span>
             </div>
           </div>
 
-          {/* List Agenda / Empty State */}
+          {/* List Aktivitas / Empty State */}
           <div
             className={cn(
               "flex-1 min-h-[220px] flex flex-col",

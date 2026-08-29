@@ -72,7 +72,7 @@ export default function DashboardMahasiswa() {
         {/* Status Denda (2 Kompartemen Mandiri) */}
         <FineSummaryCard denda={denda} className="w-full" />
 
-        {/* Kalender & Agenda Sirkulasi Terpadu (Bento Card dengan Deep Linking) */}
+        {/* Kalender & Aktivitas Sirkulasi Terpadu (Bento Card dengan Deep Linking) */}
         <CirculationScheduleCard
           date={calendar.date}
           onSelectDate={calendar.setDate}
