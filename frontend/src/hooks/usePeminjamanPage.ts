@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useLocation } from "@tanstack/react-router";
+import { useLocation, useSearch } from "@tanstack/react-router";
 import { useStudentBorrowing, StudentTicketItem } from "./useStudentBorrowing";
 import { useStudentHistory, StudentHistoryItem, HistoryStatus } from "./useStudentHistory";
 import { BorrowingStatus } from "@/components/peminjaman";
@@ -23,6 +23,10 @@ export interface UnifiedLoanItem {
 export function usePeminjamanPage() {
   const [activeFilter, setActiveFilter] = useState<PeminjamanFilter>("ALL");
   const location = useLocation();
+  const search = useSearch({ strict: false }) as {
+    selectedId?: string;
+    filter?: PeminjamanFilter;
+  };
 
   const borrowing = useStudentBorrowing();
   const history = useStudentHistory();
@@ -110,27 +114,50 @@ export function usePeminjamanPage() {
     [borrowing, history]
   );
 
-  // 8. Deep-Link Navigation Support (URL Search Params)
+  // 8. Deep-Link Navigation Support (Reactive URL Search Params & Auto-Open)
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const filterParam = params.get("filter") as PeminjamanFilter | null;
-    const selectedIdParam = params.get("selectedId");
+    const rawUrlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const selectedIdParam = search?.selectedId || rawUrlParams?.get("selectedId");
+    const filterParam = search?.filter || (rawUrlParams?.get("filter") as PeminjamanFilter | null);
 
     if (filterParam && ["ALL", "ACTIVE", "UNPAID_FINE", "COMPLETED"].includes(filterParam)) {
       setActiveFilter(filterParam);
     }
 
-    if (selectedIdParam && !isLoading && allItems.length > 0) {
-      const target = allItems.find((item) => item.id === selectedIdParam);
-      if (target) {
-        if (target.sourceType === "ACTIVE" && target.activeTicket) {
-          borrowing.openDetail(target.activeTicket);
-        } else if (target.sourceType === "HISTORY" && target.historyItem) {
-          history.openDetail(target.historyItem);
-        }
+    if (!selectedIdParam || isLoading) return;
+
+    // A. Cari di Active Tickets
+    const activeMatch = borrowing.tickets.find((t) => String(t.id) === String(selectedIdParam));
+    if (activeMatch) {
+      borrowing.openDetail(activeMatch);
+      return;
+    }
+
+    // B. Cari di History Items
+    const historyMatch = history.historyData.find((h) => String(h.id) === String(selectedIdParam));
+    if (historyMatch) {
+      history.openDetail(historyMatch);
+      return;
+    }
+
+    // C. Fallback di allItems
+    const target = allItems.find((item) => String(item.id) === String(selectedIdParam));
+    if (target) {
+      if (target.sourceType === "ACTIVE" && target.activeTicket) {
+        borrowing.openDetail(target.activeTicket);
+      } else if (target.sourceType === "HISTORY" && target.historyItem) {
+        history.openDetail(target.historyItem);
       }
     }
-  }, [location.search, isLoading, allItems]);
+  }, [
+    search?.selectedId,
+    search?.filter,
+    location.search,
+    isLoading,
+    borrowing.tickets,
+    history.historyData,
+    allItems,
+  ]);
 
   return {
     activeFilter,

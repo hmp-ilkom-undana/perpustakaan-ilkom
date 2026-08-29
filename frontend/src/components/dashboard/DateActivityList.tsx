@@ -181,7 +181,10 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
 
         {/* 3. Footer Action */}
         <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
-          <Link to="/mahasiswa/peminjaman">
+          <Link
+            to="/mahasiswa/peminjaman"
+            search={tasks.length === 1 ? { selectedId: tasks[0].id } : undefined}
+          >
             <Button variant="outline" size="sm" className="text-[11px] sm:text-xs font-bold h-7 sm:h-8 px-2.5 sm:px-3">
               Buka Detail Peminjaman
               <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-1" />

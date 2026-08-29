@@ -175,9 +175,12 @@ export function CirculationScheduleCard({
                   }
 
                   return (
-                    <div
+                    <Link
                       key={task.id}
-                      className="p-3 bg-white border-2 border-blue-900/20 hover:border-blue-900/40 rounded-xl space-y-2 shadow-[2px_2px_0px_#E2E8F0] transition-all"
+                      to="/mahasiswa/peminjaman"
+                      search={{ selectedId: task.id }}
+                      className="p-3 bg-white border-2 border-blue-900/20 hover:border-blue-900 rounded-xl space-y-2 shadow-[2px_2px_0px_#E2E8F0] hover:shadow-[2px_2px_0px_#1E3A8A] transition-all block cursor-pointer group"
+                      title="Klik untuk membuka detail peminjaman arsip"
                     >
                       {/* Baris Atas: Badge Status + Tipe + Sisa Hari / Kode Ambil */}
                       <div className="flex items-center justify-between gap-1.5 flex-wrap">
@@ -236,7 +239,7 @@ export function CirculationScheduleCard({
                       </div>
 
                       {/* Judul Dokumen */}
-                      <h5 className="text-xs sm:text-sm font-black text-blue-950 line-clamp-1 leading-snug">
+                      <h5 className="text-xs sm:text-sm font-black text-blue-950 line-clamp-1 leading-snug group-hover:text-orange-600 transition-colors">
                         {task.archive.title}
                       </h5>
 
@@ -251,7 +254,7 @@ export function CirculationScheduleCard({
                           </span>
                         )}
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -260,7 +263,10 @@ export function CirculationScheduleCard({
 
           {/* 3. Footer Action */}
           <div className="pt-2 border-t border-blue-900/10 flex items-center justify-end">
-            <Link to="/mahasiswa/peminjaman">
+            <Link
+              to="/mahasiswa/peminjaman"
+              search={tasks.length === 1 ? { selectedId: tasks[0].id } : undefined}
+            >
               <Button
                 variant="outline"
                 size="sm"
