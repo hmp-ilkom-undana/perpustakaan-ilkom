@@ -95,12 +95,6 @@ export default function Peminjaman() {
             </p>
           </div>
         </div>
-
-        <Badge variant="outline" className="w-fit self-start sm:self-auto font-black">
-          {activeCount > 0
-            ? `${activeCount} Sedang Aktif • ${allCount} Total Transaksi`
-            : `${allCount} Total Transaksi`}
-        </Badge>
       </div>
 
       {/* 2. Flat Filter Tabs (Mobile: 2x2 Grid Seimbang, Desktop: Flex) */}
@@ -110,7 +104,7 @@ export default function Peminjaman() {
           type="button"
           onClick={() => setActiveFilter("ALL")}
           className={cn(
-            "w-full sm:w-auto px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5",
+            "w-full sm:w-auto px-3 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap min-h-[38px]",
             activeFilter === "ALL"
               ? "bg-blue-950 text-white border-blue-950 shadow-[2px_2px_0px_#1E3A8A]"
               : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
@@ -128,12 +122,12 @@ export default function Peminjaman() {
           </span>
         </button>
 
-        {/* Tab 2: Sedang Aktif */}
+        {/* Tab 2: Aktif */}
         <button
           type="button"
           onClick={() => setActiveFilter("ACTIVE")}
           className={cn(
-            "w-full sm:w-auto px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5",
+            "w-full sm:w-auto px-3 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap min-h-[38px]",
             activeFilter === "ACTIVE"
               ? "bg-amber-400 text-blue-950 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]"
               : activeCount > 0
@@ -142,7 +136,7 @@ export default function Peminjaman() {
           )}
         >
           <Clock className="w-3.5 h-3.5 text-blue-950 shrink-0" />
-          <span>Sedang Aktif</span>
+          <span>Aktif</span>
           <span
             className={cn(
               "px-1.5 py-0.2 rounded-full text-[10px] font-black",
@@ -157,12 +151,12 @@ export default function Peminjaman() {
           </span>
         </button>
 
-        {/* Tab 3: Menunggak Denda */}
+        {/* Tab 3: Tunggakan */}
         <button
           type="button"
           onClick={() => setActiveFilter("UNPAID_FINE")}
           className={cn(
-            "w-full sm:w-auto px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5",
+            "w-full sm:w-auto px-3 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap min-h-[38px]",
             activeFilter === "UNPAID_FINE"
               ? "bg-rose-600 text-white border-rose-700 shadow-[2px_2px_0px_#991B1B]"
               : unpaidCount > 0
@@ -171,7 +165,7 @@ export default function Peminjaman() {
           )}
         >
           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-          <span>Menunggak Denda</span>
+          <span>Tunggakan</span>
           <span
             className={cn(
               "px-1.5 py-0.2 rounded-full text-[10px] font-black",
@@ -186,12 +180,12 @@ export default function Peminjaman() {
           </span>
         </button>
 
-        {/* Tab 4: Selesai / Bebas Denda */}
+        {/* Tab 4: Selesai */}
         <button
           type="button"
           onClick={() => setActiveFilter("COMPLETED")}
           className={cn(
-            "w-full sm:w-auto px-3.5 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5",
+            "w-full sm:w-auto px-3 py-2 rounded-lg border-2 text-xs font-bold transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 whitespace-nowrap min-h-[38px]",
             activeFilter === "COMPLETED"
               ? "bg-emerald-700 text-white border-emerald-800 shadow-[2px_2px_0px_#065F46]"
               : "bg-white text-slate-700 border-slate-300 hover:border-blue-900 shadow-[1px_1px_0px_#CBD5E1]"
