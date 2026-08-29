@@ -31,7 +31,6 @@ import MahasiswaLayout from "./layouts/MahasiswaLayout";
 import DashboardMahasiswa from "./pages/mahasiswa/DashboardMahasiswa";
 import Katalog from "./pages/mahasiswa/Katalog";
 import Peminjaman from "./pages/mahasiswa/Peminjaman";
-import Riwayat from "./pages/mahasiswa/Riwayat";
 import Profil from "./pages/mahasiswa/Profil";
 
 // Auth & Public Imports
@@ -231,7 +230,7 @@ const mahasiswaPeminjamanRoute = createRoute({
 const mahasiswaRiwayatRoute = createRoute({
   getParentRoute: () => mahasiswaLayoutRoute,
   path: "riwayat",
-  component: Riwayat,
+  component: () => <Navigate to="/mahasiswa/peminjaman" replace />,
 });
 
 const mahasiswaProfilRoute = createRoute({

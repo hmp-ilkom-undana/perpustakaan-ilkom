@@ -7,6 +7,7 @@ import { GuideStepContent } from "./GuideStepContent";
 interface GuideModalProps {
   isOpen: boolean;
   isLoading: boolean;
+  isFirstTime?: boolean;
   config: SystemConfigValues;
   steps: GuideStep[];
   currentStep: number;
@@ -21,6 +22,7 @@ interface GuideModalProps {
 export function GuideModal({
   isOpen,
   isLoading,
+  isFirstTime = false,
   config,
   steps,
   currentStep,
@@ -45,7 +47,7 @@ export function GuideModal({
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-blue-950/40 backdrop-blur-sm animate-in fade-in-0 duration-200"
-        onClick={onClose}
+        onClick={isFirstTime ? undefined : onClose}
       />
 
       {/* Modal Card */}
@@ -66,13 +68,15 @@ export function GuideModal({
               </h2>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg border-2 border-blue-900 bg-white flex items-center justify-center shadow-[2px_2px_0px_#1E3A8A] hover:bg-rose-50 hover:border-rose-500 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-            aria-label="Tutup panduan"
-          >
-            <X className="w-4 h-4 text-blue-900" />
-          </button>
+          {!isFirstTime && (
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-lg border-2 border-blue-900 bg-white flex items-center justify-center shadow-[2px_2px_0px_#1E3A8A] hover:bg-rose-50 hover:border-rose-500 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+              aria-label="Tutup panduan"
+            >
+              <X className="w-4 h-4 text-blue-900" />
+            </button>
+          )}
         </div>
 
         {/* Step Dot Indicator */}
@@ -121,13 +125,15 @@ export function GuideModal({
               <ChevronLeft className="w-4 h-4 mr-1" />
               Kembali
             </Button>
-          ) : (
+          ) : !isFirstTime ? (
             <button
               onClick={onClose}
-              className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors underline underline-offset-2"
+              className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors underline underline-offset-2 cursor-pointer"
             >
               Lewati Panduan
             </button>
+          ) : (
+            <div />
           )}
 
           <Button

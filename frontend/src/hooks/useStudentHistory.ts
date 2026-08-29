@@ -10,6 +10,8 @@ export type HistoryStatus =
   | "DAMAGED"
   | "LOST";
 
+export type HistoryFilter = "ALL" | "UNPAID_FINE" | "PAID_OR_CLEAN";
+
 export interface StudentHistoryItem {
   id: string;
   pickupCode: string;
@@ -41,6 +43,7 @@ export function useStudentHistory() {
 
   const [selectedItem, setSelectedItem] = useState<StudentHistoryItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<HistoryFilter>("ALL");
 
   const historyData: StudentHistoryItem[] = useMemo(() => {
     return rawHistory
@@ -92,6 +95,36 @@ export function useStudentHistory() {
       });
   }, [rawHistory]);
 
+  const unpaidFinesList = useMemo(() => {
+    return historyData.filter(
+      (item) => item.fine && item.fine > 0 && !item.paymentDate
+    );
+  }, [historyData]);
+
+  const unpaidFinesCount = unpaidFinesList.length;
+
+  const totalUnpaidFineAmount = useMemo(() => {
+    return unpaidFinesList.reduce((sum, item) => sum + (item.fine || 0), 0);
+  }, [unpaidFinesList]);
+
+  const paidOrCleanCount = useMemo(() => {
+    return historyData.filter(
+      (item) => !item.fine || item.fine === 0 || item.paymentDate
+    ).length;
+  }, [historyData]);
+
+  const filteredHistory = useMemo(() => {
+    if (activeFilter === "UNPAID_FINE") {
+      return unpaidFinesList;
+    }
+    if (activeFilter === "PAID_OR_CLEAN") {
+      return historyData.filter(
+        (item) => !item.fine || item.fine === 0 || item.paymentDate
+      );
+    }
+    return historyData;
+  }, [historyData, activeFilter, unpaidFinesList]);
+
   const openDetail = (item: StudentHistoryItem) => {
     setSelectedItem(item);
     setIsDialogOpen(true);
@@ -101,7 +134,7 @@ export function useStudentHistory() {
     setIsDialogOpen(false);
   };
 
-  const handleContactAdminWa = (item: StudentHistoryItem) => {
+  const handleContactAdminWa = (item?: StudentHistoryItem | null) => {
     const rawNumber = setting?.adminWaNumber || "082339113591";
     const cleanNumber = rawNumber.replace(/\D/g, "");
     const formattedNumber = cleanNumber.startsWith("0")
@@ -109,11 +142,18 @@ export function useStudentHistory() {
       : cleanNumber;
     const studentName = session?.user?.name || "Mahasiswa";
     const studentNim = (session?.user as any)?.nim || "-";
-    const archiveType = item.type || "Arsip";
 
-    const message = encodeURIComponent(
-      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${item.title}\n- Total Denda: Rp ${(item.fine || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
-    );
+    let message: string;
+    if (item) {
+      const archiveType = item.type || "Arsip";
+      message = encodeURIComponent(
+        `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${item.title}\n- Total Denda: Rp ${(item.fine || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
+      );
+    } else {
+      message = encodeURIComponent(
+        `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran total denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Total Tunggakan: Rp ${totalUnpaidFineAmount.toLocaleString("id-ID")} (${unpaidFinesCount} Transaksi)\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
+      );
+    }
 
     window.open(
       `https://wa.me/${formattedNumber}?text=${message}`,
@@ -124,10 +164,16 @@ export function useStudentHistory() {
 
   return {
     historyData,
+    filteredHistory,
     isLoading,
     selectedItem,
     isDialogOpen,
     setIsDialogOpen,
+    activeFilter,
+    setActiveFilter,
+    unpaidFinesCount,
+    totalUnpaidFineAmount,
+    paidOrCleanCount,
     openDetail,
     closeDetail,
     handleContactAdminWa,

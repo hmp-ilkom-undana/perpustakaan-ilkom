@@ -10,7 +10,6 @@ import {
   LayoutDashboard,
   Library,
   BookOpenCheck,
-  History,
   UserCircle,
   LogOut,
   Menu,
@@ -36,7 +35,6 @@ const menus = [
   { name: "Beranda", path: "/mahasiswa", icon: LayoutDashboard },
   { name: "Katalog", path: "/mahasiswa/katalog", icon: Library },
   { name: "Peminjaman", path: "/mahasiswa/peminjaman", icon: BookOpenCheck },
-  { name: "Riwayat", path: "/mahasiswa/riwayat", icon: History },
 ];
 
 export default function MahasiswaLayout() {
@@ -288,6 +286,7 @@ export default function MahasiswaLayout() {
       <GuideModal
         isOpen={guide.isOpen}
         isLoading={guide.isLoading}
+        isFirstTime={guide.isFirstTime}
         config={guide.config}
         steps={guide.steps}
         currentStep={guide.currentStep}
