@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession, authClient } from "@/lib/auth-client";
-import { useStudentGuide } from "@/hooks/useStudentGuide";
-import { GuideFab } from "@/components/guide/GuideFab";
+import {
+  StudentGuideProvider,
+  useStudentGuideContext,
+} from "@/context/StudentGuideContext";
 import { GuideModal } from "@/components/guide/GuideModal";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -38,6 +40,14 @@ const menus = [
 ];
 
 export default function MahasiswaLayout() {
+  return (
+    <StudentGuideProvider>
+      <MahasiswaLayoutContent />
+    </StudentGuideProvider>
+  );
+}
+
+function MahasiswaLayoutContent() {
   const { data: session } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,7 +56,7 @@ export default function MahasiswaLayout() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const scrolled = useScroll(10);
-  const guide = useStudentGuide();
+  const guide = useStudentGuideContext();
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -282,7 +292,6 @@ export default function MahasiswaLayout() {
         <Outlet />
       </main>
 
-      <GuideFab onClick={guide.handleOpen} />
       <GuideModal
         isOpen={guide.isOpen}
         isLoading={guide.isLoading}

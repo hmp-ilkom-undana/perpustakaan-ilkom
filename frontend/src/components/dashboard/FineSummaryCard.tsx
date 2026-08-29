@@ -1,10 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { AlertTriangle, ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  ShieldAlert,
+  ShieldCheck,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { DashboardFines } from "@/hooks/useStudentDashboard";
+import type { DashboardFines, DashboardFineItem } from "@/hooks/useStudentDashboard";
 
 interface FineSummaryCardProps {
   denda: DashboardFines;
@@ -12,7 +17,18 @@ interface FineSummaryCardProps {
 }
 
 export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
-  const { totalDenda, hasFine, fineBorrowings, countLate, countDamaged, countLost } = denda;
+  const {
+    totalDenda,
+    hasFine,
+    fineBorrowings,
+    lateBorrowings,
+    damageLossBorrowings,
+    totalLateFine,
+    totalDamageLossFine,
+    countLate,
+    countDamaged,
+    countLost,
+  } = denda;
 
   return (
     <Card
@@ -24,7 +40,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
         className,
       )}
     >
-      {/* 1. Header Card */}
+      {/* 1. Header Card Utama */}
       <CardHeader
         className={cn(
           "p-3.5 sm:p-5 pb-2.5 sm:pb-3 border-b-2 flex flex-row items-center justify-between gap-2 shrink-0 transition-colors",
@@ -63,106 +79,138 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                 hasFine ? "text-red-700" : "text-emerald-700",
               )}
             >
-              {hasFine ? `${fineBorrowings.length} Arsip Menunggak` : "Status Bersih & Bebas Denda"}
+              {hasFine
+                ? `${fineBorrowings.length} Arsip Memiliki Tagihan`
+                : "Status Bersih & Bebas Denda"}
             </span>
           </div>
         </div>
 
         <Badge
           variant={hasFine ? "rose" : "emerald"}
-          className="shrink-0 text-[9px] sm:text-[10px] font-black h-6 px-2"
+          className="shrink-0 text-[10px] sm:text-xs font-black font-mono h-6 sm:h-7 px-2.5 shadow-[1px_1px_0px_#1E3A8A]"
         >
-          {hasFine ? `Total: Rp ${totalDenda.toLocaleString("id-ID")}` : "Bebas Denda"}
+          {hasFine
+            ? `TOTAL: Rp ${totalDenda.toLocaleString("id-ID")}`
+            : "BEBAS DENDA"}
         </Badge>
       </CardHeader>
 
-      {/* 2. Konten Utama */}
-      <CardContent className="p-3.5 sm:p-5 flex flex-col justify-between flex-grow space-y-3">
+      {/* 2. Konten Utama: 2 Kompartemen Mandiri */}
+      <CardContent className="p-3.5 sm:p-5 flex flex-col justify-between flex-grow space-y-4">
         {!hasFine ? (
-          <div className="py-3 sm:py-6 px-3 flex flex-col items-center justify-center text-center my-auto">
-            <div className="bg-emerald-50 border border-emerald-300 w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center mb-2 text-emerald-600">
-              <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="py-4 sm:py-7 px-3 flex flex-col items-center justify-center text-center my-auto">
+            <div className="bg-emerald-50 border border-emerald-300 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2.5 text-emerald-600 shadow-[2px_2px_0px_#059669]">
+              <CheckCircle2 className="w-6 h-6" />
             </div>
             <h3 className="font-black text-xs sm:text-sm text-blue-950">
               Tidak Ada Tunggakan Denda
             </h3>
             <p className="text-slate-500 text-[10px] sm:text-[11px] font-medium mt-0.5 max-w-xs leading-relaxed">
-              Akun Anda bersih dan tidak memiliki tanggungan denda keterlambatan atau kerusakan arsip perpustakaan.
+              Akun Anda bersih dan tidak memiliki tanggungan denda keterlambatan atau ganti rugi arsip.
             </p>
           </div>
         ) : (
-          <div className="space-y-2 sm:space-y-2.5 flex-1">
-            {/* Kategori Denda Badges */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {countLate > 0 && (
-                <span className="inline-flex items-center bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider">
-                  {countLate} Keterlambatan
-                </span>
-              )}
-              {countDamaged > 0 && (
-                <span className="inline-flex items-center bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider">
-                  {countDamaged} Kerusakan
-                </span>
-              )}
-              {countLost > 0 && (
-                <span className="inline-flex items-center bg-slate-100 text-slate-800 border border-slate-300 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider">
-                  {countLost} Hilang
-                </span>
-              )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+            {/* KOMPARTEMEN 1: Tunggakan Keterlambatan */}
+            <div className="p-3.5 bg-rose-50/70 border-2 border-rose-200 rounded-xl flex flex-col justify-between gap-2 shadow-[2px_2px_0px_#F43F5E]">
+              <div className="space-y-2.5">
+                {/* Header Kompartemen 1 */}
+                <div className="flex items-center justify-between gap-2 border-b border-rose-200 pb-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Clock className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span className="text-xs font-black text-rose-950 uppercase tracking-wider truncate">
+                      Keterlambatan ({countLate})
+                    </span>
+                  </div>
+                  <span className="text-xs font-black font-mono text-rose-700 shrink-0">
+                    Rp {totalLateFine.toLocaleString("id-ID")}
+                  </span>
+                </div>
+
+                {/* List Item Keterlambatan */}
+                {lateBorrowings.length > 0 ? (
+                  <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                    {lateBorrowings.map((item: DashboardFineItem) => (
+                      <Link
+                        key={item.id}
+                        to="/mahasiswa/peminjaman"
+                        search={{ selectedId: item.id, filter: "UNPAID_FINE" }}
+                        className="p-2.5 bg-white border-2 border-rose-100 rounded-lg flex items-center justify-between gap-3 hover:border-rose-400 hover:shadow-[2px_2px_0px_#E11D48] transition-all group cursor-pointer"
+                        title="Klik untuk membuka rincian transaksi"
+                      >
+                        <div className="min-w-0 flex-1 flex flex-col gap-1">
+                          <h5 className="text-xs font-black text-blue-950 truncate group-hover:text-rose-600 transition-colors">
+                            {item.archive?.title}
+                          </h5>
+                          <span className="text-[9px] font-mono text-slate-500 font-bold bg-slate-100 px-1.5 py-0.2 rounded w-fit border border-slate-200">
+                            {item.pickupCode || `PK-${item.id.substring(0, 4).toUpperCase()}`}
+                          </span>
+                        </div>
+                        <span className="text-xs font-black font-mono text-rose-600 bg-rose-50 border border-rose-200 px-2 py-1 rounded shadow-[1px_1px_0px_#E11D48] shrink-0">
+                          Rp {(item.fineAmount || 0).toLocaleString("id-ID")}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-slate-500 italic py-2 text-center">
+                    Tidak ada tunggakan keterlambatan.
+                  </p>
+                )}
+              </div>
             </div>
 
-            {/* List Denda Scrollable */}
-            <div className="space-y-2 max-h-[145px] sm:max-h-[170px] overflow-y-auto pr-1">
-              {fineBorrowings.map((fb: any) => {
-                const isOverdue = fb.status === "OVERDUE";
-                const isDamaged = fb.status === "DAMAGED";
-                const isLost = fb.status === "LOST";
-
-                return (
-                  <div
-                    key={fb.id}
-                    className="p-2 sm:p-2.5 bg-red-50/60 border border-red-200 rounded-lg space-y-1 hover:bg-red-50 transition-colors"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span
-                        className={cn(
-                          "inline-flex items-center text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded border",
-                          isOverdue
-                            ? "bg-rose-100 text-rose-800 border-rose-300"
-                            : isDamaged
-                            ? "bg-amber-100 text-amber-900 border-amber-300"
-                            : isLost
-                            ? "bg-slate-800 text-white border-slate-800"
-                            : "bg-red-100 text-red-800 border-red-300",
-                        )}
-                      >
-                        {isOverdue ? "Terlambat" : isDamaged ? "Rusak" : isLost ? "Hilang" : "Denda"}
-                      </span>
-
-                      <span className="text-[11px] sm:text-xs font-black text-red-600 font-mono">
-                        Rp {(fb.fineAmount || 0).toLocaleString("id-ID")}
-                      </span>
-                    </div>
-
-                    <h4 className="text-[11px] sm:text-xs font-bold text-blue-950 truncate">
-                      {fb.archive?.title}
-                    </h4>
+            {/* KOMPARTEMEN 2: Kerusakan atau Hilang */}
+            <div className="p-3.5 bg-amber-50/70 border-2 border-amber-200 rounded-xl flex flex-col justify-between gap-2 shadow-[2px_2px_0px_#F59E0B]">
+              <div className="space-y-2.5">
+                {/* Header Kompartemen 2 */}
+                <div className="flex items-center justify-between gap-2 border-b border-amber-200 pb-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <ShieldAlert className="w-4 h-4 text-amber-700 shrink-0" />
+                    <span className="text-xs font-black text-amber-950 uppercase tracking-wider truncate">
+                      Kerusakan atau Hilang ({countDamaged + countLost})
+                    </span>
                   </div>
-                );
-              })}
+                  <span className="text-xs font-black font-mono text-amber-800 shrink-0">
+                    Rp {totalDamageLossFine.toLocaleString("id-ID")}
+                  </span>
+                </div>
+
+                {/* List Item Kerusakan atau Hilang */}
+                {damageLossBorrowings.length > 0 ? (
+                  <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                    {damageLossBorrowings.map((item: DashboardFineItem) => (
+                      <Link
+                        key={item.id}
+                        to="/mahasiswa/peminjaman"
+                        search={{ selectedId: item.id, filter: "UNPAID_FINE" }}
+                        className="p-2.5 bg-white border-2 border-amber-100 rounded-lg flex items-center justify-between gap-3 hover:border-amber-400 hover:shadow-[2px_2px_0px_#D97706] transition-all group cursor-pointer"
+                        title="Klik untuk membuka rincian transaksi"
+                      >
+                        <div className="min-w-0 flex-1 flex flex-col gap-1">
+                          <h5 className="text-xs font-black text-blue-950 truncate group-hover:text-amber-700 transition-colors">
+                            {item.archive?.title}
+                          </h5>
+                          <span className="text-[9px] font-mono text-slate-500 font-bold bg-slate-100 px-1.5 py-0.2 rounded w-fit border border-slate-200">
+                            {item.pickupCode || `PK-${item.id.substring(0, 4).toUpperCase()}`}
+                          </span>
+                        </div>
+                        <span className="text-xs font-black font-mono text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded shadow-[1px_1px_0px_#D97706] shrink-0">
+                          Rp {(item.fineAmount || 0).toLocaleString("id-ID")}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-slate-500 italic py-2 text-center">
+                    Tidak ada denda kerusakan atau kehilangan.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         )}
-
-        {/* 3. Footer Action */}
-        <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
-          <Link to="/mahasiswa/peminjaman">
-            <Button variant="outline" size="sm" className="text-[10px] sm:text-xs font-bold h-7 sm:h-8 px-2.5 sm:px-3">
-              Buka Detail Peminjaman
-              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-1" />
-            </Button>
-          </Link>
-        </div>
       </CardContent>
     </Card>
   );

@@ -16,10 +16,30 @@ export interface DashboardQuota {
   maxNaskah: number;
 }
 
+export interface DashboardFineItem {
+  id: string;
+  archive?: {
+    id?: string;
+    title: string;
+    archiveType?: string;
+    archiveCode?: string;
+  } | null;
+  status: string;
+  pickupCode?: string | null;
+  fineAmount?: number | null;
+  finePaidAt?: string | null;
+  borrowDate?: string;
+  returnDate?: string | null;
+}
+
 export interface DashboardFines {
   totalDenda: number;
   hasFine: boolean;
-  fineBorrowings: any[];
+  fineBorrowings: DashboardFineItem[];
+  lateBorrowings: DashboardFineItem[];
+  damageLossBorrowings: DashboardFineItem[];
+  totalLateFine: number;
+  totalDamageLossFine: number;
   countLate: number;
   countDamaged: number;
   countLost: number;
@@ -125,17 +145,40 @@ export function useStudentDashboard() {
     let countDamaged = 0;
     let countLost = 0;
 
+    const lateBorrowings: DashboardFineItem[] = [];
+    const damageLossBorrowings: DashboardFineItem[] = [];
+
     fineBorrowings.forEach((fb: any) => {
-      if (fb.status === "OVERDUE") countLate++;
-      else if (fb.status === "DAMAGED") countDamaged++;
-      else if (fb.status === "LOST") countLost++;
-      else countLate++;
+      if (fb.status === "DAMAGED") {
+        countDamaged++;
+        damageLossBorrowings.push(fb);
+      } else if (fb.status === "LOST") {
+        countLost++;
+        damageLossBorrowings.push(fb);
+      } else {
+        countLate++;
+        lateBorrowings.push(fb);
+      }
     });
+
+    const totalLateFine = lateBorrowings.reduce(
+      (sum: number, b: any) => sum + (b.fineAmount || 0),
+      0,
+    );
+
+    const totalDamageLossFine = damageLossBorrowings.reduce(
+      (sum: number, b: any) => sum + (b.fineAmount || 0),
+      0,
+    );
 
     return {
       totalDenda,
       hasFine: totalDenda > 0 && fineBorrowings.length > 0,
       fineBorrowings,
+      lateBorrowings,
+      damageLossBorrowings,
+      totalLateFine,
+      totalDamageLossFine,
       countLate,
       countDamaged,
       countLost,

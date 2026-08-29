@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useSearch } from "@tanstack/react-router";
 import { useStudentBorrowing, StudentTicketItem } from "./useStudentBorrowing";
 import { useStudentHistory, StudentHistoryItem, HistoryStatus } from "./useStudentHistory";
 import { BorrowingStatus } from "@/components/peminjaman";
@@ -21,6 +22,10 @@ export interface UnifiedLoanItem {
 
 export function usePeminjamanPage() {
   const [activeFilter, setActiveFilter] = useState<PeminjamanFilter>("ALL");
+  const search = useSearch({ strict: false }) as {
+    selectedId?: string;
+    filter?: PeminjamanFilter;
+  };
 
   const borrowing = useStudentBorrowing();
   const history = useStudentHistory();
@@ -107,6 +112,49 @@ export function usePeminjamanPage() {
     },
     [borrowing, history]
   );
+
+  // 8. Deep-Link Navigation Support (Direct useSearch Params & Auto-Open)
+  useEffect(() => {
+    const selectedIdParam = search?.selectedId;
+    const filterParam = search?.filter;
+
+    if (filterParam && ["ALL", "ACTIVE", "UNPAID_FINE", "COMPLETED"].includes(filterParam)) {
+      setActiveFilter(filterParam);
+    }
+
+    if (!selectedIdParam || isLoading) return;
+
+    // A. Cari di Active Tickets
+    const activeMatch = borrowing.tickets.find((t) => String(t.id) === String(selectedIdParam));
+    if (activeMatch) {
+      borrowing.openDetail(activeMatch);
+      return;
+    }
+
+    // B. Cari di History Items
+    const historyMatch = history.historyData.find((h) => String(h.id) === String(selectedIdParam));
+    if (historyMatch) {
+      history.openDetail(historyMatch);
+      return;
+    }
+
+    // C. Fallback di allItems
+    const target = allItems.find((item) => String(item.id) === String(selectedIdParam));
+    if (target) {
+      if (target.sourceType === "ACTIVE" && target.activeTicket) {
+        borrowing.openDetail(target.activeTicket);
+      } else if (target.sourceType === "HISTORY" && target.historyItem) {
+        history.openDetail(target.historyItem);
+      }
+    }
+  }, [
+    search?.selectedId,
+    search?.filter,
+    isLoading,
+    borrowing.tickets,
+    history.historyData,
+    allItems,
+  ]);
 
   return {
     activeFilter,

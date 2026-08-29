@@ -77,7 +77,7 @@ export function CirculationScheduleCard({
           </div>
           <div className="flex flex-col min-w-0">
             <CardTitle className="text-xs sm:text-sm font-black uppercase tracking-wider leading-tight text-blue-950 truncate">
-              Kalender & Agenda Sirkulasi
+              Kalender & Aktivitas Sirkulasi
             </CardTitle>
             <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 mt-0.5 truncate">
               Jadwal Peminjaman, Pengambilan & Tenggat Pengembalian
@@ -97,12 +97,12 @@ export function CirculationScheduleCard({
             variant={tasks.length > 0 ? "orange" : "secondary"}
             className="text-[10px] sm:text-xs font-black"
           >
-            {tasks.length} Agenda
+            {tasks.length} Aktivitas
           </Badge>
         </div>
       </CardHeader>
 
-      {/* 2. Split Pane Content (Kiri: Mini Kalender, Kanan: List Agenda) */}
+      {/* 2. Split Pane Content (Kiri: Mini Kalender, Kanan: List Aktivitas) */}
       <CardContent className="p-0 grid grid-cols-1 lg:grid-cols-12 divide-y-2 lg:divide-y-0 lg:divide-x-2 divide-blue-900/15 flex-grow">
         {/* Kolom Kiri: Kalender Interaktif */}
         <div className="lg:col-span-5 p-4 sm:p-5 flex flex-col items-center justify-between space-y-4 bg-white">
@@ -120,21 +120,21 @@ export function CirculationScheduleCard({
           {/* Legend Indikator Tanggal Berjadwal */}
           <div className="w-full pt-3 border-t border-slate-100 flex items-center justify-center gap-2 text-[10px] sm:text-[11px] font-bold text-slate-500">
             <span className="w-3 h-3 rounded-xs bg-amber-200 border-2 border-blue-900 shadow-[1px_1px_0px_#1E3A8A]" />
-            <span>Tanggal dengan Agenda Peminjaman</span>
+            <span>Tanggal dengan Aktivitas Peminjaman</span>
           </div>
         </div>
 
-        {/* Kolom Kanan: Detail Agenda Tanggal Terpilih */}
+        {/* Kolom Kanan: Detail Aktivitas Tanggal Terpilih */}
         <div className="lg:col-span-7 p-4 sm:p-5 flex flex-col justify-between space-y-3.5 bg-slate-50/40">
-          {/* Subheader Agenda Tanggal */}
+          {/* Subheader Aktivitas Tanggal */}
           <div className="flex items-center justify-between pb-2 border-b border-blue-900/10">
             <div className="flex items-center gap-1.5 text-xs sm:text-sm font-black text-blue-950">
-              <span>Agenda:</span>
+              <span>Aktivitas:</span>
               <span className="text-orange-600 font-bold">{formattedDate}</span>
             </div>
           </div>
 
-          {/* List Agenda / Empty State */}
+          {/* List Aktivitas / Empty State */}
           <div
             className={cn(
               "flex-1 min-h-[220px] flex flex-col",
@@ -175,9 +175,12 @@ export function CirculationScheduleCard({
                   }
 
                   return (
-                    <div
+                    <Link
                       key={task.id}
-                      className="p-3 bg-white border-2 border-blue-900/20 hover:border-blue-900/40 rounded-xl space-y-2 shadow-[2px_2px_0px_#E2E8F0] transition-all"
+                      to="/mahasiswa/peminjaman"
+                      search={{ selectedId: task.id }}
+                      className="p-3 bg-white border-2 border-blue-900/20 hover:border-blue-900 rounded-xl space-y-2 shadow-[2px_2px_0px_#E2E8F0] hover:shadow-[2px_2px_0px_#1E3A8A] transition-all block cursor-pointer group"
+                      title="Klik untuk membuka detail peminjaman arsip"
                     >
                       {/* Baris Atas: Badge Status + Tipe + Sisa Hari / Kode Ambil */}
                       <div className="flex items-center justify-between gap-1.5 flex-wrap">
@@ -236,7 +239,7 @@ export function CirculationScheduleCard({
                       </div>
 
                       {/* Judul Dokumen */}
-                      <h5 className="text-xs sm:text-sm font-black text-blue-950 line-clamp-1 leading-snug">
+                      <h5 className="text-xs sm:text-sm font-black text-blue-950 line-clamp-1 leading-snug group-hover:text-orange-600 transition-colors">
                         {task.archive.title}
                       </h5>
 
@@ -251,7 +254,7 @@ export function CirculationScheduleCard({
                           </span>
                         )}
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -260,7 +263,10 @@ export function CirculationScheduleCard({
 
           {/* 3. Footer Action */}
           <div className="pt-2 border-t border-blue-900/10 flex items-center justify-end">
-            <Link to="/mahasiswa/peminjaman">
+            <Link
+              to="/mahasiswa/peminjaman"
+              search={tasks.length === 1 ? { selectedId: tasks[0].id } : undefined}
+            >
               <Button
                 variant="outline"
                 size="sm"
