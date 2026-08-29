@@ -149,7 +149,7 @@ export function BorrowingQuotaDialog({
                 size="sm"
                 className="w-full sm:w-auto font-black text-xs uppercase tracking-wider bg-orange-500 hover:bg-orange-600"
               >
-                Cari Arsip
+                Buka Katalog
                 <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             </Link>
