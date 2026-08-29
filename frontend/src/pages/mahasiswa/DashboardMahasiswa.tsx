@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, History, Loader2, Search } from "lucide-react";
+import { ArrowRight, BookOpen, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useStudentDashboard } from "@/hooks/useStudentDashboard";
@@ -9,6 +9,7 @@ import {
   BorrowingQuotaDialog,
   FineSummaryCard,
   CirculationScheduleCard,
+  StudentHelpContactCard,
 } from "@/components/dashboard";
 
 export default function DashboardMahasiswa() {
@@ -101,20 +102,37 @@ export default function DashboardMahasiswa() {
         </div>
       </div>
 
-      {/* 2. Header Sambutan Mahasiswa */}
-      <div className="flex flex-col gap-1 px-4 sm:px-0 pt-2">
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-blue-950 leading-tight">
-          Selamat datang kembali, <span className="text-orange-500">{firstName}</span>!
-        </h1>
-        <p className="text-slate-500 font-bold text-xs sm:text-sm mt-0.5">{currentDate}</p>
+      {/* 2. Header Sambutan Mahasiswa & Quick Discovery Action (Task 4.3) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 sm:px-0 pt-2 pb-2 border-b-2 border-blue-900/20">
+        <div className="flex flex-col gap-1 max-w-xl">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-blue-950 leading-tight">
+            Selamat datang kembali, <span className="text-orange-500">{firstName}</span>!
+          </h1>
+          <p className="text-slate-500 font-bold text-xs sm:text-sm mt-0.5">
+            {currentDate} • Jelajahi koleksi arsip Skripsi, Ringkasan, dan Naskah Publikasi resmi.
+          </p>
+        </div>
+
+        {/* Tombol Buka Katalog di Header (Task 4.3) */}
+        <Link to="/mahasiswa/katalog" className="shrink-0 self-start sm:self-auto">
+          <Button
+            variant="default"
+            size="default"
+            className="font-black text-xs uppercase tracking-wider bg-orange-500 hover:bg-orange-600 shadow-[2px_2px_0px_#0F172A] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all px-4 py-2"
+          >
+            <Search className="w-4 h-4 mr-1.5" />
+            Buka Katalog
+            <ArrowRight className="w-4 h-4 ml-1.5" />
+          </Button>
+        </Link>
       </div>
 
       {/* 3. Grid Dashboard (Denda & Kalender Terpadu) */}
       <div className="w-full px-4 sm:px-0 space-y-6">
-        {/* Status Denda */}
+        {/* Status Denda (Task 4.5: 2 Kompartemen Mandiri) */}
         <FineSummaryCard denda={denda} className="w-full" />
 
-        {/* Kalender & Agenda Sirkulasi Terpadu (Full Width Bento Card) */}
+        {/* Kalender & Agenda Sirkulasi Terpadu (Full Width Bento Card, Task 4.6: Deep Linking) */}
         <CirculationScheduleCard
           date={calendar.date}
           onSelectDate={calendar.setDate}
@@ -124,45 +142,9 @@ export default function DashboardMahasiswa() {
         />
       </div>
 
-      {/* 4. Quick Action & Discovery Banner */}
+      {/* 4. Pusat Bantuan & Kontak Petugas Resmi via WhatsApp (Task 4.4) */}
       <div className="px-4 sm:px-0 pt-2">
-        <div className="bg-gradient-to-r from-blue-900 to-blue-950 border-2 border-blue-900 rounded-xl p-5 sm:p-6 text-white shadow-[4px_4px_0px_#1E3A8A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="space-y-1 max-w-xl">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-md bg-orange-500/20 border border-orange-400 flex items-center justify-center text-orange-400">
-                <BookOpen className="w-4 h-4" />
-              </div>
-              <h3 className="text-base sm:text-lg font-black text-white uppercase tracking-wider">
-                Cari Referensi Tugas Akhir & Riset
-              </h3>
-            </div>
-            <p className="text-blue-200 text-xs sm:text-sm font-medium leading-relaxed">
-              Jelajahi koleksi arsip Skripsi, Ringkasan, dan Naskah Publikasi resmi Ilmu Komputer UNDANA.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto shrink-0">
-            <Link to="/mahasiswa/peminjaman" className="w-full sm:w-auto">
-              <Button
-                variant="outline"
-                className="w-full sm:w-auto bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white shadow-none font-bold text-xs"
-              >
-                <History className="w-4 h-4 mr-1.5" />
-                Peminjaman Saya
-              </Button>
-            </Link>
-            <Link to="/mahasiswa/katalog" className="w-full sm:w-auto">
-              <Button
-                variant="default"
-                className="w-full sm:w-auto font-black text-xs uppercase tracking-wider bg-orange-500 hover:bg-orange-600 shadow-[2px_2px_0px_#0F172A]"
-              >
-                <Search className="w-4 h-4 mr-1.5" />
-                Buka Katalog
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
+        <StudentHelpContactCard />
       </div>
 
       {/* 5. Modal Dialog Kuota Pop-Up (Task 4.1) */}
