@@ -147,7 +147,7 @@ function MahasiswaLayoutContent() {
                 aria-label="Buka panduan peminjaman arsip"
                 title="Panduan Peminjaman"
               >
-                <HelpCircle className="w-5 h-5" />
+                <HelpCircle className="w-6 h-6" strokeWidth={2.3} />
               </Button>
 
               <DropdownMenu>
@@ -215,7 +215,7 @@ function MahasiswaLayoutContent() {
                 aria-label="Buka panduan peminjaman arsip"
                 title="Panduan Peminjaman"
               >
-                <HelpCircle className="w-5 h-5" />
+                <HelpCircle className="w-6 h-6" strokeWidth={2.3} />
               </Button>
 
               <Button
