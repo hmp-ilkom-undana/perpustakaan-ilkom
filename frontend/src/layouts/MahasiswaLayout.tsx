@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession, authClient } from "@/lib/auth-client";
 import {
@@ -19,7 +19,11 @@ import {
   ChevronDown,
   ChevronRight,
   Loader2,
+  HelpCircle,
+  BookOpen,
 } from "lucide-react";
+import { BorrowingQuotaDialog } from "@/components/dashboard/BorrowingQuotaDialog";
+import { useStudentQuota } from "@/hooks/useStudentQuota";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -57,6 +61,12 @@ function MahasiswaLayoutContent() {
 
   const scrolled = useScroll(10);
   const guide = useStudentGuideContext();
+  const { quota } = useStudentQuota();
+  const [isQuotaModalOpen, setIsQuotaModalOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -136,8 +146,19 @@ function MahasiswaLayoutContent() {
               })}
             </nav>
 
-            {/* Bagian Kanan: User Profile Trigger with Dropdown (Desktop) */}
-            <div className="hidden md:flex items-center">
+            {/* Bagian Kanan: User Profile Trigger & Panduan (Desktop) */}
+            <div className="hidden md:flex items-center gap-2.5">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={guide.handleOpen}
+                className="h-10 w-10 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 hover:border-blue-900 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer text-blue-950"
+                aria-label="Buka panduan peminjaman arsip"
+                title="Panduan Peminjaman"
+              >
+                <HelpCircle className="w-6 h-6" strokeWidth={2.3} />
+              </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger className="group flex items-center gap-2.5 py-1.5 px-3 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:border-orange-500 hover:shadow-[3px_3px_0px_#F97316] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer text-left select-none outline-none">
                   <div className="w-7 h-7 rounded bg-orange-100 border border-blue-900 text-blue-950 font-black text-[10px] flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
@@ -152,8 +173,8 @@ function MahasiswaLayoutContent() {
                     <span className="text-xs font-black text-blue-950 truncate max-w-[130px] group-hover:text-orange-600 transition-colors leading-tight">
                       {session?.user?.name || "Mahasiswa"}
                     </span>
-                    <span className="text-[10px] font-mono font-bold text-slate-500">
-                      NIM: {session?.user?.nim || "-"}
+                    <span className="text-[10px] font-mono font-bold text-slate-500 leading-tight mt-0.5">
+                      Kuota: {quota.terpakai}/{quota.maksimal}
                     </span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-orange-500 group-hover:translate-y-0.5 transition-all shrink-0" />
@@ -163,9 +184,29 @@ function MahasiswaLayoutContent() {
                   align="end"
                   className="w-56 p-1.5 border-2 border-blue-900 bg-white shadow-[4px_4px_0px_#1E3A8A] rounded-lg animate-in fade-in-80 zoom-in-95"
                 >
-                  <DropdownMenuLabel className="px-2.5 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                    Akun Mahasiswa
+                  <DropdownMenuLabel className="px-2.5 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider flex flex-col gap-0.5">
+                    <span className="text-blue-950 font-black text-xs truncate">
+                      {session?.user?.name || "Mahasiswa"}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-500 font-bold">
+                      NIM: {session?.user?.nim || "-"}
+                    </span>
                   </DropdownMenuLabel>
+
+                  <DropdownMenuSeparator className="my-1 border-t border-slate-200" />
+
+                  <DropdownMenuItem
+                    onClick={() => setIsQuotaModalOpen(true)}
+                    className="flex items-center justify-between px-2.5 py-2 text-xs font-bold text-blue-950 hover:bg-orange-50 hover:text-orange-600 rounded-md cursor-pointer transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <BookOpen className="w-4 h-4 text-blue-900" />
+                      <span>Rincian Kuota</span>
+                    </div>
+                    <span className="font-mono text-[10px] font-bold bg-slate-100 text-blue-950 px-1.5 py-0.5 rounded border border-blue-900/20">
+                      {quota.terpakai}/{quota.maksimal}
+                    </span>
+                  </DropdownMenuItem>
 
                   <DropdownMenuItem
                     onClick={() => navigate({ to: "/mahasiswa/profil" })}
@@ -193,13 +234,24 @@ function MahasiswaLayoutContent() {
               </DropdownMenu>
             </div>
 
-            {/* Bagian Kanan: Tombol Hamburger (Hanya Mobile) */}
-            <div className="flex md:hidden">
+            {/* Bagian Kanan: Tombol Panduan & Hamburger (Hanya Mobile) */}
+            <div className="flex md:hidden items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={guide.handleOpen}
+                className="h-10 w-10 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer text-blue-950"
+                aria-label="Buka panduan peminjaman arsip"
+                title="Panduan Peminjaman"
+              >
+                <HelpCircle className="w-6 h-6" strokeWidth={2.3} />
+              </Button>
+
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+                className="h-10 w-10 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
                 aria-label={isMobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
               >
                 {isMobileMenuOpen ? (
@@ -252,6 +304,7 @@ function MahasiswaLayoutContent() {
 
               {/* Info Profil & Logout versi Mobile */}
               <div className="border-t border-slate-200 mt-4 pt-4 px-1 pb-2 space-y-3">
+                {/* 1. Kartu Profil Mahasiswa (Original Edit Profile Card) */}
                 <Link
                   to="/mahasiswa/profil"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -283,6 +336,34 @@ function MahasiswaLayoutContent() {
                     <ChevronRight className="w-3.5 h-3.5 text-blue-900" />
                   </div>
                 </Link>
+
+                {/* 2. Kartu Rincian Kuota (Neo-Brutalist Compact Bento) */}
+                <div
+                  onClick={() => setIsQuotaModalOpen(true)}
+                  role="button"
+                  tabIndex={0}
+                  className="group flex items-center justify-between p-3 rounded-lg border-2 border-blue-900 bg-amber-50/60 shadow-[3px_3px_0px_#1E3A8A] hover:bg-amber-100/70 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer select-none"
+                  aria-label="Buka rincian alokasi kuota peminjaman"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-md bg-amber-400 border-2 border-blue-900 text-blue-950 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
+                      <BookOpen className="w-4 h-4 text-blue-950" />
+                    </div>
+                    <span className="text-xs font-black text-blue-950 uppercase tracking-tight">
+                      Kuota Peminjaman
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-xs font-mono font-black text-blue-950 bg-white border border-blue-900 px-2 py-0.5 rounded shadow-[1px_1px_0px_#1E3A8A]">
+                      {quota.terpakai}/{quota.maksimal}
+                    </span>
+                    <div className="flex items-center gap-0.5 text-[11px] font-black text-blue-900 group-hover:text-orange-600 transition-colors">
+                      <span>Rincian</span>
+                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  </div>
+                </div>
 
                 <Button
                   variant="outline"
@@ -321,6 +402,12 @@ function MahasiswaLayoutContent() {
         onClose={guide.handleClose}
         onNext={guide.handleNext}
         onPrev={guide.handlePrev}
+      />
+
+      <BorrowingQuotaDialog
+        isOpen={isQuotaModalOpen}
+        onClose={() => setIsQuotaModalOpen(false)}
+        quota={quota}
       />
     </div>
   );

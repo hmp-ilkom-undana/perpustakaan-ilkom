@@ -1,26 +1,18 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudentDashboard } from "@/hooks/useStudentDashboard";
-import { useStudentGuideContext } from "@/context/StudentGuideContext";
 import {
-  BorrowingQuotaDialog,
   FineSummaryCard,
   CirculationScheduleCard,
   StudentHelpContactCard,
-  DraggableAssistiveTouch,
 } from "@/components/dashboard";
 
 export default function DashboardMahasiswa() {
-  const [isQuotaDialogOpen, setIsQuotaDialogOpen] = useState(false);
-  const { handleOpen: openGuide } = useStudentGuideContext();
-
   const {
     isLoading,
     firstName,
     currentDate,
-    quota,
     denda,
     calendar,
   } = useStudentDashboard();
@@ -35,14 +27,7 @@ export default function DashboardMahasiswa() {
 
   return (
     <div className="flex flex-col space-y-6 max-w-5xl mx-auto w-full pb-20 animate-in fade-in slide-in-from-bottom-3 duration-500 relative">
-      {/* 1. Dynamic Draggable AssistiveTouch (Snap-to-Edge Physics) */}
-      <DraggableAssistiveTouch
-        quota={quota}
-        onOpenQuota={() => setIsQuotaDialogOpen(true)}
-        onOpenGuide={openGuide}
-      />
-
-      {/* 2. Header Sambutan Mahasiswa & Quick Discovery Action */}
+      {/* 1. Header Sambutan Mahasiswa & Quick Discovery Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 pt-1 pb-2 border-b-2 border-blue-900/20">
         <div className="flex flex-col gap-0.5 max-w-xl">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-blue-950 leading-tight">
@@ -67,7 +52,7 @@ export default function DashboardMahasiswa() {
         </Link>
       </div>
 
-      {/* 3. Grid Dashboard (Denda & Kalender Terpadu) */}
+      {/* 2. Grid Dashboard (Denda & Kalender Terpadu) */}
       <div className="w-full space-y-6">
         {/* Status Denda (2 Kompartemen Mandiri) */}
         <FineSummaryCard denda={denda} className="w-full" />
@@ -82,17 +67,10 @@ export default function DashboardMahasiswa() {
         />
       </div>
 
-      {/* 4. Pusat Bantuan & Kontak Petugas Resmi via WhatsApp */}
+      {/* 3. Pusat Bantuan & Kontak Petugas Resmi via WhatsApp */}
       <div className="w-full pt-1">
         <StudentHelpContactCard />
       </div>
-
-      {/* 5. Modal Dialog Kuota Pop-Up */}
-      <BorrowingQuotaDialog
-        isOpen={isQuotaDialogOpen}
-        onClose={() => setIsQuotaDialogOpen(false)}
-        quota={quota}
-      />
     </div>
   );
 }

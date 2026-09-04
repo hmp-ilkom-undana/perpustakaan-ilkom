@@ -47,7 +47,7 @@ export function BorrowingQuotaDialog({
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-slate-500 font-medium">
-            Alokasi batas maksimal peminjaman aktif dokumen perpustakaan.
+            Alokasi batas maksimal peminjaman aktif arsip perpustakaan.
           </DialogDescription>
         </DialogHeader>
 

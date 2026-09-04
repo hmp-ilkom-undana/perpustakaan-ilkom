@@ -5,4 +5,3 @@ export * from "./CirculationScheduleCard";
 export * from "./ActivityCalendarCard";
 export * from "./DateActivityList";
 export * from "./StudentHelpContactCard";
-export * from "./DraggableAssistiveTouch";
