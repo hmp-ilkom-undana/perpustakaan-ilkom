@@ -300,13 +300,11 @@ function MahasiswaLayoutContent() {
 
               {/* Info Profil & Logout versi Mobile */}
               <div className="border-t border-slate-200 mt-4 pt-4 px-1 pb-2 space-y-3">
-                {/* Kartu Profil & Kuota Mobile */}
-                <div
-                  onClick={() => setIsQuotaModalOpen(true)}
+                {/* 1. Kartu Profil Mahasiswa (Original Edit Profile Card) */}
+                <Link
+                  to="/mahasiswa/profil"
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="group flex items-center justify-between p-3 rounded-lg border-2 border-blue-900 bg-orange-50/70 shadow-[3px_3px_0px_#1E3A8A] hover:bg-orange-100 hover:shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer"
-                  role="button"
-                  tabIndex={0}
-                  aria-label="Lihat rincian alokasi kuota peminjaman"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className="w-10 h-10 rounded-md bg-orange-100 border-2 border-blue-900 text-blue-950 font-black text-xs flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
@@ -321,31 +319,61 @@ function MahasiswaLayoutContent() {
                       <p className="text-sm font-black text-blue-950 truncate group-hover:text-orange-600 transition-colors">
                         {session?.user?.name || "Mahasiswa"}
                       </p>
-                      <p className="text-xs font-bold text-slate-500 mt-0.5">
-                        Kuota: <span className="font-mono font-black text-blue-950">{quota.terpakai}/{quota.maksimal} Arsip</span> (Sisa {quota.sisa})
+                      <p className="text-xs font-mono font-bold text-slate-500">
+                        NIM: {session?.user?.nim || "-"}
                       </p>
                     </div>
                   </div>
 
-                  {/* Badge Indikator Aksi Rincian Kuota */}
+                  {/* Badge Indikator Aksi Edit Profil */}
                   <div className="flex items-center gap-1 px-2 py-1 rounded bg-white border border-blue-900 text-blue-950 font-black text-[11px] shadow-[1px_1px_0px_#1E3A8A] group-hover:bg-amber-400 transition-colors shrink-0 ml-2">
-                    <BookOpen className="w-3.5 h-3.5 text-blue-900" />
-                    <span>Rincian</span>
+                    <UserCircle className="w-3.5 h-3.5 text-blue-900" />
+                    <span>Edit Profil</span>
+                    <ChevronRight className="w-3.5 h-3.5 text-blue-900" />
+                  </div>
+                </Link>
+
+                {/* 2. Kartu Rincian Kuota (Neo-Brutalist Compact Bento) */}
+                <div
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsQuotaModalOpen(true);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  className="group flex flex-col gap-2 p-3 rounded-lg border-2 border-blue-900 bg-amber-50/60 shadow-[3px_3px_0px_#1E3A8A] hover:bg-amber-100/70 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer select-none"
+                  aria-label="Buka rincian alokasi kuota peminjaman"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded bg-amber-400 border border-blue-900 text-blue-950 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
+                        <BookOpen className="w-3.5 h-3.5 text-blue-950" />
+                      </div>
+                      <span className="text-xs font-black text-blue-950 uppercase tracking-tight">
+                        Kuota Peminjaman
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-mono font-black text-blue-950 bg-white border border-blue-900 px-2 py-0.5 rounded shadow-[1px_1px_0px_#1E3A8A]">
+                        {quota.terpakai}/{quota.maksimal}
+                      </span>
+                      <div className="flex items-center gap-0.5 text-[11px] font-black text-blue-900 group-hover:text-orange-600 transition-colors">
+                        <span>Rincian</span>
+                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Micro-Metrics Breakdown Bar */}
+                  <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 pt-1.5 border-t border-blue-900/15">
+                    <span>Skripsi: <strong className="font-mono text-blue-950">{quota.countSkripsi}/{quota.maxSkripsi}</strong></span>
+                    <span className="text-slate-300">•</span>
+                    <span>Ringkasan: <strong className="font-mono text-blue-950">{quota.countRingkasan}/{quota.maxRingkasan}</strong></span>
+                    <span className="text-slate-300">•</span>
+                    <span>Publikasi: <strong className="font-mono text-blue-950">{quota.countNaskah}/{quota.maxNaskah}</strong></span>
                   </div>
                 </div>
-
-                {/* Navigasi Edit Profil & NIM */}
-                <Link
-                  to="/mahasiswa/profil"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-3 py-2 rounded-lg border-2 border-slate-300 hover:border-blue-900 hover:bg-slate-50 transition-all text-xs font-bold text-slate-700 active:translate-x-[1px] active:translate-y-[1px]"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <UserCircle className="w-4 h-4 text-blue-900 shrink-0" />
-                    <span className="truncate">Edit Profil (NIM: {session?.user?.nim || "-"})</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 ml-1" />
-                </Link>
 
                 <Button
                   variant="outline"
