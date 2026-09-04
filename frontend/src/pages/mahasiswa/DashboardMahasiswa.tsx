@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudentDashboard } from "@/hooks/useStudentDashboard";
-import { useStudentGuideContext } from "@/context/StudentGuideContext";
 import {
   BorrowingQuotaDialog,
   FineSummaryCard,
@@ -14,7 +13,6 @@ import {
 
 export default function DashboardMahasiswa() {
   const [isQuotaDialogOpen, setIsQuotaDialogOpen] = useState(false);
-  const { handleOpen: openGuide } = useStudentGuideContext();
 
   const {
     isLoading,
@@ -39,7 +37,6 @@ export default function DashboardMahasiswa() {
       <DraggableAssistiveTouch
         quota={quota}
         onOpenQuota={() => setIsQuotaDialogOpen(true)}
-        onOpenGuide={openGuide}
       />
 
       {/* 2. Header Sambutan Mahasiswa & Quick Discovery Action */}
