@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession, authClient } from "@/lib/auth-client";
 import {
@@ -63,6 +63,10 @@ function MahasiswaLayoutContent() {
   const guide = useStudentGuideContext();
   const { quota } = useStudentQuota();
   const [isQuotaModalOpen, setIsQuotaModalOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -335,10 +339,7 @@ function MahasiswaLayoutContent() {
 
                 {/* 2. Kartu Rincian Kuota (Neo-Brutalist Compact Bento) */}
                 <div
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setIsQuotaModalOpen(true);
-                  }}
+                  onClick={() => setIsQuotaModalOpen(true)}
                   role="button"
                   tabIndex={0}
                   className="group flex flex-col gap-2 p-3 rounded-lg border-2 border-blue-900 bg-amber-50/60 shadow-[3px_3px_0px_#1E3A8A] hover:bg-amber-100/70 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer select-none"
