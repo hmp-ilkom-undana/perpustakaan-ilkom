@@ -342,37 +342,26 @@ function MahasiswaLayoutContent() {
                   onClick={() => setIsQuotaModalOpen(true)}
                   role="button"
                   tabIndex={0}
-                  className="group flex flex-col gap-2 p-3 rounded-lg border-2 border-blue-900 bg-amber-50/60 shadow-[3px_3px_0px_#1E3A8A] hover:bg-amber-100/70 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer select-none"
+                  className="group flex items-center justify-between p-3 rounded-lg border-2 border-blue-900 bg-amber-50/60 shadow-[3px_3px_0px_#1E3A8A] hover:bg-amber-100/70 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer select-none"
                   aria-label="Buka rincian alokasi kuota peminjaman"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded bg-amber-400 border border-blue-900 text-blue-950 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
-                        <BookOpen className="w-3.5 h-3.5 text-blue-950" />
-                      </div>
-                      <span className="text-xs font-black text-blue-950 uppercase tracking-tight">
-                        Kuota Peminjaman
-                      </span>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-md bg-amber-400 border-2 border-blue-900 text-blue-950 flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
+                      <BookOpen className="w-4 h-4 text-blue-950" />
                     </div>
-
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-mono font-black text-blue-950 bg-white border border-blue-900 px-2 py-0.5 rounded shadow-[1px_1px_0px_#1E3A8A]">
-                        {quota.terpakai}/{quota.maksimal}
-                      </span>
-                      <div className="flex items-center gap-0.5 text-[11px] font-black text-blue-900 group-hover:text-orange-600 transition-colors">
-                        <span>Rincian</span>
-                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                      </div>
-                    </div>
+                    <span className="text-xs font-black text-blue-950 uppercase tracking-tight">
+                      Kuota Peminjaman
+                    </span>
                   </div>
 
-                  {/* Micro-Metrics Breakdown Bar */}
-                  <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 pt-1.5 border-t border-blue-900/15">
-                    <span>Skripsi: <strong className="font-mono text-blue-950">{quota.countSkripsi}/{quota.maxSkripsi}</strong></span>
-                    <span className="text-slate-300">•</span>
-                    <span>Ringkasan: <strong className="font-mono text-blue-950">{quota.countRingkasan}/{quota.maxRingkasan}</strong></span>
-                    <span className="text-slate-300">•</span>
-                    <span>Publikasi: <strong className="font-mono text-blue-950">{quota.countNaskah}/{quota.maxNaskah}</strong></span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-xs font-mono font-black text-blue-950 bg-white border border-blue-900 px-2 py-0.5 rounded shadow-[1px_1px_0px_#1E3A8A]">
+                      {quota.terpakai}/{quota.maksimal}
+                    </span>
+                    <div className="flex items-center gap-0.5 text-[11px] font-black text-blue-900 group-hover:text-orange-600 transition-colors">
+                      <span>Rincian</span>
+                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
                   </div>
                 </div>
 
