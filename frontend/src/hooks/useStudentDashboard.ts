@@ -2,19 +2,9 @@ import { useState, useMemo } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
+import { useStudentQuota, type DashboardQuota } from "./useStudentQuota";
 
-export interface DashboardQuota {
-  terpakai: number;
-  maksimal: number;
-  sisa: number;
-  isFull: boolean;
-  countSkripsi: number;
-  maxSkripsi: number;
-  countRingkasan: number;
-  maxRingkasan: number;
-  countNaskah: number;
-  maxNaskah: number;
-}
+export type { DashboardQuota };
 
 export interface DashboardFineItem {
   id: string;
@@ -93,39 +83,7 @@ export function useStudentDashboard() {
     return borrowings.filter((b: any) => activeStatuses.includes(b.status));
   }, [borrowings, activeStatuses]);
 
-  // Kalkulasi Kuota Peminjaman
-  const quota = useMemo<DashboardQuota>(() => {
-    const maxSkripsi = setting?.maxActiveSkripsi ?? 2;
-    const maxRingkasan = setting?.maxActiveRingkasan ?? 1;
-    const maxNaskah = setting?.maxActiveNaskah ?? 1;
-    const maksimal = maxSkripsi + maxRingkasan + maxNaskah;
-    const terpakai = activeBorrowings.length;
-    const sisa = Math.max(0, maksimal - terpakai);
-
-    let countSkripsi = 0;
-    let countRingkasan = 0;
-    let countNaskah = 0;
-
-    activeBorrowings.forEach((b: any) => {
-      const type = b.archive?.archiveType?.toUpperCase().replace(" ", "_") || "";
-      if (type === "SKRIPSI") countSkripsi++;
-      else if (type === "RINGKASAN_SKRIPSI") countRingkasan++;
-      else if (type === "NASKAH_PUBLIKASI") countNaskah++;
-    });
-
-    return {
-      terpakai,
-      maksimal,
-      sisa,
-      isFull: terpakai >= maksimal,
-      countSkripsi,
-      maxSkripsi,
-      countRingkasan,
-      maxRingkasan,
-      countNaskah,
-      maxNaskah,
-    };
-  }, [activeBorrowings, setting]);
+  const { quota } = useStudentQuota();
 
   // Kalkulasi Tunggakan Denda
   const denda = useMemo<DashboardFines>(() => {
