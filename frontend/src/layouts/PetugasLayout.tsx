@@ -138,9 +138,9 @@ export default function PetugasLayout() {
               setIsSidebarOpen(false);
               guide.handleOpen();
             }}
-            className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-semibold transition-all text-slate-300 hover:bg-slate-800 hover:text-white cursor-pointer group select-none text-left"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all text-orange-400 hover:text-orange-300 hover:bg-orange-500/10 border border-orange-500/20 hover:border-orange-500/40 cursor-pointer group select-none text-left"
           >
-            <HelpCircle className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" strokeWidth={2.3} />
+            <HelpCircle className="w-5 h-5 text-orange-400 group-hover:text-orange-300 transition-colors" strokeWidth={2.3} />
             <span>Panduan</span>
           </button>
         </div>

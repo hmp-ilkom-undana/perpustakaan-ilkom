@@ -1,14 +1,14 @@
 export function CirculationSkeleton() {
   return (
-    <div className="flex flex-col md:flex-row gap-6 overflow-hidden">
+    <div className="flex flex-col md:flex-row gap-3 lg:gap-4 overflow-hidden">
       {[1, 2, 3, 4].map((col) => (
-        <div key={col} className="w-full md:w-80 flex flex-col gap-4 shrink-0">
-          <div className="h-9 bg-slate-200/70 border-2 border-blue-900/20 rounded-lg animate-pulse" />
-          <div className="space-y-3">
+        <div key={col} className="w-full md:flex-1 md:min-w-0 flex flex-col gap-3">
+          <div className="h-8 bg-slate-200/70 border-2 border-blue-900/20 rounded-lg animate-pulse" />
+          <div className="space-y-2.5">
             {[1, 2, 3].map((card) => (
               <div
                 key={card}
-                className="h-32 bg-white border-2 border-blue-900/20 rounded-lg p-4 shadow-[2px_2px_0px_rgba(30,58,138,0.2)] animate-pulse flex flex-col justify-between"
+                className="h-28 bg-white border-2 border-blue-900/20 rounded-lg p-3 shadow-[2px_2px_0px_rgba(30,58,138,0.2)] animate-pulse flex flex-col justify-between"
               >
                 <div className="flex justify-between items-center">
                   <div className="w-20 h-5 bg-slate-200 rounded" />

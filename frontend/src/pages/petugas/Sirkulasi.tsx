@@ -47,7 +47,7 @@ export default function Sirkulasi() {
         {isLoading ? (
           <CirculationSkeleton />
         ) : (
-          <div className="h-full flex flex-col md:flex-row gap-5 md:overflow-x-auto pb-2 custom-scrollbar-x">
+          <div className="h-full flex flex-col md:flex-row gap-3 lg:gap-4 pb-2">
             {columns.map((column) => (
               <CirculationStatusColumn
                 key={column.id}
