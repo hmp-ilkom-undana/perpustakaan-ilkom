@@ -37,7 +37,7 @@ export function PetugasGuideModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
       aria-modal="true"
       role="dialog"
       aria-label="Panduan Sirkulasi Petugas"

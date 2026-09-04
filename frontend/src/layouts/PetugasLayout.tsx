@@ -13,9 +13,12 @@ import {
   X,
   UserCircle,
   Loader2,
+  HelpCircle,
 } from "lucide-react";
 
 import { NavLogo } from "@/components/NavLogo";
+import { usePetugasGuide } from "@/hooks/usePetugasGuide";
+import { PetugasGuideModal } from "@/components/guide/PetugasGuideModal";
 
 export default function PetugasLayout() {
   const { data: session } = useSession();
@@ -23,6 +26,7 @@ export default function PetugasLayout() {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const guide = usePetugasGuide();
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -57,14 +61,27 @@ export default function PetugasLayout() {
           <NavLogo size="sm" />
           <h1 className="font-bold tracking-tight text-lg">Panel Petugas</h1>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-white hover:bg-slate-800"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-10 w-10 rounded-lg border-2 border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white hover:border-orange-500 active:translate-x-[1px] active:translate-y-[1px] transition-all cursor-pointer"
+            onClick={guide.handleOpen}
+            aria-label="Buka panduan operasional petugas"
+            title="Panduan Petugas"
+          >
+            <HelpCircle className="w-5 h-5 text-slate-200" strokeWidth={2.3} />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-10 w-10 rounded-lg border-2 border-slate-700 bg-slate-800 text-white hover:bg-slate-700 hover:border-slate-600 active:translate-x-[1px] active:translate-y-[1px] transition-all"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            aria-label={isSidebarOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+          >
+            {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+        </div>
       </div>
 
       {/* OVERLAY (Mobile) */}
@@ -81,12 +98,24 @@ export default function PetugasLayout() {
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Sidebar Header (Desktop) */}
-        <div className="hidden md:flex items-center gap-3 p-6 border-b border-slate-800">
-          <NavLogo size="md" />
-          <div>
-            <h1 className="font-bold tracking-tight text-lg leading-tight">Perpus ILKOM</h1>
-            <p className="text-[10px] text-orange-500 font-semibold tracking-widest uppercase">Petugas Panel</p>
+        <div className="hidden md:flex items-center justify-between p-6 border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <NavLogo size="md" />
+            <div>
+              <h1 className="font-bold tracking-tight text-lg leading-tight">Perpus ILKOM</h1>
+              <p className="text-[10px] text-orange-500 font-semibold tracking-widest uppercase">Petugas Panel</p>
+            </div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={guide.handleOpen}
+            className="h-9 w-9 rounded-lg border-2 border-slate-700 bg-slate-800 hover:bg-slate-700 hover:border-orange-500 text-slate-300 hover:text-white shadow-[2px_2px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer shrink-0"
+            aria-label="Buka panduan operasional petugas"
+            title="Panduan Petugas"
+          >
+            <HelpCircle className="w-5 h-5 text-slate-200" strokeWidth={2.3} />
+          </Button>
         </div>
 
         {/* Sidebar Menu */}
@@ -152,6 +181,21 @@ export default function PetugasLayout() {
           <Outlet />
         </div>
       </main>
+
+      {/* PANDUAN OPERASIONAL MODAL */}
+      <PetugasGuideModal
+        isOpen={guide.isOpen}
+        isLoading={guide.isLoading}
+        config={guide.config}
+        steps={guide.steps}
+        currentStep={guide.currentStep}
+        totalSteps={guide.totalSteps}
+        isFirstStep={guide.isFirstStep}
+        isLastStep={guide.isLastStep}
+        onClose={guide.handleClose}
+        onNext={guide.handleNext}
+        onPrev={guide.handlePrev}
+      />
     </div>
   );
 }
