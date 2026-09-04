@@ -19,6 +19,7 @@ import {
   ChevronDown,
   ChevronRight,
   Loader2,
+  HelpCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -136,8 +137,19 @@ function MahasiswaLayoutContent() {
               })}
             </nav>
 
-            {/* Bagian Kanan: User Profile Trigger with Dropdown (Desktop) */}
-            <div className="hidden md:flex items-center">
+            {/* Bagian Kanan: User Profile Trigger & Panduan (Desktop) */}
+            <div className="hidden md:flex items-center gap-2.5">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={guide.handleOpen}
+                className="h-10 w-10 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 hover:border-blue-900 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer text-blue-950"
+                aria-label="Buka panduan peminjaman arsip"
+                title="Panduan Peminjaman"
+              >
+                <HelpCircle className="w-5 h-5" />
+              </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger className="group flex items-center gap-2.5 py-1.5 px-3 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:border-orange-500 hover:shadow-[3px_3px_0px_#F97316] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer text-left select-none outline-none">
                   <div className="w-7 h-7 rounded bg-orange-100 border border-blue-900 text-blue-950 font-black text-[10px] flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#1E3A8A]">
@@ -193,13 +205,24 @@ function MahasiswaLayoutContent() {
               </DropdownMenu>
             </div>
 
-            {/* Bagian Kanan: Tombol Hamburger (Hanya Mobile) */}
-            <div className="flex md:hidden">
+            {/* Bagian Kanan: Tombol Panduan & Hamburger (Hanya Mobile) */}
+            <div className="flex md:hidden items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={guide.handleOpen}
+                className="h-10 w-10 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer text-blue-950"
+                aria-label="Buka panduan peminjaman arsip"
+                title="Panduan Peminjaman"
+              >
+                <HelpCircle className="w-5 h-5" />
+              </Button>
+
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+                className="h-10 w-10 rounded-lg border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] hover:bg-amber-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
                 aria-label={isMobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
               >
                 {isMobileMenuOpen ? (
