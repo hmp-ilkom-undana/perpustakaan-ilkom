@@ -9,7 +9,8 @@ export function StudentHelpContactCard() {
 
   const adminName = settings?.adminContactName || "Petugas Perpustakaan";
   const rawNumber = settings?.adminWaNumber || "6281234567890";
-  const cleanNumber = rawNumber.replace(/[^0-9]/g, "");
+  const digits = rawNumber.replace(/[^0-9]/g, "");
+  const cleanNumber = digits.startsWith("0") ? "62" + digits.slice(1) : digits;
 
   const studentName = session?.user?.name || "Mahasiswa";
   const studentNim = (session?.user as any)?.nim || "";
