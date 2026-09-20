@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Calculator, Info } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatRupiah } from "@/lib/utils";
 
 interface FineSimulatorCardProps {
   lateBaseFine: number;
@@ -107,21 +108,21 @@ export function FineSimulatorCard({
           <div className="flex justify-between text-blue-200">
             <span>Denda Keterlambatan:</span>
             <span className="font-bold text-white">
-              Rp {simulationResult.lateFine.toLocaleString("id-ID")}
+              {formatRupiah(simulationResult.lateFine)}
             </span>
           </div>
           {simKondisi !== "BAIK" && (
             <div className="flex justify-between text-blue-200">
               <span>Denda Fisik ({simKondisi}):</span>
               <span className="font-bold text-white">
-                Rp {simulationResult.physicalFine.toLocaleString("id-ID")}
+                {formatRupiah(simulationResult.physicalFine)}
               </span>
             </div>
           )}
           <div className="border-t border-blue-800 pt-2 flex justify-between items-center font-black">
             <span className="text-orange-300">Total Denda:</span>
             <span className="text-base text-orange-400 font-black">
-              Rp {simulationResult.total.toLocaleString("id-ID")}
+              {formatRupiah(simulationResult.total)}
             </span>
           </div>
         </div>
@@ -129,7 +130,7 @@ export function FineSimulatorCard({
         <div className="flex items-start gap-2 text-[10px] text-blue-300 leading-relaxed">
           <Info className="w-3.5 h-3.5 shrink-0 text-orange-400 mt-0.5" />
           <span>
-            Formula: Hari 1-{lateThresholdDays} = Rp {lateBaseFine.toLocaleString("id-ID")}. Setelah lewat hari ke-{lateThresholdDays} ditambah Rp {lateDailyFine.toLocaleString("id-ID")}/hari kerja.
+            Formula: Hari 1-{lateThresholdDays} = {formatRupiah(lateBaseFine)}. Setelah lewat hari ke-{lateThresholdDays} ditambah {formatRupiah(lateDailyFine)}/hari kerja.
           </span>
         </div>
       </CardContent>

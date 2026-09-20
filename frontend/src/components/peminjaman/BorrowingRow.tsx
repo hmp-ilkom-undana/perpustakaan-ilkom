@@ -2,7 +2,7 @@ import { BookOpen, Calendar, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { BorrowingStatus } from "./TicketProgress";
-import { cn } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 
 export interface BorrowingRowProps {
   id: string;
@@ -81,7 +81,7 @@ export function BorrowingRow({
             variant="rose"
             className="font-mono text-xs font-black shadow-[1px_1px_0px_#991B1B]"
           >
-            Rp {fineAmount.toLocaleString("id-ID")}
+            {formatRupiah(fineAmount)}
           </Badge>
         )}
         <Badge

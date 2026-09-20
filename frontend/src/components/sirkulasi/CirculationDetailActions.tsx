@@ -26,6 +26,7 @@ interface CirculationDetailActionsProps {
   selectedPhoto: File | null;
   returnCondition: ReturnCondition;
   returnNote: string;
+  returnToStock?: boolean;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   fileInputGalleryRef: React.RefObject<HTMLInputElement | null>;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -34,6 +35,7 @@ interface CirculationDetailActionsProps {
   onResetPhoto: () => void;
   onReturnConditionChange: (cond: ReturnCondition) => void;
   onReturnNoteChange: (note: string) => void;
+  onReturnToStockChange?: (val: boolean) => void;
   onOpenAccModal: () => void;
   onOpenRejectModal: () => void;
   onConfirmHandover: () => void;
@@ -47,6 +49,7 @@ export function CirculationDetailActions({
   selectedPhoto,
   returnCondition,
   returnNote,
+  returnToStock = true,
   fileInputRef,
   fileInputGalleryRef,
   onFileSelect,
@@ -55,6 +58,7 @@ export function CirculationDetailActions({
   onResetPhoto,
   onReturnConditionChange,
   onReturnNoteChange,
+  onReturnToStockChange,
   onOpenAccModal,
   onOpenRejectModal,
   onConfirmHandover,
@@ -258,17 +262,54 @@ export function CirculationDetailActions({
             /* KONDISI 2: BAIK / RUSAK (Physical Book Exists) */
             <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-300">
               {returnCondition === "RUSAK" && (
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-rose-700 uppercase tracking-wider block">
-                    Catatan Kerusakan Fisik <span className="text-rose-600">*</span>
-                  </label>
-                  <textarea
-                    value={returnNote}
-                    onChange={(e) => onReturnNoteChange(e.target.value)}
-                    placeholder="Wajib diisi: Tuliskan detail kerusakan (contoh: halaman 12-15 robek, cover basah)..."
-                    className="w-full border-2 border-rose-600 bg-rose-50/50 rounded-lg p-3 text-xs md:text-sm font-semibold text-rose-950 shadow-[2px_2px_0px_#E11D48] outline-none"
-                    rows={2}
-                  />
+                <div className="space-y-3 p-3.5 bg-rose-50/70 border-2 border-rose-500 rounded-xl shadow-[3px_3px_0px_#E11D48]">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-rose-800 uppercase tracking-wider block">
+                      Catatan Kerusakan Fisik <span className="text-rose-600">*</span>
+                    </label>
+                    <textarea
+                      value={returnNote}
+                      onChange={(e) => onReturnNoteChange(e.target.value)}
+                      placeholder="Wajib diisi: Tuliskan detail kerusakan (contoh: halaman 12-15 robek, cover basah)..."
+                      className="w-full border-2 border-rose-600 bg-white rounded-lg p-3 text-xs md:text-sm font-semibold text-rose-950 shadow-[2px_2px_0px_#E11D48] focus:shadow-[3px_3px_0px_#E11D48] outline-none"
+                      rows={2}
+                    />
+                  </div>
+
+                  {onReturnToStockChange && (
+                    <div className="space-y-2 pt-1 border-t border-rose-200">
+                      <label className="text-xs font-bold text-rose-900 uppercase tracking-wider block">
+                        Apakah Arsip Masih Layak Dipinjam? <span className="text-rose-600">*</span>
+                      </label>
+                      <p className="text-[11px] text-rose-800 font-medium leading-relaxed">
+                        Pilih <strong>Ya</strong> jika arsip masih layak disirkulasikan kembali (stok bertambah). Pilih <strong>Tidak</strong> jika arsip rusak berat dan perlu ditahan dari sirkulasi (stok tidak bertambah).
+                      </p>
+                      <div className="grid grid-cols-2 gap-2.5 pt-0.5">
+                        <button
+                          type="button"
+                          onClick={() => onReturnToStockChange(true)}
+                          className={`py-2.5 px-3 rounded-lg border-2 border-blue-900 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            returnToStock
+                              ? "bg-emerald-500 text-white shadow-[2px_2px_0px_#1E3A8A]"
+                              : "bg-white text-slate-700 hover:bg-slate-100 shadow-[1px_1px_0px_#1E3A8A]"
+                          }`}
+                        >
+                          ✓ Ya, Masih Layak
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onReturnToStockChange(false)}
+                          className={`py-2.5 px-3 rounded-lg border-2 border-blue-900 font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                            !returnToStock
+                              ? "bg-rose-600 text-white shadow-[2px_2px_0px_#1E3A8A]"
+                              : "bg-white text-slate-700 hover:bg-slate-100 shadow-[1px_1px_0px_#1E3A8A]"
+                          }`}
+                        >
+                          ✕ Tidak, Tahan Arsip
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

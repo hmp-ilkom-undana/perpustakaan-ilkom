@@ -155,7 +155,7 @@ export class BorrowingController {
   async returnBorrowing(
     @Param('id') id: string,
     @Req() req: Request,
-    @Body() body: { kondisiKembali: string; catatanKondisiKembali?: string; fineAmount?: string },
+    @Body() body: { kondisiKembali: string; catatanKondisiKembali?: string; fineAmount?: string; returnToStock?: string | boolean },
     @UploadedFile() file?: Express.Multer.File,
   ) {
     const sessionData = await this.authService.auth.api.getSession({
@@ -170,6 +170,16 @@ export class BorrowingController {
       throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
     }
 
-    return this.borrowingService.returnBorrowing(id, file, body.kondisiKembali, body.catatanKondisiKembali, body.fineAmount, sessionData.user as any);
+    const returnToStock = body.returnToStock === 'false' || body.returnToStock === false ? false : true;
+
+    return this.borrowingService.returnBorrowing(
+      id,
+      file,
+      body.kondisiKembali,
+      body.catatanKondisiKembali,
+      body.fineAmount,
+      sessionData.user as any,
+      returnToStock,
+    );
   }
 }

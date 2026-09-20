@@ -45,23 +45,24 @@ export function DashboardHeader({
 
       <div className="flex flex-wrap items-center gap-2.5">
         {/* Time Period Filter Dropdown */}
-        <div className="flex items-center gap-2 bg-white border-2 border-blue-900 rounded-md shadow-[2px_2px_0px_#1E3A8A] px-2 py-1">
-          <Calendar className="w-4 h-4 text-blue-900 shrink-0" />
-          <Select value={period} onValueChange={(val) => { if (val) onPeriodChange(val); }}>
-            <SelectTrigger className="w-[145px] sm:w-[160px] h-7 border-none shadow-none text-xs font-bold text-blue-950 focus:ring-0">
-              <SelectValue placeholder="Pilih Periode">
-                {periodLabelMap[period]}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] font-semibold text-xs">
-              <SelectItem value="hari_ini">Hari Ini</SelectItem>
-              <SelectItem value="7_hari">7 Hari Terakhir</SelectItem>
-              <SelectItem value="bulan_ini">Bulan Ini</SelectItem>
-              <SelectItem value="semester_ini">Semester Ini</SelectItem>
-              <SelectItem value="tahun_ini">Tahun Akademik</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={period} onValueChange={(val) => { if (val) onPeriodChange(val); }}>
+          <SelectTrigger className="h-9 px-3 text-xs font-bold border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] rounded-md hover:bg-slate-100 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer flex items-center gap-2 w-auto focus:ring-0">
+            <Calendar className="w-3.5 h-3.5 text-blue-900 shrink-0" />
+            <span className="text-[11px] font-black uppercase text-blue-950 tracking-wider">
+              Periode:
+            </span>
+            <SelectValue placeholder="Pilih Periode">
+              {periodLabelMap[period]}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent align="end" className="border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] font-semibold text-xs min-w-[160px] rounded-md">
+            <SelectItem value="hari_ini">Hari Ini</SelectItem>
+            <SelectItem value="7_hari">7 Hari Terakhir</SelectItem>
+            <SelectItem value="bulan_ini">Bulan Ini</SelectItem>
+            <SelectItem value="semester_ini">Semester Ini</SelectItem>
+            <SelectItem value="tahun_ini">Tahun Akademik</SelectItem>
+          </SelectContent>
+        </Select>
 
         {/* Refresh Button */}
         <Button

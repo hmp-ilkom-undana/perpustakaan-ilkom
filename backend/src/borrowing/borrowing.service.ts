@@ -429,8 +429,11 @@ export class BorrowingService {
     catatan?: string,
     fineAmountStr?: string,
     officerUser?: any,
+    returnToStock: boolean = true,
   ) {
-    if (!file) {
+    const kondisiKembali = kondisiStr === 'RUSAK' ? 'RUSAK' : (kondisiStr === 'HILANG' ? 'HILANG' : 'BAIK');
+
+    if (kondisiKembali !== 'HILANG' && !file) {
       throw new BadRequestException('Foto serah terima pengembalian wajib disertakan.');
     }
 
@@ -449,13 +452,6 @@ export class BorrowingService {
 
       if (borrowing.status !== 'BORROWED' && borrowing.status !== 'OVERDUE') {
         throw new BadRequestException('Hanya peminjaman berstatus BORROWED atau OVERDUE yang bisa dikembalikan.');
-      }
-
-      // Validasi Kondisi
-      const kondisiKembali = kondisiStr === 'RUSAK' ? 'RUSAK' : (kondisiStr === 'HILANG' ? 'HILANG' : 'BAIK');
-
-      if (kondisiKembali !== 'HILANG' && !file) {
-        throw new BadRequestException('Foto bukti pengembalian fisik wajib diunggah.');
       }
 
       let fotoUrl: string | null = null;
@@ -480,17 +476,23 @@ export class BorrowingService {
       const fine = fineResult.fineAmount;
 
       // Pengembalian stok
-      if (kondisiKembali !== 'HILANG') {
+      const shouldReturnToStock = kondisiKembali === 'BAIK'
+        ? true
+        : (kondisiKembali === 'RUSAK' ? Boolean(returnToStock) : false);
+
+      if (shouldReturnToStock) {
         await tx.archive.update({
           where: { id: borrowing.archiveId },
           data: { reservedQuantity: { decrement: 1 } },
         });
       } else {
+        // Arsip RUSAK (tidak layak) atau HILANG:
+        // Kurangi reservedQuantity dan kurangi quantity (stok fisik berkurang/ditahan, stok tersedia tidak bertambah)
         await tx.archive.update({
           where: { id: borrowing.archiveId },
           data: { 
             reservedQuantity: { decrement: 1 },
-            quantity: { decrement: 1 }, // Kurangi stok asli karena hilang
+            quantity: { decrement: 1 },
           },
         });
       }
@@ -504,6 +506,7 @@ export class BorrowingService {
           fotoUrlKembali: fotoUrl,
           fineAmount: fine,
           returnDate: new Date(), // Menyimpan tanggal aktual dikembalikan
+          returnToStock: shouldReturnToStock,
         },
       });
 
@@ -516,13 +519,14 @@ export class BorrowingService {
           action: 'RETURN_BORROW',
           entity: 'BORROWING',
           entityId: borrowing.id,
-          description: `Memproses pengembalian arsip "${borrowing.archive?.title || '-'}" dari ${borrowing.user?.name || 'Mahasiswa'} (Kondisi: ${kondisiKembali}${fine > 0 ? `, Denda: Rp ${fine.toLocaleString('id-ID')}` : ''})`,
+          description: `Memproses pengembalian arsip "${borrowing.archive?.title || '-'}" dari ${borrowing.user?.name || 'Mahasiswa'} (Kondisi: ${kondisiKembali}${kondisiKembali === 'RUSAK' ? `, Layak Dipinjam: ${shouldReturnToStock ? 'Ya' : 'Tidak'}` : ''}${fine > 0 ? `, Denda: Rp ${fine.toLocaleString('id-ID')}` : ''})`,
           metadata: {
             borrowingId: borrowing.id,
             pickupCode: borrowing.pickupCode,
             archiveTitle: borrowing.archive?.title,
             studentName: borrowing.user?.name,
             kondisiKembali: kondisiKembali,
+            returnToStock: shouldReturnToStock,
             catatan: catatan || null,
             fineAmount: fine,
             fotoUrlKembali: fotoUrl,

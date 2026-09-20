@@ -14,6 +14,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import type { ActivityLogItem } from "@/services/activity-log.service";
+import { formatRupiah } from "@/lib/utils";
 
 interface LogDetailDialogProps {
   log: ActivityLogItem | null;
@@ -113,7 +114,7 @@ export function LogDetailDialog({
       (lowerKey.includes("fine") || lowerKey.includes("amount") || lowerKey.includes("nominal")) &&
       typeof value === "number"
     ) {
-      return `Rp ${value.toLocaleString("id-ID")}`;
+      return formatRupiah(value);
     }
     if (typeof value === "boolean") {
       return value ? "Ya" : "Tidak";

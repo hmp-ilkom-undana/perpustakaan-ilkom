@@ -1,5 +1,6 @@
 import { AlertTriangle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatRupiah } from "@/lib/utils";
 
 interface OverdueFineCalloutProps {
   fineAmount: number;
@@ -26,7 +27,7 @@ export function OverdueFineCallout({
       <div className="flex items-center justify-between p-3 rounded-lg bg-white border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]">
         <span className="text-xs font-bold text-slate-600">Total Tagihan:</span>
         <span className="text-base sm:text-lg font-black font-mono text-rose-600">
-          Rp {fineAmount.toLocaleString("id-ID")}
+          {formatRupiah(fineAmount)}
         </span>
       </div>
 

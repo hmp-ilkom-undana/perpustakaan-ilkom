@@ -72,6 +72,7 @@ model Borrowing {
   kondisiKembali        KondisiArsip?
   catatanKondisiKembali String?
   fotoUrlKembali        String?
+  returnToStock         Boolean      @default(true)
 
   // Audit Pelunasan Denda (Fine Settlement)
   finePaidAt            DateTime?

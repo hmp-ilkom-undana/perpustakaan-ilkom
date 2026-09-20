@@ -148,10 +148,10 @@ export default function Maintenance() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t-2 border-blue-900 bg-white px-3 sm:px-4 py-3 sm:py-4 text-center">
-        <div className="max-w-4xl mx-auto flex items-center justify-center text-[11px] sm:text-xs font-bold text-slate-600">
-          <p>
-            © {new Date().getFullYear()} Ilmu Komputer Undana. Seluruh hak cipta
-            dilindungi.
+        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center text-[11px] sm:text-xs font-bold text-slate-600 gap-1">
+          <p>Dikelola oleh: HMP Ilmu Komputer Periode 2026/2027 Kabinet Arthasena</p>
+          <p className="text-[10px] text-slate-500 font-semibold">
+            © {new Date().getFullYear()} Ilmu Komputer Undana. Seluruh hak cipta dilindungi.
           </p>
         </div>
       </footer>

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
 import { authService } from "@/services/auth.service";
+import { broadcastAuthEvent } from "@/hooks/useSessionSync";
 
 export const loginSchema = z.object({
   email: z.string().min(1, "Username atau Email wajib diisi"),
@@ -64,6 +65,8 @@ export function useAuthLogin() {
         description: `Selamat datang, ${firstName}!`,
         duration: 3500,
       });
+
+      broadcastAuthEvent("LOGIN");
 
       const role = (user as { role?: string })?.role;
       const targetUrl =

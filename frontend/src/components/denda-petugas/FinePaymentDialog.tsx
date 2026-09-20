@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Receipt, Wallet, DollarSign, Loader2, CheckCircle2 } from "lucide-react";
 import type { FineItem } from "@/services/fine.service";
 import type { PaymentMethod } from "@/hooks/usePetugasDenda";
+import { formatRupiah } from "@/lib/utils";
 
 interface FinePaymentDialogProps {
   isOpen: boolean;
@@ -87,7 +88,7 @@ export function FinePaymentDialog({
                   Total Wajib Bayar
                 </span>
                 <span className="text-xl font-black text-rose-600">
-                  Rp {selectedFine.amount.toLocaleString("id-ID")}
+                  {formatRupiah(selectedFine.amount)}
                 </span>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { Receipt, AlertTriangle, Phone, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CurrencyInput } from "@/components/ui/currency-input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { FineSimulatorCard } from "./FineSimulatorCard";
@@ -68,14 +69,9 @@ export function DendaTab({
                   <Label className="text-xs font-bold text-slate-700">Denda Awal (Flat):</Label>
                   <div className="relative">
                     <span className="absolute left-3 top-2.5 text-xs font-black text-slate-400">Rp</span>
-                    <Input
-                      type="number"
-                      min={0}
-                      step={5000}
+                    <CurrencyInput
                       value={lateBaseFine}
-                      onChange={(e) =>
-                        setLateBaseFine(Math.max(0, parseInt(e.target.value) || 0))
-                      }
+                      onValueChange={setLateBaseFine}
                       className="pl-9 border-2 border-blue-900 font-black text-sm"
                     />
                   </div>
@@ -101,14 +97,9 @@ export function DendaTab({
                   <Label className="text-xs font-bold text-slate-700">Denda Tambahan/Hari:</Label>
                   <div className="relative">
                     <span className="absolute left-3 top-2.5 text-xs font-black text-slate-400">Rp</span>
-                    <Input
-                      type="number"
-                      min={0}
-                      step={1000}
+                    <CurrencyInput
                       value={lateDailyFine}
-                      onChange={(e) =>
-                        setLateDailyFine(Math.max(0, parseInt(e.target.value) || 0))
-                      }
+                      onValueChange={setLateDailyFine}
                       className="pl-9 border-2 border-blue-900 font-black text-sm"
                     />
                   </div>
@@ -136,14 +127,9 @@ export function DendaTab({
                   <Label className="text-xs font-bold text-slate-700">Denda Arsip Rusak:</Label>
                   <div className="relative">
                     <span className="absolute left-3 top-2.5 text-xs font-black text-slate-400">Rp</span>
-                    <Input
-                      type="number"
-                      min={0}
-                      step={5000}
+                    <CurrencyInput
                       value={damagedFine}
-                      onChange={(e) =>
-                        setDamagedFine(Math.max(0, parseInt(e.target.value) || 0))
-                      }
+                      onValueChange={setDamagedFine}
                       className="pl-9 border-2 border-blue-900 font-black text-sm"
                     />
                   </div>
@@ -153,14 +139,9 @@ export function DendaTab({
                   <Label className="text-xs font-bold text-slate-700">Denda Arsip Hilang:</Label>
                   <div className="relative">
                     <span className="absolute left-3 top-2.5 text-xs font-black text-slate-400">Rp</span>
-                    <Input
-                      type="number"
-                      min={0}
-                      step={5000}
+                    <CurrencyInput
                       value={lostFine}
-                      onChange={(e) =>
-                        setLostFine(Math.max(0, parseInt(e.target.value) || 0))
-                      }
+                      onValueChange={setLostFine}
                       className="pl-9 border-2 border-blue-900 font-black text-sm"
                     />
                   </div>

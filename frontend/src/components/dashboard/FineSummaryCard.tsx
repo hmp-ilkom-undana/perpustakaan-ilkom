@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 import type { DashboardFines, DashboardFineItem } from "@/hooks/useStudentDashboard";
 
 interface FineSummaryCardProps {
@@ -91,7 +91,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
           className="shrink-0 text-[10px] sm:text-xs font-black font-mono h-6 sm:h-7 px-2 sm:px-2.5 shadow-[1px_1px_0px_#1E3A8A] whitespace-nowrap"
         >
           {hasFine
-            ? `TOTAL: Rp ${totalDenda.toLocaleString("id-ID")}`
+            ? `TOTAL: ${formatRupiah(totalDenda)}`
             : "BEBAS DENDA"}
         </Badge>
       </CardHeader>
@@ -124,7 +124,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                     </span>
                   </div>
                   <span className="text-xs font-black font-mono text-rose-700 shrink-0">
-                    Rp {totalLateFine.toLocaleString("id-ID")}
+                    {formatRupiah(totalLateFine)}
                   </span>
                 </div>
 
@@ -148,7 +148,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                           </span>
                         </div>
                         <span className="text-[11px] sm:text-xs font-black font-mono text-rose-600 bg-rose-50 border border-rose-200 px-1.5 sm:px-2 py-1 rounded shadow-[1px_1px_0px_#E11D48] shrink-0 whitespace-nowrap">
-                          Rp {(item.fineAmount || 0).toLocaleString("id-ID")}
+                          {formatRupiah(item.fineAmount)}
                         </span>
                       </Link>
                     ))}
@@ -173,7 +173,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                     </span>
                   </div>
                   <span className="text-xs font-black font-mono text-amber-800 shrink-0">
-                    Rp {totalDamageLossFine.toLocaleString("id-ID")}
+                    {formatRupiah(totalDamageLossFine)}
                   </span>
                 </div>
 
@@ -197,7 +197,7 @@ export function FineSummaryCard({ denda, className }: FineSummaryCardProps) {
                           </span>
                         </div>
                         <span className="text-xs font-black font-mono text-amber-700 bg-amber-50 border border-amber-200 px-2 py-1 rounded shadow-[1px_1px_0px_#D97706] shrink-0">
-                          Rp {(item.fineAmount || 0).toLocaleString("id-ID")}
+                          {formatRupiah(item.fineAmount)}
                         </span>
                       </Link>
                     ))}

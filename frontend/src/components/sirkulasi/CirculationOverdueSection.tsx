@@ -1,5 +1,6 @@
 import { AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatRupiah } from "@/lib/utils";
 
 interface CirculationOverdueSectionProps {
   dueDate?: string;
@@ -47,7 +48,7 @@ export function CirculationOverdueSection({
             Total Denda
           </p>
           <p className="text-xl sm:text-2xl font-heading font-black text-rose-700">
-            Rp {fine.toLocaleString("id-ID")}
+            {formatRupiah(fine)}
           </p>
         </div>
       </div>
