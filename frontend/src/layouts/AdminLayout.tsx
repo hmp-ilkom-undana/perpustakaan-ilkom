@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession, authClient } from "@/lib/auth-client";
+import { useSessionSync, broadcastAuthEvent } from "@/hooks/useSessionSync";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ import {
 import { NavLogo } from "@/components/NavLogo";
 
 export default function AdminLayout() {
+  useSessionSync("ADMIN");
   const { data: session } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,6 +36,7 @@ export default function AdminLayout() {
     if (isLoggingOut) return;
     try {
       setIsLoggingOut(true);
+      broadcastAuthEvent("LOGOUT");
       await authClient.signOut();
       toast.success("Berhasil Keluar!", {
         description: "Sesi Anda telah berhasil diakhiri.",

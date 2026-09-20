@@ -1,4 +1,5 @@
 import { authClient } from "@/lib/auth-client";
+import { broadcastAuthEvent } from "@/hooks/useSessionSync";
 
 export interface StudentSignUpPayload {
   email: string;
@@ -74,6 +75,7 @@ export const authService = {
    * Mengakhiri sesi pengguna aktif.
    */
   async signOutUser() {
+    broadcastAuthEvent("LOGOUT");
     return await authClient.signOut();
   },
 

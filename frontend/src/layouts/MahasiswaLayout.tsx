@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession, authClient } from "@/lib/auth-client";
+import { useSessionSync, broadcastAuthEvent } from "@/hooks/useSessionSync";
 import {
   StudentGuideProvider,
   useStudentGuideContext,
@@ -52,6 +53,7 @@ export default function MahasiswaLayout() {
 }
 
 function MahasiswaLayoutContent() {
+  useSessionSync("MAHASISWA");
   const { data: session } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,6 +74,7 @@ function MahasiswaLayoutContent() {
     if (isLoggingOut) return;
     try {
       setIsLoggingOut(true);
+      broadcastAuthEvent("LOGOUT");
       await authClient.signOut();
       toast.success("Berhasil Keluar!", {
         description: "Sesi Anda telah berhasil diakhiri.",

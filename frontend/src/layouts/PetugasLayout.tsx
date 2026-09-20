@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession, authClient } from "@/lib/auth-client";
+import { useSessionSync, broadcastAuthEvent } from "@/hooks/useSessionSync";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ import { usePetugasGuide } from "@/hooks/usePetugasGuide";
 import { PetugasGuideModal } from "@/components/guide/PetugasGuideModal";
 
 export default function PetugasLayout() {
+  useSessionSync("PETUGAS");
   const { data: session } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,6 +34,7 @@ export default function PetugasLayout() {
     if (isLoggingOut) return;
     try {
       setIsLoggingOut(true);
+      broadcastAuthEvent("LOGOUT");
       await authClient.signOut();
       toast.success("Berhasil Keluar!", {
         description: "Sesi Anda telah berhasil diakhiri.",
