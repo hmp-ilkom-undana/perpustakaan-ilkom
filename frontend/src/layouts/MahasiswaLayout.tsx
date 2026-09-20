@@ -74,8 +74,8 @@ function MahasiswaLayoutContent() {
     if (isLoggingOut) return;
     try {
       setIsLoggingOut(true);
-      broadcastAuthEvent("LOGOUT");
       await authClient.signOut();
+      broadcastAuthEvent("LOGOUT");
       toast.success("Berhasil Keluar!", {
         description: "Sesi Anda telah berhasil diakhiri.",
         duration: 2000,

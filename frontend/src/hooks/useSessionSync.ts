@@ -8,16 +8,32 @@ export type AuthSyncAction = "LOGIN" | "LOGOUT" | "SESSION_CHANGED";
 export interface AuthSyncMessage {
   type: "AUTH_EVENT";
   action: AuthSyncAction;
+  senderTabId: string;
   timestamp: number;
 }
 
 const AUTH_CHANNEL_NAME = "auth-sync";
 const STORAGE_SYNC_KEY = "auth-sync-event";
+const TAB_ID_KEY = "auth-tab-id";
+
+/**
+ * Mengambil atau membuat unique ID untuk tab saat ini.
+ * ID disimpan di sessionStorage sehingga unik per-tab dan hilang saat tab ditutup.
+ */
+function getOrCreateTabId(): string {
+  let tabId = sessionStorage.getItem(TAB_ID_KEY);
+  if (!tabId) {
+    tabId = crypto.randomUUID();
+    sessionStorage.setItem(TAB_ID_KEY, tabId);
+  }
+  return tabId;
+}
 
 export function broadcastAuthEvent(action: AuthSyncAction) {
   const message: AuthSyncMessage = {
     type: "AUTH_EVENT",
     action,
+    senderTabId: getOrCreateTabId(),
     timestamp: Date.now(),
   };
 
@@ -74,6 +90,7 @@ export function useSessionSync(requiredRole?: "MAHASISWA" | "PETUGAS" | "ADMIN")
 
   // 2. Real-time Multi-Tab Sync Listener
   useEffect(() => {
+    const currentTabId = getOrCreateTabId();
     let channel: BroadcastChannel | null = null;
 
     const handleSyncAction = async (action: AuthSyncAction) => {
@@ -112,6 +129,8 @@ export function useSessionSync(requiredRole?: "MAHASISWA" | "PETUGAS" | "ADMIN")
       channel = new BroadcastChannel(AUTH_CHANNEL_NAME);
       channel.onmessage = (event: MessageEvent<AuthSyncMessage>) => {
         if (event.data && event.data.type === "AUTH_EVENT") {
+          // Abaikan pesan dari tab ini sendiri (guard utama)
+          if (event.data.senderTabId === currentTabId) return;
           handleSyncAction(event.data.action);
         }
       };
@@ -124,6 +143,9 @@ export function useSessionSync(requiredRole?: "MAHASISWA" | "PETUGAS" | "ADMIN")
         try {
           const parsed = JSON.parse(event.newValue) as AuthSyncMessage;
           if (parsed && parsed.type === "AUTH_EVENT") {
+            // StorageEvent tidak terpicu di tab yang sama secara native,
+            // tapi tetap filter sebagai lapisan keamanan ganda.
+            if (parsed.senderTabId === currentTabId) return;
             handleSyncAction(parsed.action);
           }
         } catch {
