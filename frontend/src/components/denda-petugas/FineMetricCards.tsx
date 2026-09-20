@@ -1,5 +1,6 @@
 import { AlertCircle, DollarSign, Users, CheckCircle2 } from "lucide-react";
 import type { FineStats } from "@/services/fine.service";
+import { formatRupiah } from "@/lib/utils";
 
 interface FineMetricCardsProps {
   stats: FineStats;
@@ -44,7 +45,7 @@ export function FineMetricCards({ stats, isLoading }: FineMetricCardsProps) {
         </div>
         <div>
           <p className="text-2xl sm:text-3xl font-black text-blue-950 tracking-tight">
-            Rp {(stats.totalUnpaidAmount || 0).toLocaleString("id-ID")}
+            {formatRupiah(stats.totalUnpaidAmount)}
           </p>
           <p className="text-xs font-bold text-slate-500 mt-1">
             Dari <span className="text-blue-950 font-black">{stats.unpaidCount || 0}</span> tagihan belum dibayar
@@ -65,7 +66,7 @@ export function FineMetricCards({ stats, isLoading }: FineMetricCardsProps) {
         </div>
         <div>
           <p className="text-2xl sm:text-3xl font-black text-blue-950 tracking-tight">
-            Rp {(stats.totalPaidAmount || 0).toLocaleString("id-ID")}
+            {formatRupiah(stats.totalPaidAmount)}
           </p>
           <p className="text-xs font-bold text-slate-500 mt-1">
             Dari <span className="text-blue-950 font-black">{stats.paidCount || 0}</span> transaksi lunas

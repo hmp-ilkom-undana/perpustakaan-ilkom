@@ -2,7 +2,7 @@ import { BookOpen, Calendar, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StudentHistoryItem, HistoryStatus } from "@/hooks/useStudentHistory";
-import { cn } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 
 interface HistoryCardRowProps {
   item: StudentHistoryItem;
@@ -68,7 +68,7 @@ export function HistoryCardRow({ item, onClick }: HistoryCardRowProps) {
             variant="rose"
             className="font-mono text-xs font-black shadow-[1px_1px_0px_#991B1B]"
           >
-            Rp {item.fine?.toLocaleString("id-ID")}
+            {formatRupiah(item.fine)}
           </Badge>
         )}
         <Badge

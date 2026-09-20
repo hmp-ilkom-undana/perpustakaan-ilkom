@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth-client";
 import type { FineItem } from "@/services/fine.service";
 import { getFineBadgeVariant } from "@/hooks/usePetugasDenda";
+import { formatRupiah } from "@/lib/utils";
 
 interface FineCardProps {
   item: FineItem;
@@ -164,7 +165,7 @@ export function FineCard({ item, onPay }: FineCardProps) {
               isUnpaid ? "text-rose-600" : "text-emerald-600"
             }`}
           >
-            Rp {item.amount.toLocaleString("id-ID")}
+            {formatRupiah(item.amount)}
           </span>
         </div>
 

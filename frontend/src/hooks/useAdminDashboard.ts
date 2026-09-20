@@ -4,6 +4,7 @@ import { useAdminDashboardQuery } from "./queries/useAdminDashboardQuery";
 import type { DashboardPeriod } from "@/services/dashboard.service";
 import { exportDashboardToExcel } from "@/services/excel-export.service";
 import { toast } from "sonner";
+import { formatRupiah } from "@/lib/utils";
 
 export function useAdminDashboard() {
   const navigate = useNavigate();
@@ -50,8 +51,8 @@ export function useAdminDashboard() {
   const formattedStats = useMemo(() => {
     if (!data) return null;
     return {
-      kasTerkumpul: `Rp ${data.stats.keuangan.totalKasTerkumpul.toLocaleString("id-ID")}`,
-      tunggakan: `Rp ${data.stats.keuangan.totalTunggakan.toLocaleString("id-ID")}`,
+      kasTerkumpul: formatRupiah(data.stats.keuangan.totalKasTerkumpul),
+      tunggakan: formatRupiah(data.stats.keuangan.totalTunggakan),
     };
   }, [data]);
 

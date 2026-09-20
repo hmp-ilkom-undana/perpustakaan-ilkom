@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 import type { DashboardTaskItem } from "@/hooks/useStudentDashboard";
 
 interface DateActivityListProps {
@@ -145,7 +145,7 @@ export function DateActivityList({ date, tasks, className }: DateActivityListPro
                       {isOverdue && (
                         <div className="flex items-center gap-1 text-rose-800 bg-rose-50 border border-rose-300 px-1.5 py-0.5 rounded text-[9px] font-black">
                           <AlertTriangle className="w-3 h-3 text-rose-600" />
-                          <span>Rp {(task.fineAmount || 0).toLocaleString("id-ID")}</span>
+                          <span>{formatRupiah(task.fineAmount)}</span>
                         </div>
                       )}
                       {!isWaitingPickup && !isBorrowed && !isOverdue && (

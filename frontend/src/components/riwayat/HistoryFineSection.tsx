@@ -2,7 +2,7 @@ import { Receipt, FileText, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StudentHistoryItem } from "@/hooks/useStudentHistory";
-import { cn } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 
 interface HistoryFineSectionProps {
   item: StudentHistoryItem;
@@ -60,7 +60,7 @@ export function HistoryFineSection({
               isPaid ? "text-emerald-700" : "text-rose-600"
             )}
           >
-            Rp {(item.fine || 0).toLocaleString("id-ID")}
+            {formatRupiah(item.fine)}
           </span>
         </div>
 

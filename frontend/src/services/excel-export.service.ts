@@ -1,6 +1,7 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import type { DashboardStatsResponse } from "./dashboard.service";
+import { formatRupiah } from "@/lib/utils";
 
 const BRAND_BLUE   = "FF1E3A8A";
 const BRAND_ORANGE = "FFF97316";
@@ -179,8 +180,8 @@ export async function exportDashboardToExcel(data: DashboardStatsResponse) {
   ["A", "B", "C", "D"].forEach((c) => applyHeaderStyle(fHead.getCell(c), GREEN_600));
 
   const fRows: (string | number)[][] = [
-    ["Kas Denda Terkumpul (Lunas)", `Rp ${stats.keuangan.totalKasTerkumpul.toLocaleString("id-ID")}`, "✅ Tercatat",    "Sudah dibayar ke kas loket"],
-    ["Tunggakan Denda Aktif",       `Rp ${stats.keuangan.totalTunggakan.toLocaleString("id-ID")}`,    "⚠️ Belum Lunas", "Perlu ditagih ke mahasiswa"],
+    ["Kas Denda Terkumpul (Lunas)", formatRupiah(stats.keuangan.totalKasTerkumpul), "✅ Tercatat",    "Sudah dibayar ke kas loket"],
+    ["Tunggakan Denda Aktif",       formatRupiah(stats.keuangan.totalTunggakan),    "⚠️ Belum Lunas", "Perlu ditagih ke mahasiswa"],
     ["Mahasiswa Terblokir",         `${stats.keuangan.mahasiswaTerblokir} orang`,                     "🔒 Diblokir",    "Tidak dapat meminjam baru"],
   ];
   const fBgs = [LIGHT_GREEN, LIGHT_RED, GRAY_50];

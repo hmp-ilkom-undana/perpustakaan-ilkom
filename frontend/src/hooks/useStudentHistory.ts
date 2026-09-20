@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
+import { formatRupiah } from "@/lib/utils";
 
 export type HistoryStatus =
   | "RETURNED"
@@ -147,11 +148,11 @@ export function useStudentHistory() {
     if (item) {
       const archiveType = item.type || "Arsip";
       message = encodeURIComponent(
-        `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${item.title}\n- Total Denda: Rp ${(item.fine || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
+        `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${item.title}\n- Total Denda: ${formatRupiah(item.fine)}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
       );
     } else {
       message = encodeURIComponent(
-        `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran total denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Total Tunggakan: Rp ${totalUnpaidFineAmount.toLocaleString("id-ID")} (${unpaidFinesCount} Transaksi)\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
+        `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran total denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Total Tunggakan: ${formatRupiah(totalUnpaidFineAmount)} (${unpaidFinesCount} Transaksi)\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
       );
     }
 

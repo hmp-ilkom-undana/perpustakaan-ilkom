@@ -1,5 +1,6 @@
 import type { UserItem } from "@/services/user.service";
 import { useStudentBorrowingsQuery } from "@/hooks/queries/useUserQuery";
+import { formatRupiah } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -128,7 +129,7 @@ export function StudentHistoryDialog({
                 totalFine > 0 ? "text-rose-600 font-bold" : "text-emerald-700"
               }
             >
-              Rp {totalFine.toLocaleString("id-ID")}
+              {formatRupiah(totalFine)}
             </strong>
           </div>
         </div>
@@ -179,7 +180,7 @@ export function StudentHistoryDialog({
                     <div className="flex items-center gap-1 text-rose-600 font-bold">
                       <Receipt className="w-3.5 h-3.5" />
                       <span>
-                        Denda: Rp {item.fineAmount.toLocaleString("id-ID")}
+                        Denda: {formatRupiah(item.fineAmount)}
                       </span>
                     </div>
                   )}

@@ -4,6 +4,7 @@ import { useMyBorrowingHistoryQuery } from "@/hooks/queries/useBorrowingQuery";
 import { useSystemSettingQuery } from "@/hooks/queries/useSettingQuery";
 import { useCancelBorrowingMutation } from "@/hooks/queries/useBorrowingMutation";
 import { BorrowingStatus } from "@/components/peminjaman";
+import { formatRupiah } from "@/lib/utils";
 
 export interface StudentTicketItem {
   id: string;
@@ -149,7 +150,7 @@ export function useStudentBorrowing() {
     const archiveType = ticket.archiveType || "Arsip";
 
     const message = encodeURIComponent(
-      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${ticket.archiveTitle}\n- Total Denda: Rp ${(ticket.fineAmount || 0).toLocaleString("id-ID")}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
+      `Halo ${setting?.adminContactName || "Admin Perpustakaan ILKOM"},\n\nSaya ingin konfirmasi pembayaran denda peminjaman:\n- Nama: ${studentName}\n- NIM: ${studentNim}\n- Judul ${archiveType}: ${ticket.archiveTitle}\n- Total Denda: ${formatRupiah(ticket.fineAmount)}\n\nMohon informasi petunjuk pembayarannya. Terima kasih.`
     );
 
     window.open(

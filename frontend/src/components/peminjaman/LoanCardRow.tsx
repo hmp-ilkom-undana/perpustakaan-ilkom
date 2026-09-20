@@ -2,7 +2,7 @@ import { BookOpen, Calendar, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { UnifiedLoanItem } from "@/hooks/usePeminjamanPage";
-import { cn } from "@/lib/utils";
+import { cn, formatRupiah } from "@/lib/utils";
 
 interface LoanCardRowProps {
   item: UnifiedLoanItem;
@@ -77,7 +77,7 @@ export function LoanCardRow({ item, onClick }: LoanCardRowProps) {
               variant="rose"
               className="font-mono text-xs font-black shadow-[1px_1px_0px_#991B1B] animate-pulse whitespace-nowrap"
             >
-              Rp {(item.fineAmount ?? 0).toLocaleString("id-ID")}
+              {formatRupiah(item.fineAmount)}
             </Badge>
           )}
           <Badge
