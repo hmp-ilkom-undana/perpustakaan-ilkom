@@ -18,9 +18,11 @@ export function AuthFooter() {
           className="h-10 w-auto object-contain"
         />
       </div>
-      <p className="text-[10px] tracking-wider font-bold text-blue-200 uppercase">
-        Dikelola oleh HMP Ilmu Komputer Kabinet Arthasena
-      </p>
+      <div className="text-[10px] tracking-wider font-bold text-blue-200 uppercase leading-relaxed text-center">
+        <p>Dikelola oleh:</p>
+        <p>HMP Ilmu Komputer Periode 2026/2027</p>
+        <p>Kabinet Arthasena</p>
+      </div>
     </footer>
   );
 }
