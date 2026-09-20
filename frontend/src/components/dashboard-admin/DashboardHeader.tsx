@@ -45,10 +45,13 @@ export function DashboardHeader({
 
       <div className="flex flex-wrap items-center gap-2.5">
         {/* Time Period Filter Dropdown */}
-        <div className="flex items-center gap-2 bg-white border-2 border-blue-900 rounded-md shadow-[2px_2px_0px_#1E3A8A] px-2 py-1">
+        <div className="flex items-center gap-2 bg-white border-2 border-blue-900 rounded-md shadow-[2px_2px_0px_#1E3A8A] px-2.5 py-1">
           <Calendar className="w-4 h-4 text-blue-900 shrink-0" />
+          <span className="text-[11px] font-black uppercase text-blue-950 tracking-wider">
+            Periode:
+          </span>
           <Select value={period} onValueChange={(val) => { if (val) onPeriodChange(val); }}>
-            <SelectTrigger className="w-[145px] sm:w-[160px] h-7 border-none shadow-none text-xs font-bold text-blue-950 focus:ring-0">
+            <SelectTrigger className="w-[130px] sm:w-[145px] h-7 border-none shadow-none text-xs font-bold text-blue-950 focus:ring-0">
               <SelectValue placeholder="Pilih Periode">
                 {periodLabelMap[period]}
               </SelectValue>
