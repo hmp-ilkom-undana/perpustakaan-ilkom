@@ -28,6 +28,7 @@ export function usePetugasCirculationDetail() {
   const [rejectReason, setRejectReason] = useState("");
   const [returnCondition, setReturnCondition] = useState<ReturnCondition>("BAIK");
   const [returnNote, setReturnNote] = useState("");
+  const [returnToStock, setReturnToStock] = useState<boolean>(true);
 
   const { data: item, isPending: isLoading } = useBorrowingDetailQuery(id);
 
@@ -124,10 +125,14 @@ export function usePetugasCirculationDetail() {
       if (selectedPhoto) formData.append("photo", selectedPhoto);
       formData.append("kondisiKembali", returnCondition);
       if (returnNote.trim()) formData.append("catatanKondisiKembali", returnNote.trim());
+      if (returnCondition === "RUSAK") {
+        formData.append("returnToStock", String(returnToStock));
+      }
       await returnMutation.mutateAsync({ id: item.id, formData });
       resetPhoto();
       setReturnCondition("BAIK");
       setReturnNote("");
+      setReturnToStock(true);
       navigateBack();
     } catch {
       // Error handled by mutation toast
@@ -162,6 +167,8 @@ export function usePetugasCirculationDetail() {
     setReturnCondition,
     returnNote,
     setReturnNote,
+    returnToStock,
+    setReturnToStock,
     // Confirm actions
     handleApproveConfirm,
     handleRejectConfirm,

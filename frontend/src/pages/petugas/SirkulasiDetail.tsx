@@ -41,6 +41,8 @@ export default function SirkulasiDetail() {
     setReturnCondition,
     returnNote,
     setReturnNote,
+    returnToStock,
+    setReturnToStock,
     handleApproveConfirm,
     handleRejectConfirm,
     handleHandoverConfirm,
@@ -135,6 +137,7 @@ export default function SirkulasiDetail() {
           selectedPhoto={selectedPhoto}
           returnCondition={returnCondition}
           returnNote={returnNote}
+          returnToStock={returnToStock}
           fileInputRef={fileInputRef}
           fileInputGalleryRef={fileInputGalleryRef}
           onFileSelect={handleFileSelect}
@@ -143,6 +146,7 @@ export default function SirkulasiDetail() {
           onResetPhoto={resetPhoto}
           onReturnConditionChange={setReturnCondition}
           onReturnNoteChange={setReturnNote}
+          onReturnToStockChange={setReturnToStock}
           onOpenAccModal={() => setIsAccModalOpen(true)}
           onOpenRejectModal={() => setIsRejectModalOpen(true)}
           onConfirmHandover={handleHandoverConfirm}
