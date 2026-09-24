@@ -9,6 +9,11 @@ import {
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
+import {
+  MaxFileSizeValidator,
+  ParseFilePipe,
+  FileTypeValidator,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
 import { BorrowingService } from './borrowing.service';
@@ -67,7 +72,16 @@ export class BorrowingController {
   async handoverBorrowing(
     @Param('id') id: string,
     @Req() req: Request,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /^image\/(jpeg|jpg|png|webp)$/ }),
+        ],
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
   ) {
     return this.borrowingService.handoverBorrowing(id, file, req['user'] as any);
   }
@@ -79,7 +93,16 @@ export class BorrowingController {
     @Param('id') id: string,
     @Req() req: Request,
     @Body() body: ReturnBorrowDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /^image\/(jpeg|jpg|png|webp)$/ }),
+        ],
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
   ) {
     const returnToStock =
       body.returnToStock === 'false' || body.returnToStock === false

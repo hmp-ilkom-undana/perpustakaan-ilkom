@@ -13,6 +13,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { MaxFileSizeValidator, ParseFilePipe } from '@nestjs/common';
 import type { Request } from 'express';
 import { ArchiveService } from './archive.service';
 import { CreateArchiveDto } from './dto/create-archive.dto';
@@ -60,12 +61,17 @@ export class ArchiveController {
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(
     @Req() req: Request,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+        ],
+        fileIsRequired: true,
+      }),
+    )
+    file: Express.Multer.File,
     @Body('archiveType') archiveType: string,
   ) {
-    if (!file) {
-      throw new BadRequestException('File Excel tidak ditemukan');
-    }
     if (!archiveType) {
       throw new BadRequestException('Tipe arsip belum dipilih');
     }
