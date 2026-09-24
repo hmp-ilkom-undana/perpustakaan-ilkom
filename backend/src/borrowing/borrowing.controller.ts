@@ -13,6 +13,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
 import { BorrowingService } from './borrowing.service';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { RequestBorrowDto } from './dto/request-borrow.dto';
+import { RejectBorrowDto } from './dto/reject-borrow.dto';
+import { ReturnBorrowDto } from './dto/return-borrow.dto';
 
 @Controller('api/borrowings')
 export class BorrowingController {
@@ -21,7 +24,7 @@ export class BorrowingController {
   @Post()
   async requestBorrow(
     @Req() req: Request,
-    @Body() body: { archiveId: string },
+    @Body() body: RequestBorrowDto,
   ) {
     return this.borrowingService.requestBorrow(req['user'].id, body.archiveId);
   }
@@ -53,7 +56,7 @@ export class BorrowingController {
   async rejectBorrowing(
     @Param('id') id: string,
     @Req() req: Request,
-    @Body() body: { reason?: string },
+    @Body() body: RejectBorrowDto,
   ) {
     return this.borrowingService.rejectBorrowing(id, body.reason, req['user'] as any);
   }
@@ -75,13 +78,7 @@ export class BorrowingController {
   async returnBorrowing(
     @Param('id') id: string,
     @Req() req: Request,
-    @Body()
-    body: {
-      kondisiKembali: string;
-      catatanKondisiKembali?: string;
-      fineAmount?: string;
-      returnToStock?: string | boolean;
-    },
+    @Body() body: ReturnBorrowDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
     const returnToStock =

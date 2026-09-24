@@ -14,6 +14,10 @@ import type { Request } from 'express';
 import { UserService } from './user.service';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Public } from '../auth/decorators/public.decorator';
+import { CreateStaffDto } from './dto/create-staff.dto';
+import { CreateBatchStaffDto } from './dto/create-batch-staff.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
+import { UpdateStaffDto } from './dto/update-staff.dto';
 
 @Controller('api/users')
 export class UserController {
@@ -39,26 +43,13 @@ export class UserController {
 
   @Post('staff')
   @Roles('ADMIN')
-  async createStaff(
-    @Req() req: Request,
-    @Body()
-    body: {
-      email: string;
-      password?: string;
-    },
-  ) {
+  async createStaff(@Req() req: Request, @Body() body: CreateStaffDto) {
     return this.userService.createStaff(body, req['user'] as any);
   }
 
   @Post('staff/batch')
   @Roles('ADMIN')
-  async createBatchStaff(
-    @Req() req: Request,
-    @Body()
-    body: {
-      staffList: Array<{ email: string; password?: string }>;
-    },
-  ) {
+  async createBatchStaff(@Req() req: Request, @Body() body: CreateBatchStaffDto) {
     return this.userService.createBatchStaff(body.staffList, req['user'] as any);
   }
 
@@ -66,7 +57,7 @@ export class UserController {
   async updateProfile(
     @Param('id') id: string,
     @Req() req: Request,
-    @Body() body: { name?: string; email?: string; wa_number?: string },
+    @Body() body: UpdateProfileDto,
   ) {
     const user = req['user'] as any;
     const isOwner = user.id === id;
@@ -86,13 +77,7 @@ export class UserController {
   async updateStaff(
     @Param('id') id: string,
     @Req() req: Request,
-    @Body()
-    body: {
-      name?: string;
-      email?: string;
-      wa_number?: string;
-      status?: string;
-    },
+    @Body() body: UpdateStaffDto,
   ) {
     return this.userService.updateStaff(id, body, req['user'] as any);
   }
