@@ -2,7 +2,9 @@ import { Controller, All, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { toNodeHandler } from 'better-auth/node';
+import { Public } from './decorators/public.decorator';
 
+@Public()
 @Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -13,4 +15,5 @@ export class AuthController {
     return nodeHandler(req, res);
   }
 }
+
 

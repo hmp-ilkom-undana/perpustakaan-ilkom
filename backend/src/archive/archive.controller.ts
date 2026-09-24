@@ -9,46 +9,22 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
-  UnauthorizedException,
-  ForbiddenException,
   Query,
   Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
 import { ArchiveService } from './archive.service';
-import { AuthService } from '../auth/auth.service';
 import { CreateArchiveDto } from './dto/create-archive.dto';
 import { UpdateArchiveDto } from './dto/update-archive.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('api/archives')
 export class ArchiveController {
-  constructor(
-    private readonly archiveService: ArchiveService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly archiveService: ArchiveService) {}
 
-  private async validateStaffOrAdmin(req: Request) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-
-    if (!sessionData) {
-      throw new UnauthorizedException(
-        'Sesi tidak valid, Anda harus login terlebih dahulu.',
-      );
-    }
-
-    const role = (sessionData.user as any)?.role;
-    if (role !== 'ADMIN' && role !== 'PETUGAS') {
-      throw new ForbiddenException(
-        'Akses ditolak: Hanya Petugas atau Administrator yang berhak memodifikasi katalog arsip.',
-      );
-    }
-
-    return sessionData.user;
-  }
-
+  @Public()
   @Get()
   async getCatalog(
     @Query('page') page?: string,
@@ -73,12 +49,14 @@ export class ArchiveController {
     });
   }
 
+  @Public()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.archiveService.findOne(id);
   }
 
   @Post('import')
+  @Roles('ADMIN', 'PETUGAS')
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(
     @Req() req: Request,
@@ -92,35 +70,34 @@ export class ArchiveController {
       throw new BadRequestException('Tipe arsip belum dipilih');
     }
 
-    const user = await this.validateStaffOrAdmin(req);
-    return this.archiveService.importExcel(file.buffer, archiveType, user as any);
+    return this.archiveService.importExcel(file.buffer, archiveType, req['user'] as any);
   }
 
   @Post()
+  @Roles('ADMIN', 'PETUGAS')
   async create(
     @Req() req: Request,
     @Body() createArchiveDto: CreateArchiveDto,
   ) {
-    const user = await this.validateStaffOrAdmin(req);
-    return this.archiveService.create(createArchiveDto, user as any);
+    return this.archiveService.create(createArchiveDto, req['user'] as any);
   }
 
   @Patch(':id')
+  @Roles('ADMIN', 'PETUGAS')
   async update(
     @Param('id') id: string,
     @Req() req: Request,
     @Body() updateArchiveDto: UpdateArchiveDto,
   ) {
-    const user = await this.validateStaffOrAdmin(req);
-    return this.archiveService.update(id, updateArchiveDto, user as any);
+    return this.archiveService.update(id, updateArchiveDto, req['user'] as any);
   }
 
   @Delete(':id')
+  @Roles('ADMIN', 'PETUGAS')
   async remove(
     @Param('id') id: string,
     @Req() req: Request,
   ) {
-    const user = await this.validateStaffOrAdmin(req);
-    return this.archiveService.remove(id, user as any);
+    return this.archiveService.remove(id, req['user'] as any);
   }
 }
