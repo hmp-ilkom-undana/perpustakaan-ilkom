@@ -4,173 +4,110 @@ import {
   Post,
   Body,
   Req,
-  UnauthorizedException,
   Param,
   Patch,
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
+import {
+  MaxFileSizeValidator,
+  ParseFilePipe,
+  FileTypeValidator,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request } from 'express';
 import { BorrowingService } from './borrowing.service';
-import { AuthService } from '../auth/auth.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RequestBorrowDto } from './dto/request-borrow.dto';
+import { RejectBorrowDto } from './dto/reject-borrow.dto';
+import { ReturnBorrowDto } from './dto/return-borrow.dto';
 
 @Controller('api/borrowings')
 export class BorrowingController {
-  constructor(
-    private readonly borrowingService: BorrowingService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly borrowingService: BorrowingService) {}
 
   @Post()
   async requestBorrow(
     @Req() req: Request,
-    @Body() body: { archiveId: string },
+    @Body() body: RequestBorrowDto,
   ) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-
-    if (!sessionData) {
-      throw new UnauthorizedException(
-        'Sesi tidak valid, Anda harus login terlebih dahulu.',
-      );
-    }
-
-    return this.borrowingService.requestBorrow(
-      sessionData.user.id,
-      body.archiveId,
-    );
+    return this.borrowingService.requestBorrow(req['user'].id, body.archiveId);
   }
+
   @Get('my-history')
   async getMyHistory(@Req() req: Request) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-    if (!sessionData) {
-      throw new UnauthorizedException(
-        'Sesi tidak valid, Anda harus login terlebih dahulu.',
-      );
-    }
-    return this.borrowingService.getMyBorrowings(sessionData.user.id);
+    return this.borrowingService.getMyBorrowings(req['user'].id);
   }
 
   @Post(':id/cancel')
   async cancelBorrowing(@Req() req: Request, @Param('id') borrowingId: string) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-
-    if (!sessionData) {
-      throw new UnauthorizedException(
-        'Sesi tidak valid, Anda harus login terlebih dahulu.',
-      );
-    }
-
-    return this.borrowingService.cancelBorrowing(
-      sessionData.user.id,
-      borrowingId,
-    );
+    return this.borrowingService.cancelBorrowing(req['user'].id, borrowingId);
   }
 
-  // ==========================================
-  // TAHAP 1: FITUR PETUGAS (ACC PEMINJAMAN)
-  // ==========================================
-
   @Get('active')
-  async getActiveBorrowings(@Req() req: Request) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-
-    if (!sessionData) {
-      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
-    }
-
-    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
-      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
-    }
-
+  @Roles('ADMIN', 'PETUGAS')
+  async getActiveBorrowings() {
     return this.borrowingService.getActiveBorrowings();
   }
 
   @Patch(':id/approve')
+  @Roles('ADMIN', 'PETUGAS')
   async approveBorrowing(@Req() req: Request, @Param('id') borrowingId: string) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-
-    if (!sessionData) {
-      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
-    }
-
-    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
-      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
-    }
-
-    return this.borrowingService.approveBorrowing(borrowingId, sessionData.user as any);
+    return this.borrowingService.approveBorrowing(borrowingId, req['user'] as any);
   }
 
   @Patch(':id/reject')
-  async rejectBorrowing(@Param('id') id: string, @Req() req: Request, @Body() body: { reason?: string }) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-
-    if (!sessionData) {
-      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
-    }
-
-    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
-      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
-    }
-
-    return this.borrowingService.rejectBorrowing(id, body.reason, sessionData.user as any);
+  @Roles('ADMIN', 'PETUGAS')
+  async rejectBorrowing(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() body: RejectBorrowDto,
+  ) {
+    return this.borrowingService.rejectBorrowing(id, body.reason, req['user'] as any);
   }
 
   @Patch(':id/handover')
+  @Roles('ADMIN', 'PETUGAS')
   @UseInterceptors(FileInterceptor('photo'))
   async handoverBorrowing(
     @Param('id') id: string,
     @Req() req: Request,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /^image\/(jpeg|jpg|png|webp)$/ }),
+        ],
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
   ) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-
-    if (!sessionData) {
-      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
-    }
-
-    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
-      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
-    }
-
-    return this.borrowingService.handoverBorrowing(id, file, sessionData.user as any);
+    return this.borrowingService.handoverBorrowing(id, file, req['user'] as any);
   }
 
   @Patch(':id/return')
+  @Roles('ADMIN', 'PETUGAS')
   @UseInterceptors(FileInterceptor('photo'))
   async returnBorrowing(
     @Param('id') id: string,
     @Req() req: Request,
-    @Body() body: { kondisiKembali: string; catatanKondisiKembali?: string; fineAmount?: string; returnToStock?: string | boolean },
-    @UploadedFile() file?: Express.Multer.File,
+    @Body() body: ReturnBorrowDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: /^image\/(jpeg|jpg|png|webp)$/ }),
+        ],
+        fileIsRequired: false,
+      }),
+    )
+    file?: Express.Multer.File,
   ) {
-    const sessionData = await this.authService.auth.api.getSession({
-      headers: req.headers as any,
-    });
-
-    if (!sessionData) {
-      throw new UnauthorizedException('Sesi tidak valid, Anda harus login.');
-    }
-
-    if (sessionData.user.role !== 'PETUGAS' && sessionData.user.role !== 'ADMIN') {
-      throw new UnauthorizedException('Akses ditolak: Hanya untuk Petugas.');
-    }
-
-    const returnToStock = body.returnToStock === 'false' || body.returnToStock === false ? false : true;
+    const returnToStock =
+      body.returnToStock === 'false' || body.returnToStock === false
+        ? false
+        : true;
 
     return this.borrowingService.returnBorrowing(
       id,
@@ -178,7 +115,7 @@ export class BorrowingController {
       body.kondisiKembali,
       body.catatanKondisiKembali,
       body.fineAmount,
-      sessionData.user as any,
+      req['user'] as any,
       returnToStock,
     );
   }
