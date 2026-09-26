@@ -23,16 +23,16 @@ function isOriginAllowed(origin: string | undefined): boolean {
   const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
   const staticAllowed = [
     frontendUrl,
+    'https://perpustakaan-ilmu-komputer.vercel.app',
     'http://localhost:5173',
     'http://localhost:5000',
   ].filter(Boolean);
 
   if (staticAllowed.includes(origin)) return true;
 
-  // Izinkan semua preview deployment Vercel milik project perpustakaan-ilmu-komputer
-  const vercelPreviewPattern =
-    /^https:\/\/perpustakaan-ilmu-komputer-[a-z0-9]+-hmp-ilkom-unc\.vercel\.app$/;
-  return vercelPreviewPattern.test(origin);
+  // Izinkan domain produksi dan preview deployment resmi perpustakaan-ilmu-komputer di vercel.app
+  const vercelPattern = /^https:\/\/perpustakaan-ilmu-komputer(-[a-z0-9]+)*\.vercel\.app$/;
+  return vercelPattern.test(origin);
 }
 
 expressInstance.use(
@@ -41,7 +41,7 @@ expressInstance.use(
       if (isOriginAllowed(origin)) {
         callback(null, true);
       } else {
-        callback(new Error(`Origin ${origin} not allowed by CORS`));
+        callback(null, false);
       }
     },
     credentials: true,
@@ -69,7 +69,7 @@ export async function bootstrap(): Promise<INestApplication> {
         if (isOriginAllowed(origin)) {
           callback(null, true);
         } else {
-          callback(new Error(`Origin ${origin} not allowed by CORS`));
+          callback(null, false);
         }
       },
       credentials: true,
@@ -118,7 +118,8 @@ export default async function handler(req: Request, res: Response) {
   }
 
   if (req.method === 'OPTIONS') {
-    res.status(204).end();
+    res.statusCode = 204;
+    res.end();
     return;
   }
 
