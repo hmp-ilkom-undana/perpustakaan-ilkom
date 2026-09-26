@@ -23,24 +23,29 @@ function getAllowedOrigins(): string[] {
  */
 expressInstance.use((req: Request, res: Response, next: NextFunction) => {
   const allowedOrigins = getAllowedOrigins();
-  const origin = req.headers.origin as string | undefined;
+  const origin = req.headers.origin;
 
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
+  const isOriginAllowed =
+    allowedOrigins.length > 0 &&
+    typeof origin === 'string' &&
+    origin.length > 0 &&
+    allowedOrigins.includes(origin);
+
+  if (isOriginAllowed) {
+    res.setHeader('Access-Control-Allow-Origin', origin as string);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type,Authorization,X-Requested-With',
+    );
   }
 
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-  );
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Content-Type,Authorization,X-Requested-With',
-  );
-
   if (req.method === 'OPTIONS') {
-    res.status(204).end();
+    res.status(isOriginAllowed ? 204 : 403).end();
     return;
   }
 
