@@ -1,7 +1,6 @@
 import { Controller, All, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { toNodeHandler } from 'better-auth/node';
 import { Public } from './decorators/public.decorator';
 
 @Public()
@@ -11,7 +10,9 @@ export class AuthController {
 
   @All('*')
   async handler(@Req() req: Request, @Res() res: Response) {
-    const nodeHandler = toNodeHandler(this.authService.auth);
+    const { toNodeHandler } = await import('better-auth/node');
+    const auth = await this.authService.getAuth();
+    const nodeHandler = toNodeHandler(auth);
     return nodeHandler(req, res);
   }
 }
