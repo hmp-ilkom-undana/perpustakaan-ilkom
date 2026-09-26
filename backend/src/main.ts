@@ -3,8 +3,9 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Express, Request, Response } from 'express';
 import helmet from 'helmet';
+import corsMiddleware from 'cors';
 
 let cachedApp: INestApplication;
 const expressInstance: Express = express();
@@ -17,47 +18,31 @@ function getAllowedOrigins(): string[] {
 }
 
 /**
- * Middleware CORS dipasang langsung di Express instance sebelum NestJS init.
- * Ini memastikan preflight (OPTIONS) selalu mendapat header yang benar,
- * bahkan sebelum middleware chain NestJS berjalan.
+ * Middleware cors (package resmi) dipasang di Express instance sebelum NestJS init.
+ * Ini penting agar preflight OPTIONS pada route /api/auth/* dari Better Auth
+ * mendapat header CORS yang benar, sebelum toNodeHandler mengambil alih request.
  */
-expressInstance.use((req: Request, res: Response, next: NextFunction) => {
-  const allowedOrigins = getAllowedOrigins();
-  const origin = req.headers.origin;
-
-  const isOriginAllowed =
-    allowedOrigins.length > 0 &&
-    typeof origin === 'string' &&
-    origin.length > 0 &&
-    allowedOrigins.includes(origin);
-
-  if (isOriginAllowed) {
-    res.setHeader('Access-Control-Allow-Origin', origin as string);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader(
-      'Access-Control-Allow-Methods',
-      'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-    );
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Content-Type,Authorization,X-Requested-With',
-    );
-  }
-
-  if (req.method === 'OPTIONS') {
-    res.status(isOriginAllowed ? 204 : 403).end();
-    return;
-  }
-
-  next();
-});
+expressInstance.use(
+  corsMiddleware({
+    origin: (origin, callback) => {
+      const allowedOrigins = getAllowedOrigins();
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  }),
+);
 
 export async function bootstrap(): Promise<INestApplication> {
   if (!cachedApp) {
-    const app = await NestFactory.create(
-      AppModule,
-      new ExpressAdapter(expressInstance),
-    );
+    const app = await NestFactory.create(AppModule, new ExpressAdapter(expressInstance), {
+      bodyParser: false,
+    });
 
     app.use(
       helmet({
@@ -65,10 +50,9 @@ export async function bootstrap(): Promise<INestApplication> {
       }),
     );
 
-    const allowedOrigins = getAllowedOrigins();
-
     app.enableCors({
       origin: (origin, callback) => {
+        const allowedOrigins = getAllowedOrigins();
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
