@@ -27,11 +27,25 @@ export class AuthService {
       },
       plugins: [username()],
       baseURL: (process.env.BETTER_AUTH_URL || 'http://localhost:5000').replace(/\/+$/, ''),
-      trustedOrigins: [
-        (process.env.FRONTEND_URL || '').replace(/\/+$/, ''),
-        'http://localhost:5173',
-        'http://localhost:5000',
-      ].filter(Boolean),
+      trustedOrigins: (request) => {
+        const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
+        const origins = [
+          frontendUrl,
+          'https://perpustakaan-ilmu-komputer.vercel.app',
+          'http://localhost:5173',
+          'http://localhost:5000',
+        ].filter(Boolean);
+
+        const origin = request?.headers?.get?.('origin');
+        if (
+          origin &&
+          /^https:\/\/perpustakaan-ilmu-komputer.*\.vercel\.app$/.test(origin)
+        ) {
+          origins.push(origin);
+        }
+
+        return origins;
+      },
       advanced: {
         defaultCookieAttributes: {
           sameSite: 'none',
