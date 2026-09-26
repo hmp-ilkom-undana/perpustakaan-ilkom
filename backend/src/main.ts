@@ -30,8 +30,8 @@ function isOriginAllowed(origin: string | undefined): boolean {
 
   if (staticAllowed.includes(origin)) return true;
 
-  // Izinkan semua domain produksi maupun preview perpustakaan-ilmu-komputer di vercel.app
-  const vercelPattern = /^https:\/\/perpustakaan-ilmu-komputer.*\.vercel\.app$/;
+  // Izinkan domain produksi dan preview deployment resmi perpustakaan-ilmu-komputer di vercel.app
+  const vercelPattern = /^https:\/\/perpustakaan-ilmu-komputer(-[a-z0-9]+)*\.vercel\.app$/;
   return vercelPattern.test(origin);
 }
 

@@ -39,7 +39,9 @@ export class AuthService {
         const origin = request?.headers?.get?.('origin');
         if (
           origin &&
-          /^https:\/\/perpustakaan-ilmu-komputer.*\.vercel\.app$/.test(origin)
+          /^https:\/\/perpustakaan-ilmu-komputer(-[a-z0-9]+)*\.vercel\.app$/.test(
+            origin,
+          )
         ) {
           origins.push(origin);
         }
