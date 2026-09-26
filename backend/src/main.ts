@@ -18,7 +18,7 @@ const expressInstance: Express = express();
  * - Semua preview URL Vercel (*.vercel.app) milik project frontend ini
  */
 function isOriginAllowed(origin: string | undefined): boolean {
-  if (!origin) return false;
+  if (!origin) return true;
 
   const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
   const staticAllowed = [
