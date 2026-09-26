@@ -10,23 +10,35 @@ import corsMiddleware from 'cors';
 let cachedApp: INestApplication;
 const expressInstance: Express = express();
 
-function getAllowedOrigins(): string[] {
+/**
+ * Menentukan apakah suatu origin diperbolehkan.
+ * Mendukung:
+ * - Production URL dari env FRONTEND_URL
+ * - Localhost untuk development
+ * - Semua preview URL Vercel (*.vercel.app) milik project frontend ini
+ */
+function isOriginAllowed(origin: string | undefined): boolean {
+  if (!origin) return false;
+
   const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
-  return [frontendUrl, 'http://localhost:5173', 'http://localhost:5000'].filter(
-    Boolean,
-  );
+  const staticAllowed = [
+    frontendUrl,
+    'http://localhost:5173',
+    'http://localhost:5000',
+  ].filter(Boolean);
+
+  if (staticAllowed.includes(origin)) return true;
+
+  // Izinkan semua preview deployment Vercel milik project perpustakaan-ilmu-komputer
+  const vercelPreviewPattern =
+    /^https:\/\/perpustakaan-ilmu-komputer-[a-z0-9]+-hmp-ilkom-unc\.vercel\.app$/;
+  return vercelPreviewPattern.test(origin);
 }
 
-/**
- * Middleware cors (package resmi) dipasang di Express instance sebelum NestJS init.
- * Ini penting agar preflight OPTIONS pada route /api/auth/* dari Better Auth
- * mendapat header CORS yang benar, sebelum toNodeHandler mengambil alih request.
- */
 expressInstance.use(
   corsMiddleware({
     origin: (origin, callback) => {
-      const allowedOrigins = getAllowedOrigins();
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (isOriginAllowed(origin)) {
         callback(null, true);
       } else {
         callback(new Error(`Origin ${origin} not allowed by CORS`));
@@ -40,9 +52,11 @@ expressInstance.use(
 
 export async function bootstrap(): Promise<INestApplication> {
   if (!cachedApp) {
-    const app = await NestFactory.create(AppModule, new ExpressAdapter(expressInstance), {
-      bodyParser: false,
-    });
+    const app = await NestFactory.create(
+      AppModule,
+      new ExpressAdapter(expressInstance),
+      { bodyParser: false },
+    );
 
     app.use(
       helmet({
@@ -52,8 +66,7 @@ export async function bootstrap(): Promise<INestApplication> {
 
     app.enableCors({
       origin: (origin, callback) => {
-        const allowedOrigins = getAllowedOrigins();
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (isOriginAllowed(origin)) {
           callback(null, true);
         } else {
           callback(new Error(`Origin ${origin} not allowed by CORS`));
@@ -83,8 +96,32 @@ if (!process.env.VERCEL) {
   });
 }
 
-// Handler serverless resmi untuk Vercel Function
+/**
+ * Handler utama untuk Vercel Serverless Function.
+ * CORS preflight (OPTIONS) di-handle di sini sebelum Express dipanggil
+ * agar tidak bergantung pada middleware chain NestJS/Better Auth.
+ */
 export default async function handler(req: Request, res: Response) {
+  const origin = req.headers.origin;
+
+  if (isOriginAllowed(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin as string);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+    );
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type,Authorization,X-Requested-With',
+    );
+  }
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+
   await bootstrap();
   expressInstance(req, res);
 }
