@@ -3,11 +3,49 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 
 let cachedApp: INestApplication;
 const expressInstance: Express = express();
+
+function getAllowedOrigins(): string[] {
+  const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
+  return [frontendUrl, 'http://localhost:5173', 'http://localhost:5000'].filter(
+    Boolean,
+  );
+}
+
+/**
+ * Middleware CORS dipasang langsung di Express instance sebelum NestJS init.
+ * Ini memastikan preflight (OPTIONS) selalu mendapat header yang benar,
+ * bahkan sebelum middleware chain NestJS berjalan.
+ */
+expressInstance.use((req: Request, res: Response, next: NextFunction) => {
+  const allowedOrigins = getAllowedOrigins();
+  const origin = req.headers.origin as string | undefined;
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type,Authorization,X-Requested-With',
+  );
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+
+  next();
+});
 
 export async function bootstrap(): Promise<INestApplication> {
   if (!cachedApp) {
@@ -22,12 +60,7 @@ export async function bootstrap(): Promise<INestApplication> {
       }),
     );
 
-    const frontendUrl = (process.env.FRONTEND_URL || '').replace(/\/+$/, '');
-    const allowedOrigins = [
-      frontendUrl,
-      'http://localhost:5173',
-      'http://localhost:5000',
-    ].filter(Boolean);
+    const allowedOrigins = getAllowedOrigins();
 
     app.enableCors({
       origin: (origin, callback) => {
