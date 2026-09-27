@@ -3,6 +3,7 @@ import {
   Get,
   Headers,
   UnauthorizedException,
+  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { CronService } from './cron.service';
@@ -23,14 +24,25 @@ export class CronController {
   async triggerMaintenance(@Headers('authorization') authHeader?: string) {
     const cronSecret = process.env.CRON_SECRET;
 
-    if (cronSecret) {
-      if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
-        this.logger.warn('Trigger cron ditolak: Secret authorization tidak valid');
-        throw new UnauthorizedException('Unauthorized: Invalid cron secret');
-      }
+    if (!cronSecret || cronSecret.trim() === '') {
+      this.logger.error(
+        'Trigger cron ditolak: CRON_SECRET belum dikonfigurasi pada environment server',
+      );
+      throw new InternalServerErrorException(
+        'Server configuration error: Cron secret is not configured',
+      );
     }
 
-    this.logger.log('Menerima pemicu cron eksternal. Memulai pemeliharaan harian...');
+    if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
+      this.logger.warn(
+        'Trigger cron ditolak: Secret authorization tidak valid atau tidak disertakan',
+      );
+      throw new UnauthorizedException('Unauthorized: Invalid cron secret');
+    }
+
+    this.logger.log(
+      'Menerima pemicu cron eksternal yang terotentikasi. Memulai pemeliharaan harian...',
+    );
     await this.cronService.handleDailyMaintenance();
 
     return {
