@@ -92,7 +92,7 @@ export function useStudentGuide() {
         title: "Cari & Pilih Arsip",
         subtitle: "Langkah 1 • Penelusuran Katalog",
         description:
-          "Jelajahi koleksi arsip di halaman Katalog. Setiap mahasiswa memiliki kuota peminjaman aktif sesuai kategori dokumen.",
+          "Jelajahi koleksi arsip di halaman Katalog. Setiap mahasiswa memiliki kuota peminjaman aktif sesuai jenis arsip.",
       },
       {
         step: 2,

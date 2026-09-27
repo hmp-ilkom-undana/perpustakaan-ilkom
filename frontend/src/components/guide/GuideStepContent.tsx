@@ -124,7 +124,7 @@ export function GuideStepContent({ step, config }: GuideStepContentProps) {
               Batas Kuota Pinjaman Aktif
             </span>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-950 border border-blue-900 shadow-[1px_1px_0px_#1E3A8A]">
-              Per Kategori
+              Per Jenis
             </span>
           </div>
 
@@ -231,7 +231,7 @@ export function GuideStepContent({ step, config }: GuideStepContentProps) {
                 </span>
               </div>
               <span className="text-[10px] text-slate-500 font-medium leading-tight mt-1.5 block">
-                Card ringkasan status
+                Ringkasan status peminjaman
               </span>
             </div>
             <div className="p-2.5 rounded-xl border-2 border-blue-900 bg-white shadow-[2px_2px_0px_#1E3A8A] flex flex-col justify-between">
@@ -244,7 +244,7 @@ export function GuideStepContent({ step, config }: GuideStepContentProps) {
                 </span>
               </div>
               <span className="text-[10px] text-slate-500 font-medium leading-tight mt-1.5 block">
-                Detail kartu & barcode
+                Detail peminjaman & kode pinjam
               </span>
             </div>
           </div>
