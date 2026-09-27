@@ -104,8 +104,8 @@ if (!process.env.VERCEL) {
 export default async function handler(req: Request, res: Response) {
   const origin = req.headers.origin;
 
-  if (isOriginAllowed(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin as string);
+  if (origin && isOriginAllowed(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader(
       'Access-Control-Allow-Methods',
@@ -115,6 +115,7 @@ export default async function handler(req: Request, res: Response) {
       'Access-Control-Allow-Headers',
       'Content-Type,Authorization,X-Requested-With',
     );
+    res.setHeader('Vary', 'Origin');
   }
 
   if (req.method === 'OPTIONS') {
