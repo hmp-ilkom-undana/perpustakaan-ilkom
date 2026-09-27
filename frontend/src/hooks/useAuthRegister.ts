@@ -7,18 +7,46 @@ import { authService } from "@/services/auth.service";
 
 export const registerSchema = z
   .object({
-    name: z.string().min(3, "Nama minimal 3 karakter"),
+    name: z
+      .string()
+      .trim()
+      .min(3, "Nama lengkap minimal 3 karakter")
+      .max(100, "Nama lengkap maksimal 100 karakter")
+      .regex(
+        /^[a-zA-Z\s'.]+$/,
+        "Nama hanya boleh mengandung huruf, spasi, titik, dan petik"
+      ),
+    nim: z
+      .string()
+      .trim()
+      .regex(/^\d{10}$/, "NIM harus berupa 10 digit angka"),
     username: z
       .string()
+      .trim()
       .min(3, "Username minimal 3 karakter")
-      .regex(/^[a-zA-Z0-9_]+$/, "Hanya boleh huruf, angka, dan underscore"),
-    nim: z.string().length(10, "NIM harus 10 karakter"),
+      .max(20, "Username maksimal 20 karakter")
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Username hanya boleh mengandung huruf, angka, dan underscore (_)"
+      ),
     wa_number: z
       .string()
-      .min(10, "Nomor WA minimal 10 digit")
-      .max(14, "Nomor WA terlalu panjang"),
-    email: z.string().email("Format email tidak valid"),
-    password: z.string().min(8, "Password minimal 8 karakter"),
+      .trim()
+      .regex(
+        /^(08|628)\d{8,11}$/,
+        "Nomor WhatsApp harus valid diawali 08 atau 628 (10-14 digit)"
+      ),
+    email: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .email("Format alamat email tidak valid"),
+    password: z
+      .string()
+      .min(8, "Kata sandi minimal 8 karakter")
+      .regex(/[A-Z]/, "Kata sandi wajib mengandung huruf besar (A-Z)")
+      .regex(/[a-z]/, "Kata sandi wajib mengandung huruf kecil (a-z)")
+      .regex(/[0-9]/, "Kata sandi wajib mengandung angka (0-9)"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -39,6 +67,8 @@ export function useAuthRegister({ onOpenChange }: UseAuthRegisterOptions) {
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       name: "",
       username: "",
@@ -82,7 +112,8 @@ export function useAuthRegister({ onOpenChange }: UseAuthRegisterOptions) {
 
       if (error) {
         setRegisterError(
-          error.message || "Gagal mendaftar. Email atau NIM mungkin sudah terdaftar."
+          error.message ||
+            "Gagal mendaftar. Email, NIM, atau username mungkin sudah terdaftar."
         );
       } else {
         handleDialogChange(false);
