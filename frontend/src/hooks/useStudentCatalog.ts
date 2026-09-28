@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { usePublicArchiveQuery } from "./queries/useArchiveQuery";
 import { useMyBorrowingHistoryQuery } from "./queries/useBorrowingQuery";
-import { authClient } from "@/lib/auth-client";
 
 export interface StudentArchiveItem {
   id: string;
@@ -20,9 +19,6 @@ export interface StudentArchiveItem {
 }
 
 export function useStudentCatalog() {
-  const { data: session } = authClient.useSession();
-  const currentUserId = session?.user?.id;
-
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterType, setFilterType] = useState<string>("Semua");
@@ -65,7 +61,6 @@ export function useStudentCatalog() {
     type: filterType !== "Semua" ? filterType : undefined,
     category: filterCategory !== "Semua" ? filterCategory : undefined,
     availability: filterAvailability !== "Semua" ? filterAvailability : undefined,
-    userId: currentUserId || undefined,
   });
 
   const { data: myBorrowings = [] } = useMyBorrowingHistoryQuery();

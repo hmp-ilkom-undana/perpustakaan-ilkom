@@ -113,7 +113,6 @@ export function CatalogFilterBar({
             <SelectContent>
               <SelectItem value="Semua">Semua Status</SelectItem>
               <SelectItem value="Tersedia">Tersedia</SelectItem>
-              <SelectItem value="Diajukan">Diajukan</SelectItem>
               <SelectItem value="Dipinjam">Dipinjam</SelectItem>
             </SelectContent>
           </Select>

@@ -58,7 +58,6 @@ export class ArchiveController {
     @Query('type') type?: string,
     @Query('category') category?: string,
     @Query('availability') availability?: string,
-    @Query('userId') userId?: string,
   ) {
     const parsedPage = parseInt(page ?? '', 10);
     const parsedLimit = parseInt(limit ?? '', 10);
@@ -70,7 +69,6 @@ export class ArchiveController {
       type,
       category,
       availability,
-      userId,
       includeUncategorized: false,
     });
   }
