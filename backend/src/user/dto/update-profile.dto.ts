@@ -14,4 +14,8 @@ export class UpdateProfileDto {
   @IsString({ message: 'Nomor WhatsApp harus berupa teks' })
   @MaxLength(20, { message: 'Nomor WhatsApp maksimal 20 karakter' })
   wa_number?: string;
+
+  @IsOptional()
+  @IsString({ message: 'Kata sandi saat ini harus berupa teks' })
+  currentPassword?: string;
 }

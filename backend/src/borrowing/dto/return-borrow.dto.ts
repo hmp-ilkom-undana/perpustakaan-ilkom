@@ -18,9 +18,5 @@ export class ReturnBorrowDto {
   catatanKondisiKembali?: string;
 
   @IsOptional()
-  @IsString()
-  fineAmount?: string;
-
-  @IsOptional()
   returnToStock?: string | boolean;
 }

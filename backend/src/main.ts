@@ -3,12 +3,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import corsMiddleware from 'cors';
 
 let cachedApp: INestApplication;
 const expressInstance: Express = express();
+expressInstance.disable('x-powered-by');
 
 /**
  * Menentukan apakah suatu origin diperbolehkan.
@@ -50,6 +51,25 @@ expressInstance.use(
   }),
 );
 
+// Global security headers middleware (Permissions-Policy & API Cache-Control)
+expressInstance.use((req: Request, res: Response, next: NextFunction) => {
+  res.setHeader(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+  );
+
+  if (req.path?.startsWith('/api') || req.url?.startsWith('/api')) {
+    res.setHeader(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    );
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+
+  next();
+});
+
 export async function bootstrap(): Promise<INestApplication> {
   if (!cachedApp) {
     const app = await NestFactory.create(
@@ -61,6 +81,17 @@ export async function bootstrap(): Promise<INestApplication> {
     app.use(
       helmet({
         crossOriginResourcePolicy: { policy: 'cross-origin' },
+        referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+        crossOriginOpenerPolicy: { policy: 'same-origin' },
+        frameguard: { action: 'sameorigin' },
+        contentSecurityPolicy: {
+          useDefaults: false,
+          directives: {
+            defaultSrc: ["'none'"],
+            frameAncestors: ["'none'"],
+            baseUri: ["'none'"],
+          },
+        },
       }),
     );
 
@@ -116,6 +147,24 @@ export default async function handler(req: Request, res: Response) {
       'Content-Type,Authorization,X-Requested-With',
     );
     res.setHeader('Vary', 'Origin');
+  }
+
+  // Security headers pada response Vercel Serverless Function
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+  );
+
+  if (req.url?.startsWith('/api')) {
+    res.setHeader(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    );
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
   }
 
   if (req.method === 'OPTIONS') {

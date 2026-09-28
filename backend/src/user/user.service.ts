@@ -1,8 +1,16 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
 import { ActivityLogService } from '../activity-log/activity-log.service';
 import { Role } from '@prisma/client';
+import { verifyPassword } from 'better-auth/crypto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -295,15 +303,14 @@ export class UserService {
   }
 
   /**
-   * Memperbarui profil nama dan email pengguna (Admin / Staf / Mahasiswa)
+   * Memperbarui profil pengguna (Admin / Staf / Mahasiswa)
+   * SEC-008: Kontrol ketat perubahan email (otorisasi role & verifikasi currentPassword)
+   * SEC-009: Pencatatan ActivityLog komprehensif saat profil diubah oleh Administrator
    */
   async updateProfile(
     id: string,
-    data: {
-      name?: string;
-      email?: string;
-      wa_number?: string;
-    },
+    data: UpdateProfileDto,
+    actorUser?: any,
   ) {
     const user = await this.prisma.user.findUnique({
       where: { id },
@@ -319,8 +326,46 @@ export class UserService {
       targetEmail !== '' &&
       targetEmail !== user.email.toLowerCase();
 
-    // Validasi keunikan email jika email diubah
+    // Validasi otorisasi dan re-autentikasi jika email diubah (SEC-008)
     if (isEmailChanged) {
+      // 1. Hanya peran ADMIN yang diizinkan mengubah alamat email
+      if (actorUser?.role !== Role.ADMIN) {
+        throw new ForbiddenException(
+          'Perubahan alamat email hanya dapat dilakukan oleh Administrator.',
+        );
+      }
+
+      // 2. Jika pemilik akun mengubah emailnya sendiri, wajib verifikasi kata sandi saat ini
+      if (actorUser?.id === id) {
+        if (!data.currentPassword) {
+          throw new BadRequestException(
+            'Kata sandi saat ini (currentPassword) wajib disertakan untuk melakukan perubahan email.',
+          );
+        }
+
+        const account = await this.prisma.account.findFirst({
+          where: { userId: id, providerId: 'credential' },
+        });
+
+        if (!account || !account.password) {
+          throw new BadRequestException(
+            'Akun tidak memiliki autentikasi kata sandi terdaftar untuk diverifikasi.',
+          );
+        }
+
+        const isPasswordValid = await verifyPassword({
+          hash: account.password,
+          password: data.currentPassword,
+        });
+
+        if (!isPasswordValid) {
+          throw new UnauthorizedException(
+            'Kata sandi saat ini tidak valid. Perubahan email dibatalkan.',
+          );
+        }
+      }
+
+      // 3. Validasi keunikan email baru
       const emailInUse = await this.prisma.user.findFirst({
         where: {
           email: targetEmail,
@@ -357,8 +402,43 @@ export class UserService {
       });
     }
 
+    // Catat log aktivitas jika tindakan dilakukan oleh Administrator (SEC-009)
+    if (actorUser && actorUser.role === Role.ADMIN) {
+      const isSelfUpdate = actorUser.id === id;
+      await this.activityLogService.createLog({
+        userId: actorUser.id,
+        userName: actorUser.name || actorUser.email,
+        userRole: actorUser.role || Role.ADMIN,
+        userEmail: actorUser.email,
+        action: 'UPDATE_PROFILE',
+        entity: 'USER',
+        entityId: id,
+        description: isSelfUpdate
+          ? `Administrator memperbarui profil pribadinya: ${updated.name} (${updated.email})`
+          : `Administrator memperbarui profil pengguna: ${updated.name} (${updated.email})`,
+        metadata: {
+          targetUserId: id,
+          targetName: user.name,
+          targetEmail: user.email,
+          targetRole: user.role,
+          isSelfUpdate,
+          changes: {
+            ...(data.name && data.name.trim() !== user.name
+              ? { oldName: user.name, newName: data.name.trim() }
+              : {}),
+            ...(isEmailChanged
+              ? { oldEmail: user.email, newEmail: targetEmail }
+              : {}),
+            ...(data.wa_number !== undefined && data.wa_number !== user.wa_number
+              ? { oldWaNumber: user.wa_number, newWaNumber: data.wa_number }
+              : {}),
+          },
+        },
+      });
+    }
+
     return {
-      message: 'Profil dan email berhasil diperbarui',
+      message: 'Profil berhasil diperbarui',
       user: {
         id: updated.id,
         name: updated.name,
