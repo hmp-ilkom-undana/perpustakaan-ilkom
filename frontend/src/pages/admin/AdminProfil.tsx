@@ -57,17 +57,30 @@ export default function AdminProfil() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
+  // Email Change Re-Authentication State (SEC-008)
+  const [emailCurrentPassword, setEmailCurrentPassword] = useState("");
+  const [showEmailCurrentPassword, setShowEmailCurrentPassword] = useState(false);
+
+  // Check if email input is modified from original session data
+  const isEmailModified = useMemo(() => {
+    const originalEmail = (user?.email || "").trim().toLowerCase();
+    const currentEmail = email.trim().toLowerCase();
+    return currentEmail !== originalEmail;
+  }, [email, user?.email]);
+
   // Check if profile inputs are modified from original session data
   const isProfileDirty = useMemo(() => {
     const originalName = (user?.name || "").trim();
-    const originalEmail = (user?.email || "").trim().toLowerCase();
     const currentName = name.trim();
-    const currentEmail = email.trim().toLowerCase();
 
-    return currentName !== originalName || currentEmail !== originalEmail;
-  }, [name, email, user?.name, user?.email]);
+    return currentName !== originalName || isEmailModified;
+  }, [name, isEmailModified, user?.name]);
 
-  const isProfileValid = name.trim().length > 0 && email.trim().length > 0 && email.includes("@");
+  const isProfileValid =
+    name.trim().length > 0 &&
+    email.trim().length > 0 &&
+    email.includes("@") &&
+    (!isEmailModified || emailCurrentPassword.trim().length > 0);
   const canSubmitProfile = isProfileDirty && isProfileValid && !isUpdatingProfile;
 
   // Calculate Password Strength
@@ -105,7 +118,8 @@ export default function AdminProfil() {
       if (user?.id) {
         await userService.updateProfile(user.id, { 
           name: name.trim(),
-          email: email.trim().toLowerCase()
+          email: email.trim().toLowerCase(),
+          ...(isEmailModified ? { currentPassword: emailCurrentPassword } : {}),
         });
       }
       toast.success("Biodata dan email administrator berhasil diperbarui!", {
@@ -256,6 +270,47 @@ export default function AdminProfil() {
                   Anda dapat mengganti email ini dengan email resmi HMP. Email baru akan digunakan untuk login berikutnya.
                 </p>
               </div>
+
+              {isEmailModified && (
+                <div className="space-y-2 p-3 bg-amber-50/80 border-2 border-amber-300 rounded-md animate-in fade-in duration-200">
+                  <Label
+                    htmlFor="admin-email-password"
+                    className="text-xs font-bold text-amber-950 uppercase tracking-wider flex items-center justify-between"
+                  >
+                    <span>
+                      Kata Sandi Saat Ini <span className="text-red-500">*</span>
+                    </span>
+                    <span className="text-[10px] text-amber-700 font-semibold lowercase">
+                      (wajib untuk verifikasi pergantian email)
+                    </span>
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="admin-email-password"
+                      type={showEmailCurrentPassword ? "text" : "password"}
+                      value={emailCurrentPassword}
+                      onChange={(e) => setEmailCurrentPassword(e.target.value)}
+                      placeholder="Masukkan kata sandi saat ini"
+                      required
+                      className="border-2 border-amber-400 bg-white rounded-md font-semibold text-sm pr-10 focus-visible:ring-amber-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEmailCurrentPassword(!showEmailCurrentPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800 cursor-pointer"
+                    >
+                      {showEmailCurrentPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-amber-800 font-medium">
+                    Demi keamanan akun, perubahan alamat email wajib dikonfirmasi dengan kata sandi aktif Anda.
+                  </p>
+                </div>
+              )}
 
               <div className="p-3 bg-amber-50 border-2 border-amber-200 rounded-md text-xs text-amber-900 font-medium flex items-start gap-2">
                 <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />

@@ -465,7 +465,6 @@ export class BorrowingService {
     file: Express.Multer.File | undefined,
     kondisiStr: string,
     catatan?: string,
-    fineAmountStr?: string,
     officerUser?: any,
     returnToStock: boolean = true,
   ) {

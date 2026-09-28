@@ -114,7 +114,6 @@ export class BorrowingController {
       file,
       body.kondisiKembali,
       body.catatanKondisiKembali,
-      body.fineAmount,
       req['user'] as any,
       returnToStock,
     );

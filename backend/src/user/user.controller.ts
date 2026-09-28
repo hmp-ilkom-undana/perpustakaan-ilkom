@@ -69,7 +69,7 @@ export class UserController {
       );
     }
 
-    return this.userService.updateProfile(id, body);
+    return this.userService.updateProfile(id, body, user);
   }
 
   @Patch('staff/:id')
