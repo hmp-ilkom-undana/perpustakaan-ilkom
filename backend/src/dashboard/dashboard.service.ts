@@ -252,7 +252,10 @@ export class DashboardService {
     const topCategories = categoryDistributionRaw.map((cat, idx) => {
       const percentage = totalCategoryItems > 0 ? Math.round((cat._count.id / totalCategoryItems) * 100) : 0;
       return {
-        name: cat.category || 'Umum',
+        name:
+          !cat.category || cat.category === 'Umum'
+            ? 'Belum Dikategorikan'
+            : cat.category,
         count: cat._count.id,
         percentage,
         color: categoryColors[idx % categoryColors.length],

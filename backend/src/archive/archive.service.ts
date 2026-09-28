@@ -20,6 +20,7 @@ export class ArchiveService {
     category?: string;
     availability?: string;
     userId?: string;
+    includeUncategorized?: boolean;
   }) {
     // Lapisan pertahanan kedua: pastikan nilai page dan limit selalu angka valid (>= 1)
     const parsedPage =
@@ -37,7 +38,7 @@ export class ArchiveService {
       100,
       Math.max(1, Number.isInteger(parsedLimit) ? (parsedLimit as number) : 10),
     );
-    const { search, type, category, availability, userId } = params;
+    const { search, type, category, availability, userId, includeUncategorized } = params;
     const skip = (pageNum - 1) * limitNum;
     const where: any = {};
 
@@ -54,8 +55,24 @@ export class ArchiveService {
       where.archiveType = type;
     }
 
-    if (category && category !== 'all' && category !== 'Semua') {
-      where.category = category;
+    if (includeUncategorized) {
+      if (category && category !== 'all' && category !== 'Semua') {
+        if (category === 'Belum Dikategorikan' || category === 'Umum') {
+          where.category = { in: ['Belum Dikategorikan', 'Umum'] };
+        } else {
+          where.category = category;
+        }
+      }
+    } else {
+      if (category && category !== 'all' && category !== 'Semua') {
+        if (category === 'Belum Dikategorikan' || category === 'Umum') {
+          where.category = '__EXCLUDED_CATEGORY__';
+        } else {
+          where.category = category;
+        }
+      } else {
+        where.category = { notIn: ['Belum Dikategorikan', 'Umum'] };
+      }
     }
 
     if (availability === 'Tersedia') {
@@ -326,7 +343,7 @@ export class ArchiveService {
       let title = '';
       let author = '';
       let year: number | null = null;
-      let category = 'Umum';
+      let category = 'Belum Dikategorikan';
       let quantity = 1;
       let shelfLocation: string | null = null;
 
@@ -445,7 +462,7 @@ export class ArchiveService {
       }
 
       // 5. Cleansing Kategori
-      if (!category) category = 'Umum';
+      if (!category || category === 'Umum') category = 'Belum Dikategorikan';
       if (
         typeof category === 'string' &&
         category.trim().toLowerCase() === 'machine larning'

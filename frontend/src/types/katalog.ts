@@ -4,7 +4,7 @@ export type ArchiveCategory =
   | "Sistem Pakar"
   | "SPK"
   | "Kriptografi"
-  | "Umum";
+  | "Belum Dikategorikan";
 
 export type ArchiveType = "Skripsi" | "Ringkasan Skripsi" | "Naskah Publikasi";
 

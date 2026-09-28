@@ -95,7 +95,7 @@ export function KatalogFilterBar({
               <SelectItem value="Sistem Pakar">Sistem Pakar</SelectItem>
               <SelectItem value="SPK">SPK</SelectItem>
               <SelectItem value="Kriptografi">Kriptografi</SelectItem>
-              <SelectItem value="Umum">Umum</SelectItem>
+              <SelectItem value="Belum Dikategorikan">Belum Dikategorikan</SelectItem>
             </SelectContent>
           </Select>
         </div>

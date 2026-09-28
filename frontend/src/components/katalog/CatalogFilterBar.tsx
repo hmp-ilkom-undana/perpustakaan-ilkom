@@ -94,7 +94,6 @@ export function CatalogFilterBar({
               <SelectItem value="Sistem Pakar">Sistem Pakar</SelectItem>
               <SelectItem value="SPK">SPK</SelectItem>
               <SelectItem value="Kriptografi">Kriptografi</SelectItem>
-              <SelectItem value="Umum">Umum</SelectItem>
             </SelectContent>
           </Select>
         </div>
