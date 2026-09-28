@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
 import { ActivityLogService } from '../activity-log/activity-log.service';
 import { Role } from '@prisma/client';
-import { verifyPassword } from 'better-auth/crypto';
+
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
@@ -353,6 +353,7 @@ export class UserService {
           );
         }
 
+        const { verifyPassword } = await import('better-auth/crypto');
         const isPasswordValid = await verifyPassword({
           hash: account.password,
           password: data.currentPassword,
