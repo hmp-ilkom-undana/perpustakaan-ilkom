@@ -18,13 +18,42 @@ export class BorrowingService {
     const settings = await this.settingService.getSettings();
 
     return await this.prisma.$transaction(async (tx) => {
-      const archive = await tx.archive.findUnique({
-        where: { id: archiveId },
-      });
+      const userRows = await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM "User"
+        WHERE id = ${userId}
+        FOR UPDATE
+      `;
 
-      if (!archive) {
+      if (!userRows || userRows.length === 0) {
+        throw new BadRequestException('Pengguna tidak ditemukan.');
+      }
+
+      const archiveRows = await tx.$queryRaw<
+        Array<{
+          id: string;
+          archiveCode: string;
+          title: string;
+          author: string;
+          year: number;
+          category: string;
+          status: string;
+          archiveType: string;
+          quantity: number;
+          reservedQuantity: number;
+          shelfLocation: string | null;
+        }>
+      >`
+        SELECT id, "archiveCode", title, author, year, category, status, "archiveType", quantity, "reservedQuantity", "shelfLocation"
+        FROM "Archive"
+        WHERE id = ${archiveId}
+        FOR UPDATE
+      `;
+
+      if (!archiveRows || archiveRows.length === 0) {
         throw new BadRequestException('Arsip tidak ditemukan.');
       }
+
+      const archive = archiveRows[0];
 
       if (
         archive.category === 'Belum Dikategorikan' ||
