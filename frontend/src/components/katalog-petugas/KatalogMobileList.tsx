@@ -72,8 +72,12 @@ export function KatalogMobileList({
                 {item.title}
               </span>
             </button>
-            <p className="font-semibold text-slate-600 text-xs mt-1 truncate" title={item.author}>
-              <span className="truncate">{item.author}</span> • <span className="text-slate-500 font-medium whitespace-nowrap">{item.year}</span>
+            <p className="flex items-center gap-1 mt-1 min-w-0">
+              <span className="font-semibold text-slate-600 text-xs truncate min-w-0" title={item.author}>
+                {item.author}
+              </span>
+              <span className="font-semibold text-slate-600 text-xs shrink-0">•</span>
+              <span className="text-slate-500 font-medium text-xs shrink-0 whitespace-nowrap">{item.year}</span>
             </p>
           </div>
 
