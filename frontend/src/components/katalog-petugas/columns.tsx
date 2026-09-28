@@ -68,9 +68,13 @@ export function getKatalogColumns({
                 {item.title}
               </span>
             </button>
-            <span className="font-semibold text-slate-600 mt-1 text-xs tracking-tight">
-              {item.author} •{" "}
-              <span className="text-slate-500 font-medium">{item.year}</span>
+            <span
+              className="font-semibold text-slate-600 mt-1 text-xs tracking-tight truncate block max-w-full"
+              title={item.author}
+            >
+              <span className="truncate">{item.author}</span>
+              {" "}•{" "}
+              <span className="text-slate-500 font-medium whitespace-nowrap">{item.year}</span>
             </span>
           </div>
         );
