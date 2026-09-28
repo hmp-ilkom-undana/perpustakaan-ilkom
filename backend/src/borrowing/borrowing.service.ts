@@ -195,13 +195,25 @@ export class BorrowingService {
 
   async cancelBorrowing(userId: string, borrowingId: string) {
     return await this.prisma.$transaction(async (tx) => {
-      const borrowing = await tx.borrowing.findUnique({
-        where: { id: borrowingId },
-      });
+      const borrowingRows = await tx.$queryRaw<
+        Array<{
+          id: string;
+          userId: string;
+          archiveId: string;
+          status: string;
+        }>
+      >`
+        SELECT id, "userId", "archiveId", status
+        FROM "Borrowing"
+        WHERE id = ${borrowingId}
+        FOR UPDATE
+      `;
 
-      if (!borrowing) {
+      if (!borrowingRows || borrowingRows.length === 0) {
         throw new BadRequestException('Peminjaman tidak ditemukan.');
       }
+
+      const borrowing = borrowingRows[0];
 
       if (borrowing.userId !== userId) {
         throw new BadRequestException(
@@ -270,67 +282,34 @@ export class BorrowingService {
   }
 
   async approveBorrowing(borrowingId: string, officerUser?: any) {
-    const borrowing = await this.prisma.borrowing.findUnique({
-      where: { id: borrowingId },
-      include: {
-        user: true,
-        archive: true,
-      },
-    });
-
-    if (!borrowing) {
-      throw new BadRequestException('Peminjaman tidak ditemukan.');
-    }
-
-    if (borrowing.status !== 'REQUESTED') {
-      throw new BadRequestException('Hanya peminjaman berstatus REQUESTED yang bisa disetujui.');
-    }
-
-    // Gunakan pickupCode yang sudah ada sejak pengajuan, atau generate format PK- baru jika belum ada
-    const randomCode = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const pickupCode = borrowing.pickupCode || `PK-${randomCode}`;
-
-    const approverName =
-      officerUser?.name ||
-      (officerUser?.role === 'ADMIN'
-        ? 'Administrator Perpustakaan'
-        : 'Petugas Perpustakaan');
-
-    const updated = await this.prisma.borrowing.update({
-      where: { id: borrowingId },
-      data: {
-        status: 'WAITING_PICKUP',
-        pickupCode: pickupCode,
-        accDate: new Date(),
-        approvedBy: approverName,
-      },
-    });
-
-    if (officerUser) {
-      await this.activityLogService.createLog({
-        userId: officerUser.id,
-        userName: officerUser.name || officerUser.email,
-        userRole: officerUser.role,
-        userEmail: officerUser.email,
-        action: 'APPROVE_BORROW',
-        entity: 'BORROWING',
-        entityId: borrowing.id,
-        description: `Menyetujui pengajuan peminjaman arsip "${borrowing.archive?.title || '-'}" untuk ${borrowing.user?.name || 'Mahasiswa'} (Kode Ambil: ${pickupCode})`,
-        metadata: {
-          borrowingId: borrowing.id,
-          pickupCode: pickupCode,
-          archiveTitle: borrowing.archive?.title,
-          studentName: borrowing.user?.name,
-          studentNim: borrowing.user?.nim,
-        },
-      });
-    }
-
-    return updated;
-  }
-
-  async rejectBorrowing(borrowingId: string, reason?: string, officerUser?: any) {
     return await this.prisma.$transaction(async (tx) => {
+      const borrowingRows = await tx.$queryRaw<
+        Array<{
+          id: string;
+          userId: string;
+          archiveId: string;
+          status: string;
+          pickupCode: string | null;
+        }>
+      >`
+        SELECT id, "userId", "archiveId", status, "pickupCode"
+        FROM "Borrowing"
+        WHERE id = ${borrowingId}
+        FOR UPDATE
+      `;
+
+      if (!borrowingRows || borrowingRows.length === 0) {
+        throw new BadRequestException('Peminjaman tidak ditemukan.');
+      }
+
+      const lockedBorrowing = borrowingRows[0];
+
+      if (lockedBorrowing.status !== 'REQUESTED') {
+        throw new BadRequestException(
+          'Hanya peminjaman berstatus REQUESTED yang bisa disetujui.',
+        );
+      }
+
       const borrowing = await tx.borrowing.findUnique({
         where: { id: borrowingId },
         include: {
@@ -339,21 +318,89 @@ export class BorrowingService {
         },
       });
 
-      if (!borrowing) {
+      const randomCode = crypto.randomBytes(3).toString('hex').toUpperCase();
+      const pickupCode = lockedBorrowing.pickupCode || `PK-${randomCode}`;
+
+      const approverName =
+        officerUser?.name ||
+        (officerUser?.role === 'ADMIN'
+          ? 'Administrator Perpustakaan'
+          : 'Petugas Perpustakaan');
+
+      const updated = await tx.borrowing.update({
+        where: { id: borrowingId },
+        data: {
+          status: 'WAITING_PICKUP',
+          pickupCode: pickupCode,
+          accDate: new Date(),
+          approvedBy: approverName,
+        },
+      });
+
+      if (officerUser) {
+        await this.activityLogService.createLog({
+          userId: officerUser.id,
+          userName: officerUser.name || officerUser.email,
+          userRole: officerUser.role,
+          userEmail: officerUser.email,
+          action: 'APPROVE_BORROW',
+          entity: 'BORROWING',
+          entityId: lockedBorrowing.id,
+          description: `Menyetujui pengajuan peminjaman arsip "${borrowing?.archive?.title || '-'}" untuk ${borrowing?.user?.name || 'Mahasiswa'} (Kode Ambil: ${pickupCode})`,
+          metadata: {
+            borrowingId: lockedBorrowing.id,
+            pickupCode: pickupCode,
+            archiveTitle: borrowing?.archive?.title,
+            studentName: borrowing?.user?.name,
+            studentNim: borrowing?.user?.nim,
+          },
+        });
+      }
+
+      return updated;
+    });
+  }
+
+  async rejectBorrowing(borrowingId: string, reason?: string, officerUser?: any) {
+    return await this.prisma.$transaction(async (tx) => {
+      const borrowingRows = await tx.$queryRaw<
+        Array<{
+          id: string;
+          archiveId: string;
+          status: string;
+        }>
+      >`
+        SELECT id, "archiveId", status
+        FROM "Borrowing"
+        WHERE id = ${borrowingId}
+        FOR UPDATE
+      `;
+
+      if (!borrowingRows || borrowingRows.length === 0) {
         throw new BadRequestException('Peminjaman tidak ditemukan.');
       }
 
-      if (borrowing.status !== 'REQUESTED') {
-        throw new BadRequestException('Hanya peminjaman berstatus REQUESTED yang bisa ditolak.');
+      const lockedBorrowing = borrowingRows[0];
+
+      if (lockedBorrowing.status !== 'REQUESTED') {
+        throw new BadRequestException(
+          'Hanya peminjaman berstatus REQUESTED yang bisa ditolak.',
+        );
       }
 
-      // Kembalikan stok
+      const borrowing = await tx.borrowing.findUnique({
+        where: { id: borrowingId },
+        include: {
+          user: true,
+          archive: true,
+        },
+      });
+
       await tx.archive.update({
-        where: { id: borrowing.archiveId },
+        where: { id: lockedBorrowing.archiveId },
         data: { reservedQuantity: { decrement: 1 } },
       });
 
-      // Ubah status jadi REJECTED
       const updated = await tx.borrowing.update({
         where: { id: borrowingId },
         data: {
@@ -371,12 +418,12 @@ export class BorrowingService {
           userEmail: officerUser.email,
           action: 'REJECT_BORROW',
           entity: 'BORROWING',
-          entityId: borrowing.id,
-          description: `Menolak pengajuan arsip "${borrowing.archive?.title || '-'}" untuk ${borrowing.user?.name || 'Mahasiswa'}${reason ? `. Alasan: ${reason}` : ''}`,
+          entityId: lockedBorrowing.id,
+          description: `Menolak pengajuan arsip "${borrowing?.archive?.title || '-'}" untuk ${borrowing?.user?.name || 'Mahasiswa'}${reason ? `. Alasan: ${reason}` : ''}`,
           metadata: {
-            borrowingId: borrowing.id,
-            archiveTitle: borrowing.archive?.title,
-            studentName: borrowing.user?.name,
+            borrowingId: lockedBorrowing.id,
+            archiveTitle: borrowing?.archive?.title,
+            studentName: borrowing?.user?.name,
             reason: reason || null,
           },
         });
