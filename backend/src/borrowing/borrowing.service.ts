@@ -26,6 +26,15 @@ export class BorrowingService {
         throw new BadRequestException('Arsip tidak ditemukan.');
       }
 
+      if (
+        archive.category === 'Belum Dikategorikan' ||
+        archive.category === 'Umum'
+      ) {
+        throw new BadRequestException(
+          'Arsip ini belum dikategorikan dan belum dapat dipinjam.',
+        );
+      }
+
       const activeBorrowings = await tx.borrowing.findMany({
         where: {
           userId: userId,

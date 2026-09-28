@@ -170,7 +170,7 @@ export function updateCirculationItem(id: string, updates: Partial<CirculationIt
 // MOCK DATA: KATALOG (ARCHIVES)
 // ==========================================
 
-export type ArchiveCategory = "Machine Learning" | "Sistem Pendukung Keputusan" | "Rekayasa Perangkat Lunak" | "Jaringan Komputer" | "Umum";
+export type ArchiveCategory = "Machine Learning" | "Sistem Pendukung Keputusan" | "Rekayasa Perangkat Lunak" | "Jaringan Komputer" | "Belum Dikategorikan";
 export type ArchiveType = "Skripsi" | "Naskah Publikasi" | "Buku";
 
 export interface CatalogItem {

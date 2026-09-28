@@ -23,7 +23,7 @@ const INITIAL_FORM_DATA: CatalogFormData = {
   title: "",
   author: "",
   year: new Date().getFullYear(),
-  category: "Umum",
+  category: "Belum Dikategorikan",
   type: "Skripsi",
   stock: 1,
   location: "",
@@ -81,7 +81,7 @@ export function usePetugasKatalog() {
         formData.title.trim() !== "" ||
         formData.author.trim() !== "" ||
         formData.location.trim() !== "" ||
-        formData.category !== "Umum" ||
+        formData.category !== "Belum Dikategorikan" ||
         formData.type !== "Skripsi" ||
         formData.stock !== 1
       );
@@ -110,7 +110,10 @@ export function usePetugasKatalog() {
       title: item.title || "",
       author: item.author || "",
       year: item.year || new Date().getFullYear(),
-      category: (item.category as ArchiveCategory) || "Umum",
+      category:
+        item.category === ("Umum" as any)
+          ? "Belum Dikategorikan"
+          : (item.category as ArchiveCategory) || "Belum Dikategorikan",
       type: (item.type as ArchiveType) || "Skripsi",
       stock: item.stock ?? 1,
       location: item.location || "",

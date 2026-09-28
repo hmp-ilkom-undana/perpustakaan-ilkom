@@ -25,6 +25,30 @@ import { Public } from '../auth/decorators/public.decorator';
 export class ArchiveController {
   constructor(private readonly archiveService: ArchiveService) {}
 
+  @Get('manage')
+  @Roles('ADMIN', 'PETUGAS')
+  async getManageCatalog(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('type') type?: string,
+    @Query('category') category?: string,
+    @Query('availability') availability?: string,
+  ) {
+    const parsedPage = parseInt(page ?? '', 10);
+    const parsedLimit = parseInt(limit ?? '', 10);
+
+    return this.archiveService.findAll({
+      page: !isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1,
+      limit: !isNaN(parsedLimit) && parsedLimit > 0 ? parsedLimit : 10,
+      search,
+      type,
+      category,
+      availability,
+      includeUncategorized: true,
+    });
+  }
+
   @Public()
   @Get()
   async getCatalog(
@@ -47,6 +71,7 @@ export class ArchiveController {
       category,
       availability,
       userId,
+      includeUncategorized: false,
     });
   }
 

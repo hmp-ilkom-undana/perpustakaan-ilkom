@@ -52,7 +52,7 @@ const mapArchive = (item: any): CatalogItem => ({
 
 export const archiveService = {
   getAll: async (params: ArchiveQueryParams): Promise<PaginatedArchiveResponse> => {
-    const response = await api.get("/api/archives", { params });
+    const response = await api.get("/api/archives/manage", { params });
     return {
       data: response.data.data.map(mapArchive),
       meta: response.data.meta,
