@@ -8,15 +8,15 @@ const cardVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-white text-slate-900 border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] rounded-lg",
+          "bg-white text-slate-900 border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] rounded-xl",
         elevated:
-          "bg-white text-slate-900 border-2 border-blue-900 shadow-[6px_6px_0px_#1E3A8A] rounded-lg",
+          "bg-white text-slate-900 border-4 border-blue-900 shadow-[6px_6px_0px_#1E3A8A] rounded-xl",
         interactive:
-          "bg-white text-slate-900 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] hover:border-orange-500 hover:shadow-[4px_4px_0px_#F97316] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer rounded-lg",
+          "bg-white text-slate-900 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] hover:border-orange-500 hover:shadow-[5px_5px_0px_#F97316] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all duration-200 cursor-pointer rounded-xl",
         dark:
-          "bg-gradient-to-b from-blue-950 to-slate-900 text-white border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] rounded-lg",
+          "bg-blue-900 text-white border-2 border-blue-700 shadow-[4px_4px_0px_#0B132B] rounded-xl",
         muted:
-          "bg-slate-50 text-slate-900 border-2 border-blue-900/40 shadow-[2px_2px_0px_#1E3A8A] rounded-lg",
+          "bg-slate-50 text-slate-900 border-2 border-blue-900/40 shadow-[2px_2px_0px_#1E3A8A] rounded-xl",
         ghost:
           "bg-transparent border-2 border-transparent",
       },

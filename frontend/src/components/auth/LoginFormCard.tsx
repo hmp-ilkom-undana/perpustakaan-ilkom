@@ -30,10 +30,10 @@ export function LoginFormCard({
   } = form;
 
   return (
-    <Card className="w-full max-w-sm bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] rounded-2xl overflow-hidden relative">
+    <Card className="w-full max-w-sm bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] rounded-xl overflow-hidden relative">
       <CardHeader className="space-y-3 text-center pt-8 pb-4 px-6 border-b-2 border-blue-900">
         <div className="flex justify-center">
-          <div className="p-3 rounded-xl bg-amber-50 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] flex items-center justify-center">
+          <div className="p-2.5 rounded-lg bg-amber-50 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] flex items-center justify-center">
             <img
               src="/assets/Logo_Ilkom.png"
               alt="Logo Ilmu Komputer"
@@ -68,7 +68,7 @@ export function LoginFormCard({
             <Input
               id="email"
               placeholder="nama@email.com atau username..."
-              className="h-11 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white"
+              className="h-11 text-sm bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-orange-500 focus-visible:shadow-[3px_3px_0px_#F97316] transition-all"
               {...register("email")}
             />
             {errors.email && (
@@ -89,7 +89,7 @@ export function LoginFormCard({
               </Label>
               <Link
                 to="/lupa-sandi"
-                className="text-[11px] font-black text-blue-900 hover:text-orange-500 transition-colors uppercase tracking-wider"
+                className="text-[11px] font-black text-blue-900 hover:text-orange-500 hover:underline transition-colors uppercase tracking-wider"
               >
                 Lupa Sandi?
               </Link>
@@ -99,7 +99,7 @@ export function LoginFormCard({
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Masukkan kata sandi..."
-                className="h-11 bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:bg-white pr-10"
+                className="h-11 bg-slate-50 border-2 border-blue-900 text-slate-900 placeholder:text-slate-400 font-bold rounded-lg shadow-[2px_2px_0px_#1E3A8A] focus-visible:ring-0 focus-visible:border-orange-500 focus-visible:shadow-[3px_3px_0px_#F97316] transition-all pr-10"
                 {...register("password")}
               />
               <button
@@ -127,7 +127,7 @@ export function LoginFormCard({
             variant="default"
             size="lg"
             disabled={isSubmitting || isRedirecting}
-            className="w-full font-black text-sm h-11 border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] uppercase tracking-wider mt-5 cursor-pointer"
+            className="w-full font-black text-sm uppercase tracking-wider mt-5 cursor-pointer"
           >
             {isSubmitting || isRedirecting ? (
               <>
@@ -148,7 +148,7 @@ export function LoginFormCard({
           <button
             type="button"
             onClick={onOpenRegister}
-            className="text-orange-500 font-black hover:underline cursor-pointer inline-block ml-1"
+            className="text-orange-500 font-black hover:text-orange-600 hover:underline cursor-pointer inline-block ml-1 transition-colors"
           >
             Daftar di sini
           </button>
