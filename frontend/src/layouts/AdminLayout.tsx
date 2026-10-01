@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import { NavLogo } from "@/components/NavLogo";
+import { AppFooter } from "@/components/AppFooter";
 
 export default function AdminLayout() {
   useSessionSync("ADMIN");
@@ -171,16 +172,18 @@ export default function AdminLayout() {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 overflow-y-auto relative bg-slate-50">
+      <main className="flex-1 overflow-y-auto relative bg-slate-50 flex flex-col justify-between">
         
         {/* BACKGROUND SILHOUETTE */}
         <div className="fixed inset-0 md:left-64 pointer-events-none z-0 overflow-hidden flex items-center justify-center opacity-5">
            <img src="/assets/Logo_Ilkom.png" alt="Logo Watermark" className="w-[400px] md:w-[600px] h-auto grayscale" />
         </div>
 
-        <div className="max-w-7xl mx-auto w-full p-4 sm:p-6 md:p-8 animate-in fade-in duration-500 relative z-10">
+        <div className="max-w-7xl mx-auto w-full p-4 sm:p-6 md:p-8 animate-in fade-in duration-500 relative z-10 flex-1">
           <Outlet />
         </div>
+
+        <AppFooter />
       </main>
     </div>
   );

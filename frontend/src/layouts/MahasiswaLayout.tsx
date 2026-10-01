@@ -36,6 +36,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/useScroll";
 import { NavLogo } from "@/components/NavLogo";
+import { AppFooter } from "@/components/AppFooter";
 
 // Daftar Menu Mahasiswa
 const menus = [
@@ -391,6 +392,8 @@ function MahasiswaLayoutContent() {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <Outlet />
       </main>
+
+      <AppFooter />
 
       <GuideModal
         isOpen={guide.isOpen}
