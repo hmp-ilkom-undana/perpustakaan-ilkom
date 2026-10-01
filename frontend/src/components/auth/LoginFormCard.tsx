@@ -30,7 +30,7 @@ export function LoginFormCard({
   } = form;
 
   return (
-    <Card className="w-full max-w-sm bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] rounded-xl overflow-hidden relative">
+    <Card className="w-full max-w-sm bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#000000] rounded-xl overflow-hidden relative">
       <CardHeader className="space-y-3 text-center pt-8 pb-4 px-6 border-b-2 border-blue-900">
         <div className="flex justify-center">
           <div className="p-2.5 rounded-lg bg-amber-50 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] flex items-center justify-center">
