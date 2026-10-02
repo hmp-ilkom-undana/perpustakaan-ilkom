@@ -33,7 +33,7 @@ export function RegisterDialog({ open, onOpenChange }: RegisterDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleDialogChange}>
-      <DialogContent className="sm:max-w-lg bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] rounded-2xl p-6 max-h-[90vh] overflow-y-auto z-[60]">
+      <DialogContent className="sm:max-w-lg bg-white border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] rounded-xl p-6 max-h-[90vh] overflow-y-auto z-[60]">
         <DialogHeader className="border-b-2 border-blue-900 pb-3 text-center sm:text-left">
           <DialogTitle className="text-lg sm:text-xl font-black text-blue-950 uppercase tracking-tight flex items-center justify-center sm:justify-start gap-2">
             <UserPlus className="w-5 h-5 text-orange-500" />

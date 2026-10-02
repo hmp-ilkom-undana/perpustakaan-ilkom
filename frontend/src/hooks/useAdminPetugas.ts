@@ -86,9 +86,13 @@ export function useAdminPetugas() {
 
   const handleBatchCreateStaff = useCallback(
     async (staffListToCreate: Array<{ email: string; password?: string }>) => {
-      const res = await createBatchMutation.mutateAsync(staffListToCreate);
-      if (res && res.totalCreated > 0) {
-        setIsFormOpen(false);
+      try {
+        const res = await createBatchMutation.mutateAsync(staffListToCreate);
+        if (res && res.totalCreated > 0) {
+          setIsFormOpen(false);
+        }
+      } catch {
+        // Error toast ditangani oleh onError pada useCreateBatchStaffMutation
       }
     },
     [createBatchMutation],
@@ -97,17 +101,21 @@ export function useAdminPetugas() {
   const handleSaveStaff = useCallback(
     async (staffData: Partial<UserItem> & { password?: string }) => {
       if (!staffData.id) return;
-      await updateMutation.mutateAsync({
-        id: staffData.id,
-        data: {
-          name: staffData.name,
-          email: staffData.email,
-          wa_number: staffData.wa_number,
-          status: staffData.status,
-          password: staffData.password,
-        },
-      });
-      setIsFormOpen(false);
+      try {
+        await updateMutation.mutateAsync({
+          id: staffData.id,
+          data: {
+            name: staffData.name,
+            email: staffData.email,
+            wa_number: staffData.wa_number,
+            status: staffData.status,
+            password: staffData.password,
+          },
+        });
+        setIsFormOpen(false);
+      } catch {
+        // Error toast ditangani oleh onError pada useUpdateStaffMutation
+      }
     },
     [updateMutation],
   );

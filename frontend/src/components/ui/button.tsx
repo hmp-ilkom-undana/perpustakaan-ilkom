@@ -9,19 +9,19 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-orange-500 text-white border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] hover:bg-orange-600 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+          "bg-orange-500 text-white border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] hover:bg-orange-600 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_#1E3A8A] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none",
         outline:
-          "border-2 border-blue-900 bg-white text-blue-950 shadow-[2px_2px_0px_#1E3A8A] hover:bg-orange-50 hover:text-orange-950 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+          "border-2 border-blue-900 bg-white text-blue-950 shadow-[3px_3px_0px_#1E3A8A] hover:bg-orange-50 hover:text-orange-950 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none",
         navy:
-          "bg-blue-900 text-white border-2 border-blue-950 shadow-[3px_3px_0px_#1E3A8A] hover:bg-blue-800 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+          "bg-blue-900 text-white border-2 border-blue-950 shadow-[4px_4px_0px_#0B132B] hover:bg-blue-800 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_#0B132B] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none",
         secondary:
-          "bg-slate-100 text-slate-800 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] hover:bg-slate-200 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+          "bg-slate-100 text-slate-800 border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] hover:bg-slate-200 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#1E3A8A] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
         success:
-          "bg-emerald-600 text-white border-2 border-blue-950 shadow-[3px_3px_0px_#1E3A8A] hover:bg-emerald-700 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+          "bg-emerald-600 text-white border-2 border-blue-950 shadow-[3px_3px_0px_#064e3b] hover:bg-emerald-700 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_#064e3b] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none",
         destructive:
-          "bg-rose-600 text-white border-2 border-blue-950 shadow-[3px_3px_0px_#1E3A8A] hover:bg-rose-700 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+          "bg-rose-600 text-white border-2 border-blue-950 shadow-[3px_3px_0px_#7f1d1d] hover:bg-rose-700 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_#7f1d1d] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none",
         amber:
-          "bg-amber-400 text-blue-950 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] hover:bg-amber-500 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+          "bg-amber-400 text-blue-950 border-2 border-blue-900 shadow-[3px_3px_0px_#1E3A8A] hover:bg-amber-500 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none",
         ghost:
           "hover:bg-slate-100 hover:text-blue-900 text-slate-700 border-2 border-transparent shadow-none",
         link:
