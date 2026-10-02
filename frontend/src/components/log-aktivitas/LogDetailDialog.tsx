@@ -142,96 +142,114 @@ export function LogDetailDialog({
     );
   };
 
+  // Pre-filter metadata keys yang valid untuk ditampilkan
+  const visibleMetadataEntries = hasMetadata
+    ? Object.entries(metadata).filter(([key, value]) => {
+        if (typeof value === "object" && value !== null) return false;
+        return !isExcludedKey(key);
+      })
+    : [];
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A]">
-        <DialogHeader>
-          <div className="flex items-center gap-2 mb-1">
-            <Badge variant={isAdmin ? "navy" : "amber"}>
-              {log.action}
-            </Badge>
-            <Badge variant="outline">
-              {log.entity}
-            </Badge>
+      <DialogContent className="max-w-2xl p-5 border-4 border-blue-900 shadow-[8px_8px_0px_#1E3A8A] overflow-hidden">
+        <DialogHeader className="pb-3 border-b-2 border-blue-900">
+          <div className="flex flex-wrap items-center justify-between gap-2 pr-6">
+            <div className="flex items-center gap-2">
+              <Badge variant={isAdmin ? "navy" : "amber"}>
+                {log.action}
+              </Badge>
+              <Badge variant="outline">
+                {log.entity}
+              </Badge>
+            </div>
+            <DialogDescription className="flex items-center gap-1 text-slate-500 font-semibold text-xs">
+              <Clock className="w-3.5 h-3.5 text-blue-900" />
+              {formattedDate} WIB
+            </DialogDescription>
           </div>
-          <DialogTitle className="text-xl font-black text-blue-950">
+          <DialogTitle className="text-lg font-black text-blue-950 mt-1">
             Rincian Audit Log Aktivitas
           </DialogTitle>
-          <DialogDescription className="flex items-center gap-1 text-slate-500 font-semibold text-xs">
-            <Clock className="w-3.5 h-3.5" />
-            {formattedDate} WIB
-          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 my-2">
-          {/* KARTU DIPROSES OLEH */}
-          <div className="bg-slate-50 p-4 rounded-xl border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] space-y-2">
-            <p className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
-              Diproses oleh
-            </p>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="font-black text-sm text-blue-950">{log.userName}</p>
-                <p className="text-xs font-semibold text-slate-500">{log.userEmail}</p>
-              </div>
-              <div className="shrink-0">
-                {isAdmin ? (
-                  <Badge variant="navy" className="gap-1">
-                    <ShieldCheck className="w-3 h-3" />
-                    Administrator
-                  </Badge>
-                ) : (
-                  <Badge variant="orange" className="gap-1">
-                    <UserCheck className="w-3 h-3" />
-                    Petugas
-                  </Badge>
-                )}
+        <div className="space-y-3 pt-1">
+          {/* BARIS 1: DIPROSES OLEH & RINGKASAN AKSI DALAM 2 KOLOM */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* KARTU DIPROSES OLEH */}
+            <div className="bg-slate-50 p-3 rounded-lg border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] flex flex-col justify-between">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">
+                Diproses oleh
+              </p>
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="font-black text-xs sm:text-sm text-blue-950 truncate">
+                    {log.userName}
+                  </p>
+                  <p className="text-[11px] font-semibold text-slate-500 truncate">
+                    {log.userEmail}
+                  </p>
+                </div>
+                <div className="shrink-0">
+                  {isAdmin ? (
+                    <Badge variant="navy" className="gap-1 text-[10px] py-0.5 px-2">
+                      <ShieldCheck className="w-3 h-3" />
+                      Admin
+                    </Badge>
+                  ) : (
+                    <Badge variant="orange" className="gap-1 text-[10px] py-0.5 px-2">
+                      <UserCheck className="w-3 h-3" />
+                      Petugas
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* DESKRIPSI UTAMA */}
-          <div className="bg-blue-50/50 p-4 rounded-xl border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]">
-            <p className="text-[11px] font-black text-blue-900 uppercase tracking-wider mb-1">
-              Ringkasan Aksi
-            </p>
-            <p className="text-sm font-semibold text-blue-950 leading-relaxed">
-              {log.description}
-            </p>
+            {/* RINGKASAN AKSI */}
+            <div className="bg-blue-50/50 p-3 rounded-lg border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] flex flex-col justify-center">
+              <p className="text-[10px] font-black text-blue-900 uppercase tracking-wider mb-1">
+                Ringkasan Aksi
+              </p>
+              <p className="text-xs font-semibold text-blue-950 leading-relaxed line-clamp-3">
+                {log.description}
+              </p>
+            </div>
           </div>
 
           {/* BUKTI FOTO JIKA ADA */}
           {photoUrls.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-[11px] font-black text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-blue-900" />
                 Lampiran Foto Bukti Fisik
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 {photoUrls.map((photo, i) => (
                   <div
                     key={i}
-                    className="p-2 bg-white rounded-xl border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] space-y-1.5"
+                    className="p-1.5 bg-white rounded-lg border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A] flex items-center gap-2"
                   >
-                    <p className="text-[11px] font-bold text-slate-700">{photo.label}</p>
-                    <div className="relative group overflow-hidden rounded-lg border border-slate-200 aspect-video bg-slate-100 flex items-center justify-center">
+                    <div className="relative overflow-hidden rounded border border-slate-200 w-12 h-12 bg-slate-100 shrink-0">
                       <img
                         src={photo.url}
                         alt={photo.label}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        className="w-full h-full object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
-                            "https://placehold.co/400x250/e2e8f0/1e293b?text=Foto+Tidak+Tersedia";
+                            "https://placehold.co/100x100/e2e8f0/1e293b?text=Foto";
                         }}
                       />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-bold text-slate-700 truncate">{photo.label}</p>
                       <a
                         href={photo.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="absolute inset-0 bg-blue-950/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold gap-1 transition-opacity"
+                        className="text-[10px] font-black text-blue-900 hover:text-orange-500 flex items-center gap-0.5 mt-0.5"
                       >
-                        <ExternalLink className="w-4 h-4" />
-                        Buka Foto Asli
+                        Buka Foto <ExternalLink className="w-2.5 h-2.5" />
                       </a>
                     </div>
                   </div>
@@ -240,31 +258,29 @@ export function LogDetailDialog({
             </div>
           )}
 
-          {/* METADATA TERSTRUKTUR */}
-          {hasMetadata && (
-            <div className="space-y-2">
-              <p className="text-[11px] font-black text-slate-500 uppercase tracking-wider">
+          {/* PARAMETER & NILAI TERKAIT */}
+          {hasMetadata && visibleMetadataEntries.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
                 Parameter & Nilai Terkait
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-white p-3 rounded-xl border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]">
-                {Object.entries(metadata).map(([key, value]) => {
-                  if (typeof value === "object" && value !== null) return null;
-                  if (isExcludedKey(key)) return null;
-
-                  return (
-                    <div
-                      key={key}
-                      className="p-2 bg-slate-50 rounded-lg border border-slate-200"
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-slate-50/70 p-2.5 rounded-lg border-2 border-blue-900 shadow-[2px_2px_0px_#1E3A8A]">
+                {visibleMetadataEntries.map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="p-2 bg-white rounded-md border border-slate-200 min-w-0"
+                  >
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider truncate">
+                      {formatMetadataLabel(key)}
+                    </p>
+                    <p
+                      className="text-[11px] font-black text-blue-950 truncate mt-0.5"
+                      title={formatMetadataValue(key, value)}
                     >
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
-                        {formatMetadataLabel(key)}
-                      </p>
-                      <p className="text-xs font-black text-blue-950 truncate mt-0.5">
-                        {formatMetadataValue(key, value)}
-                      </p>
-                    </div>
-                  );
-                })}
+                      {formatMetadataValue(key, value)}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           )}
