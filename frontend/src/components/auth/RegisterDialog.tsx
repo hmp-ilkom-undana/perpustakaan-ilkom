@@ -75,7 +75,7 @@ export function RegisterDialog({ open, onOpenChange }: RegisterDialogProps) {
             </Button>
             <Button
               type="submit"
-              variant="navy"
+              variant="default"
               disabled={isSubmitting}
               className="w-full sm:w-2/3 text-white font-black text-sm h-11 rounded-lg border-2 border-blue-900 shadow-[4px_4px_0px_#1E3A8A] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all cursor-pointer uppercase tracking-wider"
             >
