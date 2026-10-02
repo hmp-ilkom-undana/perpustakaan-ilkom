@@ -1,3 +1,5 @@
+import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 import { Role } from '@prisma/client';
 
 export interface CreateLogInput {
@@ -13,12 +15,39 @@ export interface CreateLogInput {
 }
 
 export class GetLogsQueryDto {
+  @IsOptional()
+  @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsEnum(Role, { message: 'Role tidak valid' })
   role?: Role;
+
+  @IsOptional()
+  @IsString()
   action?: string;
+
+  @IsOptional()
+  @IsString()
   entity?: string;
+
+  @IsOptional()
+  @IsString()
   startDate?: string;
+
+  @IsOptional()
+  @IsString()
   endDate?: string;
-  page?: string | number;
-  limit?: string | number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  limit?: number;
 }
