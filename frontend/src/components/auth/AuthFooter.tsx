@@ -1,6 +1,6 @@
 export function AuthFooter() {
   return (
-    <footer className="w-full max-w-md bg-blue-900/90 border-2 border-blue-900 rounded-xl px-5 py-3.5 flex flex-col items-center gap-3 text-center z-20 shadow-[4px_4px_0px_#000000] mt-auto">
+    <footer className="w-full max-w-md bg-blue-900/90 border-2 border-black rounded-2xl px-5 py-3.5 flex flex-col items-center gap-3 text-center z-20 shadow-[4px_4px_0px_#000000] mt-auto">
       <div className="flex items-center justify-center gap-6">
         <img
           src="/assets/Undana.png"
